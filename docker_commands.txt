@@ -1,0 +1,5 @@
+sudo docker build -t icoscp/alfresco:latest .
+sudo docker run --name alfresco -ti -d -p 8088:8080 -e ALFRESCO_VERSION=5.0.a -v /opt/alfresco-5.0.a:/opt/alfresco-5.0.a icoscp/alfresco alfrescostart.sh
+
+
+#  sed -i '/^#.*/s/^#//g' /etc/locale.gen
