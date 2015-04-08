@@ -2,7 +2,7 @@ sudo docker stop -t 200 alfresco
 sudo docker rm alfresco
 sudo docker rmi icoscp/alfresco
 sudo docker build -t icoscp/alfresco:latest .
-sudo docker run --name alfresconew -ti -d -p 8087:8080 -e ALFRESCO_VERSION=5.0.c -v /opt/alfresco-5.0.c:/opt/alfresco-5.0.c icoscp/alfresco alfrescostart.sh
+sudo docker run --name alfresco -ti -d -p 8443:8443 -e ALFRESCO_VERSION=5.0.c -v /opt/alfresco-5.0.c:/opt/alfresco-5.0.c icoscp/alfresco alfrescostart.sh
 
 # To migrate database from 5.0.a to 5.0.c
 
