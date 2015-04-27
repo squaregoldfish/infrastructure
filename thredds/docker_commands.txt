@@ -1,0 +1,4 @@
+sudo docker stop -t 200 thredds
+sudo docker rm thredds
+sudo docker run --name thredds -ti -d -p 8801:8080 -v /opt/thredds/webapps:/usr/local/tomcat/webapps icoscp/alfresco alfrescostart.sh
+
