@@ -5,3 +5,4 @@ thredds:
   volumes:
    - /disk/data/thredds/webapps:/usr/local/tomcat/webapps
    - /disk/data/thredds/content:/usr/local/tomcat/content/thredds
+   - /disk/data/carbontracker:/usr/local/tomcat/content/thredds/public/carbontracker
