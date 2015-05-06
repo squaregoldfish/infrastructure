@@ -1,0 +1,4 @@
+name = Simple Auth
+description = Simple Authentication for Drupal 7.
+core = 7.x
+configure = admin/config/content/simpleauth
