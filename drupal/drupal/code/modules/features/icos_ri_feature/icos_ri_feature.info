@@ -1,0 +1,15 @@
+name = ICOS RI
+description = Configuration specific to ICOS RI site.
+core = 7.x
+package = ICOS
+dependencies[] = ctools
+dependencies[] = minimal_share
+dependencies[] = strongarm
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[variable][] = date_default_timezone
+features[variable][] = minimal_share
+features[variable][] = site_default_country
+features[variable][] = site_mail
+features[variable][] = site_name
+features[variable][] = theme_default

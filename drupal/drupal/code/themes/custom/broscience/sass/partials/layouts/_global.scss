@@ -1,0 +1,71 @@
+////////////////////////
+// Layouts - Global Partial
+////////////////////////
+
+.display.one-third {
+  @include clearfix;
+  .block-region {
+    &.left {
+      @include grid-span(4, 1);
+    }
+    &.right {
+      @include grid-span(8, 5);
+    }
+  }
+}
+
+@include from(m) {
+  .display.two-col-without-styles {
+    @include clearfix;
+    .block-region {
+      &.left {
+        @include grid-span(6, 1);
+      }
+      &.right {
+        @include grid-span(6, 7);
+      }
+    }
+  }
+}
+
+// Larger gutter for main regions
+@include layout($gutter: $gutter-large) {
+  .display.four-col {
+    @include clearfix;
+    .region {
+      @include grid-span(12, 1);
+      @include from(l) {
+        &.first {
+          @include grid-span(3, 1);
+        }
+        &.second {
+          @include grid-span(3, 4);
+        }
+        &.third {
+          @include grid-span(3, 7);
+        }
+        &.fourth {
+          @include grid-span(3, 10);
+        }
+      }
+    }
+  }
+
+  .display.three-col {
+    @include clearfix;
+    .region {
+      @include grid-span(12, 1);
+      @include from(l) {
+        &.first {
+          @include grid-span(4, 1);
+        }
+        &.second {
+          @include grid-span(4, 5);
+        }
+        &.third {
+          @include grid-span(4, 9);
+        }
+      }
+    }
+  }
+}

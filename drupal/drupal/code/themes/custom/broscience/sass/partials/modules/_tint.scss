@@ -1,0 +1,10 @@
+////////////////////////
+// Modules - Tint Partial
+////////////////////////
+
+.tint-container {
+  @include style-theme-tint-container();
+  .tint {
+    @include style-theme-tint();
+  }
+}

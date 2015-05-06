@@ -1,0 +1,143 @@
+////////////////////////
+// Modules - Tabs Partial
+////////////////////////
+
+// Action tabs (authenticated users)
+#tabs {
+  background: $black;
+  @include clearfix;
+  ul.tabs {
+    border: none;
+    margin: 0;
+    padding: 0;
+    li {
+      a {
+        border: none;
+        padding: $rem-spacing;
+        margin: 0;
+        float: left;
+        color: $white;
+        background: transparent;
+        font-size: $font-smaller;
+        font-weight: bold;
+        &.active, &:hover {
+          color: $white;
+          @include style-theme-background-color();
+        }
+      }
+    }
+  }
+}
+
+// Horizontal tabs
+.ui-tabs {
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  .ui-tabs-nav {
+    border: none;
+    background: transparent;
+    li {
+      display: block;
+      float: none;
+      top: auto;
+      text-align: center;
+      margin: 0 0.2 * $rem-spacing 0 0;
+      padding: 0;
+      border-radius: 0;
+      border: none;
+      background: none;
+      @include style-theme-background-color();
+      a {
+        display: block;
+        float: none;
+        // Hide the ugly outline
+        outline: none;
+        padding: $rem-spacing;
+        font-size: $base-font-size;
+        text-transform: uppercase;
+        color: $white;
+      }
+      @include from(l) {
+        display: inherit;
+        float: left;
+        top: 0;
+        text-align: inherit;
+        a {
+          display: inherit;
+          float: left;
+        }
+      }
+    }
+  }
+}
+
+// Vertical tabs
+div.vertical-tabs {
+  background: $white;
+  .vertical-tabs-list {
+    background: $grey-5;
+    .vertical-tab-button {
+      font-size: $font-smaller;
+      border-bottom: 0.1 * $rem-spacing dashed $grey-25;
+      text-transform: uppercase;
+      &.last {
+        border-bottom: none;
+      }
+      a {
+        color: $green;
+        strong {
+          color: $default-theme-color-text;
+        }
+        span.summary {
+          text-transform: none;
+          color: $grey-50;
+          display: block;
+        }
+      }
+    }
+  }
+  .vertical-tabs-panes {
+    .vertical-tabs-pane {
+      legend {
+        display: none;
+      }
+    }
+  }
+  @include from(l) {
+    border: 0.1 * $rem-spacing solid $grey-25;
+    .vertical-tabs-list {
+      border-right: 0.15 * $rem-spacing solid $grey-25;
+    }
+  }
+}
+
+
+// Accordions
+div.ui-accordion {
+  border-radius: 0;
+  .ui-accordion-header {
+    overflow: inherit;
+    border: none;
+    border-radius: 0;
+    text-align: center;
+    background: $default-theme-color-grey;
+    padding: $rem-spacing;
+    font-size: $font-h3;
+    a {
+      color: $white;
+    }
+    .ui-accordion-header-icon {
+      display: none;
+    }
+  }
+  .ui-accordion-content {
+    color: $default-theme-color-grey;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    a {
+      @include style-theme-color();
+    }
+  }
+}

@@ -1,0 +1,11 @@
+////////////////////////
+// Modules - Contact Person Partial
+////////////////////////
+
+// Author view mode
+.node-contact-person.view-mode-author {
+  background: $white;
+  .text-wrapper {
+    padding: 0 $rem-spacing $rem-spacing $rem-spacing;
+  }
+}

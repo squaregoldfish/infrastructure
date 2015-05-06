@@ -1,0 +1,12 @@
+////////////////////////
+// Layouts - Users Partial
+////////////////////////
+
+body.not-logged-in.page-user {
+  #main {
+    max-width: $max-width;
+    margin: 0 auto;
+    text-align: center;
+    padding: $rem-spacing;
+  }
+}

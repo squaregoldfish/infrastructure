@@ -1,0 +1,23 @@
+////////////////////////
+// Mixins - Slick Partial
+////////////////////////
+
+@mixin style-theme-slick-dots($color: $slick-dot-color, $color-active: $slick-dot-color-active) {
+  li {
+    &.slick-active {
+      button:before{
+        background: $color-active;
+      }
+    }
+    &:hover {
+      button:before{
+        background: $color-active;
+      }
+    }
+    button {
+      &:before {
+        background: $color;
+      }
+    }
+  }
+}

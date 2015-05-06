@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ICOS User feature.
+ */
+
+include_once 'icos_user_feature.features.inc';

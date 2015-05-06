@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ICOS RI feature.
+ */
+
+include_once 'icos_ri_feature.features.inc';

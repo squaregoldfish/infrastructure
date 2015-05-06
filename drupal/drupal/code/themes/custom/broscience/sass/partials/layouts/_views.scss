@@ -1,0 +1,75 @@
+////////////////////////
+// Layouts - Views Partial
+////////////////////////
+
+// General
+.more-link {
+  text-align: left;
+}
+
+// Carousel
+.pane-icos-reusable-lists-reusable-carousel {
+  position: relative;
+  // Reverse the padding of colored panes, if this has color
+  // because list type has it's own paddings.
+  &.colored-panel-pane {
+    padding: 0;
+  }
+  .slick-dots {
+    position: absolute;
+    top: $rem-spacing;
+    right: $rem-spacing;
+    z-index: 999;
+  }
+}
+
+// Contacts views
+.view-display-id-reusable_contact_person,
+.view-display-id-resusable_contact_person_country,
+.view-display-id-reusable_contact_person_org,
+.view-display-id-reusable_contact_country {
+  @include style-grid-maker();
+  @include clearfix;
+  .block-region {
+    &.right {
+      div[class*="field-"] {
+        padding-bottom: 0.5 * $rem-spacing;
+        &:last-of-type, &:first-of-type {
+          padding-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+// Documents view
+.view-display-id-reusable_documents {
+  @include style-grid-maker(2);
+  @include clearfix;
+}
+
+// Date and link
+.view-mode-date_and_link {
+  .field-date-with-end {
+    @include grid-span(3, 1);
+  }
+  .field-title {
+    @include grid-span(9, 4);
+  }
+}
+.view-display-id-reusable_date_link {
+  .views-row {
+    padding: $rem-spacing 0;
+  }
+}
+.view-display-id-reusable_acc_date_link {
+  .views-row {
+    padding: $rem-spacing 0 $rem-spacing $rem-spacing;
+  }
+}
+.pane-icos-reusable-lists-reusable-date-link {
+  .more-link {
+    @include grid-span(12, 1);
+    padding-bottom: $rem-spacing;
+  }
+}

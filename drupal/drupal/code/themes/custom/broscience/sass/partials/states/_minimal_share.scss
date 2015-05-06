@@ -1,0 +1,10 @@
+////////////////////////
+// States - Minimal Share Partial
+////////////////////////
+.minimal-share {
+  > .icon {
+    &:hover {
+      background: $default-theme-color-grey;
+    }
+  }
+}

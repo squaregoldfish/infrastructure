@@ -1,0 +1,12 @@
+////////////////////////
+// Modules - Link Partial
+////////////////////////
+
+.field-link {
+  display: inline-block;
+}
+
+a {
+  @include style-theme-color();
+  text-decoration: none;
+}

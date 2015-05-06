@@ -1,0 +1,276 @@
+<?php
+/**
+ * @file
+ * Code for the ICOS Panelized compilation page feature.
+ */
+
+include_once 'icos_panelized_compilation_page_feature.features.inc';
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Preselect and hide configuration for fieldable panels panes.
+ *
+ * @param $form
+ * @param $form_state
+ * @param $form_id
+ */
+function icos_panelized_compilation_page_feature_form_alter(&$form, &$form_state, $form_id) {
+
+  switch ($form_id) {
+
+    case 'panels_edit_style_type_form':
+      switch ($form_state['type']) {
+        case 'region':
+          $form['style']['#options'] = array(
+            'default' => t('Default'),
+            'tabs' => t('Tabs')
+          );
+          break;
+        case 'pane':
+          switch ($form_state['pane']->type) {
+            case 'fieldable_panels_pane':
+              $form['style']['#options'] = array(
+                'naked' => t('Default')
+              );
+              break;
+            default:
+              $form['style']['#options'] = array(
+                'default' => t('Default')
+              );
+          }
+          break;
+
+      }
+      break;
+
+    case 'panels_edit_style_settings_form':
+      if ($form_state['input']['style'] == 'tabs') {
+        $form['settings']['tab_type']['#options'] = array(
+          'horizontal' => t('Horizontal'),
+          'vertical_left' => t('Vertical Left'),
+        );
+        $form['settings']['tab_style']['#access'] = false;
+      }
+      break;
+
+    case 'views_content_views_panes_content_type_edit_form':
+
+      // Create the content block background color selector.
+      $form = _icos_panelized_compilation_page_feature_create_background_color_selector($form, $form_state);
+
+      // Set the title heading always to h3
+      $form['override_title_heading']['#default_value'] = 'h3';
+      $form['override_title_heading']['#access'] = false;
+
+      // Add more link configurator
+      $form['icos_more_link'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('More link'),
+        '#default_value' => (isset($form_state['conf']['icos_more_link'])) ? $form_state['conf']['icos_more_link'] : null
+      );
+      $form['icos_more_link_text'] = array(
+        '#type' => 'textfield',
+        '#title' => t('More link text'),
+        '#default_value' => (isset($form_state['conf']['icos_more_link_text'])) ? $form_state['conf']['icos_more_link_text'] : null,
+        '#states' => array(
+          'visible' => array(
+            '#edit-icos-more-link' => array('checked' => TRUE),
+          ),
+        ),
+      );
+      $form['icos_more_link_link'] = array(
+        '#type' => 'textfield',
+        '#title' => t('More link path'),
+        '#description' => t('Relative path to the page like "news" or "node/1".'),
+        '#default_value' => (isset($form_state['conf']['icos_more_link_link'])) ? $form_state['conf']['icos_more_link_link'] : null,
+        '#states' => array(
+          'visible' => array(
+            '#edit-icos-more-link' => array('checked' => TRUE),
+          ),
+        ),
+      );
+      $form['#submit'][] = '_icos_panelized_compilation_page_feature_custom_views_content_views_panes_content_type_edit_form_submit';
+
+      break;
+
+  }
+
+  if ($form_id == 'fieldable_panels_panes_entity_edit_form' || $form_id == 'fieldable_panels_panes_fieldable_panels_pane_content_type_edit_form') {
+    // Create the content block background color selector.
+    $form = _icos_panelized_compilation_page_feature_create_background_color_selector($form, $form_state);
+    // Move the content block background color selector to the configuration field group.
+    $form['#group_children']['icos_pane_background'] = 'group_configuration';
+    // Move the view mode selection to the configuration field group.
+    $form['#group_children']['view_mode'] = 'group_configuration';
+    // Remove all other view modes except the ones we use.
+    $used_view_modes = array(
+      'link_as_button',
+      'link_as_title',
+      'ingress_on_the_right',
+      'original_aspect_image',
+    );
+    if ($form['view_mode']['#default_value'] == 'full') {
+      $form['view_mode']['#default_value'] = 'link_as_button';
+    }
+    foreach ($form['view_mode']['#options'] as $view_mode_machine_name => $view_mode) {
+      if (!in_array($view_mode_machine_name, $used_view_modes)) {
+        unset($form['view_mode']['#options'][$view_mode_machine_name]);
+      }
+    }
+    // Hide the option to make the title a link since it doesn't work with
+    // our display configuration
+    $form['link']['#access'] = FALSE;
+    // Disable revisions and hide the field
+    $form['revision']['revision']['#default_value'] = 0;
+    $form['revision']['#access'] = FALSE;
+    // Preselect the reusable pane category and hide the field
+    $form['reusable']['category']['#default_value'] = 'Reusable content blocks';
+    $form['reusable']['category']['#access'] = FALSE;
+    // Hide the reusable pane descriptions since it's not needed
+    $form['reusable']['admin_description']['#access'] = FALSE;
+  }
+
+}
+
+/**
+ * Helper function to create the content block background color selector
+ * form element.
+ *
+ * @param $form
+ * @return mixed
+ */
+function _icos_panelized_compilation_page_feature_create_background_color_selector($form, $form_state) {
+  // Create the content block background color selector.
+  $form['icos_pane_background'] = array(
+    '#type' => 'select',
+    '#title' => t('Content block/list background color'),
+    '#options' => array(
+      'transparent' => t('Transparent/no color'),
+      'cyan' => t('Cyan'),
+      'magenta' => t('Magenta'),
+      'red' => t('Red'),
+      'green' => t('Green'),
+      'blue' => t('Blue'),
+      'purple' => t('Purple'),
+      'orange' => t('Orange'),
+      'black' => t('Black'),
+      'grey-90' => t('Dark grey'),
+      'grey-50' => t('Grey'),
+      'grey-10' => t('Light grey'),
+      'white' => t('White'),
+    ),
+    '#default_value' => (isset($form_state['conf']['icos_pane_background'])) ? $form_state['conf']['icos_pane_background'] : 'transparent',
+    '#description' => t('Select the background color for this content block/list. By default there\'s no background color.'),
+  );
+  $form['#submit'][] = '_icos_panelized_compilation_page_feature_custom_pane_configuration_form_submit';
+  return $form;
+}
+
+/**
+ * Implements hook_panels_pane_content_alter().
+ *
+ * Change the heading of the pane title to H3.
+ *
+ * @param $content
+ * @param $pane
+ * @param $args
+ * @param $context
+ * @param $renderer
+ * @param $display
+ */
+function icos_panelized_compilation_page_feature_panels_pane_content_alter(&$content, $pane, $args, $context, $renderer, $display) {
+  if (is_object($content) && is_array($content->content)) {
+    if (!empty($content->content['title']['#value'])) {
+      $content->content['title']['#tag'] = 'h3';
+    }
+    // Hide the title if it's empty.
+    else {
+      unset($content->content['title']);
+    }
+  }
+}
+
+/**
+ * Implements hook_panels_new_pane_alter().
+ *
+ * Set the default style of content_block_panes to naked.
+ *
+ * @param $pane
+ */
+function icos_panelized_compilation_page_feature_panels_new_pane_alter(&$pane) {
+  if ($pane->type == 'fieldable_panels_pane' && $pane->subtype == 'content_block_pane') {
+    $pane->style = array(
+      'style' => 'naked',
+      'settings' => NULL,
+    );
+  }
+}
+
+/**
+ * Implements template_preprocess_panels_pane().
+ *
+ * Add more link and background color class for the panes.
+ *
+ * @param $vars
+ */
+function icos_panelized_compilation_page_feature_preprocess_panels_pane(&$vars) {
+  // Provide more link from pane settings
+  if (isset($vars['pane']->configuration['icos_more_link']) && $vars['pane']->configuration['icos_more_link'] == 1) {
+    $vars['more'] = l($vars['pane']->configuration['icos_more_link_text'], $vars['pane']->configuration['icos_more_link_link']);
+  }
+  // Provide background color class from pane settings
+  if (isset($vars['pane']->configuration['icos_pane_background']) && $vars['pane']->configuration['icos_pane_background'] != 'transparent') {
+    $vars['classes_array'][] = $vars['pane']->configuration['icos_pane_background'];
+    // Also add "colored-panel-pane" class
+    $vars['classes_array'][] = 'colored-panel-pane';
+  }
+  // Make sure that all panes have the default panel-pane class
+  if (!in_array('panel-pane', $vars['classes_array'])) {
+    $vars['classes_array'][] = 'panel-pane';
+  }
+}
+
+/**
+ * Implements template_preprocess_fieldable_panels_pane().
+ *
+ * Add background color class for the panes.
+ *
+ * @param $vars
+ */
+function icos_panelized_compilation_page_feature_preprocess_fieldable_panels_pane(&$vars) {
+  // Set the background color class of the pane
+  if (isset($vars['elements']['#fieldable_panels_pane']->conf['icos_pane_background']) && $vars['elements']['#fieldable_panels_pane']->conf['icos_pane_background'] != 'transparent') {
+    $vars['classes_array'][] = $vars['elements']['#fieldable_panels_pane']->conf['icos_pane_background'];
+    // Also add "colored-panel-pane" class
+    $vars['classes_array'][] = 'colored-panel-pane';
+  }
+  // Make sure that all panes have the default panel-pane class
+  if (!in_array('panel-pane', $vars['classes_array'])) {
+    $vars['classes_array'][] = 'panel-pane';
+  }
+}
+
+/**
+ * Custom submit function to provide the custom more links as pane configuration.
+ *
+ * @param $form
+ * @param $form_state
+ */
+function _icos_panelized_compilation_page_feature_custom_views_content_views_panes_content_type_edit_form_submit($form, &$form_state) {
+  // Provide the custom more link as panel configuration
+  $form_state['conf']['icos_more_link'] = $form_state['input']['icos_more_link'];
+  $form_state['conf']['icos_more_link_link'] = $form_state['input']['icos_more_link_link'];
+  $form_state['conf']['icos_more_link_text'] = $form_state['input']['icos_more_link_text'];
+}
+
+/**
+ * Custom submit function to provide the custom pane background color as pane configuration.
+ *
+ * @param $form
+ * @param $form_state
+ */
+function _icos_panelized_compilation_page_feature_custom_pane_configuration_form_submit($form, &$form_state) {
+  // Provide the custom pane background color as panel configuration
+  $form_state['conf']['icos_pane_background'] = $form_state['input']['icos_pane_background'];
+}

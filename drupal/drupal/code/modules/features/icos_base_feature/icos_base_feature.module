@@ -1,0 +1,18 @@
+<?php
+/**
+ * @file
+ * Code for the ICOS Base feature.
+ */
+
+include_once 'icos_base_feature.features.inc';
+
+/**
+ * Implements hook_menu_alter().
+ *
+ * Unset the default 'node' menu callback.
+ */
+function icos_base_feature_menu_alter(&$items) {
+  if (isset($items['node'])) {
+    unset($items['node']);
+  }
+}

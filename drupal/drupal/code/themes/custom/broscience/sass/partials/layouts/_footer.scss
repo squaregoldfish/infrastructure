@@ -1,0 +1,15 @@
+////////////////////////
+// Layouts - Footer Partial
+////////////////////////
+
+// Larger gutter for main regions
+@include layout($gutter: $gutter-large) {
+  #footer {
+    .footer-inner {
+      max-width: $max-width;
+      margin: 0 auto;
+      overflow: hidden;
+      padding: 2 * $rem-spacing 0;
+    }
+  }
+}

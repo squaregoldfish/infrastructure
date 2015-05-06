@@ -1,0 +1,18 @@
+<?php
+/**
+ * @file
+ * Code for the ICOS Contacting feature.
+ */
+
+include_once 'icos_contacting_feature.features.inc';
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Hide noise from the taxonomy edit form.
+ *
+ */
+function icos_contacting_feature_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) {
+  // Hide the relations field since it's just noise
+  $form['relations']['#access'] = FALSE;
+}

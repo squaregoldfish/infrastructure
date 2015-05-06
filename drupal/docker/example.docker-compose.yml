@@ -1,0 +1,22 @@
+drupal:
+  build: .
+  links:
+   - mariadb
+   - memcache
+  ports:
+   - "8095:8080"
+  volumes:
+   - ../drupal:/var/www/icos-infrastructure.eu
+   - ./entrypoint/drupal:/entrypoint
+mariadb:
+  image: mariadb:10.0.17
+  ports:
+   - "3316:3306"
+  environment:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: icos
+    MYSQL_USER: icos
+    MYSQL_PASSWORD: icos
+memcache:
+  image: memcached:1.4.23
+

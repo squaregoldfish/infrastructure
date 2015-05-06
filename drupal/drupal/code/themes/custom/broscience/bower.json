@@ -1,0 +1,26 @@
+{
+  "name": "broscience",
+  "version": "0.0.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "singularity": "~1.6.2",
+    "breakpoint-slicer": "https://github.com/lolmaus/breakpoint-slicer.git",
+    "sass-toolkit": "~2.7.0",
+    "meyer-reset": "https://github.com/adamstac/meyer-reset.git"
+  },
+  "preen": {
+    "compass-breakpoint": [
+      "*"
+    ]
+  },
+  "overrides": {
+    "meyer-reset": {
+      "main": "stylesheets/_meyer-reset.scss"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ICOS Authoring feature.
+ */
+
+include_once 'icos_authoring_feature.features.inc';

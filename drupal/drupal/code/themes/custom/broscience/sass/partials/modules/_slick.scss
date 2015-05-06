@@ -1,0 +1,47 @@
+////////////////////////
+// Modules - Slick Partial
+////////////////////////
+
+// Configuration
+$slick-dot-size: 1.3 * $rem-spacing;
+$slick-dot-color: $default-theme-color-text;
+$slick-dot-color-active: $default-theme-color;
+$slick-dot-space: 0.5 * $rem-spacing;
+
+.slick-dots {
+  text-align: center;
+  li {
+    display: inline-block;
+    position: relative;
+    height: $slick-dot-size;
+    width: $slick-dot-size;
+    margin: 0 0 0 $slick-dot-space;
+    &.slick-active {
+      button:before{
+        background: $slick-dot-color-active;
+      }
+    }
+    &:hover {
+      button:before{
+        background: $slick-dot-color-active;
+      }
+    }
+    button {
+      border: 0;
+      background: transparent;
+      font-size: 0;
+      padding: 0;
+      &:before {
+        background: $slick-dot-color;
+        border-radius: 50%;
+        content: '';
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: $slick-dot-size;
+        width: $slick-dot-size;
+      }
+    }
+  }
+}

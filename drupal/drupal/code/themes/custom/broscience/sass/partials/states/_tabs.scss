@@ -1,0 +1,72 @@
+////////////////////////
+// States - Tabs Partial
+////////////////////////
+
+// Horizontal tabs
+.ui-tabs {
+  .ui-tabs-nav {
+    li {
+      &.ui-tabs-active {
+        background: $default-theme-color-grey;
+        padding: 0;
+        margin-bottom: 0;
+        @include from(l) {
+          @include style-arrow(bottom, $default-theme-color-grey);
+        }
+      }
+      &.ui-state-hover {
+        background: $default-theme-color-grey;
+      }
+    }
+  }
+}
+
+// Vertical tabs
+div.vertical-tabs {
+  .vertical-tabs-list {
+    .vertical-tab-button {
+      &.selected {
+        a {
+          @include style-theme-background-color();
+          strong {
+            color: $white;
+          }
+          span.summary {
+            color: $grey-10;
+          }
+          @include from(l) {
+            @include style-arrow(right);
+          }
+        }
+      }
+      a {
+        &:hover {
+          @include style-theme-background-color();
+          strong {
+            color: $white;
+            text-decoration: none;
+          }
+          span.summary {
+            color: $grey-10;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// Accordions
+div.ui-accordion {
+  .ui-accordion-header {
+    &.ui-state-active {
+      @include style-theme-background-color();
+      @include style-arrow();
+    }
+  }
+  .ui-accordion-content {
+    a:hover {
+      color: $default-theme-color-text;
+    }
+  }
+}

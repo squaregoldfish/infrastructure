@@ -1,0 +1,42 @@
+<?php
+/**
+ * @file
+ * Drupal needs this blank file.
+ */
+
+/**
+ * Implements hook_form_FORM_ID_alter() to conditionally prevent node deletion
+ * if the node to be deleted is set to be the front page.
+ */
+function icos_permissions_feature_form_node_delete_confirm_alter(&$form, $form_state, $form_id) {
+
+  //Check if we have a node id and stop if not
+  if (empty($form['nid']['#value'])) {
+    return;
+  }
+
+  // Get the current front page
+  $front_url = variable_get('site_frontpage', 'node');
+  $front_url = trim($front_url, '/');
+  $front = explode('/', $front_url);
+  if ($front[0]=='node' && is_numeric($front[1])) {
+    $front_nid = $front[1];
+  }
+
+  // Check if the node being deleted is the current front page
+  if (isset($front_nid) && $front_nid == $form['nid']['#value']) {
+
+    // Inform the user of the situation.
+    $form['icos_permissions_feature_front_page_delete_warning'] = array(
+      '#markup' => "This node can't be deleted, because it's set to be the front page of the site. To delete this node, please first set some other node to be the front page of the site.",
+      '#weight' => -10,
+    );
+
+    //Remove the 'This action cannot be undone' message
+    unset($form['description']);
+
+    //Remove the delete button
+    unset($form['actions']['submit']);
+  }
+
+}

@@ -1,0 +1,18 @@
+////////////////////////
+// Global - Variables - Breakpoints Partial
+////////////////////////
+
+$max-width: 70 * $rem-spacing;
+
+// Viewport width
+$bp-xs:     30 * $rem-spacing;
+$bp-s:      40 * $rem-spacing;
+$bp-m:      50 * $rem-spacing;
+$bp-l:      60 * $rem-spacing;
+$bp-xl:     $max-width;
+
+$slicer-breakpoints:        0       $bp-xs       $bp-s       $bp-m       $bp-l      $bp-xl;
+
+//                          └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘└────┬────┘
+// Slice numbers:                1           2           3           4           5          6
+$slicer-breakpoint-names:       'xs'        's'         'm'         'l'         'xl'      'xxl';

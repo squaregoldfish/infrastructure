@@ -1,0 +1,45 @@
+////////////////////////
+// Global - Typography Partial
+////////////////////////
+
+body {
+  font-family: $default-font-family;
+  font-size: $base-font-size;
+  line-height: 1.5 * $base-font-size;
+  color: $default-theme-color-text;
+  p {
+    padding: $rem-spacing 0;
+  }
+  h1 {
+    font-size: $font-h1;
+    line-height: $font-h1;
+    text-transform: uppercase;
+    font-weight: lighter;
+    padding: $rem-spacing 0;
+  }
+  h2 {
+    font-size: $font-h2;
+    line-height: $font-h2;
+    padding: $rem-spacing 0;
+  }
+  h3 {
+    font-size: $font-h3;
+    line-height: $font-h3;
+    padding: $rem-spacing 0;
+  }
+  h4 {
+    font-size: $font-h4;
+    line-height: $font-h4;
+    padding: $rem-spacing 0;
+  }
+  sub {
+    vertical-align: sub;
+    font-size: $font-small;
+    line-height: $font-small;
+  }
+  sup {
+    vertical-align: super;
+    font-size: $font-small;
+    line-height: $font-small;
+  }
+}

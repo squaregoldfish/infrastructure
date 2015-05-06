@@ -1,0 +1,18 @@
+<?php
+/**
+ * @file
+ * Code for the ICOS Controller feature.
+ */
+
+include_once 'icos_controller_feature.features.inc';
+
+function icos_controller_feature_form_node_form_alter(&$form, &$form_state, $form_id) {
+  // Hide the end date from the Blog post and News content types.
+  // Doing this here with CSS so that the same date field can be used
+  // for all content types, even the ones without the end date. Using
+  // the same date field for all content types allows to make combined
+  // views with sort by said date field.
+  if ($form_state['node']->type == 'blog_post' || $form_state['node']->type == 'news') {
+    drupal_add_css('#field-date-with-end-add-more-wrapper .form-type-checkbox { display: none; }', array('type' => 'inline'));
+  }
+}

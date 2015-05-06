@@ -1,0 +1,11 @@
+////////////////////////
+// Layouts - Pane Partial
+////////////////////////
+
+.panel-pane {
+  margin-bottom: $rem-spacing;
+  &.colored-panel-pane {
+    padding: $rem-spacing;
+  }
+}
+

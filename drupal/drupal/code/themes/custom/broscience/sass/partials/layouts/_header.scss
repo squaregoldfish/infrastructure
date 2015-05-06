@@ -1,0 +1,29 @@
+////////////////////////
+// Layouts - Header Partial
+////////////////////////
+
+#header {
+  overflow: hidden;
+  .grid-container {
+    max-width: $max-width;
+    margin: 0 auto;
+  }
+}
+
+// Larger gutter for main regions
+@include layout($gutter: $gutter-large) {
+  #header_inner {
+    @include grid-span(12, 1);
+    text-align: center;
+    @include from(m) {
+      text-align: inherit;
+    }
+  }
+}
+
+#logo {
+  img {
+    width: 10 * $rem-spacing;
+    height: auto;
+  }
+}
