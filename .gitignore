@@ -1,9 +1,10 @@
 
 # Local Drupal configuration and files etc. #
 #############################################
-drupal/drupal/conf/docker.settings.php
 drupal/drupal/builds
 drupal/drupal/current
 drupal/drupal/_build
 drupal/drupal/files
+drupal/drupal/conf/docker.settings.php
 drupal/docker/docker-compose.yml
+drupal/docker/name-prefix.txt

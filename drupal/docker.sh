@@ -1,24 +1,27 @@
 #!/bin/bash
 
+cd "$(dirname "$0")"
+source params.sh
+
 # Check that environment argument is supplied.
 if [ "$1" ]
 then
     if [ "$1" == "up" ]
     then
         cd docker
-        docker-compose -p icos up -d
+        docker-compose -p $PREFIX up -d
     elif [ "$1" == "start" ]
     then
         cd docker
-        docker-compose -p icos start
+        docker-compose -p $PREFIX start
     elif [ "$1" == "stop" ]
     then
         cd docker
-        docker-compose -p icos stop
+        docker-compose -p $PREFIX stop
     elif [ "$1" == "rm" ]
     then
         cd docker
-        docker-compose -p icos rm
+        docker-compose -p $PREFIX rm
     elif [ "$1" == "purge" ]
     then
         while true; do
@@ -61,10 +64,10 @@ then
         then
             if [ "$2" == "drupal" ]
             then
-                docker exec -ti icos_drupal_1 /bin/bash
+                docker exec -ti "$PREFIX"_drupal_1 /bin/bash
             elif [ "$2" == "mariadb" ]
             then
-                docker exec -ti icos_mariadb_1 /bin/bash
+                docker exec -ti "$PREFIX"_mariadb_1 /bin/bash
             fi
         else
             echo "Service needed as second argument. Try 'drupal' for example."
@@ -82,9 +85,9 @@ then
                     echo "This is going to purge drupal. "
                     ./docker.sh purge drupal
                 fi
-                docker exec icos_drupal_1 /bin/bash -c "cd /var/www/icos-infrastructure.eu; ./build.sh $3"
+                docker exec "$PREFIX"_drupal_1 /bin/bash -c "cd /var/www/icos-infrastructure.eu; ./build.sh $3"
                 # Make sure the files are owned by the correct user.
-                docker exec icos_drupal_1 /bin/bash -c "chown -R icos-admin:icos-admin /var/www/icos-infrastructure.eu"
+                docker exec "$PREFIX"_drupal_1 /bin/bash -c "chown -R icos-admin:icos-admin /var/www/icos-infrastructure.eu"
             fi
         else
             echo "Service needed as second argument. Try 'drupal' for example."
