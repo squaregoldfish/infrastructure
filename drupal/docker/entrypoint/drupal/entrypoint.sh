@@ -9,6 +9,7 @@ then
     touch /build_done
     # Build the Drupal site with build.sh
     cd /var/www/icos-infrastructure.eu
+    mkdir -p files
     ./build.sh new
 fi
 
