@@ -9,7 +9,7 @@ then
     if [ "$1" == "up" ]
     then
         cd docker
-        docker-compose -p $PREFIX up -d
+        docker-compose -p $PREFIX up -d --no-recreate
     elif [ "$1" == "start" ]
     then
         cd docker

@@ -2,8 +2,6 @@
 
 # Setup the user for Nginx and PHP
 useradd icos-admin -u 501 -s /bin/bash --no-create-home
-groupadd icos-admin
-usermod -a -G icos-admin icos-admin
 
 # Install some needed utilities
 yum install -y wget yum-utils git unzip tar
