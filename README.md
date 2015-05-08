@@ -18,18 +18,19 @@ Was developed for ICOS by Aleksi Johansson from [Wunderkraut](http://wunderkraut
 Getting started
 ===============
 To get started, one needs:  
-	* Linux
-	* Git
-	* Docker
-	* docker-compose
+- Linux
+- Git
+- Docker
+- docker-compose
 
-To avoid cloning the whole `infrastructure` repository, one can use Git's sparse checkouts.  
-For example, to clone only `thredds` subproject, run the following:
+To avoid cloning the whole `infrastructure` repository, one can use Git's sparse checkouts.
+To automate sparse cloning you can use the `sparse.sh` script from the root of this repo.
+Run the following from a newly created folder for your new repo:
 
-`mkdir mythredds && cd mythredds`  
-`git init`  
-`git remote add -f origin git@github.com:ICOS-Carbon-Portal/infrastructure.git`  
-`git config core.sparsecheckout true`  
-`echo thredds/ >> .git/info/sparse-checkout`  
-`git pull origin master`  
+`wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/sparse.sh`  
+`chmod +x sparse.sh`  
+`./sparse.sh <subproject> [<branch>]` (default branch is `master`)
+
+`subproject` above must be one of the first-level folders in this repo.
+
 
