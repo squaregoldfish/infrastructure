@@ -7,7 +7,7 @@ Deploying a website instance
 - Clone this repository. Sparse cloning can be used as described in the top-level README.md.
 - Make a copy of `drupal/docker/example.docker-compose.yml` named `docker-compose.yml` in the same folder, then edit it as needed.
 - Create a file `name-prefix.txt` in `drupal/docker`, put a single short string that will distinguish this website instance.
-- Make a copy of `drupal/drupal/example.docker.settings.php` named `docker.settings.php` in the same folder, then edit it as needed. Make sure database config and credentials match those of `docker-compose.yml` mentioned above.
+- Make a copy of `drupal/drupal/conf/example.docker.settings.php` named `docker.settings.php` in the same folder, then edit it as needed. Make sure database config and credentials match those of `docker-compose.yml` mentioned above.
 - Navigate to the top-level `drupal` folder
 - Run `./docker.sh up`.
 
