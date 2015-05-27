@@ -50,7 +50,7 @@ function broscience_preprocess_html(&$vars) {
  *   An array of variables to pass to the theme template.
  */
 function broscience_preprocess_page(&$vars) {
-
+	
   // Set the Header background dynamically from the node Header image field
   if (isset($vars['node'])) {
 
@@ -62,8 +62,8 @@ function broscience_preprocess_page(&$vars) {
       'icos_header_medium',
       'icos_header_small'
     );
-
-    if (!empty($node->field_header_image)) {
+    
+    if (!empty($node->field_header_image)) {	
       $wrapped_node = entity_metadata_wrapper('node', $node);
       $background_image = $wrapped_node->field_header_image->value();
       // Get three sizes of the image
@@ -71,14 +71,35 @@ function broscience_preprocess_page(&$vars) {
         // Use the full URL so that the image styles get created correctly
         $url = image_style_url($style_name, $background_image['uri']);
         $paths[$style_name] = $url;
-      }
+      }    
     }
+    
     else {
-      // Use the default from the theme
-      $theme_path = drupal_get_path('theme', 'broscience');
-      foreach($background_image_styles as $style_name) {
-        $paths[$style_name] = $theme_path . '/img/' . $style_name . '.jpg';
-      }
+    	
+    	$image = variable_get('broscience_style_header_image');
+    	if ($image) {
+    		$paths['icos_header'] = $image;
+    		$paths['icos_header_medium'] = $image;
+    		$paths['icos_header_small'] = $image;
+    		
+    		
+    	// Use the default from the theme
+    	} else {
+    		$theme_path = drupal_get_path('theme', 'broscience');
+    		foreach($background_image_styles as $style_name) {
+    			$paths[$style_name] = $theme_path . '/img/' . $style_name . '.jpg';
+    		}
+    	}  
+    }
+    
+    $tint = '';
+    if (variable_get('broscience_style_header_tint')) {
+    	$tint = '#header .tint {background-color: rgba(' . variable_get('broscience_style_header_tint') . ')}';
+    }
+    
+    $hideH2 = '';
+    if (variable_get('broscience_style_hide_h2')) {
+    	$hideH2 = '.block-menu-block h2 {display: none}';
     }
 
     $vars['page']['broscience_dynamic_header_styles'] = ""
@@ -97,10 +118,14 @@ function broscience_preprocess_page(&$vars) {
       ."background-image: url(".$paths['icos_header'].");"
       ."}"
       ."} "
+
+      . $tint
+      . $hideH2		
+      
       ."</style>"
     ;
 
-  }
+   }
 
 }
 

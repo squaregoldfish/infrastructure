@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * Configuration
+ */
+
+
+function broscience_style_menu() {
+	$items = array();
+
+	$items['admin/config/content/broscience_style'] = array(
+			'title' => 'Broscience style',
+			'description' => 'Configuration for Broscience eg. header image',
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array('form'),
+			'access arguments' => array('access administration pages'),
+			'type' => MENU_NORMAL_ITEM,
+	);
+
+	return $items;
+}
+
+function form($form, &$form_state) {
+	
+	$image = '';
+	$imageDesc = 'not defind yet';
+	if (variable_get('broscience_style_header_image')) {
+		$image = variable_get('broscience_style_header_image');
+		$imageDesc = $image;
+	}
+
+	$tint = '';
+	$tintDesc = 'not defind yet';
+	if (variable_get('broscience_style_header_tint')) {
+		$tint = variable_get('broscience_style_header_tint');
+		$tintDesc = $tint;
+	}
+	
+	$hideH2 = '';
+	if (variable_get('broscience_style_hide_h2')) {
+		$hideH2 = variable_get('broscience_style_hide_h2');
+	}
+
+
+	$form['broscience_style_header_image'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Assign an URL for the header image.'),
+			'#description' => t('Current image is ' . $imageDesc . '.'),
+			'#required' => FALSE,
+			'#default_value' => $image,
+	);
+
+	$form['broscience_style_header_tint'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Assign a RGBA color value for the header image.'),
+			'#description' => t('Format eg. 240, 99, 34, 0.3 <br/>Current value is ' . $tintDesc . '.'),
+			'#required' => FALSE,
+			'#default_value' => $tint,
+	);
+	
+	$form['broscience_style_hide_h2'] = array(
+			'#type' => 'checkbox',
+			'#title' => t('Hide some title element'),
+			'#description' => t(''),
+			'#required' => FALSE,
+			'#default_value' => $hideH2,
+	);
+
+	return system_settings_form($form);
+}
