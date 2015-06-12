@@ -63,7 +63,7 @@ function broscience_preprocess_page(&$vars) {
       'icos_header_small'
     );
     
-    if (!empty($node->field_header_image)) {	
+    if (!empty($node->field_header_image && false)) {	
       $wrapped_node = entity_metadata_wrapper('node', $node);
       $background_image = $wrapped_node->field_header_image->value();
       // Get three sizes of the image
@@ -77,10 +77,13 @@ function broscience_preprocess_page(&$vars) {
     else {
     	
     	$image = variable_get('broscience_style_header_image');
-    	if ($image) {
+    	$imageMedium = variable_get('broscience_style_header_image_medium');
+    	$imageSmall = variable_get('broscience_style_header_image_small');
+    	
+    	if ($image && $imageMedium && $imageSmall) {
     		$paths['icos_header'] = $image;
-    		$paths['icos_header_medium'] = $image;
-    		$paths['icos_header_small'] = $image;
+    		$paths['icos_header_medium'] = $imageMedium;
+    		$paths['icos_header_small'] = $imageSmall;
     		
     		
     	// Use the default from the theme
@@ -102,6 +105,12 @@ function broscience_preprocess_page(&$vars) {
     	$hideH2 = '.block-menu-block h2 {display: none}';
     }
 
+    $logoPadding = "";
+    if (variable_get('broscience_style_logo_padding')) {
+    	$logoPadding = '#logo img {padding-top: ' . variable_get('broscience_style_logo_padding') . 'px; padding-bottom: ' . variable_get('broscience_style_logo_padding') . 'px; width: auto;}';	
+    }
+    
+    
     $vars['page']['broscience_dynamic_header_styles'] = ""
       ."<style>"
       ."#header {"
@@ -121,10 +130,11 @@ function broscience_preprocess_page(&$vars) {
 
       . $tint
       . $hideH2		
+      . $logoPadding 
       
       ."</style>"
     ;
-
+    
    }
 
 }

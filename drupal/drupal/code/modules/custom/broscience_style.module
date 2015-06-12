@@ -28,6 +28,20 @@ function form($form, &$form_state) {
 		$image = variable_get('broscience_style_header_image');
 		$imageDesc = $image;
 	}
+	
+	$imageMedium = '';
+	$imageMediumDesc = 'not defind yet';
+	if (variable_get('broscience_style_header_image_medium')) {
+		$imageMedium = variable_get('broscience_style_header_image_medium');
+		$imageMediumDesc = $imageMedium;
+	}
+	
+	$imageSmall = '';
+	$imageSmallDesc = 'not defind yet';
+	if (variable_get('broscience_style_header_image_small')) {
+		$imageSmall = variable_get('broscience_style_header_image_small');
+		$imageSmallDesc = $imageSmall;
+	}	
 
 	$tint = '';
 	$tintDesc = 'not defind yet';
@@ -40,31 +54,68 @@ function form($form, &$form_state) {
 	if (variable_get('broscience_style_hide_h2')) {
 		$hideH2 = variable_get('broscience_style_hide_h2');
 	}
+	
+	$logoPadding = '';
+	if (variable_get('broscience_style_logo_padding')) {
+		$logoPadding = variable_get('broscience_style_logo_padding');
+	}
 
-
+	
 	$form['broscience_style_header_image'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Header image'),
+			'#description' => t('The background image actually consists of three images - large, medium and small size.<br/>The large size should be over 2000 * 200 pixels. The medium size should be half of the large and the small size half the medium.<br/><br/>'),
+			'#collapsible' => FALSE,
+			'#collapsed' => FALSE,
+	);	
+
+	$form['broscience_style_header_image']['broscience_style_header_image'] = array(
 			'#type' => 'textfield',
-			'#title' => t('Assign an URL for the header image.'),
+			'#title' => t('Assign an URL for the LARGE image.'),
 			'#description' => t('Current image is ' . $imageDesc . '.'),
 			'#required' => FALSE,
 			'#default_value' => $image,
 	);
+	
+	$form['broscience_style_header_image']['broscience_style_header_image_medium'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Assign an URL for the MEDIUM image.'),
+			'#description' => t('Current image is ' . $imageMediumDesc . '.'),
+			'#required' => FALSE,
+			'#default_value' => $imageMedium,
+	);	
+	
+	$form['broscience_style_header_image']['broscience_style_header_image_small'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Assign an URL for the SMALL image.'),
+			'#description' => t('Current image is ' . $imageSmallDesc . '.'),
+			'#required' => FALSE,
+			'#default_value' => $imageSmall,
+	);	
 
 	$form['broscience_style_header_tint'] = array(
 			'#type' => 'textfield',
-			'#title' => t('Assign a RGBA color value for the header image.'),
-			'#description' => t('Format eg. 240, 99, 34, 0.3 <br/>Current value is ' . $tintDesc . '.'),
+			'#title' => t('Assign a RGBA color value as a layer over the header image.'),
+			'#description' => t('Format eg. 240, 99, 34, 0.3'),
 			'#required' => FALSE,
 			'#default_value' => $tint,
 	);
 	
+	$form['broscience_style_logo_padding'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Assign a value for padding top and bottom for the logo.'),
+			'#description' => t(''),
+			'#required' => FALSE,
+			'#default_value' => $logoPadding,
+	);	
+		
 	$form['broscience_style_hide_h2'] = array(
 			'#type' => 'checkbox',
 			'#title' => t('Hide some title element'),
 			'#description' => t(''),
 			'#required' => FALSE,
 			'#default_value' => $hideH2,
-	);
+	);	
 
 	return system_settings_form($form);
 }
