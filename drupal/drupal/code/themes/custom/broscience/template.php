@@ -127,6 +127,8 @@ function broscience_preprocess_page(&$vars) {
       ."background-image: url(".$paths['icos_header'].");"
       ."}"
       ."} "
+      
+      .".field-title span {margin-left: 5px;}"
 
       . $tint
       . $hideH2		
