@@ -112,7 +112,7 @@ function broscience_preprocess_page(&$vars) {
     
     $menuButtonColor = '';
     if (variable_get('broscience_style_menu_button_color')) {
-    	$menuButtonColor = '#block-menu-block-2 ul.menu li.leaf a.active-trail {background-color: ' . variable_get('broscience_style_menu_button_color') . '}';
+    	$menuButtonColor = '#block-menu-block-2 ul.menu li.leaf a.active-trail, #block-menu-block-2 ul.menu li.leaf a:hover {background-color: ' . variable_get('broscience_style_menu_button_color') . '}';
     }
     
     $titleColor = '';
