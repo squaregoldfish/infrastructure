@@ -110,6 +110,15 @@ function broscience_preprocess_page(&$vars) {
     	$logoPadding = '#logo img {padding-top: ' . variable_get('broscience_style_logo_padding') . 'px; padding-bottom: ' . variable_get('broscience_style_logo_padding') . 'px; width: auto;}';	
     }
     
+    $menuButtonColor = '';
+    if (variable_get('broscience_style_menu_button_color')) {
+    	$menuButtonColor = '#block-menu-block-2 ul.menu li.leaf a.active-trail {background-color: ' . variable_get('broscience_style_menu_button_color') . '}';
+    }
+    
+    $titleColor = '';
+    if (variable_get('broscience_style_title_color')) {
+    	$titleColor = 'div.pane-content h1 {color: ' . variable_get('broscience_style_title_color') . '}';
+    }    
     
     $vars['page']['broscience_dynamic_header_styles'] = ""
       ."<style>"
@@ -132,7 +141,9 @@ function broscience_preprocess_page(&$vars) {
 
       . $tint
       . $hideH2		
-      . $logoPadding 
+      . $logoPadding
+      . $menuButtonColor
+      . $titleColor 
       
       ."</style>"
     ;

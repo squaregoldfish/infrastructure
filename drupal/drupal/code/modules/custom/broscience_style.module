@@ -59,6 +59,16 @@ function form($form, &$form_state) {
 	if (variable_get('broscience_style_logo_padding')) {
 		$logoPadding = variable_get('broscience_style_logo_padding');
 	}
+	
+	$menuButtonColor = '';
+	if (variable_get('broscience_style_menu_button_color')) {
+		$menuButtonColor = variable_get('broscience_style_menu_button_color');
+	}
+	
+	$titleColor = '';
+	if (variable_get('broscience_style_title_color')) {
+		$titleColor = variable_get('broscience_style_title_color');
+	}
 
 	
 	$form['broscience_style_header_image'] = array(
@@ -103,7 +113,7 @@ function form($form, &$form_state) {
 	
 	$form['broscience_style_logo_padding'] = array(
 			'#type' => 'textfield',
-			'#title' => t('Assign a value for padding top and bottom for the logo.'),
+			'#title' => t('Assign a value for padding the top and the bottom for the logo.'),
 			'#description' => t(''),
 			'#required' => FALSE,
 			'#default_value' => $logoPadding,
@@ -116,6 +126,22 @@ function form($form, &$form_state) {
 			'#required' => FALSE,
 			'#default_value' => $hideH2,
 	);	
+	
+	$form['broscience_style_menu_button_color'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Assign a color value for the active/hovered button in the menu.'),
+			'#description' => t('Format eg. #F06322'),
+			'#required' => FALSE,
+			'#default_value' => $menuButtonColor,
+	);
+	
+	$form['broscience_style_title_color'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Assign a color value for the title of the page.'),
+			'#description' => t('Format eg. #F06322'),
+			'#required' => FALSE,
+			'#default_value' => $titleColor,
+	);
 
 	return system_settings_form($form);
 }
