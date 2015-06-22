@@ -1,0 +1,10 @@
+alfresco:
+  build: .
+  ports:
+   - "8443:8443"
+  volumes:
+   - /opt/alfresco-5.0.c:/opt/alfresco-5.0.c
+  environment:
+   ALFRESCO_VERSION: 5.0.c
+  command:
+   alfrescostart.sh
