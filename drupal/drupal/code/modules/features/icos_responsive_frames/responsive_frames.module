@@ -1,0 +1,155 @@
+<?php
+
+/**
+ * Implements hook_filter_info().
+ *
+ * Define the text format filter and default values.
+ */
+function responsive_frames_filter_info() {
+  $filters = array();
+  $filters['responsive_frames'] = array(
+    'title' => t('Make frames responsive'),
+    'description' => t('Wrap the frames with containing divs to allow them to be responsive. Optionally include CSS to make the frames responsive.'),
+    'process callback' => '_responsive_frames_filter',
+    'settings callback' => '_responsive_frames_settings',
+    'default settings' => array(
+      'frames' => 'iframe',
+      'include_css' => true,
+      'ratio' => '16:9',
+    ),
+  );
+  return $filters;
+}
+
+/**
+ * Filter callback for responsive_frames filter.
+ */
+function _responsive_frames_filter($text, $filter, $format, $langcode, $cache, $cache_id) {
+
+  // Check whether the CSS should be included from the module.
+  $include_css = $filter->settings['include_css'];
+  $ratio = 'ignore';
+  if ($include_css == true) {
+    // Get configured aspect ratio and calculate the percentage for CSS.
+    $ratio = explode(':', $filter->settings['ratio']);
+    if (is_array($ratio) && isset($ratio[0]) && isset($ratio[1]) && is_numeric($ratio[0]) && is_numeric($ratio[1])) {
+      $ratio = $ratio[1] / $ratio[0] * 100;
+    }
+    else {
+      $ratio = 'invalid';
+    }
+  }
+
+  // Insert wrappers around all of the defined tags.
+  $tags = explode(PHP_EOL, $filter->settings['frames']);
+  foreach ($tags as $tag) {
+
+    // Make sure there are no newlines in the tag.
+    $tag = trim(preg_replace('/\s+/', ' ', $tag));
+
+    // Init the style variables.
+    $container_style = '';
+    $wrapper_style = '';
+
+    // Configure the container styles and insert the frame style
+    // if we have a valid ratio.
+    if (is_numeric($ratio)) {
+      $container_style = "style='width: 100%;'";
+      $wrapper_style = "style='height: 0; width: 100%; padding-bottom: " . $ratio . "%; overflow: hidden; position: relative;'";
+      $frame_style = " style='top: 0; left: 0; width: 100%; height: 100%; position: absolute;'";
+      $frame = "<" . $tag;
+      $insert = $frame_style;
+      $text = _str_insert($text, $frame, $insert);
+    }
+    else if ($ratio == 'invalid') {
+      // Include link to log if dblog module is enabled.
+      if (module_exists('dblog')) {
+        $link_to_log = l(t('log'), 'admin/reports/dblog');
+      }
+      else {
+        $link_to_log = t('log');
+      }
+      // Give a warning if the ratio is not valid
+      $message = t('Ratio of Responsive Frames is invalid. See the Drupal !log for more details.', array('!log' => $link_to_log));
+      drupal_set_message($message, $type = 'warning');
+      // and also write a log entry.
+      $message = 'Invalid ratio in Responsive Frames filter configuration on the %TEXT_FORMAT text format.';
+      $variables = array(
+        '%TEXT_FORMAT' => $format->format
+      );
+      $link = '<a href="/admin/config/content/formats/' . $format->format . '">Configure ' . $format->format . ' text format</a>';
+      watchdog('responsive_frames', $message, $variables, $severity = WATCHDOG_WARNING, $link);
+      // No need to process any further
+      // when there's an error in the configuration.
+      break;
+    }
+
+    // Insert the containers with the styles (if configured before).
+    $frame = "<" . $tag;
+    $insert = "<div class='responsive_frames_container'" . $container_style . "><div class='responsive_frames_wrapper'" . $wrapper_style . ">";
+    $text = _str_insert($text, $frame, $insert, 'before');
+
+    // Insert the enclosing tags.
+    $frame = "</" . $tag . ">";
+    $insert = "</div></div>";
+    $text = _str_insert($text, $frame, $insert);
+
+  }
+
+  // Return the altered text.
+  return $text;
+}
+
+/**
+ * Settings form callback for responsive_frames filter.
+ *
+ * Create the settings form with default values from the filter info.
+ */
+function _responsive_frames_settings($form, &$form_state, $filter, $format, $defaults, $filters) {
+  $elements = array();
+  $elements['frames'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Frames'),
+    '#description' => t('Frame tags to be made responsive. The default is "iframe". Include one tag per line without angle brackets.'),
+    '#default_value' => isset($filter->settings['frames']) ? $filter->settings['frames'] : $defaults['frames'],
+  );
+  $elements['include_css'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Include CSS'),
+    '#description' => t('Whether to include the CSS from the Responsive Frames module. Uncheck this if you want to theme the frames yourself. Unchecking makes the below ratio ineffective.'),
+    '#default_value' => isset($filter->settings['include_css']) ? $filter->settings['include_css'] : $defaults['include_css'],
+  );
+  $elements['ratio'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Fixed aspect ratio of the frames'),
+    '#description' => t('The aspect ratio of the frames. The default is "16:9".'),
+    '#default_value' => isset($filter->settings['ratio']) ? $filter->settings['ratio'] : $defaults['ratio'],
+  );
+  return $elements;
+}
+
+/**
+ * Helper function to insert string after or before
+ * all occurrences of a string in a string.
+ *
+ * @param $text
+ * @param $search
+ * @param $insert
+ * @param string $position
+ * @return mixed
+ */
+function _str_insert($text, $search, $insert, $position = 'after') {
+  if ($position == 'before') {
+    $insert = $insert.$search;
+  }
+  else {
+    $insert = $search.$insert;
+  }
+  $start = 0;
+  // Go through the whole text as long as there are unchanged tags.
+  while(strpos($text, $search, $start) !== false) {
+    $text = substr_replace($text, $insert, strpos($text, $search, $start), strlen($search));
+    $start = strpos($text, $search, $start) + 1; // start searching from next position.
+  }
+  return $text;
+}

@@ -1,0 +1,5 @@
+name = Responsive Frames
+description = Provides a filter to wrap frames to make them responsive.
+package = "Input filters"
+dependencies[] = filter
+core = 7.x
