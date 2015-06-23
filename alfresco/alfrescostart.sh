@@ -10,7 +10,6 @@ trap "/opt/alfresco-$ALFRESCO_VERSION/alfresco.sh stop" TERM
 
 if [ "$?" -eq 0 ]
 then
-	PGPID=`cat /opt/alfresco-"$ALFRESCO_VERSION"/alf_data/postgresql/postmaster.pid | head -n 1`
 	while [[ `pidof postgres` ]]; do sleep 1; done
 fi
 
