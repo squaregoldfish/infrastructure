@@ -51,105 +51,119 @@ function broscience_preprocess_html(&$vars) {
  */
 function broscience_preprocess_page(&$vars) {
 	
-  // Set the Header background dynamically from the node Header image field
-  if (isset($vars['node'])) {
+	// Set the Header background dynamically from the node Header image field
+	if (isset($vars['node'])) {
 
-    // Init the variables
-    $paths = array();
-    $node = $vars['node'];
-    $background_image_styles = array(
-      'icos_header',
-      'icos_header_medium',
-      'icos_header_small'
-    );
+		// Init the variables
+    	$paths = array();
+    	$node = $vars['node'];
+    	$background_image_styles = array(
+      		'icos_header',
+      		'icos_header_medium',
+      		'icos_header_small'
+    	);
     
-    if (!empty($node->field_header_image && false)) {	
-      $wrapped_node = entity_metadata_wrapper('node', $node);
-      $background_image = $wrapped_node->field_header_image->value();
-      // Get three sizes of the image
-      foreach($background_image_styles as $style_name) {
-        // Use the full URL so that the image styles get created correctly
-        $url = image_style_url($style_name, $background_image['uri']);
-        $paths[$style_name] = $url;
-      }    
-    }
-    
-    else {
+    	if (!empty($node->field_header_image && false)) {	
+			$wrapped_node = entity_metadata_wrapper('node', $node);
+			$background_image = $wrapped_node->field_header_image->value();
+      		// Get three sizes of the image
+      		foreach($background_image_styles as $style_name) {
+			// Use the full URL so that the image styles get created correctly
+			$url = image_style_url($style_name, $background_image['uri']);
+			$paths[$style_name] = $url;
+		}  
+		  
+		} else {
     	
-    	$image = variable_get('broscience_style_header_image');
-    	$imageMedium = variable_get('broscience_style_header_image_medium');
-    	$imageSmall = variable_get('broscience_style_header_image_small');
+			$image = variable_get('broscience_style_header_image');
+    		$imageMedium = variable_get('broscience_style_header_image_medium');
+    		$imageSmall = variable_get('broscience_style_header_image_small');
     	
-    	if ($image && $imageMedium && $imageSmall) {
-    		$paths['icos_header'] = $image;
-    		$paths['icos_header_medium'] = $imageMedium;
-    		$paths['icos_header_small'] = $imageSmall;
+    		if ($image && $imageMedium && $imageSmall) {
+				$paths['icos_header'] = $image;
+    			$paths['icos_header_medium'] = $imageMedium;
+    			$paths['icos_header_small'] = $imageSmall;
     		
     		
-    	// Use the default from the theme
-    	} else {
-    		$theme_path = drupal_get_path('theme', 'broscience');
-    		foreach($background_image_styles as $style_name) {
-    			$paths[$style_name] = $theme_path . '/img/' . $style_name . '.jpg';
-    		}
-    	}  
-    }
+    		// Use the default from the theme
+    		} else {
+    			$theme_path = drupal_get_path('theme', 'broscience');
+    			foreach($background_image_styles as $style_name) {
+    				$paths[$style_name] = $theme_path . '/img/' . $style_name . '.jpg';
+    			}
+    		}  
+    	}
     
-    $tint = '';
-    if (variable_get('broscience_style_header_tint')) {
-    	$tint = '#header .tint {background-color: rgba(' . variable_get('broscience_style_header_tint') . ')}';
-    }
     
-    $hideH2 = '';
-    if (variable_get('broscience_style_hide_h2')) {
-    	$hideH2 = '.block-menu-block h2 {display: none}';
-    }
+    	$tint = '';
+    	if (variable_get('broscience_style_header_tint')) {
+    		$tint = '#header .tint {background-color: rgba(' . variable_get('broscience_style_header_tint') . ')}';
+		}
+    
+    	$logoPadding = "";
+    	if (variable_get('broscience_style_header_logo_padding')) {
+    		$logoPadding = '#logo img {padding-top: ' . variable_get('broscience_style_header_logo_padding') . 'px; padding-bottom: ' . variable_get('broscience_style_header_logo_padding') . 'px; width: auto;}';	
+    	}
+    
+    	$menuButtonColor = '';
+    	if (variable_get('broscience_style_menu_button_color')) {
+    		$menuButtonColor = '#block-menu-block-2 ul.menu li.leaf a.active-trail, #block-menu-block-2 ul.menu li.leaf a:hover {background-color: ' . variable_get('broscience_style_menu_button_color') . '}';
+    	}
+    
+    	$hideH2 = '';
+    	if (variable_get('broscience_style_menu_hide_h2')) {
+    		$hideH2 = '.block-menu-block h2 {display: none}';
+    	}
 
-    $logoPadding = "";
-    if (variable_get('broscience_style_logo_padding')) {
-    	$logoPadding = '#logo img {padding-top: ' . variable_get('broscience_style_logo_padding') . 'px; padding-bottom: ' . variable_get('broscience_style_logo_padding') . 'px; width: auto;}';	
-    }
+    	$titleColor = '';
+    	if (variable_get('broscience_style_title_color')) {
+    		$titleColor = 'div.pane-content h1 {color: ' . variable_get('broscience_style_title_color') . '}';
+    	}    
     
-    $menuButtonColor = '';
-    if (variable_get('broscience_style_menu_button_color')) {
-    	$menuButtonColor = '#block-menu-block-2 ul.menu li.leaf a.active-trail, #block-menu-block-2 ul.menu li.leaf a:hover {background-color: ' . variable_get('broscience_style_menu_button_color') . '}';
-    }
     
-    $titleColor = '';
-    if (variable_get('broscience_style_title_color')) {
-    	$titleColor = 'div.pane-content h1 {color: ' . variable_get('broscience_style_title_color') . '}';
-    }    
-    
-    $vars['page']['broscience_dynamic_header_styles'] = ""
-      ."<style>"
-      ."#header {"
-      ."background-size: cover;"
-      ."background-image: url(".$paths['icos_header_small'].");"
-      ."}"
-      ."@media all and (min-width: 513px) {"
-      ."#header {"
-      ."background-image: url(".$paths['icos_header_medium'].");"
-      ."}"
-      ."} "
-      ."@media all and (min-width: 1025px) {"
-      ."#header {"
-      ."background-image: url(".$paths['icos_header'].");"
-      ."}"
-      ."} "
+    	$vars['page']['broscience_dynamic_header_styles'] = ""
+		."<style>"
+			."#header {"
+			."background-size: cover;"
+			."background-image: url(".$paths['icos_header_small'].");"
+			."}"
+			."@media all and (min-width: 513px) {"
+			."#header {"
+			."background-image: url(".$paths['icos_header_medium'].");"
+			."}"
+			."} "
+			."@media all and (min-width: 1025px) {"
+			."#header {"
+			."background-image: url(".$paths['icos_header'].");"
+			."}"
+			."} "
       
-      .".field-title span {margin-left: 5px;}"
+			.".field-title span {margin-left: 5px;}"
 
-      . $tint
-      . $hideH2		
-      . $logoPadding
-      . $menuButtonColor
-      . $titleColor 
+			. $tint
+			. $logoPadding
+			. $menuButtonColor
+			. $hideH2		
+			. $titleColor 
       
-      ."</style>"
-    ;
+		."</style>"
+		;
     
-   }
+    
+    
+    	if (variable_get('broscience_style_menu_use_2level_submenu')) {
+			drupal_add_js('jQuery(document).ready(function () {'
+			
+        		.'if( jQuery("#block-menu-block-1 li.expanded").length && screen.availWidth > 800) {'
+                	.'var submenu = jQuery("#block-menu-block-1 li.expanded ul.menu").detach();'
+					.'jQuery("#block-menu-block-1 div.menu-block-1").after(submenu);'
+				.'}'
 
+  			.'});', 'inline');    
+    
+    	}
+    
+	}
 }
 
 /**
