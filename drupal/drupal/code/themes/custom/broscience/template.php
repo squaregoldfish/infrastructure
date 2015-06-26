@@ -122,12 +122,13 @@ function broscience_preprocess_page(&$vars) {
     	
         $newsColor = '';
         if (variable_get('broscience_style_news_color')) {
-                $newsColor .= '.field-title h3 a {color: ' . variable_get('broscience_style_news_color') . '}';
-                $newsColor .= '.field-title a {color: ' . variable_get('broscience_style_news_color') . '}';
-                $newsColor .= '.node .button .field-link a  {background-color: ' . variable_get('broscience_style_news_color') . '}';
-                $newsColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button a:hover {background-color: ' . variable_get('broscience_style_news_color') . '}';
-                $newsColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a {background-color: ' . variable_get('broscience_style_news_color') . '}';
-                $newsColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a::after {border-color: transparent transparent transparent ' . variable_get('broscience_style_news_color') . '}';
+			$newsColor .= '.field-title h1 {color: ' . variable_get('broscience_style_news_color') . '}';
+        	$newsColor .= '.field-title h3 a {color: ' . variable_get('broscience_style_news_color') . '}';
+			$newsColor .= '.field-title a {color: ' . variable_get('broscience_style_news_color') . '}';
+			$newsColor .= '.node .button .field-link a  {background-color: ' . variable_get('broscience_style_news_color') . '}';
+			$newsColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button a:hover {background-color: ' . variable_get('broscience_style_news_color') . '}';
+			$newsColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a {background-color: ' . variable_get('broscience_style_news_color') . '}';
+			$newsColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a::after {border-color: transparent transparent transparent ' . variable_get('broscience_style_news_color') . '}';
         }    	 
     
     
