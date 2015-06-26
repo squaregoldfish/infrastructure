@@ -173,7 +173,20 @@ function broscience_preprocess_page(&$vars) {
   			.'});', 'inline');    
     
     	}
-    
+    	
+    	if (variable_get('broscience_style_iframe_sizing')) {
+			drupal_add_js('jQuery(document).ready(function () {'
+    		
+				.'if( jQuery("div.responsive_frames_wrapper").length) {'
+                 	.'var w = jQuery("div.responsive_frames_wrapper iframe").attr("width");'
+                 	.'var h = jQuery("div.responsive_frames_wrapper iframe").attr("height");'
+                 	.'jQuery("div.responsive_frames_wrapper").css({width: w, height: h});'	
+				.'}'
+
+			.'});', 'inline');    	
+    	
+    	}
+   
 	}
 }
 

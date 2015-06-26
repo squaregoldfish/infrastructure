@@ -188,6 +188,31 @@ function form($form, &$form_state) {
 			'#required' => FALSE,
 			'#default_value' => $newsColor,
 	);	
+	
+	
+	/**
+	 * iframe
+	 **/
+	 $form['broscience_style_iframe'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Iframe'),
+			'#description' => t(''),
+			'#collapsible' => FALSE,
+			'#collapsed' => FALSE,
+	);
+	
+	$iframeSizing = '';
+	if (variable_get('broscience_style_iframe_sizing')) {
+		$iframeSizing = variable_get('broscience_style_iframe_sizing');
+	}
+				
+	$form['broscience_style_iframe']['broscience_style_iframe_sizing'] = array(
+			'#type' => 'checkbox',
+			'#title' => t('Use explicit sizing.'),
+			'#description' => t('If enabled and width & height is defined for a iframe element the scrollers will stay away.'),
+			'#required' => FALSE,
+			'#default_value' => $iframeSizing,
+	);		
 		
 
 	return system_settings_form($form);
