@@ -28,6 +28,7 @@ To automate sparse cloning you can use the `sparse.sh` script from the root of t
 Run the following from a newly created folder for your new repo:
 
 `wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/sparse.sh`  
+`chmod +x sparse.sh`
 `./sparse.sh <subproject> [<branch>]` (default branch is `master`)
 
 `subproject` above must be one of the first-level folders in this repo.

@@ -9,7 +9,12 @@ drupal/drupal/conf/docker.settings.php
 drupal/docker/docker-compose.yml
 drupal/docker/name-prefix.txt
 
-# Local Drupal configuration and files etc. #
+# Concrete local Docker configuration for Alfresco. #
 #############################################
 alfresco/docker-compose.yml
 alfresco/name-prefix.txt
+
+# Concrete local Docker configuration for RDF log's Postgres. #
+#############################################
+rdflogdb/docker-compose.yml
+rdflogdb/postgres
