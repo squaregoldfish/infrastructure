@@ -1,0 +1,4 @@
+name = Alfresco reader
+description = An Alfresco reader for Drupal 7.
+core = 7.x
+
