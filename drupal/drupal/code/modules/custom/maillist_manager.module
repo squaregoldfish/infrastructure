@@ -28,7 +28,9 @@ function view_form($form, &$form_state) {
     $list = _get_options_content();
     
     $size = count($list['names']);
-    $options = array();   
+    $options = array();
+ 
+    $descriptions = '<ul>';    
     
     $email = '';
     $disabled = false;
@@ -47,6 +49,12 @@ function view_form($form, &$form_state) {
             
         }
     }
+    
+    $descriptions .= '</ul>';
+    
+    $form['description'] = array(
+        '#markup' => t($descriptions),    
+    );
    
     $form['name'] = array(
         '#type' => 'checkboxes',
