@@ -1,5 +1,7 @@
 .block-maillist-manager { margin-left: 20%; padding-bottom: 40px; }
 
-.block-maillist-manager .content {  }
+.block-maillist-manager .content { width: 60%; }
 
-.block-maillist-manager .content h2 { color: red } 
+.block-maillist-manager .content h2 { color: black; } 
+
+.block-maillist-manager .content .form-checkboxes .form-item { color: rgb(10, 150, 240); background-color: #E6E6E6; height: 2em; }

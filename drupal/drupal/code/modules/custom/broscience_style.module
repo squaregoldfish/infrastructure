@@ -94,8 +94,8 @@ function form($form, &$form_state) {
 	);
 	
 	$logoPadding = '';
-	if (variable_get('broscience_style_logo_padding')) {
-		$logoPadding = variable_get('broscience_style_logo_padding');
+	if (variable_get('broscience_style_header_logo_padding')) {
+		$logoPadding = variable_get('broscience_style_header_logo_padding');
 	}
 	
 	$form['broscience_style_header']['broscience_style_header_logo_padding'] = array(

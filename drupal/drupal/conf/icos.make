@@ -170,7 +170,8 @@ projects[telephone][version] = 1.0-alpha1
 projects[views_accordion][version] = 1.1
 projects[views_vertical_tabs][version] = 1.0
 projects[view_unpublished][version] = 1.2
-
+projects[cmis][version] = 1.6
+projects[smtp][version] = 1.2
 ; --------
 ; Themes
 ; --------

@@ -18,3 +18,5 @@ alfresco/name-prefix.txt
 #############################################
 rdflogdb/docker-compose.yml
 rdflogdb/postgres
+
+*.*~

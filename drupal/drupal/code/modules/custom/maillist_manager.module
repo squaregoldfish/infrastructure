@@ -25,35 +25,56 @@ function maillist_manager_block_view($delta = '') {
 
 
 function view_form($form, &$form_state) {
-    $options = _get_options_content();
-    $description = '<h2>You can add yourself to a maillist</h2>';
-    $description .= '<ul>';
-    $size = count($options);
+    $list = _get_options_content();
     
-    if (user_is_logged_in()) { }
+    $size = count($list['names']);
+    $options = array();   
     
-    for ($i=0; $i < $size; $i++) {
-        $description .= '<li>' . $options['names'][$i] . ' (' . $options['descriptions'][$i] . ')</li>';
+    $email = '';
+    $disabled = false;
+    
+    for ($c = 0; $c < $size; $c++) {
+        if (user_is_logged_in()) {  
+            $descriptions .= '<li>' . $list['names'][$c] . ' -- ' . $list['descriptions'][$c] . '</li>'; 
+            $options[] = $list['names'][$c];
+            
+            $email = _getUserMail();
+            $disabled = true;
+            
+        } elseif ($list['internal_uses'][$c] != '1') {
+            $descriptions .= '<li>' . $list['names'][$c] . ' -- ' . $list['descriptions'][$c] . '</li>'; 
+            $options[] = $list['names'][$c];            
+            
+        }
     }
-    $description .= '</ul>';
-    
-    
-    $form['description'] = array(
-        '#markup' => t($description),    
-    );
-    
+   
     $form['name'] = array(
         '#type' => 'checkboxes',
-        '#options' => drupal_map_assoc($options['names']),
-        '#title' => t(''),
+        '#options' => drupal_map_assoc($options),
+    );
+    
+    $form['email'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Your email'), 
+        '#required' => true,
+        '#default_value' => $email,
+        '#disabled' => $disabled,
+        '#element_validate' => array('_validate_email'),
     );
   
     $form['submit'] = array(
         '#type' => 'submit',
-        '#value' => 'Anmäl dig',
+        '#value' => 'Send for subscribe',
     );  
   
     return $form;    
+}
+
+
+function _validate_email($form, &$form_state) {
+    if (! valid_email_address($form_state['values']['email'])) {
+      form_set_error('mail', t('You must enter a valid e-mail address.'));
+    }   
 }
 
 
@@ -73,18 +94,22 @@ function _get_options_content() {
             ':status' => 1,
             )
     );
-
+    
     foreach ($result as $row) {
         $node = node_load($row->nid);
+        
         $name = strtoupper($node->maillist_manager_name['und'][0]['safe_value']);
         $description = $node->maillist_manager_description['und'][0]['safe_value'];
+        $internal_use = $node->maillist_manager_internal_use['und'][0]['safe_value'];
         
         $names[] = t($name);
         $descriptions[] = t($description);
+        $internal_uses[] = t($internal_use);
         $content['names'] = $names;
         $content['descriptions'] = $descriptions;
+        $content['internal_uses'] = $internal_uses;
     }
-  
+    
     return $content;
 }
 
@@ -95,23 +120,23 @@ function view_form_submit($form, &$form_state) {
     foreach ($form_state['values'] as $key => $value) {
         foreach ($value as $val) {
             if ($val) {
-                _send($val);
+                _send($form_state['values']['email'], $val);
             }
         }       
     }    
 }
 
 
-function _send($var) {
+function _send($email, $var) {
     if ($var) {
         module_load_include('smtp_mail.inc', 'smtp');
         
         $id = 'id-1';
         $header = 'From: subscribe@icos-cp.eu' . "\r\n" . 'Reply-To: subscribe@icos-cp.eu';
         $from = 'subscribe@icos-cp.eu';
-        $to = 'paul.hedberg@nateko.lu.se';
+        $to = $email;
         $subject = 'ICOS subscribe to maillist - ' . $var; 
-        $body = 'Repley this message if you want to subscribe to the maillist';
+        $body = 'Reply this message if you want to subscribe to the maillist';
         $body .= "\r\n\r\n";
         $body .= $var;
        
@@ -134,19 +159,6 @@ function _send($var) {
     
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function maillist_manager_node_info() {
@@ -172,6 +184,7 @@ function maillist_manager_node_type_insert($content_type) {
         foreach (_add_instances() as $instance) {
             $instance['entity_type'] = 'node';
             $instance['bundle'] = 'maillist_manager';
+            $instance['required'] = true;
             field_create_instance($instance);
         }
     }
@@ -194,7 +207,7 @@ function _add_fields() {
             'type'        => 'text',
             'settings'    => array(
                 'max_length' => 200,
-                ),            
+                ),
             ),  
         'maillist_manager_internal_use' => array(
             'field_name' => 'maillist_manager_internal_use',
@@ -202,7 +215,7 @@ function _add_fields() {
             'type'        => 'text',
             'settings'    => array(
                 'max_length' => 1,
-                ),          
+                ),
             ),
         );
 }
@@ -249,6 +262,7 @@ function _add_instances() {
                     'type' => 'maillist_manager_internal_uses',
                     ),
                 ),
+            'default_value' => array(array('value' => '0')),
             ),            
         );
 }
