@@ -1,0 +1,258 @@
+<?php
+
+function maillist_manager_block_info() {
+	$blocks = array();
+	
+	$blocks['maillist_manager'] = array(
+			'info' => t('Maillist manager'),
+	);
+
+	return $blocks;	
+}
+
+
+function maillist_manager_block_view($delta = '') {
+	if ($delta == 'maillist_manager') {	
+		$block = array();
+		$block['subject'] = t('');
+		$block['content'] = drupal_get_form('view_form');
+
+		drupal_add_css(drupal_get_path('module', 'maillist_manager') . '/maillist_manager.css');
+	
+		return $block;	
+	}
+}
+
+
+function view_form($form, &$form_state) {
+    $options = _get_options_content();
+    $description = '<h2>You can add yourself to a maillist</h2>';
+    $description .= '<ul>';
+    $size = count($options);
+    
+    if (user_is_logged_in()) { }
+    
+    for ($i=0; $i < $size; $i++) {
+        $description .= '<li>' . $options['names'][$i] . ' (' . $options['descriptions'][$i] . ')</li>';
+    }
+    $description .= '</ul>';
+    
+    
+    $form['description'] = array(
+        '#markup' => t($description),    
+    );
+    
+    $form['name'] = array(
+        '#type' => 'checkboxes',
+        '#options' => drupal_map_assoc($options['names']),
+        '#title' => t(''),
+    );
+  
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Anmäl dig',
+    );  
+  
+    return $form;    
+}
+
+
+function _getUserMail() {
+    global $user;
+    return $user->mail; 
+}
+
+
+function _get_options_content() {
+    $content = array();
+  
+    $sql = 'select nid from {node} n where n.type = :type and n.status = :status';
+    $result = db_query($sql,
+        array(
+            ':type' => 'maillist_manager',
+            ':status' => 1,
+            )
+    );
+
+    foreach ($result as $row) {
+        $node = node_load($row->nid);
+        $name = strtoupper($node->maillist_manager_name['und'][0]['safe_value']);
+        $description = $node->maillist_manager_description['und'][0]['safe_value'];
+        
+        $names[] = t($name);
+        $descriptions[] = t($description);
+        $content['names'] = $names;
+        $content['descriptions'] = $descriptions;
+    }
+  
+    return $content;
+}
+
+
+function view_form_submit($form, &$form_state) {
+    unset($form_state['values']['submit'], $form_state['values']['form_id'], $form_state['values']['op'], $form_state['values']['form_token'], $form_state['values']['form_build_id']);
+
+    foreach ($form_state['values'] as $key => $value) {
+        foreach ($value as $val) {
+            if ($val) {
+                _send($val);
+            }
+        }       
+    }    
+}
+
+
+function _send($var) {
+    if ($var) {
+        module_load_include('smtp_mail.inc', 'smtp');
+        
+        $id = 'id-1';
+        $header = 'From: subscribe@icos-cp.eu' . "\r\n" . 'Reply-To: subscribe@icos-cp.eu';
+        $from = 'subscribe@icos-cp.eu';
+        $to = 'paul.hedberg@nateko.lu.se';
+        $subject = 'ICOS subscribe to maillist - ' . $var; 
+        $body = 'Repley this message if you want to subscribe to the maillist';
+        $body .= "\r\n\r\n";
+        $body .= $var;
+       
+        $message = array();
+        $message['id'] = $id;
+        $message['headers'] = $header;
+        $message['from'] = $from;
+        $message['to'] = $to;
+        $message['subject'] = $subject;
+        $message['body'] = $body;
+
+        $mailer = new SmtpMailSystem();
+        
+        $sent = 'An email has be sent to you. Just reply the mail and we will subscribe you.';
+        if (! $mailer->mail($message)) {
+            $sent = 'A error has occurred. Please try again about a minute.';
+        }  
+
+        drupal_set_message(t($sent));
+    
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function maillist_manager_node_info() {
+    return array(
+        'maillist_manager' => array(
+            'name' => t('Maillist Manager'),
+            'base' => 'maillist_manager',
+            'description' => t('Manage maillists.'),
+            'title_label' => t('Maillist Manager'),
+            'locked' => TRUE,
+            ),
+        );	
+}
+
+
+function maillist_manager_node_type_insert($content_type) {
+    if ($content_type->type == 'maillist_manager') {
+ 	
+        foreach (_add_fields() as $field) {
+            field_create_field($field);
+        }
+
+        foreach (_add_instances() as $instance) {
+            $instance['entity_type'] = 'node';
+            $instance['bundle'] = 'maillist_manager';
+            field_create_instance($instance);
+        }
+    }
+}
+
+
+function _add_fields() {
+    return array(
+        'maillist_manager_name' => array(
+            'field_name' => 'maillist_manager_name',
+            'cardinality' => 1,
+            'type'        => 'text',
+            'settings'    => array(
+                'max_length' => 100,
+                ),
+            ),
+        'maillist_manager_description' => array(
+            'field_name' => 'maillist_manager_description',
+            'cardinality' => 1,
+            'type'        => 'text',
+            'settings'    => array(
+                'max_length' => 200,
+                ),            
+            ),  
+        'maillist_manager_internal_use' => array(
+            'field_name' => 'maillist_manager_internal_use',
+            'cardinality' => 1,
+            'type'        => 'text',
+            'settings'    => array(
+                'max_length' => 1,
+                ),          
+            ),
+        );
+}
+
+
+function _add_instances() {
+    return array(
+        'maillist_manager_name' => array(
+            'field_name' => 'maillist_manager_name',
+            'label'       => t('Name of the maillist.'),
+            'widget'      => array(
+                'type'    => 'text_textfield',
+                ),
+            'display' => array(
+                'maillist_manager_list' => array(
+                    'label' => 'hidden',
+                    'type' => 'maillist_manager_names',
+                    ),
+                ),
+            ),
+        'maillist_manager_description' => array(
+            'field_name' => 'maillist_manager_description',
+            'label'       => t('Description of the maillist.'),
+            'widget'      => array(
+                'type'    => 'text_textfield',
+                ),
+            'display' => array(
+                'maillist_manager_list' => array(
+                    'label' => 'hidden',
+                    'type' => 'maillist_manager_descriptions',
+                    ),
+                ),
+            ),
+        'maillist_manager_internal_use' => array(
+            'field_name' => 'maillist_manager_internal_use',
+            'label'       => t('Internal or public use?'),
+            'description' => t('If the maillist is intend for internal use type 1.'),
+            'widget'      => array(
+                'type'    => 'text_textfield',
+                ),
+            'display' => array(
+                'maillist_manager_list' => array(
+                    'label' => 'hidden',
+                    'type' => 'maillist_manager_internal_uses',
+                    ),
+                ),
+            ),            
+        );
+}
+
+function maillist_manager_form($node, $form_state) {
+    return node_content_form($node, $form_state);
+}
