@@ -23,6 +23,7 @@ function alfresco_reader_block_view($delta = '') {
 		}
 		
 		$formatted = '';
+		//$formatted .= '<h2>Downloadable documents</h2>';
 
 		foreach ($folderIdList as $folderId) {
 			$id = trim($folderId);
@@ -39,10 +40,11 @@ function alfresco_reader_block_view($delta = '') {
 				'#markup' => t($formatted),
 				'#attached' => array(
 					'css' => array('https://static.icos-cp.eu/constant/bootstrap/3.3.4/css/bootstrap.min.css', drupal_get_path('module', 'alfresco_reader') . '/alfresco_reader.css'),
-					'js' => array('https://static.icos-cp.eu/constant/bootstrap/3.3.4/js/bootstrap.min.js', drupal_get_path('module', 'alfresco_reader') . '/alfresco_reader.js'),
+					'js' => array('https://static.icos-cp.eu/constant/jquery/1.11.2/jquery.min.js', 'https://static.icos-cp.eu/constant/bootstrap/3.3.4/js/bootstrap.min.js', drupal_get_path('module', 'alfresco_reader') . '/alfresco_reader.js'),
 				),
 			),
 		);
+		
 		return $block;
 	}
 
@@ -50,15 +52,24 @@ function alfresco_reader_block_view($delta = '') {
 
 
 function build($properties, $contents) {
-	$output = '<div class="alfresco_reader">';
-	$output .= '<h4 class"alfresco_reader_title">' . $properties->properties['cmis:name'] . '</h4>';
+
+	$output = '<div id="accordion_' . $properties->properties['cmis:objectId'] . '" class="alfresco_reader panel-group" role="tablist" aria-multiselectable="true">';
+	
+	$output .= '<div class="panel panel-primary">';
+	
+	$output .= '<div id="heading_' . $properties->properties['cmis:objectId'] .'" class="panel-heading" role="tab">';	
+	$output .= '<h3 class="panel-title">';
+	$output .= '<a role="button" data-toggle="collapse" data-parent="#accordion_' . $properties->properties['cmis:objectId'] . '" href="#collapse_'. $properties->properties['cmis:objectId'] . '" aria-expanded="true" aria-controls="collapse_' . $properties->properties['cmis:objectId'] . '">';
+	$output .= $properties->properties['cmis:name'];
+	$output .= '</a>';
+	$output .= '</h3>';
+	$output .= '</div>';
+	
+	$output .= '<div id="collapse_' . $properties->properties['cmis:objectId'] . '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_' . $properties->properties['cmis:objectId'] . '">';
+
+	$output .= '<div class="panel-body">';
 
 	$output .= '<table class="table table-hover table-responsive">';
-	$output .= '<tr>';
-	$output .= '<th>Document</th>';
-	$output .= '<th>Modified by</th>';
-	$output .= '<th>Last modified</th>';
-	$output .= '</tr>';
 
 	foreach ($contents as $content) {
 		if ($content->properties['cmis:baseTypeId'] != 'cmis:folder') {
@@ -71,14 +82,22 @@ function build($properties, $contents) {
 			$modificationDate = new DateTime($content->properties['cmis:lastModificationDate']);
 
 			$output .= '<tr>';
-			$output .= '<td>' . l($document, 'cmis/browser', array('query' => array('id' => $content->properties['cmis:objectId']))) . '</td>';
-			$output .= '<td>' . $modifiedBy . '</td>';
-			$output .= '<td>' . $modificationDate->format('Y-m-d H:i') . '</td>';
+			$output .= '<td>';
+			
+			$output .= l($document, 'cmis/browser', array('query' => array('id' => $content->properties['cmis:objectId'])));
+			$output .= '<br/>';
+			$output .= '<span class="small_text">' . $modifiedBy . '  ' . $modificationDate->format('Y-m-d H:i') . '</span>';
+			
+			$output .= '</td>';
 			$output .= '</tr>';
 		}		
 	}	
 	
 	$output .= '</table>';
+	
+	$output .= '</div>';
+	$output .= '</div>';
+	$output .= '</div>';
 	$output .= '</div>';
 	
 	return $output;
