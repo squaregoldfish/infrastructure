@@ -15,7 +15,7 @@ function maillist_manager_block_view($delta = '') {
 	if ($delta == 'maillist_manager') {	
 		$block = array();
 		$block['subject'] = t('');
-		$block['content'] = drupal_get_form('maillist_manager_view_form');
+		$block['content'] = drupal_get_form('_maillist_manager_view_form');
 
 		drupal_add_css(drupal_get_path('module', 'maillist_manager') . '/maillist_manager.css');
 	
@@ -24,8 +24,8 @@ function maillist_manager_block_view($delta = '') {
 }
 
 
-function maillist_manager_view_form($form, &$form_state) {
-    $list = _get_maillist_manager_options();
+function _maillist_manager_view_form($form, &$form_state) {
+    $list = _maillist_manager_get_view_form_options();
     
     $size = count($list['names']);
     $options = array();
@@ -40,8 +40,8 @@ function maillist_manager_view_form($form, &$form_state) {
             $descriptions .= '<li>' . $list['names'][$c] . ' -- ' . $list['descriptions'][$c] . '</li>'; 
             $options[] = $list['names'][$c];
             
-            $email = _getUserMail();
-            $disabled = true;
+            $email = _maillist_manager_get_user_mail();
+            //$disabled = true;
             
         } elseif ($list['internal_uses'][$c] != '1') {
             $descriptions .= '<li>' . $list['names'][$c] . ' -- ' . $list['descriptions'][$c] . '</li>'; 
@@ -67,7 +67,7 @@ function maillist_manager_view_form($form, &$form_state) {
         '#required' => true,
         '#default_value' => $email,
         '#disabled' => $disabled,
-        '#element_validate' => array('_validate_email'),
+        '#element_validate' => array('_maillist_manager_validate_email'),
     );
   
     $form['submit'] = array(
@@ -79,20 +79,20 @@ function maillist_manager_view_form($form, &$form_state) {
 }
 
 
-function _validate_email($form, &$form_state) {
+function _maillist_manager_validate_email($form, &$form_state) {
     if (! valid_email_address($form_state['values']['email'])) {
       form_set_error('mail', t('You must enter a valid e-mail address.'));
     }   
 }
 
 
-function _getUserMail() {
+function _maillist_manager_get_user_mail() {
     global $user;
     return $user->mail; 
 }
 
 
-function _get_maillist_manager_options() {
+function _maillist_manager_get_view_form_options() {
     $content = array();
   
     $sql = 'select nid from {node} n where n.type = :type and n.status = :status';
@@ -128,14 +128,14 @@ function maillist_manager_view_form_submit($form, &$form_state) {
     foreach ($form_state['values'] as $key => $value) {
         foreach ($value as $val) {
             if ($val) {
-                _send($form_state['values']['email'], $val);
+                _maillist_manager_send($form_state['values']['email'], $val);
             }
         }       
     }    
 }
 
 
-function _send($email, $var) {
+function _maillist_manager_send($email, $var) {
     if ($var) {
         module_load_include('smtp_mail.inc', 'smtp');
         
@@ -185,11 +185,11 @@ function maillist_manager_node_info() {
 function maillist_manager_node_type_insert($content_type) {
     if ($content_type->type == 'maillist_manager') {
  	
-        foreach (_add_fields() as $field) {
+        foreach (_maillist_manager_add_fields() as $field) {
             field_create_field($field);
         }
 
-        foreach (_add_instances() as $instance) {
+        foreach (_maillist_manager_add_instances() as $instance) {
             $instance['entity_type'] = 'node';
             $instance['bundle'] = 'maillist_manager';
             $instance['required'] = true;
@@ -199,7 +199,7 @@ function maillist_manager_node_type_insert($content_type) {
 }
 
 
-function _add_fields() {
+function _maillist_manager_add_fields() {
     return array(
         'maillist_manager_name' => array(
             'field_name' => 'maillist_manager_name',
@@ -229,7 +229,7 @@ function _add_fields() {
 }
 
 
-function _add_instances() {
+function _maillist_manager_add_instances() {
     return array(
         'maillist_manager_name' => array(
             'field_name' => 'maillist_manager_name',

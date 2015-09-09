@@ -27,9 +27,9 @@ function alfresco_reader_block_view($delta = '') {
 		foreach ($folderIdList as $folderId) {
 			$id = trim($folderId);
 			if (! empty($id)) {
-				$properties = getCMISObjectProperties($id);
-				$contents = getCMISSubObjects($id);
-				$formatted .= alfresco_reader_build_output($properties, $contents);
+				$properties = _alfresco_reader_get_cmis_object_properties($id);
+				$contents = _alfresco_reader_get_cmis_sub_objects($id);
+				$formatted .= _alfresco_reader_build_output($properties, $contents);
 			}
 		}
  
@@ -50,7 +50,7 @@ function alfresco_reader_block_view($delta = '') {
 }
 
 
-function alfresco_reader_build_output($properties, $contents) {
+function _alfresco_reader_build_output($properties, $contents) {
 
 	$output = '<div id="accordion_' . $properties->properties['cmis:objectId'] . '" class="alfresco_reader panel-group" role="tablist" aria-multiselectable="true">';
 	
@@ -103,7 +103,7 @@ function alfresco_reader_build_output($properties, $contents) {
 }
 
 
-function getCMISObjectProperties($objectId) {
+function _alfresco_reader_get_cmis_object_properties($objectId) {
 	module_load_include('api.inc', 'cmis');
 	
 	try {
@@ -118,7 +118,7 @@ function getCMISObjectProperties($objectId) {
 }
 
 
-function getCMISSubObjects($objectId) {
+function _alfresco_reader_get_cmis_sub_objects($objectId) {
 	module_load_include('api.inc', 'cmis');
 
 	try {
@@ -141,7 +141,7 @@ function alfresco_reader_menu() {
 			'title' => 'Alfresco reader configuration',
 			'description' => 'Configuration for Alfresco reader',
 			'page callback' => 'drupal_get_form',
-			'page arguments' => array('alfresco_reader_form'),
+			'page arguments' => array('_alfresco_reader_form'),
 			'access arguments' => array('access administration pages'),
 			'type' => MENU_NORMAL_ITEM,
 	);
@@ -150,7 +150,7 @@ function alfresco_reader_menu() {
 }
 
 
-function alfresco_reader_form($form, &$form_state) {
+function _alfresco_reader_form($form, &$form_state) {
 
 	$objectIdList = '';
 	if (variable_get('alfresco_reader_objectid_list')) {
