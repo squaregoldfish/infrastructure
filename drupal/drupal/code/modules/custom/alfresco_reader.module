@@ -22,21 +22,21 @@ function alfresco_reader_block_view($delta = '') {
 			$folderIdList = explode(',', variable_get('alfresco_reader_objectid_list'));
 		}
 		
-		$formatted = '';
+		$output = '';
 		
 		foreach ($folderIdList as $folderId) {
 			$id = trim($folderId);
 			if (! empty($id)) {
 				$properties = _alfresco_reader_get_cmis_object_properties($id);
 				$contents = _alfresco_reader_get_cmis_sub_objects($id);
-				$formatted .= _alfresco_reader_build_output($properties, $contents);
+				$output .= _alfresco_reader_output($properties, $contents);
 			}
 		}
  
 		$block = array(
 			'subject' => t(''),
 			'content' => array(
-				'#markup' => t($formatted),
+				'#markup' => t($output),
 				'#attached' => array(
 					'css' => array('https://static.icos-cp.eu/constant/bootstrap/3.3.4/css/bootstrap.min.css', drupal_get_path('module', 'alfresco_reader') . '/alfresco_reader.css'),
 					'js' => array('https://static.icos-cp.eu/constant/jquery/1.11.2/jquery.min.js', 'https://static.icos-cp.eu/constant/bootstrap/3.3.4/js/bootstrap.min.js', drupal_get_path('module', 'alfresco_reader') . '/alfresco_reader.js'),
@@ -50,7 +50,7 @@ function alfresco_reader_block_view($delta = '') {
 }
 
 
-function _alfresco_reader_build_output($properties, $contents) {
+function _alfresco_reader_output($properties, $contents) {
 
 	$output = '<div id="accordion_' . $properties->properties['cmis:objectId'] . '" class="alfresco_reader panel-group" role="tablist" aria-multiselectable="true">';
 	
