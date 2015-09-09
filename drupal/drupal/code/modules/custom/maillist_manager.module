@@ -15,17 +15,17 @@ function maillist_manager_block_view($delta = '') {
 	if ($delta == 'maillist_manager') {	
 		$block = array();
 		$block['subject'] = t('');
-		$block['content'] = drupal_get_form('view_form');
+		$block['content'] = drupal_get_form('maillist_manager_view_form');
 
 		drupal_add_css(drupal_get_path('module', 'maillist_manager') . '/maillist_manager.css');
 	
-		return $block;	
+		return $block;
 	}
 }
 
 
-function view_form($form, &$form_state) {
-    $list = _get_options_content();
+function maillist_manager_view_form($form, &$form_state) {
+    $list = _get_maillist_manager_options();
     
     $size = count($list['names']);
     $options = array();
@@ -92,7 +92,7 @@ function _getUserMail() {
 }
 
 
-function _get_options_content() {
+function _get_maillist_manager_options() {
     $content = array();
   
     $sql = 'select nid from {node} n where n.type = :type and n.status = :status';
@@ -122,7 +122,7 @@ function _get_options_content() {
 }
 
 
-function view_form_submit($form, &$form_state) {
+function maillist_manager_view_form_submit($form, &$form_state) {
     unset($form_state['values']['submit'], $form_state['values']['form_id'], $form_state['values']['op'], $form_state['values']['form_token'], $form_state['values']['form_build_id']);
 
     foreach ($form_state['values'] as $key => $value) {
@@ -172,10 +172,10 @@ function _send($email, $var) {
 function maillist_manager_node_info() {
     return array(
         'maillist_manager' => array(
-            'name' => t('Maillist Manager'),
+            'name' => t('Maillist'),
             'base' => 'maillist_manager',
-            'description' => t('Manage maillists.'),
-            'title_label' => t('Maillist Manager'),
+            'description' => t('Create a maillist.'),
+            'title_label' => t('Maillist'),
             'locked' => TRUE,
             ),
         );	
@@ -275,6 +275,6 @@ function _add_instances() {
         );
 }
 
-function maillist_manager_form($node, $form_state) {
+function maillist_manager_content_form($node, $form_state) {
     return node_content_form($node, $form_state);
 }

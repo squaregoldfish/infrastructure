@@ -23,17 +23,16 @@ function alfresco_reader_block_view($delta = '') {
 		}
 		
 		$formatted = '';
-		//$formatted .= '<h2>Downloadable documents</h2>';
-
+		
 		foreach ($folderIdList as $folderId) {
 			$id = trim($folderId);
 			if (! empty($id)) {
 				$properties = getCMISObjectProperties($id);
 				$contents = getCMISSubObjects($id);
-				$formatted .= build($properties, $contents);
+				$formatted .= alfresco_reader_build_output($properties, $contents);
 			}
 		}
-
+ 
 		$block = array(
 			'subject' => t(''),
 			'content' => array(
@@ -51,7 +50,7 @@ function alfresco_reader_block_view($delta = '') {
 }
 
 
-function build($properties, $contents) {
+function alfresco_reader_build_output($properties, $contents) {
 
 	$output = '<div id="accordion_' . $properties->properties['cmis:objectId'] . '" class="alfresco_reader panel-group" role="tablist" aria-multiselectable="true">';
 	
@@ -138,7 +137,7 @@ function getCMISSubObjects($objectId) {
 function alfresco_reader_menu() {
 	$items = array();
 
-	$items['alfresco_reader'] = array(
+	$items['admin/config/content/alfresco_reader'] = array(
 			'title' => 'Alfresco reader configuration',
 			'description' => 'Configuration for Alfresco reader',
 			'page callback' => 'drupal_get_form',
