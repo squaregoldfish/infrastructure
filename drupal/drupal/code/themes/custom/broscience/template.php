@@ -120,25 +120,28 @@ function broscience_preprocess_page(&$vars) {
 		$hideH2 = '.block-menu-block h2 {display: none}';
 	}
 
-	$titleColor = '';
-	if (variable_get('broscience_style_title_color')) {
-		$titleColor = 'div.pane-content h1 {color: ' . variable_get('broscience_style_title_color') . '}';
+	$contentsTitleColor = '';
+	if (variable_get('broscience_style_contents_title_color')) {
+		$contentsTitleColor = 'div.pane-content h1 {color: ' . variable_get('broscience_style_contents_title_color') . '}';
 	}   
 	
-    $newsColor = '';
-    if (variable_get('broscience_style_news_color')) {
-		$newsColor .= '.field-title h1 {color: ' . variable_get('broscience_style_news_color') . '}';
-    	$newsColor .= '.field-title h3 a {color: ' . variable_get('broscience_style_news_color') . '}';
-		$newsColor .= '.field-title a {color: ' . variable_get('broscience_style_news_color') . '}';
-		$newsColor .= '.node .button .field-link a  {background-color: ' . variable_get('broscience_style_news_color') . '}';
-		$newsColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button a:hover {background-color: ' . variable_get('broscience_style_news_color') . '}';
-		$newsColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a {background-color: ' . variable_get('broscience_style_news_color') . '}';
-		$newsColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a::after {border-color: transparent transparent transparent ' . variable_get('broscience_style_news_color') . '}';
-    }  
-    
+    $contentsElementColor = '';
+    if (variable_get('broscience_style_contents_element_color')) {
+    	$color = variable_get('broscience_style_contents_element_color');
+		$contentsElementColor .= '.field-title h1 {color: ' . $color . '}';
+    	$contentsElementColor .= '.field-title h3 a {color: ' . $color . '}';
+		$contentsElementColor .= '.field-title a {color: ' . $color . '}';
+		$contentsElementColor .= '.node .button .field-link a  {background-color: ' . $color . '}';
+		$contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button a:hover {background-color: ' . $color . '}';
+		$contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a {background-color: ' . $color . '}';
+		$contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a::after {border-color: transparent transparent transparent ' . $color . '}';
+    }
+   
     $threeColPanels = '';
     $threeColPanels .= '.three-col {margin-top: 40px;}';
-    $threeColPanels .= '.three-col .second {border-left: 1px solid #414042; border-right: 1px solid #414042; }';  	 
+    $threeColPanels .= '.three-col .first { }';
+    $threeColPanels .= '.three-col .second { }';
+    $threeColPanels .= '.three-col .third { }'; 	 
 
 
 	$vars['page']['broscience_dynamic_header_styles'] = ""
@@ -164,8 +167,8 @@ function broscience_preprocess_page(&$vars) {
 		. $logoPadding
 		. $menuButtonColor
 		. $hideH2		
-		. $titleColor 
-		. $newsColor
+		. $contentsTitleColor 
+		. $contentsElementColor
 		. $threeColPanels
   
 	."</style>"

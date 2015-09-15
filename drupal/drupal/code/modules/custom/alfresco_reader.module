@@ -22,7 +22,12 @@ function alfresco_reader_block_view($delta = '') {
 			$folderIdList = explode(',', variable_get('alfresco_reader_objectid_list'));
 		}
 		
-		$output = '';
+		
+		$color = '';
+		if (variable_get('broscience_style_contents_title_color')) {
+			$color = 'style="color: ' . variable_get('broscience_style_contents_title_color') . '"';
+		}
+		$output = '<div class="block_title" ' . $color . '><h2>DOCUMENTS</h2></div>';
 		
 		foreach ($folderIdList as $folderId) {
 			$id = trim($folderId);

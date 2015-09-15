@@ -158,35 +158,40 @@ function form($form, &$form_state) {
 	
 	
 	/**
-	 * titleColor
+	 * broscience_style_contents
 	 **/
-	$titleColor = '';
-	if (variable_get('broscience_style_title_color')) {
-		$titleColor = variable_get('broscience_style_title_color');
+	 $form['broscience_style_contents'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Contents'),
+			'#description' => t(''),
+			'#collapsible' => FALSE,
+			'#collapsed' => FALSE,
+	);
+		 
+	$contentsTitleColor = '';
+	if (variable_get('broscience_style_contents_title_color')) {
+		$contentsTitleColor = variable_get('broscience_style_contents_title_color');
 	}
 	
-	$form['broscience_style_title_color'] = array(
+	$form['broscience_style_contents']['broscience_style_contents_title_color'] = array(
 			'#type' => 'textfield',
-			'#title' => t('Assign a color value for the title of the page.'),
+			'#title' => t('Assign a color value for a title.'),
 			'#description' => t('Format eg. #F06322'),
 			'#required' => FALSE,
-			'#default_value' => $titleColor,
+			'#default_value' => $contentsTitleColor,
 	);
 	
-	/**
-	 * newsColor
-	 **/
-	$newsColor = '';
-	if (variable_get('broscience_style_news_color')) {
-		$newsColor = variable_get('broscience_style_news_color');
+	$contentsElementColor = '';
+	if (variable_get('broscience_style_contents_element_color')) {
+		$contentsElementColor = variable_get('broscience_style_contents_element_color');
 	}
 	
-	$form['broscience_style_news_color'] = array(
+	$form['broscience_style_contents']['broscience_style_contents_element_color'] = array(
 			'#type' => 'textfield',
-			'#title' => t('Assign a color value for the news parts.'),
-			'#description' => t('If the site is using the news parts it\'s possible to change the color of the components.<br/>Format eg. #F06322'),
+			'#title' => t('Assign a color value for the contents of a page.'),
+			'#description' => t('Format eg. #F06322'),
 			'#required' => FALSE,
-			'#default_value' => $newsColor,
+			'#default_value' => $contentsElementColor,
 	);	
 	
 	
