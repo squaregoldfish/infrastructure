@@ -1,0 +1,173 @@
+<?php
+
+function picture_slider_block_info() {
+	$blocks = array();
+	
+	$blocks['picture_slider'] = array(
+			'info' => t('Picture Slider'),
+	);
+	
+	return $blocks;	
+}
+
+
+function picture_slider_block_view($delta = '') {
+
+	if ($delta == 'picture_slider') {
+	
+		$block = array(
+			'subject' => t(''),
+			'content' => array(
+				'#markup' => t(_picture_slider_output()),
+				'#attached' => array(
+					'css' => array(drupal_get_path('module', 'picture_slider') . '/picture_slider.css'),
+					'js' => array(drupal_get_path('module', 'picture_slider') . '/picture_slider.js'),
+				),
+			),
+		);
+		
+		return $block;	
+	}
+}
+
+
+function picture_slider_menu() {
+	$items = array();
+
+	$items['admin/config/content/picture_slider'] = array(
+			'title' => 'Picture Slider configuration',
+			'description' => 'Configuration for Picture Slider',
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array('_picture_slider_form'),
+			'access arguments' => array('access administration pages'),
+			'type' => MENU_NORMAL_ITEM,
+	);
+  
+	return $items;
+}
+
+
+function _picture_slider_form($form, &$form_state) {
+	$options = array();
+	
+	$list = _picture_slider_options();
+	foreach ($list as $key => $value) {
+		$options[$value['path']] = t($value['name']);
+	}
+	
+	$checked = array();
+	foreach (variable_get('picture_slider_object_list') as $key => $value) {
+		if ($value) {
+			$checked[] = $value;
+		}
+	}
+
+	$form['description'] = array(
+        '#markup' => t('<p>Check or uncheck the name of the pictures you want to add/remove for the Picture Slider and then click on the button.</p>'),    
+    );
+    
+	$form['picture_slider_object_list'] = array(
+			'#type' => 'checkboxes',
+			'#description' => t(''),
+			'#options' => $options,
+			'#default_value' => $checked,
+			'#prefix' => '<div id="picture_slider_options">',
+			'#suffix' => '</div>',
+			'#after_build' => array('_picture_slider_js')
+	);
+
+	return system_settings_form($form);	
+}
+
+
+function _picture_slider_options() {
+	$content = array();
+	
+	$folder = variable_get('file_public_path', conf_path() . '/files');
+	
+	foreach (scandir($folder) as $file) {
+		
+		if (is_file($folder . '/' . $file)
+			&& (
+				(substr_compare($file, 'jpg', -3, 3, true) == 0)
+				||
+				(substr_compare($file, 'jpeg', -4, 4, true) == 0)
+				||
+				(substr_compare($file, 'png', -3, 3, true) == 0)
+				||
+				(substr_compare($file, 'gif', -3, 3, true) == 0)
+			)) {
+			
+			$content[] = array('name' => $file, 'path' => $folder . '/' . $file);
+		}
+	}	
+
+	return $content;
+}
+
+
+function _picture_slider_js($form, &$form_state) {
+	$path = drupal_get_path('module', 'picture_slider');
+	drupal_add_js("$path/picture_slider_form.js");
+  
+	return $form; 
+}
+
+
+function _picture_slider_output() {
+
+	$list = array();
+	foreach (variable_get('picture_slider_object_list') as $key => $value) {
+		if ($value && file_exists($value) && is_file($value)) {
+			$list[] = $value;
+		}
+	}
+	
+	$output = '<div class="block_titel"><h2></h2></div>';
+
+	if (! empty($list)) {
+		
+		$output .= '<div id="picture_slider_carousel" class="carousel slide" data-ride="carousel" data-interval="5000">';
+		
+		$output .= '<div>';
+		$output .= '<a class="left carousel-control" href="#picture_slider_carousel" role="button" data-slide="prev" title="Previous">';
+		$output .= '<span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>';
+		$output .= '<span class="sr-only">Previous</span>';	
+		$output .= '</a>';
+	
+		$output .= '<a class="right carousel-control" href="#picture_slider_carousel" role="button" data-slide="next" title="Next">';
+		$output .= '<span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>';
+		$output .= '<span class="sr-only">Next</span>';
+		$output .= '</a>';			
+		$output .= '</div>';		
+			
+		$output .= '<div class="carousel-inner vertical" role="listbox">';
+	
+		$co = 0;
+		foreach ($list as $picture) {
+			
+			if ($co === 0) {
+				$output .= '<div class="item active">';
+				$co ++;
+		
+			} else {
+				$output .= '<div class="item">';		
+			}
+	
+			$title = substr($picture, 0, strrpos($picture, '.'));
+			$output .= '<img src="' . $picture . '" title="' . $title . '" />';
+			$output .= '</div>';	
+				
+		}
+
+		$output .= '</div>';
+		$output .= '</div>';				
+	}
+	
+	
+	if (variable_get('broscience_style_contents_element_color')) {
+		drupal_add_js(array('picture_slider' => array('color' => variable_get('broscience_style_contents_element_color'))), 'setting');
+	}
+		
+	return $output;
+}
