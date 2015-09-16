@@ -63,7 +63,7 @@ function _picture_slider_form($form, &$form_state) {
 	}
 
 	$form['description'] = array(
-        '#markup' => t('<h4>Mark or unmark the pictures you want to add/remove for the Picture Slider and then click on the button to save.</h4>'),    
+        '#markup' => t('<span style="font-weight: 700">Mark or unmark the pictures you want to add/remove for the Picture Slider and then click on the button to save.</span>'),    
     );
     
 	$form['picture_slider_object_list'] = array(
@@ -131,12 +131,12 @@ function _picture_slider_output() {
 		
 		$output .= '<div>';
 		$output .= '<a class="left carousel-control" href="#picture_slider_carousel" role="button" data-slide="prev" title="Previous">';
-		$output .= '<span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>';
+		$output .= '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>';
 		$output .= '<span class="sr-only">Previous</span>';	
 		$output .= '</a>';
 	
 		$output .= '<a class="right carousel-control" href="#picture_slider_carousel" role="button" data-slide="next" title="Next">';
-		$output .= '<span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>';
+		$output .= '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>';
 		$output .= '<span class="sr-only">Next</span>';
 		$output .= '</a>';			
 		$output .= '</div>';		
@@ -154,7 +154,9 @@ function _picture_slider_output() {
 				$output .= '<div class="item">';		
 			}
 	
-			$title = substr($picture, 0, strrpos($picture, '.'));
+			$title = substr($picture, strripos($picture, '/') + 1);
+			$title = substr($title, 0, strripos($title, '.'));
+			
 			$output .= '<img src="' . $picture . '" title="' . $title . '" />';
 			$output .= '</div>';	
 				
