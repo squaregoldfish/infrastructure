@@ -63,7 +63,7 @@ function _picture_slider_form($form, &$form_state) {
 	}
 
 	$form['description'] = array(
-        '#markup' => t('<p>Check or uncheck the name of the pictures you want to add/remove for the Picture Slider and then click on the button.</p>'),    
+        '#markup' => t('<h4>Mark or unmark the pictures you want to add/remove for the Picture Slider and then click on the button to save.</h4>'),    
     );
     
 	$form['picture_slider_object_list'] = array(
