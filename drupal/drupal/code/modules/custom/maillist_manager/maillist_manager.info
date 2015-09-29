@@ -1,3 +1,4 @@
 name = Maillist manager
 description = Maillist manager for Drupal 7.
+package = CP
 core = 7.x

@@ -23,11 +23,12 @@ function alfresco_reader_block_view($delta = '') {
 		}
 		
 		
-		$color = '';
+		$title_color = '';
 		if (variable_get('broscience_style_contents_title_color')) {
-			$color = 'style="color: ' . variable_get('broscience_style_contents_title_color') . '"';
+			$title_color = 'style="color: ' . variable_get('broscience_style_contents_title_color') . '"';
 		}
-		$output = '<div class="block_title" ' . $color . '><h2>DOCUMENTS</h2></div>';
+		
+		$output = '<div class="block_title" ' . $title_color . '><h2>DOCUMENTS</h2></div>';
 		
 		foreach ($folderIdList as $folderId) {
 			$id = trim($folderId);
@@ -57,11 +58,17 @@ function alfresco_reader_block_view($delta = '') {
 
 function _alfresco_reader_output($properties, $contents) {
 
+	$element_color = '';
+	if (variable_get('broscience_style_contents_element_color')) {
+		$element_color = 'background-color: ' . variable_get('broscience_style_contents_element_color') . '; color: #ffffff;';
+	}
+	
+	
 	$output = '<div id="accordion_' . $properties->properties['cmis:objectId'] . '" class="alfresco_reader panel-group" role="tablist" aria-multiselectable="true">';
+
+	$output .= '<div class="panel panel-default">';
 	
-	$output .= '<div class="panel panel-primary">';
-	
-	$output .= '<div id="heading_' . $properties->properties['cmis:objectId'] .'" class="panel-heading" role="tab">';	
+	$output .= '<div id="heading_' . $properties->properties['cmis:objectId'] .'" class="panel-heading" role="tab" style="' . $element_color . '">';	
 	$output .= '<h3 class="panel-title">';
 	$output .= '<a role="button" data-toggle="collapse" data-parent="#accordion_' . $properties->properties['cmis:objectId'] . '" href="#collapse_'. $properties->properties['cmis:objectId'] . '" aria-expanded="true" aria-controls="collapse_' . $properties->properties['cmis:objectId'] . '">';
 	$output .= $properties->properties['cmis:name'];

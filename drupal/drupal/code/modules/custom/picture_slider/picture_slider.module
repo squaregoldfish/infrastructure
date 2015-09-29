@@ -20,7 +20,7 @@ function picture_slider_block_view($delta = '') {
 			'content' => array(
 				'#markup' => t(_picture_slider_output()),
 				'#attached' => array(
-					'css' => array(drupal_get_path('module', 'picture_slider') . '/picture_slider.css'),
+					'css' => array(drupal_get_path('module', 'picture_slider') . '/picture_slider_vert.css'),
 					'js' => array(drupal_get_path('module', 'picture_slider') . '/picture_slider.js'),
 				),
 			),
@@ -123,7 +123,13 @@ function _picture_slider_output() {
 		}
 	}
 	
-	$output = '<div class="block_titel"><h2></h2></div>';
+	
+	$title_color = '';
+	if (variable_get('broscience_style_contents_title_color')) {
+		$title_color = 'style="color: ' . variable_get('broscience_style_contents_title_color') . '"';
+	}
+	
+	$output = '<div class="block_title" ' . $title_color . '><h2>PICTURE GALLERY</h2></div>';
 
 	if (! empty($list)) {
 		
@@ -131,12 +137,12 @@ function _picture_slider_output() {
 		
 		$output .= '<div>';
 		$output .= '<a class="left carousel-control" href="#picture_slider_carousel" role="button" data-slide="prev" title="Previous">';
-		$output .= '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>';
+		$output .= '<span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>';
 		$output .= '<span class="sr-only">Previous</span>';	
 		$output .= '</a>';
 	
 		$output .= '<a class="right carousel-control" href="#picture_slider_carousel" role="button" data-slide="next" title="Next">';
-		$output .= '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>';
+		$output .= '<span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>';
 		$output .= '<span class="sr-only">Next</span>';
 		$output .= '</a>';			
 		$output .= '</div>';		

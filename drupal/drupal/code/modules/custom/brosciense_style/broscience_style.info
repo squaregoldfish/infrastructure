@@ -1,4 +1,5 @@
 name = Broscience style
 description = Broscience style for Drupal 7.
+package = CP
 core = 7.x
 configure = admin/config/content/broscience_style
