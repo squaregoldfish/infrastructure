@@ -1,0 +1,136 @@
+<?php
+
+
+function document_presenter_block_info() {
+	$blocks = array();
+	
+	$blocks['document_presenter'] = array(
+			'info' => t('Document presenter'),
+	);
+
+	return $blocks;
+}
+
+
+function document_presenter_block_view($delta = '') {
+
+	if ($delta == 'document_presenter') {
+	
+		$block = array(
+			'subject' => t(''),
+			'content' => array(
+				'#markup' => t(_document_presenter_output()),
+				'#attached' => array(
+					'css' => array(drupal_get_path('module', 'document_presenter') . '/document_presenter.css'),
+					'js' => array(drupal_get_path('module', 'document_presenter') . '/document_presenter.js'),
+				),
+			),
+		);
+		
+		return $block;	
+	}
+}
+
+
+function _document_presenter_output() {
+	$output = '';
+
+	$title_color = '';
+	if (variable_get('broscience_style_contents_title_color')) {
+		$title_color = 'style="color: ' . variable_get('broscience_style_contents_title_color') . '"';
+	}
+
+	$output = '<div class="block_title" ' . $title_color . '><h2>PRESS AND MEDIA</h2></div>';
+
+	$output .= '<div id="document_presenter">';
+
+	$folder = variable_get('file_public_path', conf_path() . '/files');
+
+	foreach (scandir($folder) as $file) {
+
+		if ((is_file($folder . '/' . $file) && (substr_compare($file, 'pdf', -3, 3, true) == 0))) {
+
+			$props = _collect($file);
+			if (props) {
+				$pic_uri = $props['file_pic_uri'];
+				$pic_uri = str_replace('public://', '', $pic_uri);
+
+				$size = '';
+				if ($props['file_size']) {
+					$size = '(' . $props['file_size'] . ')'; }
+
+				$desc = '';
+				if ($props['file_desc']) {
+					$desc = $props['file_desc'];
+
+				} else {
+					$desc = $file;
+				}
+			}
+
+			$output .= '<div class="post">';
+
+			$output .= '<div class="pic">';
+			$output .= '<a href="' . $folder . '/' . $file . '" target="_blank"><img src="/' . $folder . '/' . $pic_uri . '" style="width: 200px" /></a>';
+			$output .= '</div>';
+
+			$output .= '<div class="desc">' . $desc . '</div>';
+
+			$output .= '<div class="file">';
+			$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
+			$output .= '<a href="' . $folder . '/' . $file . '" target="_blank">Download</a>';
+			//$output .=  $size;
+			$output .= '</div>';
+
+			$output .= '</div>';
+		}
+
+	}
+
+	$output .= '</div>';
+
+
+	return $output;
+}
+
+
+function _collect($filename) {
+	$list = [];
+
+	$result_1 = db_query('
+		select fm.filesize, fi.field_ingress_value
+		from {file_managed} fm join {field_data_field_ingress} fi on fm.fid = fi.entity_id
+		where fm.filename = :filename
+		',
+
+		array(':filename' => $filename)
+	)->fetchAll();
+
+	foreach ($result_1 as $record) {
+		if ($record) {
+			$list['file_size'] =  $record->filesize;
+			$list['file_desc'] =  $record->field_ingress_value;
+		}
+	}
+
+
+	$result_2 = db_query('
+		select o.uri
+		from {file_managed} o
+		where o.fid in (
+			select fu.fid
+			from {file_managed} fm join {file_usage} fu on fm.fid = fu.id
+			where fm.filename = :filename)
+		',
+
+		array(':filename' => $filename)
+	)->fetchAll();
+
+	foreach ($result_2 as $record) {
+		if ($record) { $list['file_pic_uri'] =  $record->uri; }
+	}
+
+	return $list;
+}
+
+

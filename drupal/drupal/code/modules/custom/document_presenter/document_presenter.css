@@ -1,0 +1,13 @@
+#document_presenter { }
+
+.block_title { font-size: 2.7rem; line-height: 2.7rem; font-weight: lighter; }
+
+#document_presenter .post { border-bottom: 1px solid #0A96F0; margin-bottom: 20px; }
+
+#document_presenter div .pic { margin-left: 20px; }
+
+#document_presenter div .desc { font-size: 1.2rem; line-height: 1.35rem; color: #0A96F0; padding: 0.5rem 0px; }
+
+#document_presenter div .file { }
+
+#document_presenter div .file img { padding-right: 6px; }
