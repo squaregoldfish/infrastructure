@@ -4,7 +4,7 @@ function picture_slider_block_info() {
 	$blocks = array();
 	
 	$blocks['picture_slider'] = array(
-			'info' => t('Picture Slider'),
+			'info' => t('Picture slider'),
 	);
 	
 	return $blocks;	
@@ -35,8 +35,8 @@ function picture_slider_menu() {
 	$items = array();
 
 	$items['admin/config/content/picture_slider'] = array(
-			'title' => 'Picture Slider configuration',
-			'description' => 'Configuration for Picture Slider',
+			'title' => 'Picture slider configuration',
+			'description' => 'Configuration for Picture slider',
 			'page callback' => 'drupal_get_form',
 			'page arguments' => array('_picture_slider_form'),
 			'access arguments' => array('access administration pages'),

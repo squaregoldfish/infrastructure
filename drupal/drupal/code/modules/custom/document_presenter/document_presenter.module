@@ -32,8 +32,78 @@ function document_presenter_block_view($delta = '') {
 }
 
 
+function document_presenter_menu() {
+	$items = array();
+
+	$items['admin/config/content/document_presenter'] = array(
+		'title' => 'Document presenter configuration',
+		'description' => 'Configuration for Document presenter',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('_document_presenter_form'),
+		'access arguments' => array('access administration pages'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+
+	return $items;
+}
+
+
+function _document_presenter_form($form, &$form_state) {
+	$options = array();
+
+	$list = _document_presenter_options();
+	foreach ($list as $key => $value) {
+		$options[$value['path']] = t($value['name']);
+	}
+
+	$checked = array();
+	foreach (variable_get('document_presenter_object_list') as $key => $value) {
+		if ($value) {
+			$checked[] = $value;
+		}
+	}
+
+	$form['description'] = array(
+		'#markup' => t('<span style="font-weight: 700">Mark or unmark the documents you want to add/remove for the Press and Media and then click on the button to save.</span>'),
+	);
+
+	$form['document_presenter_object_list'] = array(
+		'#type' => 'checkboxes',
+		'#description' => t(''),
+		'#options' => $options,
+		'#default_value' => $checked,
+	);
+
+	return system_settings_form($form);
+}
+
+
+function _document_presenter_options() {
+	$content = array();
+
+	$folder = variable_get('file_public_path', conf_path() . '/files');
+
+	foreach (scandir($folder) as $file) {
+
+		if ((is_file($folder . '/' . $file) && (substr_compare($file, 'pdf', -3, 3, true) == 0))) {
+			$content[] = array('name' => $file, 'path' => $file);
+		}
+	}
+
+	return $content;
+}
+
+
 function _document_presenter_output() {
-	$output = '';
+
+	$folder = variable_get('file_public_path', conf_path() . '/files');
+
+	$list = array();
+	foreach (variable_get('document_presenter_object_list') as $key => $value) {
+		if ($value && file_exists($folder . '/' .$value) && is_file($folder . '/' . $value)) {
+			$list[] = $value;
+		}
+	}
 
 	$title_color = '';
 	if (variable_get('broscience_style_contents_title_color')) {
@@ -44,20 +114,21 @@ function _document_presenter_output() {
 
 	$output .= '<div id="document_presenter">';
 
-	$folder = variable_get('file_public_path', conf_path() . '/files');
 
-	foreach (scandir($folder) as $file) {
 
-		if ((is_file($folder . '/' . $file) && (substr_compare($file, 'pdf', -3, 3, true) == 0))) {
+	if (! empty($list)) {
+		foreach ($list as $file) {
 
 			$props = _collect($file);
 			if (props) {
-				$pic_uri = $props['file_pic_uri'];
-				$pic_uri = str_replace('public://', '', $pic_uri);
 
-				$size = '';
-				if ($props['file_size']) {
-					$size = '(' . $props['file_size'] . ')'; }
+				$pic_uri = '';
+				if ($props['file_pic_uri']) {
+					$pic_uri = '/' . $folder . '/' . str_replace('public://', '', $props['file_pic_uri']);
+
+				} else {
+					$pic_uri = drupal_get_path('module', 'document_presenter') . '/icons/Icos_Wall.png';
+				}
 
 				$desc = '';
 				if ($props['file_desc']) {
@@ -66,12 +137,17 @@ function _document_presenter_output() {
 				} else {
 					$desc = $file;
 				}
+
+				$size = '';
+				if ($props['file_size']) {
+					$size = '(' . $props['file_size'] . ')';
+				}
 			}
 
 			$output .= '<div class="post">';
 
 			$output .= '<div class="pic">';
-			$output .= '<a href="' . $folder . '/' . $file . '" target="_blank"><img src="/' . $folder . '/' . $pic_uri . '" style="width: 200px" /></a>';
+			$output .= '<a href="' . $folder . '/' . $file . '" target="_blank"><img src="' . $pic_uri . '" style="width: 200px" /></a>';
 			$output .= '</div>';
 
 			$output .= '<div class="desc">' . $desc . '</div>';
@@ -84,7 +160,6 @@ function _document_presenter_output() {
 
 			$output .= '</div>';
 		}
-
 	}
 
 	$output .= '</div>';

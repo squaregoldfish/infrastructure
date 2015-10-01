@@ -1,4 +1,4 @@
-name = Picture Slider
-description = Picture Slider for Drupal 7.
+name = Picture slider
+description = Picture slider for Drupal 7.
 package = CP
 core = 7.x
