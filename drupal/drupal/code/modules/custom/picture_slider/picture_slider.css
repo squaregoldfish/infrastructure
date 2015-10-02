@@ -1,7 +1,7 @@
 .carousel-control {
   position: relative !important; 
   background-image: none !important; 
-  font-size: xx-large !important; 
+  font-size: xx-large !important;
 }
 
 .glyphicon-chevron-left { 
@@ -16,8 +16,36 @@
   display: none !important; 
 }
 
-a.left {
-	padding-right: 80px;
+.carousel-control {
+  position: relative !important;
+  z-index: 100;
+}
+
+.control_1_left {
+  position: relative !important;
+  z-index: 100;
+  left: 20px !important;
+  top: 50px;
+}
+.control_1_right {
+  position: relative !important;
+  z-index: 100;
+  left: 96% !important;
+  top: 50px;
+}
+
+.control_2_left {
+  position: relative !important;
+  z-index: 100;
+  left: 20px !important;
+  bottom: 0px;
+}
+
+.control_2_right {
+  position: relative !important;
+  z-index: 100;
+  left: 96% !important;
+  bottom: 0px;
 }
 
 .block_title { font-size: 2.7rem; line-height: 2.7rem; font-weight: lighter; }
