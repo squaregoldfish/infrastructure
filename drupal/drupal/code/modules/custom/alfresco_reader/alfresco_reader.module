@@ -64,19 +64,19 @@ function _alfresco_reader_output($properties, $contents) {
 	}
 	
 	
-	$output = '<div id="accordion_' . $properties->properties['cmis:objectId'] . '" class="alfresco_reader panel-group" role="tablist" aria-multiselectable="true">';
+	$output = '<div id="alfresco_reader_accordion_' . $properties->properties['cmis:objectId'] . '" class="alfresco_reader panel-group" role="tablist" aria-multiselectable="true">';
 
 	$output .= '<div class="panel panel-default">';
 	
-	$output .= '<div id="heading_' . $properties->properties['cmis:objectId'] .'" class="panel-heading" role="tab" style="' . $element_color . '">';	
+	$output .= '<div id="alfresco_reader_accordion_heading_' . $properties->properties['cmis:objectId'] .'" class="panel-heading" role="tab" style="' . $element_color . '">';
 	$output .= '<h3 class="panel-title">';
-	$output .= '<a role="button" data-toggle="collapse" data-parent="#accordion_' . $properties->properties['cmis:objectId'] . '" href="#collapse_'. $properties->properties['cmis:objectId'] . '" aria-expanded="true" aria-controls="collapse_' . $properties->properties['cmis:objectId'] . '">';
+	$output .= '<a role="button" data-toggle="collapse" data-parent="#alfresco_reader_accordion_' . $properties->properties['cmis:objectId'] . '" href="#alfresco_reader_accordion_collapse_'. $properties->properties['cmis:objectId'] . '" aria-expanded="true" aria-controls="alfresco_reader_accordion_collapse_' . $properties->properties['cmis:objectId'] . '">';
 	$output .= $properties->properties['cmis:name'];
 	$output .= '</a>';
 	$output .= '</h3>';
 	$output .= '</div>';
 	
-	$output .= '<div id="collapse_' . $properties->properties['cmis:objectId'] . '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_' . $properties->properties['cmis:objectId'] . '">';
+	$output .= '<div id="alfresco_reader_accordion_collapse_' . $properties->properties['cmis:objectId'] . '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="alfresco_reader_accordion_heading_' . $properties->properties['cmis:objectId'] . '">';
 
 	$output .= '<div class="panel-body">';
 

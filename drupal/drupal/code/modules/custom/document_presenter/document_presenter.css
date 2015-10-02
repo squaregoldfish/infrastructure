@@ -4,10 +4,14 @@
 
 #document_presenter .post { border-bottom: 1px solid #0A96F0; margin-bottom: 20px; }
 
-#document_presenter div .pic { margin-left: 20px; }
+#document_presenter .post .pic { margin-left: 20px; }
 
-#document_presenter div .desc { font-size: 1.2rem; line-height: 1.35rem; color: #0A96F0; padding: 0.5rem 0px; }
+#document_presenter .post .desc { font-size: 1.2rem; line-height: 1.35rem; color: #0A96F0; padding: 0.5rem 0px; }
 
-#document_presenter div .file { }
+#document_presenter .post .file { }
 
-#document_presenter div .file img { padding-right: 6px; }
+#document_presenter .post .file img { padding-right: 6px; }
+
+#document_presenter div .archive .file { }
+
+#document_presenter div .archive .file img { padding-right: 6px; }

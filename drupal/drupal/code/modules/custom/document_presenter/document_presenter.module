@@ -101,7 +101,7 @@ function _document_presenter_output() {
 	$list = array();
 	foreach (variable_get('document_presenter_object_list') as $key => $value) {
 		if ($value && file_exists($folder . '/' .$value) && is_file($folder . '/' . $value)) {
-			$list[] = $value;
+			$list[] = _collect($value);
 		}
 	}
 
@@ -110,55 +110,102 @@ function _document_presenter_output() {
 		$title_color = 'style="color: ' . variable_get('broscience_style_contents_title_color') . '"';
 	}
 
+	$element_color = '';
+	if (variable_get('broscience_style_contents_element_color')) {
+		$element_color = 'background-color: ' . variable_get('broscience_style_contents_element_color') . '; color: #ffffff;';
+	}
+
 	$output = '<div class="block_title" ' . $title_color . '><h2>PRESS AND MEDIA</h2></div>';
 
 	$output .= '<div id="document_presenter">';
 
-
-
 	if (! empty($list)) {
+
+		usort($list, _compare);
+
+		$count = 1;
+		$has_archive = false;
+
 		foreach ($list as $file) {
 
-			$props = _collect($file);
-			if (props) {
+			$pic_uri = '';
+			if ($file['file_pic_uri']) {
+				$pic_uri = '/' . $folder . '/' . str_replace('public://', '', $file['file_pic_uri']);
 
-				$pic_uri = '';
-				if ($props['file_pic_uri']) {
-					$pic_uri = '/' . $folder . '/' . str_replace('public://', '', $props['file_pic_uri']);
-
-				} else {
-					$pic_uri = drupal_get_path('module', 'document_presenter') . '/icons/Icos_Wall.png';
-				}
-
-				$desc = '';
-				if ($props['file_desc']) {
-					$desc = $props['file_desc'];
-
-				} else {
-					$desc = $file;
-				}
-
-				$size = '';
-				if ($props['file_size']) {
-					$size = '(' . $props['file_size'] . ')';
-				}
+			} else {
+				$pic_uri = drupal_get_path('module', 'document_presenter') . '/icons/Icos_Wall.png';
 			}
 
-			$output .= '<div class="post">';
+			$desc = '';
+			if ($file['file_desc']) {
+				$desc = $file['file_desc'];
 
-			$output .= '<div class="pic">';
-			$output .= '<a href="' . $folder . '/' . $file . '" target="_blank"><img src="' . $pic_uri . '" style="width: 200px" /></a>';
+			} else {
+				$desc = $file['file_name'];
+			}
+
+			$size = '';
+			if ($file['file_size']) {
+				$size = '(' . $file['file_size'] . ')';
+			}
+
+
+			if ($count < 4) {
+				$output .= '<div class="post">';
+
+				$output .= '<div class="pic">';
+				$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank"><img src="' . $pic_uri . '" style="width: 200px" /></a>';
+				$output .= '</div>';
+
+				$output .= '<div class="desc">' . $desc . '</div>';
+
+				$output .= '<div class="file">';
+				$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
+				$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank">Download</a>';
+				$output .= '</div>';
+
+				$output .= '</div>';
+
+			} else {
+
+				if ($count == 4) {
+					$output .= '<br /><br />';
+
+					$output .= '<div class="panel-group" id="document_presenter_accordion" role="tablist" aria-multiselectable="true">';
+					$output .= '<div class="panel panel-default">';
+					$output .= '<div class="panel-heading" role="tab" id="document_presenter_accordion_heading" style="' . $element_color . '">';
+					$output .= '<h3 class="panel-title">';
+					$output .= '<a role="button" data-toggle="collapse" data-parent="#document_presenter_accordion" href="#document_presenter_accordion_collapse" aria-expanded="true" aria-controls="document_presenter_accordion_collapse">';
+					$output .= 'Earlier press and media';
+					$output .= '</a>';
+					$output .= '</h3>';
+					$output .= '</div>';
+					$output .= '<div id="document_presenter_accordion_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="document_presenter_accordion_heading">';
+					$output .= '<div class="panel-body">';
+
+					$has_archive = true;
+				}
+
+				$output .= '<div class="archive">';
+
+				$output .= '<div class="file">';
+				$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
+				$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank">' . $desc . '</a>';
+				$output .= '</div>';
+
+				$output .= '</div>';
+			}
+
+			$count++;
+		}
+
+
+		if ($has_archive) {
+			$output .= '</div>';
+			$output .= '</div>';
+			$output .= '</div>';
 			$output .= '</div>';
 
-			$output .= '<div class="desc">' . $desc . '</div>';
-
-			$output .= '<div class="file">';
-			$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
-			$output .= '<a href="' . $folder . '/' . $file . '" target="_blank">Download</a>';
-			//$output .=  $size;
-			$output .= '</div>';
-
-			$output .= '</div>';
 		}
 	}
 
@@ -169,11 +216,18 @@ function _document_presenter_output() {
 }
 
 
+function _compare($a, $b) {
+	if ($a['file_timestamp'] == $b['file_timestamp']) { return 0; }
+	return ($a['file_timestamp'] > $b['file_timestamp']) ? -1 : 1;
+}
+
+
 function _collect($filename) {
 	$list = [];
+	$list['file_name'] =  $filename;
 
 	$result_1 = db_query('
-		select fm.filesize, fi.field_ingress_value
+		select fm.timestamp, fm.filesize, fi.field_ingress_value
 		from {file_managed} fm join {field_data_field_ingress} fi on fm.fid = fi.entity_id
 		where fm.filename = :filename
 		',
@@ -183,6 +237,7 @@ function _collect($filename) {
 
 	foreach ($result_1 as $record) {
 		if ($record) {
+			$list['file_timestamp'] =  $record->timestamp;
 			$list['file_size'] =  $record->filesize;
 			$list['file_desc'] =  $record->field_ingress_value;
 		}
