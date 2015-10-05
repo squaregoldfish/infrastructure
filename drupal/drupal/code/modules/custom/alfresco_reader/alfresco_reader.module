@@ -62,8 +62,31 @@ function _alfresco_reader_output($properties, $contents) {
 	if (variable_get('broscience_style_contents_element_color')) {
 		$element_color = 'background-color: ' . variable_get('broscience_style_contents_element_color') . '; color: #ffffff;';
 	}
-	
-	
+
+	$icon = '';
+	// ATC
+	if ($properties->properties['cmis:objectId'] == '0ecc91a5-7479-4df2-97a5-d2d99b6a6737') {
+		$icon = '<img src="/' . drupal_get_path('module', 'alfresco_reader') . '/icons/icon_cloud_atc.svg" />';
+
+	// ETC
+	} else if ($properties->properties['cmis:objectId'] == '608af1f2-28f2-4ee7-b220-42784d53938e') {
+		$icon = '<img src="/' . drupal_get_path('module', 'alfresco_reader') . '/icons/icon_leaf_etc.svg" />';
+
+	// OTC
+	} else if ($properties->properties['cmis:objectId'] == 'f078f032-e65c-4b5e-92ca-9207f9acee08') {
+		$icon = '<img src="/' . drupal_get_path('module', 'alfresco_reader') . '/icons/icon_wave_otc.svg" />';
+
+	// CP
+	} else if ($properties->properties['cmis:objectId'] == 'fad26865-2095-46d0-b0b4-a0d3feaddc23') {
+		$icon = '<img src="/' . drupal_get_path('module', 'alfresco_reader') . '/icons/icon_database_cp.svg" />';
+
+	// CAL
+	} else if ($properties->properties['cmis:objectId'] == '13094ca8-a799-479d-8123-a53bc8679b2b') {
+		$icon = '<img src="/' . drupal_get_path('module', 'alfresco_reader') . '/icons/icon_graph_cal.svg" />';
+
+	}
+
+
 	$output = '<div id="alfresco_reader_accordion_' . $properties->properties['cmis:objectId'] . '" class="alfresco_reader panel-group" role="tablist" aria-multiselectable="true">';
 
 	$output .= '<div class="panel panel-default">';
@@ -73,6 +96,9 @@ function _alfresco_reader_output($properties, $contents) {
 	$output .= '<a role="button" data-toggle="collapse" data-parent="#alfresco_reader_accordion_' . $properties->properties['cmis:objectId'] . '" href="#alfresco_reader_accordion_collapse_'. $properties->properties['cmis:objectId'] . '" aria-expanded="true" aria-controls="alfresco_reader_accordion_collapse_' . $properties->properties['cmis:objectId'] . '">';
 	$output .= $properties->properties['cmis:name'];
 	$output .= '</a>';
+
+	$output .= $icon;
+
 	$output .= '</h3>';
 	$output .= '</div>';
 	
