@@ -1,6 +1,6 @@
-.alfresco_reader {  }
+#alfresco_reader { padding-top:20px; padding-right: 20px; }
 
-.block_title { font-size: 2.7rem; line-height: 2.7rem; font-weight: lighter; }
+.block_title { font-size: 2.7rem; line-height: 2.7rem; font-weight: lighter; height: 120px; text-align: center; background-color: #ffffff; }
 
 .alfresco_reader .small_text { font-size: 80%; }
 

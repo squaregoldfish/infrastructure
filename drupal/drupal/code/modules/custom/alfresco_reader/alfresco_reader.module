@@ -28,7 +28,8 @@ function alfresco_reader_block_view($delta = '') {
 			$title_color = 'style="color: ' . variable_get('broscience_style_contents_title_color') . '"';
 		}
 		
-		$output = '<div class="block_title" ' . $title_color . '><h2>DOCUMENTS</h2></div>';
+		$output = '<h1 class="block_title" ' . $title_color . '>DOCUMENTS</h1>';
+		$output .= '<div id="alfresco_reader">';
 		
 		foreach ($folderIdList as $folderId) {
 			$id = trim($folderId);
@@ -38,6 +39,8 @@ function alfresco_reader_block_view($delta = '') {
 				$output .= _alfresco_reader_output($properties, $contents);
 			}
 		}
+
+		$output .= '</div>';
  
 		$block = array(
 			'subject' => t(''),
@@ -85,7 +88,6 @@ function _alfresco_reader_output($properties, $contents) {
 		$icon = '<img src="/' . drupal_get_path('module', 'alfresco_reader') . '/icons/icon_graph_cal.svg" />';
 
 	}
-
 
 	$output = '<div id="alfresco_reader_accordion_' . $properties->properties['cmis:objectId'] . '" class="alfresco_reader panel-group" role="tablist" aria-multiselectable="true">';
 
@@ -136,7 +138,7 @@ function _alfresco_reader_output($properties, $contents) {
 	$output .= '</div>';
 	$output .= '</div>';
 	$output .= '</div>';
-	
+
 	return $output;
 }
 

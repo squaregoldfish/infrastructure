@@ -129,13 +129,16 @@ function _picture_slider_output() {
 		$title_color = 'style="color: ' . variable_get('broscience_style_contents_title_color') . '"';
 	}
 	
-	$output = '<div class="block_title" ' . $title_color . '><h2>PICTURE GALLERY</h2></div>';
+	$output = '<h1 class="block_title" ' . $title_color . '>PICTURE GALLERY</h1>';
+
+	$output .= '<div id="picture_slider">';
 
 	if (! empty($list)) {
 
 		// First slider
 		$output .= '<div id="picture_slider_carousel_1" class="carousel slide" data-ride="carousel" data-interval="5000">';
-		
+
+		/*
 		$output .= '<div class="control_1_left">';
 		$output .= '<a class="left carousel-control" href="#picture_slider_carousel_1" role="button" data-slide="prev" title="Previous">';
 		$output .= '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>';
@@ -148,7 +151,8 @@ function _picture_slider_output() {
 		$output .= '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>';
 		$output .= '<span class="sr-only">Next</span>';
 		$output .= '</a>';			
-		$output .= '</div>';		
+		$output .= '</div>';
+		*/
 			
 		$output .= '<div class="carousel-inner vertical" role="listbox">';
 	
@@ -166,13 +170,15 @@ function _picture_slider_output() {
 			$title = substr($picture, strripos($picture, '/') + 1);
 			$title = substr($title, 0, strripos($title, '.'));
 			
-			$output .= '<img src="' . $picture . '" title="' . $title . '" />';
+			$output .= '<img src="' . $picture . '" title="' . $title . '" width="100%" />';
 			$output .= '</div>';	
 				
 		}
 
 		$output .= '</div>';
 		$output .= '</div>';
+
+		$output .= '<br /><br /><br /><br />';
 
 
 		// Second slider
@@ -194,11 +200,12 @@ function _picture_slider_output() {
 			$title = substr($picture, strripos($picture, '/') + 1);
 			$title = substr($title, 0, strripos($title, '.'));
 
-			$output .= '<img src="' . $picture . '" title="' . $title . '" />';
+			$output .= '<img src="' . $picture . '" title="' . $title . '" width="100%" />';
 			$output .= '</div>';
 
 		}
 
+		/*
 		$output .= '<div class="control_2_left">';
 		$output .= '<a class="left carousel-control" href="#picture_slider_carousel_2" role="button" data-slide="prev" title="Previous">';
 		$output .= '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>';
@@ -212,13 +219,15 @@ function _picture_slider_output() {
 		$output .= '<span class="sr-only">Next</span>';
 		$output .= '</a>';
 		$output .= '</div>';
+		*/
 
 		$output .= '</div>';
 		$output .= '</div>';
 
 	}
-	
-	
+
+	$output .= '</div>';
+
 	if (variable_get('broscience_style_contents_element_color')) {
 		drupal_add_js(array('picture_slider' => array('color' => variable_get('broscience_style_contents_element_color'))), 'setting');
 	}

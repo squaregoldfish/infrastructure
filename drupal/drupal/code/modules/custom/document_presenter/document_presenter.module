@@ -21,7 +21,7 @@ function document_presenter_block_view($delta = '') {
 			'content' => array(
 				'#markup' => t(_document_presenter_output()),
 				'#attached' => array(
-					'css' => array(drupal_get_path('module', 'document_presenter') . '/document_presenter.css'),
+					'css' => array(drupal_get_path('module', 'document_presenter') . '/document_presenter.css', drupal_get_path('module', 'document_presenter') . '/three-columns.css'),
 					'js' => array(drupal_get_path('module', 'document_presenter') . '/document_presenter.js'),
 				),
 			),
@@ -115,7 +115,7 @@ function _document_presenter_output() {
 		$element_color = 'background-color: ' . variable_get('broscience_style_contents_element_color') . '; color: #ffffff;';
 	}
 
-	$output = '<div class="block_title" ' . $title_color . '><h2>PRESS AND MEDIA</h2></div>';
+	$output = '<h1 class="block_title" ' . $title_color . '>PRESS AND MEDIA</h1>';
 
 	$output .= '<div id="document_presenter">';
 
@@ -210,7 +210,6 @@ function _document_presenter_output() {
 	}
 
 	$output .= '</div>';
-
 
 	return $output;
 }
