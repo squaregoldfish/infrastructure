@@ -25,6 +25,50 @@ h1.block_title {
     background-color: #ffffff;
 }
 
+@media all and (max-width: 1600px) {
+    h1.block_title {
+        font-size: 2.4rem;
+        line-height: 2.4rem;
+        font-weight: lighter;
+        height: 120px;
+        text-align: center;
+        background-color: #ffffff;
+    }
+}
+
+@media all and (max-width: 1450px) {
+    h1.block_title {
+        font-size: 2.2rem;
+        line-height: 2.2rem;
+        font-weight: lighter;
+        height: 120px;
+        text-align: center;
+        background-color: #ffffff;
+    }
+}
+
+@media all and (max-width: 1300px) {
+    h1.block_title {
+        font-size: 1.9rem;
+        line-height: 1.9rem;
+        font-weight: lighter;
+        height: 120px;
+        text-align: center;
+        background-color: #ffffff;
+    }
+}
+
+@media all and (max-width: 1150px) {
+    h1.block_title {
+        font-size: 1.7rem;
+        line-height: 1.7rem;
+        font-weight: lighter;
+        height: 120px;
+        text-align: center;
+        background-color: #ffffff;
+    }
+}
+
 @media all and (max-width: 1000px) {
     h1.block_title {
         font-size: 1rem;

@@ -31,7 +31,6 @@ function document_presenter_block_view($delta = '') {
 	}
 }
 
-
 function document_presenter_menu() {
 	$items = array();
 
@@ -56,25 +55,144 @@ function _document_presenter_form($form, &$form_state) {
 		$options[$value['path']] = t($value['name']);
 	}
 
-	$checked = array();
-	foreach (variable_get('document_presenter_object_list') as $key => $value) {
+
+	/**
+	 * document category 1
+	 */
+	$checked_1 = array();
+	foreach (variable_get('document_presenter_object_list_1') as $key => $value) {
 		if ($value) {
-			$checked[] = $value;
+			$checked_1[] = $value;
 		}
 	}
 
-	$form['description'] = array(
-		'#markup' => t('<span style="font-weight: 700">Mark or unmark the documents you want to add/remove for the Press and Media and then click on the button to save.</span>'),
+	$form['document_presenter_1'] = array(
+		'#type' => 'fieldset',
+		'#title' => t(_document_categories(1)),
+		'#description' => t('Mark or unmark the documents you want to add/remove for the ' . _document_categories(1) . ' and then click on the button to save.<br/><br/>'),
+		'#collapsible' => true,
+		'#collapsed' => false,
 	);
 
-	$form['document_presenter_object_list'] = array(
+	$form['document_presenter_1']['document_presenter_object_list_1'] = array(
 		'#type' => 'checkboxes',
 		'#description' => t(''),
 		'#options' => $options,
-		'#default_value' => $checked,
+		'#default_value' => $checked_1,
 	);
 
+
+	/**
+	 * document category 2
+	 */
+	$checked_2 = array();
+	foreach (variable_get('document_presenter_object_list_2') as $key => $value) {
+		if ($value) {
+			$checked_2[] = $value;
+		}
+	}
+
+	$form['document_presenter_2'] = array(
+		'#type' => 'fieldset',
+		'#title' => t(_document_categories(2)),
+		'#description' => t('Mark or unmark the documents you want to add/remove for the ' . _document_categories(2) . ' and then click on the button to save.<br/><br/>'),
+		'#collapsible' => true,
+		'#collapsed' => false,
+	);
+
+	$form['document_presenter_2']['document_presenter_object_list_2'] = array(
+		'#type' => 'checkboxes',
+		'#description' => t(''),
+		'#options' => $options,
+		'#default_value' => $checked_2,
+	);
+
+
+	/**
+	 * document category 3
+	 */
+	$checked_3 = array();
+	foreach (variable_get('document_presenter_object_list_3') as $key => $value) {
+		if ($value) {
+			$checked_3[] = $value;
+		}
+	}
+
+	$form['document_presenter_3'] = array(
+		'#type' => 'fieldset',
+		'#title' => t(_document_categories(3)),
+		'#description' => t('Mark or unmark the documents you want to add/remove for the ' . _document_categories(3) . ' and then click on the button to save.<br/><br/>'),
+		'#collapsible' => true,
+		'#collapsed' => false,
+	);
+
+	$form['document_presenter_3']['document_presenter_object_list_3'] = array(
+		'#type' => 'checkboxes',
+		'#description' => t(''),
+		'#options' => $options,
+		'#default_value' => $checked_3,
+	);
+
+
+	/**
+	 * document category 4
+	 */
+	$checked_4 = array();
+	foreach (variable_get('document_presenter_object_list_4') as $key => $value) {
+		if ($value) {
+			$checked_4[] = $value;
+		}
+	}
+
+	$form['document_presenter_4'] = array(
+		'#type' => 'fieldset',
+		'#title' => t(_document_categories(4)),
+		'#description' => t('Mark or unmark the documents you want to add/remove for the ' . _document_categories(4) . ' and then click on the button to save.<br/><br/>'),
+		'#collapsible' => true,
+		'#collapsed' => false,
+	);
+
+	$form['document_presenter_4']['document_presenter_object_list_4'] = array(
+		'#type' => 'checkboxes',
+		'#description' => t(''),
+		'#options' => $options,
+		'#default_value' => $checked_4,
+	);
+
+
+	/**
+	 * document category 5
+	 */
+	$checked_5 = array();
+	foreach (variable_get('document_presenter_object_list_5') as $key => $value) {
+		if ($value) {
+			$checked_5[] = $value;
+		}
+	}
+
+	$form['document_presenter_5'] = array(
+		'#type' => 'fieldset',
+		'#title' => t(_document_categories(5)),
+		'#description' => t('Mark or unmark the documents you want to add/remove for the ' . _document_categories(5) . ' and then click on the button to save.<br/><br/>'),
+		'#collapsible' => true,
+		'#collapsed' => false,
+	);
+
+	$form['document_presenter_5']['document_presenter_object_list_5'] = array(
+		'#type' => 'checkboxes',
+		'#description' => t(''),
+		'#options' => $options,
+		'#default_value' => $checked_5,
+	);
+
+
 	return system_settings_form($form);
+}
+
+
+function _document_categories($index) {
+	$names = array(1 => 'NEWSLETTERS', 2 => 'PRESS RELEASES', 3 => 'BROCHURES & LOGOS', 4 => 'PUBLICATIONS', 5 => 'FROM THE PRESS');
+	return $names[$index];
 }
 
 
@@ -98,13 +216,6 @@ function _document_presenter_output() {
 
 	$folder = variable_get('file_public_path', conf_path() . '/files');
 
-	$list = array();
-	foreach (variable_get('document_presenter_object_list') as $key => $value) {
-		if ($value && file_exists($folder . '/' .$value) && is_file($folder . '/' . $value)) {
-			$list[] = _collect($value);
-		}
-	}
-
 	$title_color = '';
 	if (variable_get('broscience_style_contents_title_color')) {
 		$title_color = 'style="color: ' . variable_get('broscience_style_contents_title_color') . '"';
@@ -115,98 +226,208 @@ function _document_presenter_output() {
 		$element_color = 'background-color: ' . variable_get('broscience_style_contents_element_color') . '; color: #ffffff;';
 	}
 
+
 	$output = '<h1 class="block_title" ' . $title_color . '>PRESS AND MEDIA</h1>';
 
 	$output .= '<div id="document_presenter">';
 
-	if (! empty($list)) {
+	/**
+	 * document category 1
+	 */
+	$list_1 = array();
+	foreach (variable_get('document_presenter_object_list_1') as $key => $value) {
+		if ($value && file_exists($folder . '/' .$value) && is_file($folder . '/' . $value)) {
+			$list_1[] = _collect($value);
+		}
+	}
 
-		usort($list, _compare);
+	if (! empty($list_1)) {
 
-		$count = 1;
-		$has_archive = false;
+		usort($list_1, _compare);
 
-		foreach ($list as $file) {
+		$output .= '<div id="document_presenter_accordion_1" class="document_presenter panel-group" role="tablist" aria-multiselectable="true">';
+		$output .= '<div class="panel panel-default">';
+		$output .= '<div id="document_presenter_accordion_1_heading" class="panel-heading" role="tab" style="' . $element_color . '">';
+		$output .= '<h3 class="panel-title">';
+		$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/icon_news.svg" />';
+		$output .= '<a role="button" data-toggle="collapse" data-parent="#document_presenter_accordion_1" href="#document_presenter_accordion_1_collapse" aria-expanded="true" aria-controls="document_presenter_accordion_1_collapse">';
+		$output .= _document_categories(1);
+		$output .= '</a>';
+		$output .= '</h3>';
+		$output .= '</div>';
+		$output .= '<div id="document_presenter_accordion_1_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="document_presenter_accordion_1_heading">';
+		$output .= '<div class="panel-body">';
 
-			$pic_uri = '';
-			if ($file['file_pic_uri']) {
-				$pic_uri = '/' . $folder . '/' . str_replace('public://', '', $file['file_pic_uri']);
-
-			} else {
-				$pic_uri = drupal_get_path('module', 'document_presenter') . '/icons/Icos_Wall.png';
-			}
-
-			$desc = '';
-			if ($file['file_desc']) {
-				$desc = $file['file_desc'];
-
-			} else {
-				$desc = $file['file_name'];
-			}
-
-			$size = '';
-			if ($file['file_size']) {
-				$size = '(' . $file['file_size'] . ')';
-			}
-
-
-			if ($count < 4) {
-				$output .= '<div class="post">';
-
-				$output .= '<div class="pic">';
-				$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank"><img src="' . $pic_uri . '" style="width: 200px" /></a>';
-				$output .= '</div>';
-
-				$output .= '<div class="desc">' . $desc . '</div>';
-
-				$output .= '<div class="file">';
-				$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
-				$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank">Download</a>';
-				$output .= '</div>';
-
-				$output .= '</div>';
-
-			} else {
-
-				if ($count == 4) {
-					$output .= '<br /><br />';
-
-					$output .= '<div class="panel-group" id="document_presenter_accordion" role="tablist" aria-multiselectable="true">';
-					$output .= '<div class="panel panel-default">';
-					$output .= '<div class="panel-heading" role="tab" id="document_presenter_accordion_heading" style="' . $element_color . '">';
-					$output .= '<h3 class="panel-title">';
-					$output .= '<a role="button" data-toggle="collapse" data-parent="#document_presenter_accordion" href="#document_presenter_accordion_collapse" aria-expanded="true" aria-controls="document_presenter_accordion_collapse">';
-					$output .= 'Earlier press and media';
-					$output .= '</a>';
-					$output .= '</h3>';
-					$output .= '</div>';
-					$output .= '<div id="document_presenter_accordion_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="document_presenter_accordion_heading">';
-					$output .= '<div class="panel-body">';
-
-					$has_archive = true;
-				}
-
-				$output .= '<div class="archive">';
-
-				$output .= '<div class="file">';
-				$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
-				$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank">' . $desc . '</a>';
-				$output .= '</div>';
-
-				$output .= '</div>';
-			}
-
-			$count++;
+		foreach ($list_1 as $file) {
+			$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
+			$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank">' . $file['file_name'] . '</a>';
+			$output .= '<br />';
 		}
 
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
+	}
 
-		if ($has_archive) {
-			$output .= '</div>';
-			$output .= '</div>';
-			$output .= '</div>';
-			$output .= '</div>';
 
+	/**
+	 * document category 2
+	 */
+	$list_2 = array();
+	foreach (variable_get('document_presenter_object_list_2') as $key => $value) {
+		if ($value && file_exists($folder . '/' .$value) && is_file($folder . '/' . $value)) {
+			$list_2[] = _collect($value);
 		}
+	}
+
+	if (! empty($list_2)) {
+
+		usort($list_2, _compare);
+
+		$output .= '<div id="document_presenter_accordion_2" class="document_presenter panel-group" role="tablist" aria-multiselectable="true">';
+		$output .= '<div class="panel panel-default">';
+		$output .= '<div id="document_presenter_accordion_2_heading" class="panel-heading" role="tab" style="' . $element_color . '">';
+		$output .= '<h3 class="panel-title">';
+		$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/icon_releases.svg" />';
+		$output .= '<a role="button" data-toggle="collapse" data-parent="#document_presenter_accordion_2" href="#document_presenter_accordion_2_collapse" aria-expanded="true" aria-controls="document_presenter_accordion_2_collapse">';
+		$output .= _document_categories(2);
+		$output .= '</a>';
+		$output .= '</h3>';
+		$output .= '</div>';
+		$output .= '<div id="document_presenter_accordion_2_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="document_presenter_accordion_2_heading">';
+		$output .= '<div class="panel-body">';
+
+		foreach ($list_2 as $file) {
+			$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
+			$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank">' . $file['file_name'] . '</a>';
+			$output .= '<br />';
+		}
+
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
+	}
+
+
+	/**
+	 * document category 3
+	 */
+	$list_3 = array();
+	foreach (variable_get('document_presenter_object_list_3') as $key => $value) {
+		if ($value && file_exists($folder . '/' .$value) && is_file($folder . '/' . $value)) {
+			$list_3[] = _collect($value);
+		}
+	}
+
+	if (! empty($list_3)) {
+
+		usort($list_3, _compare);
+
+		$output .= '<div id="document_presenter_accordion_3" class="document_presenter panel-group" role="tablist" aria-multiselectable="true">';
+		$output .= '<div class="panel panel-default">';
+		$output .= '<div id="document_presenter_accordion_3_heading" class="panel-heading" role="tab" style="' . $element_color . '">';
+		$output .= '<h3 class="panel-title">';
+		$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/icon_brochures.svg" />';
+		$output .= '<a role="button" data-toggle="collapse" data-parent="#document_presenter_accordion_1" href="#document_presenter_accordion_3_collapse" aria-expanded="true" aria-controls="document_presenter_accordion_3_collapse">';
+		$output .= _document_categories(3);
+		$output .= '</a>';
+		$output .= '</h3>';
+		$output .= '</div>';
+		$output .= '<div id="document_presenter_accordion_3_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="document_presenter_accordion_3_heading">';
+		$output .= '<div class="panel-body">';
+
+		foreach ($list_3 as $file) {
+			$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
+			$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank">' . $file['file_name'] . '</a>';
+			$output .= '<br />';
+		}
+
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
+	}
+
+
+	/**
+	 * document category 4
+	 */
+	$list_4 = array();
+	foreach (variable_get('document_presenter_object_list_4') as $key => $value) {
+		if ($value && file_exists($folder . '/' .$value) && is_file($folder . '/' . $value)) {
+			$list_4[] = _collect($value);
+		}
+	}
+
+	if (! empty($list_4)) {
+
+		usort($list_4, _compare);
+
+		$output .= '<div id="document_presenter_accordion_4" class="document_presenter panel-group" role="tablist" aria-multiselectable="true">';
+		$output .= '<div class="panel panel-default">';
+		$output .= '<div id="document_presenter_accordion_4_heading" class="panel-heading" role="tab" style="' . $element_color . '">';
+		$output .= '<h3 class="panel-title">';
+		$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/icon_publications.svg" />';
+		$output .= '<a role="button" data-toggle="collapse" data-parent="#document_presenter_accordion_4" href="#document_presenter_accordion_4_collapse" aria-expanded="true" aria-controls="document_presenter_accordion_4_collapse">';
+		$output .= _document_categories(4);
+		$output .= '</a>';
+		$output .= '</h3>';
+		$output .= '</div>';
+		$output .= '<div id="document_presenter_accordion_4_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="document_presenter_accordion_4_heading">';
+		$output .= '<div class="panel-body">';
+
+		foreach ($list_4 as $file) {
+			$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
+			$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank">' . $file['file_name'] . '</a>';
+			$output .= '<br />';
+		}
+
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
+	}
+
+
+	/**
+	 * document category 5
+	 */
+	$list_5 = array();
+	foreach (variable_get('document_presenter_object_list_5') as $key => $value) {
+		if ($value && file_exists($folder . '/' .$value) && is_file($folder . '/' . $value)) {
+			$list_5[] = _collect($value);
+		}
+	}
+
+	if (! empty($list_5)) {
+
+		usort($list_5, _compare);
+
+		$output .= '<div id="document_presenter_accordion_5" class="document_presenter panel-group" role="tablist" aria-multiselectable="true">';
+		$output .= '<div class="panel panel-default">';
+		$output .= '<div id="document_presenter_accordion_5_heading" class="panel-heading" role="tab" style="' . $element_color . '">';
+		$output .= '<h3 class="panel-title">';
+		$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/icon_press.svg" />';
+		$output .= '<a role="button" data-toggle="collapse" data-parent="#document_presenter_accordion_5" href="#document_presenter_accordion_5_collapse" aria-expanded="true" aria-controls="document_presenter_accordion_5_collapse">';
+		$output .= _document_categories(5);
+		$output .= '</a>';
+		$output .= '</h3>';
+		$output .= '</div>';
+		$output .= '<div id="document_presenter_accordion_5_collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="document_presenter_accordion_5_heading">';
+		$output .= '<div class="panel-body">';
+
+		foreach ($list_5 as $file) {
+			$output .= '<img src="/' . drupal_get_path('module', 'document_presenter') . '/icons/application-pdf.png" />';
+			$output .= '<a href="' . $folder . '/' . $file['file_name'] . '" target="_blank">' . $file['file_name'] . '</a>';
+			$output .= '<br />';
+		}
+
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
+		$output .= '</div>';
 	}
 
 	$output .= '</div>';
@@ -225,38 +446,20 @@ function _collect($filename) {
 	$list = [];
 	$list['file_name'] =  $filename;
 
-	$result_1 = db_query('
-		select fm.timestamp, fm.filesize, fi.field_ingress_value
-		from {file_managed} fm join {field_data_field_ingress} fi on fm.fid = fi.entity_id
+	$result = db_query('
+		select fm.timestamp, fm.filesize
+		from {file_managed} fm
 		where fm.filename = :filename
 		',
 
 		array(':filename' => $filename)
 	)->fetchAll();
 
-	foreach ($result_1 as $record) {
+	foreach ($result as $record) {
 		if ($record) {
 			$list['file_timestamp'] =  $record->timestamp;
 			$list['file_size'] =  $record->filesize;
-			$list['file_desc'] =  $record->field_ingress_value;
 		}
-	}
-
-
-	$result_2 = db_query('
-		select o.uri
-		from {file_managed} o
-		where o.fid in (
-			select fu.fid
-			from {file_managed} fm join {file_usage} fu on fm.fid = fu.id
-			where fm.filename = :filename)
-		',
-
-		array(':filename' => $filename)
-	)->fetchAll();
-
-	foreach ($result_2 as $record) {
-		if ($record) { $list['file_pic_uri'] =  $record->uri; }
 	}
 
 	return $list;
