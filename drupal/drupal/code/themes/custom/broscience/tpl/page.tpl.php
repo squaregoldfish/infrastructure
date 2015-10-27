@@ -84,10 +84,10 @@
   </header>
 <?php endif; ?>
 
-
 <?php if ($page['main_prefix']): ?>
   <?php print render($page['main_prefix']); ?>
 <?php endif; ?>
+
 
 <?php
 // Print messages manually here, since they don't really work with
@@ -95,10 +95,16 @@
 print $messages;
 ?>
 
+
 <?php if ($page['content']): ?>
-    <main id="main" role="main">
-      <?php print render($page['content']); ?>
-    </main>
+  <main id="main" role="main">
+    <?php print render($page['content']); ?>
+  </main>
+<?php endif; ?>
+
+
+<?php if ($page['sidebar_left']): ?>
+  <?php print render($page['sidebar_left']); ?>
 <?php endif; ?>
 
 

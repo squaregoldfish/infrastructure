@@ -200,6 +200,20 @@ function broscience_preprocess_page(&$vars) {
 		.'});', 'inline');    	
 	
 	}
+
+  if (variable_get('broscience_style_menu_use_full_level_submenu')) {
+
+  	$submenuElementColor = '#0A96F0';
+	  if (variable_get('broscience_style_contents_element_color')) {
+		  $submenuElementColor = variable_get('broscience_style_contents_element_color');
+  	}
+
+    $modulePath = drupal_get_path('module', 'broscience_style');
+
+    drupal_add_js(array('broscience_style' => array('elementColor' => $submenuElementColor, 'modulePath' => $modulePath)), 'setting');
+    drupal_add_js(drupal_get_path('module', 'broscience_style') . '/broscience_style_sidebar_menu.js');
+
+  }
    
 }
 

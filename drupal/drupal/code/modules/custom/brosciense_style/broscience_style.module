@@ -141,7 +141,20 @@ function form($form, &$form_state) {
 			'#description' => t('If selected make sure there is a menu-block with starting level at two and maximum depth with two.'),
 			'#required' => FALSE,
 			'#default_value' => $use2LevelSubMenu,
-	);	
+	);
+
+	$useFullLevelSubMenu = '';
+	if (variable_get('broscience_style_menu_use_full_level_submenu')) {
+		$useFullLevelSubMenu = variable_get('broscience_style_menu_use_full_level_submenu');
+	}
+
+	$form['broscience_style_menu']['broscience_style_menu_use_full_level_submenu'] = array(
+		'#type' => 'checkbox',
+		'#title' => t('Made use of a full level submenu.'),
+		'#description' => t('If selected make sure there is a menu-block with starting level at two and no limit for the depth.'),
+		'#required' => FALSE,
+		'#default_value' => $useFullLevelSubMenu,
+	);
 	
 	$hideH2 = '';
 	if (variable_get('broscience_style_menu_hide_h2')) {

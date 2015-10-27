@@ -8,6 +8,7 @@ base theme = aurora
 ; ========================================
 
 regions[header]       = 'Header'
+regions[sidebar_left] = 'Sidebar Left'
 regions[main_prefix]  = 'Main Region Prefix'
 regions[content]      = 'Main Region'
 regions[main_suffix]  = 'Main Region Suffix'
