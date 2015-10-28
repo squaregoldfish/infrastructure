@@ -103,11 +103,6 @@ print $messages;
 <?php endif; ?>
 
 
-<?php if ($page['sidebar_left']): ?>
-  <?php print render($page['sidebar_left']); ?>
-<?php endif; ?>
-
-
 <?php if ($page['main_suffix']): ?>
   <?php print render($page['main_suffix']); ?>
 <?php endif; ?>

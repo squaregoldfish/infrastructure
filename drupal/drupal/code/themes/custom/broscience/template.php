@@ -176,7 +176,7 @@ function broscience_preprocess_page(&$vars) {
 
 
 
-	if (variable_get('broscience_style_menu_use_2level_submenu')) {
+	if (variable_get('broscience_style_menu_use_submenu')) {
 		drupal_add_js('jQuery(document).ready(function () {'
 		
     		.'if( jQuery("#block-menu-block-1 li.expanded").length && screen.availWidth > 800) {'
@@ -201,7 +201,7 @@ function broscience_preprocess_page(&$vars) {
 	
 	}
 
-  if (variable_get('broscience_style_menu_use_full_level_submenu')) {
+  if (variable_get('broscience_style_menu_use_left_submenu')) {
 
   	$submenuElementColor = '#0A96F0';
 	  if (variable_get('broscience_style_contents_element_color')) {

@@ -130,30 +130,30 @@ function form($form, &$form_state) {
 			'#default_value' => $menuButtonColor,
 	);
 
-	$use2LevelSubMenu = '';
-	if (variable_get('broscience_style_menu_use_2level_submenu')) {
-		$use2LevelSubMenu = variable_get('broscience_style_use_2level_submenu');
+	$useSubMenu = '';
+	if (variable_get('broscience_style_menu_use_submenu')) {
+		$useSubMenu = variable_get('broscience_style_menu_use_submenu');
 	}
 			
-	$form['broscience_style_menu']['broscience_style_menu_use_2level_submenu'] = array(
+	$form['broscience_style_menu']['broscience_style_menu_use_submenu'] = array(
 			'#type' => 'checkbox',
-			'#title' => t('Made use of a two level submenu.'),
-			'#description' => t('If selected make sure there is a menu-block with starting level at two and maximum depth with two.'),
+			'#title' => t('Made use of a styled submenu.'),
+			'#description' => t(''),
 			'#required' => FALSE,
-			'#default_value' => $use2LevelSubMenu,
+			'#default_value' => $useSubMenu,
 	);
 
-	$useFullLevelSubMenu = '';
-	if (variable_get('broscience_style_menu_use_full_level_submenu')) {
-		$useFullLevelSubMenu = variable_get('broscience_style_menu_use_full_level_submenu');
+	$useLeftSubMenu = '';
+	if (variable_get('broscience_style_menu_use_left_submenu')) {
+		$useLeftSubMenu = variable_get('broscience_style_menu_use_left_submenu');
 	}
 
-	$form['broscience_style_menu']['broscience_style_menu_use_full_level_submenu'] = array(
+	$form['broscience_style_menu']['broscience_style_menu_use_left_submenu'] = array(
 		'#type' => 'checkbox',
-		'#title' => t('Made use of a full level submenu.'),
-		'#description' => t('If selected make sure there is a menu-block with starting level at two and no limit for the depth.'),
+		'#title' => t('Made use of a styled left submenu.'),
+		'#description' => t(''),
 		'#required' => FALSE,
-		'#default_value' => $useFullLevelSubMenu,
+		'#default_value' => $useLeftSubMenu,
 	);
 	
 	$hideH2 = '';
