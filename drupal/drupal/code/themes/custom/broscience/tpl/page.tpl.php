@@ -75,7 +75,7 @@
 <?php if ($page['header']): ?>
   <header id="header" role="banner" class="tint-container">
     <div class="tint"></div>
-    <?php if (isset($page['broscience_dynamic_header_styles'])) { print $page['broscience_dynamic_header_styles']; } ?>
+    <?php if (isset($page['broscience_styles'])) { print $page['broscience_styles']; } ?>
     <div class="grid-container">
       <div id="header_inner">
         <?php print render($page['header']); ?>
@@ -86,6 +86,11 @@
 
 <?php if ($page['main_prefix']): ?>
   <?php print render($page['main_prefix']); ?>
+<?php endif; ?>
+
+
+<?php if ($breadcrumb): ?>
+  <div id="breadcrumb"><?php print $breadcrumb; ?></div>
 <?php endif; ?>
 
 

@@ -130,9 +130,9 @@ function form($form, &$form_state) {
 			'#default_value' => $menuButtonColor,
 	);
 
-	$useSubMenu = '';
+	$useSubmenu = '';
 	if (variable_get('broscience_style_menu_use_submenu')) {
-		$useSubMenu = variable_get('broscience_style_menu_use_submenu');
+		$useSubmenu = variable_get('broscience_style_menu_use_submenu');
 	}
 			
 	$form['broscience_style_menu']['broscience_style_menu_use_submenu'] = array(
@@ -140,12 +140,12 @@ function form($form, &$form_state) {
 			'#title' => t('Made use of a styled submenu.'),
 			'#description' => t(''),
 			'#required' => FALSE,
-			'#default_value' => $useSubMenu,
+			'#default_value' => $useSubmenu,
 	);
 
-	$useLeftSubMenu = '';
+	$useLeftSubmenu = '';
 	if (variable_get('broscience_style_menu_use_left_submenu')) {
-		$useLeftSubMenu = variable_get('broscience_style_menu_use_left_submenu');
+		$useLeftSubmenu = variable_get('broscience_style_menu_use_left_submenu');
 	}
 
 	$form['broscience_style_menu']['broscience_style_menu_use_left_submenu'] = array(
@@ -153,8 +153,28 @@ function form($form, &$form_state) {
 		'#title' => t('Made use of a styled left submenu.'),
 		'#description' => t(''),
 		'#required' => FALSE,
-		'#default_value' => $useLeftSubMenu,
+		'#default_value' => $useLeftSubmenu,
 	);
+
+
+
+
+	$useBreadcrumb = '';
+	if (variable_get('broscience_style_menu_use_breadcrumb')) {
+		$useBreadcrumb = variable_get('broscience_style_menu_use_breadcrumb');
+	}
+
+	$form['broscience_style_menu']['broscience_style_menu_use_breadcrumb'] = array(
+		'#type' => 'checkbox',
+		'#title' => t('Made use of a breadcrumb.'),
+		'#description' => t(''),
+		'#required' => FALSE,
+		'#default_value' => $useBreadcrumb,
+	);
+
+
+
+
 	
 	$hideH2 = '';
 	if (variable_get('broscience_style_menu_hide_h2')) {

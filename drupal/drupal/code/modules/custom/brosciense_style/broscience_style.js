@@ -2,38 +2,30 @@
     Drupal.behaviors.broscience_style = {
         attach: function (context, settings) {
 
-            style_bs_submenu(settings.broscience_style.elementColor);
-            place_bs_submenu();
-            set_bs_active(settings.broscience_style.elementColor);
+            var titleColor = settings.broscience_style.titleColor;
+            var elementColor = settings.broscience_style.elementColor;
+            var modulePath = settings.broscience_style.modulePath;
 
-            $(window).resize(function() {
-                style_bs_submenu(settings.broscience_style.elementColor);
-                place_bs_submenu();
-                set_bs_active(settings.broscience_style.elementColor);
-            });
+            if (settings.broscience_style.use_submenu) {
+                bs_submenu_style(elementColor);
+                bs_submenu_place();
+                bs_submenu_active(elementColor);
+
+                $(window).resize(function () {
+                    bs_submenu_style(elementColor);
+                    bs_submenu_place();
+                    bs_submenu_active(elementColor);
+                });
+            }
         }
     };
 }(jQuery));
 
 
-var min = 800;
+var bs_submenu_min = 800;
 
-
-function place_bs_submenu() {
-    if (jQuery(window).width() > min) {
-        var top_position = jQuery('#header').height() * 2;
-
-        if (jQuery('#tabs').height() > 0) {
-            top_position += 120;
-        }
-
-        jQuery('#block-menu-block-1').css({'position': 'absolute', 'top': top_position})
-    }
-}
-
-
-function style_bs_submenu(elementColor) {
-    if (jQuery(window).width() > min) {
+function bs_submenu_style(elementColor) {
+    if (jQuery(window).width() > bs_submenu_min) {
         jQuery('#block-menu-block-1 .content ul li a').css({'padding': '0'});
         jQuery('#block-menu-block-1 .content ul li.leaf a').css({'padding': '0'});
         jQuery('#block-menu-block-1 .content ul.menu li a').css({'padding': '0'});
@@ -59,8 +51,19 @@ function style_bs_submenu(elementColor) {
     }
 }
 
+function bs_submenu_place() {
+    if (jQuery(window).width() > bs_submenu_min) {
+        var top_position = jQuery('#header').height() * 2;
 
-function set_bs_active(elementColor) {
+        if (jQuery('#tabs').height() > 0) {
+            top_position += 120;
+        }
+
+        jQuery('#block-menu-block-1').css({'position': 'absolute', 'top': top_position})
+    }
+}
+
+function bs_submenu_active(elementColor) {
     var w = jQuery('#block-menu-block-1').outerWidth() - 1;
     jQuery('#block-menu-block-1 a.active').append('<span style="position: absolute; left: ' + w + 'px; width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-left: 20px solid ' + elementColor + ';">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
 }
