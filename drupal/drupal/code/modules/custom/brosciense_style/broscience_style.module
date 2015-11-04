@@ -105,7 +105,8 @@ function form($form, &$form_state) {
 			'#required' => FALSE,
 			'#default_value' => $logoPadding,
 	);	
-	
+
+
 	/**
 	 * broscience_style_menu
 	 **/
@@ -156,9 +157,6 @@ function form($form, &$form_state) {
 		'#default_value' => $useLeftSubmenu,
 	);
 
-
-
-
 	$useBreadcrumb = '';
 	if (variable_get('broscience_style_menu_use_breadcrumb')) {
 		$useBreadcrumb = variable_get('broscience_style_menu_use_breadcrumb');
@@ -172,10 +170,6 @@ function form($form, &$form_state) {
 		'#default_value' => $useBreadcrumb,
 	);
 
-
-
-
-	
 	$hideH2 = '';
 	if (variable_get('broscience_style_menu_hide_h2')) {
 		$hideH2 = variable_get('broscience_style_menu_hide_h2');
