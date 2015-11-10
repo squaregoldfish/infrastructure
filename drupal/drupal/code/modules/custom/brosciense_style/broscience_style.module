@@ -170,19 +170,44 @@ function form($form, &$form_state) {
 		'#default_value' => $useBreadcrumb,
 	);
 
+
+	/**
+	 * broscience_style_disable
+	 **/
+	$form['broscience_style_disable'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('Disable various elements'),
+		'#description' => t(''),
+		'#collapsible' => FALSE,
+		'#collapsed' => FALSE,
+	);
+
 	$hideH2 = '';
-	if (variable_get('broscience_style_menu_hide_h2')) {
-		$hideH2 = variable_get('broscience_style_menu_hide_h2');
+	if (variable_get('broscience_style_disable_hide_h2')) {
+		$hideH2 = variable_get('broscience_style_disable_hide_h2');
 	}
-				
-	$form['broscience_style_menu']['broscience_style_menu_hide_h2'] = array(
-			'#type' => 'checkbox',
-			'#title' => t('Hide main menu element names.'),
-			'#description' => t('If a selected item in the main menu has submenus the name of the menu item will show up in a big way.'),
-			'#required' => FALSE,
-			'#default_value' => $hideH2,
-	);	
-	
+
+	$form['broscience_style_disable']['broscience_style_disable_hide_h2'] = array(
+		'#type' => 'checkbox',
+		'#title' => t('Hide main menu element names.'),
+		'#description' => t('If a selected item in the main menu has submenus the name of the menu item will show up in a big way.'),
+		'#required' => FALSE,
+		'#default_value' => $hideH2,
+	);
+
+	$noPadding = '';
+	if (variable_get('broscience_style_disable_no_padding')) {
+		$noPadding = variable_get('broscience_style_block_no_padding');
+	}
+
+	$form['broscience_style_disable']['broscience_style_disable_no_padding'] = array(
+		'#type' => 'checkbox',
+		'#title' => t('Disable padding on some text elements.'),
+		'#description' => t(''),
+		'#required' => FALSE,
+		'#default_value' => $noPadding,
+	);
+
 	
 	/**
 	 * broscience_style_contents

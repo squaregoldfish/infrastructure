@@ -52,8 +52,9 @@ function _build($collected_nodes) {
 	$output = '<div id="cp_site_map">';
 
 	foreach ($collected_nodes as $node) {
+
 		if ($node->getParentId() == '0') {
-			$node->setSortOrder($node->getId());
+			$node->setSortOrder($node->getWeight() + 50);
 
 		} else {
 			$node->setSortOrder($node->getParentId() . ',' . $node->getWeight());

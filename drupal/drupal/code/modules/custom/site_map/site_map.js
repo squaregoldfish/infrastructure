@@ -18,7 +18,6 @@ function cp_site_map_build() {
 
     while (cp_elements.length > 0) {
         jQuery(cp_elements).each(function () {
-            console.log( jQuery(this).attr('cp_title') + ' - ' + jQuery(this).attr('cp_sort_order') );
 
             var done = 1;
             var li_element_1 = '<li><a href="' + jQuery(this).attr('cp_link_path') + '">' + jQuery(this).attr('cp_title') + '</a>';

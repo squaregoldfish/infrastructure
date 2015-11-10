@@ -50,7 +50,7 @@ function broscience_preprocess_html(&$vars) {
  *   An array of variables to pass to the theme template.
  */
 function broscience_preprocess_page(&$vars) {
-	
+
 	// Init the variables
 	$paths = array();
 	$node = array();
@@ -60,14 +60,14 @@ function broscience_preprocess_page(&$vars) {
   		'icos_header_small'
 	);
 
-	
+
 	if (isset($vars['node'])) {
 		$node = $vars['node'];
 	}
-	
-	
+
+
     // Set the Header background dynamically from the node Header image field
-	if (! empty($node->field_header_image)) {	
+	if (! empty($node->field_header_image)) {
 		$wrapped_node = entity_metadata_wrapper('node', $node);
 		$background_image = $wrapped_node->field_header_image->value();
   		// Get three sizes of the image
@@ -75,39 +75,39 @@ function broscience_preprocess_page(&$vars) {
 			// Use the full URL so that the image styles get created correctly
 			$url = image_style_url($style_name, $background_image['uri']);
 			$paths[$style_name] = $url;
-		}  
-	  
+		}
+
 	} else {
-	
+
 		$image = variable_get('broscience_style_header_image');
 		$imageMedium = variable_get('broscience_style_header_image_medium');
 		$imageSmall = variable_get('broscience_style_header_image_small');
-	
+
 		if ($image && $imageMedium && $imageSmall) {
 			$paths['icos_header'] = $image;
 			$paths['icos_header_medium'] = $imageMedium;
 			$paths['icos_header_small'] = $imageSmall;
-		
-		
+
+
 		// Use the default from the theme
 		} else {
 			$theme_path = drupal_get_path('theme', 'broscience');
 			foreach($background_image_styles as $style_name) {
 				$paths[$style_name] = $theme_path . '/img/' . $style_name . '.jpg';
 			}
-		}  
+		}
 	}
-    
-    
-    
+
+
+
 	$tint = '';
 	if (variable_get('broscience_style_header_tint')) {
-		$tint = '#header .tint {background-color: rgba(' . variable_get('broscience_style_header_tint') . ')}';
+    $tint = '#header .tint {background-color: rgba(' . variable_get('broscience_style_header_tint') . ')}';
 	}
 
 	$logoPadding = "";
 	if (variable_get('broscience_style_header_logo_padding')) {
-		$logoPadding = '#logo img {padding-top: ' . variable_get('broscience_style_header_logo_padding') . 'px; padding-bottom: ' . variable_get('broscience_style_header_logo_padding') . 'px; width: auto;}';	
+		$logoPadding = '#logo img {padding-top: ' . variable_get('broscience_style_header_logo_padding') . 'px; padding-bottom: ' . variable_get('broscience_style_header_logo_padding') . 'px; width: auto;}';
 	}
 
 	$menuButtonColor = '';
@@ -116,9 +116,15 @@ function broscience_preprocess_page(&$vars) {
 	}
 
 	$hideH2 = '';
-	if (variable_get('broscience_style_menu_hide_h2')) {
+	if (variable_get('broscience_style_disable_hide_h2')) {
 		$hideH2 = '.block-menu-block h2 {display: none}';
 	}
+
+  $noPadding = '';
+  if (variable_get('broscience_style_disable_no_padding')) {
+    $noPadding .= '.field-body h4 {padding: 1rem 0rem 0rem 0rem}';
+    $noPadding .= '.field-body p {padding: 0rem 0rem 0rem 0rem}';
+  }
 
 	$contentsTitleColor = '';
 	$titleColor = '#0A96F0';
@@ -126,27 +132,27 @@ function broscience_preprocess_page(&$vars) {
 		$titleColor = variable_get('broscience_style_contents_title_color');
 
 		$contentsTitleColor = 'div.pane-content h1 {color: ' . variable_get('broscience_style_contents_title_color') . '}';
-	}   
-	
-    $contentsElementColor = '';
-	$elementColor = '#0A96F0';
-    if (variable_get('broscience_style_contents_element_color')) {
-		$elementColor = variable_get('broscience_style_contents_element_color');
+	}
 
-		$contentsElementColor .= '.field-title h1 {color: ' . $elementColor . '}';
-    	$contentsElementColor .= '.field-title h3 a {color: ' . $elementColor . '}';
-		$contentsElementColor .= '.field-title a {color: ' . $elementColor . '}';
-		$contentsElementColor .= '.node .button .field-link a  {background-color: ' . $elementColor . '}';
-		$contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button a:hover {background-color: ' . $elementColor . '}';
-		$contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a {background-color: ' . $elementColor . '}';
-		$contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a::after {border-color: transparent transparent transparent ' . $elementColor . '}';
-    }
-   
-    $threeColPanels = '';
-    $threeColPanels .= '.three-col {margin-top: 40px;}';
-    $threeColPanels .= '.three-col .first { }';
-    $threeColPanels .= '.three-col .second { }';
-    $threeColPanels .= '.three-col .third { }'; 	 
+  $contentsElementColor = '';
+  $elementColor = '#0A96F0';
+  if (variable_get('broscience_style_contents_element_color')) {
+    $elementColor = variable_get('broscience_style_contents_element_color');
+
+    $contentsElementColor .= '.field-title h1 {color: ' . $elementColor . '}';
+    $contentsElementColor .= '.field-title h3 a {color: ' . $elementColor . '}';
+    $contentsElementColor .= '.field-title a {color: ' . $elementColor . '}';
+    $contentsElementColor .= '.node .button .field-link a  {background-color: ' . $elementColor . '}';
+    $contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button a:hover {background-color: ' . $elementColor . '}';
+    $contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a {background-color: ' . $elementColor . '}';
+    $contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a::after {border-color: transparent transparent transparent ' . $elementColor . '}';
+  }
+
+  $threeColPanels = '';
+  $threeColPanels .= '.three-col {margin-top: 40px;}';
+  $threeColPanels .= '.three-col .first { }';
+  $threeColPanels .= '.three-col .second { }';
+  $threeColPanels .= '.three-col .third { }';
 
 
 	$vars['page']['broscience_styles'] = ""
@@ -165,17 +171,18 @@ function broscience_preprocess_page(&$vars) {
 		."background-image: url(".$paths['icos_header'].");"
 		."}"
 		."} "
-  
+
 		.".field-title span {margin-left: 5px;}"
 
 		. $tint
 		. $logoPadding
 		. $menuButtonColor
-		. $hideH2		
-		. $contentsTitleColor 
+		. $hideH2
+    . $noPadding
+		. $contentsTitleColor
 		. $contentsElementColor
 		. $threeColPanels
-  
+
 	."</style>"
 	;
 
@@ -184,27 +191,27 @@ function broscience_preprocess_page(&$vars) {
 
 	if (variable_get('broscience_style_menu_use_submenu')) {
 		drupal_add_js('jQuery(document).ready(function () {'
-		
+
     		.'if( jQuery("#block-menu-block-1 li.expanded").length && screen.availWidth > 800 ) {'
             	.'var submenu = jQuery("#block-menu-block-1 li.expanded ul.menu").detach();'
 				.'jQuery("#block-menu-block-1 div.menu-block-1").after(submenu);'
 			.'}'
 
-		.'});', 'inline');    
+		.'});', 'inline');
 
 	}
 
 	if (variable_get('broscience_style_iframe_sizing')) {
 		drupal_add_js('jQuery(document).ready(function () {'
-		
+
 			.'if( jQuery("div.responsive_frames_wrapper").length ) {'
              	.'var w = jQuery("div.responsive_frames_wrapper iframe").attr("width");'
              	.'var h = jQuery("div.responsive_frames_wrapper iframe").attr("height");'
-             	.'jQuery("div.responsive_frames_wrapper").css({width: w, height: h});'	
+             	.'jQuery("div.responsive_frames_wrapper").css({width: w, height: h});'
 			.'}'
 
-		.'});', 'inline');    	
-	
+		.'});', 'inline');
+
 	}
 
 	if (variable_get('broscience_style_menu_use_left_submenu')) {
