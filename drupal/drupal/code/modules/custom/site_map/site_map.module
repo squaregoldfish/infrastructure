@@ -2,6 +2,7 @@
 include ('Node.php');
 
 function site_map_block_info() {
+
 	$blocks = array();
 	
 	$blocks['site_map'] = array(
@@ -42,7 +43,6 @@ function site_map_block_view($delta = '') {
 		drupal_add_js(array('site_map' => array('title_color' => $title_color, 'element_color' => $element_color)), 'setting');
 
 		return $block;
-		
 	}
 }
 
@@ -52,7 +52,19 @@ function _build($collected_nodes) {
 	$output = '<div id="cp_site_map">';
 
 	foreach ($collected_nodes as $node) {
-		$output .= '<span class="cp_site_map_element" cp_link_path="' . $node->getLinkPath() . '" cp_title="' . $node->getTitle() . '" cp_node="' . $node->getId() . '" cp_parent_node="' . $node->getParentId() . '" cp_has_children="' . $node->getHasChildren() . '" >' . $node->getTitle() . '</span>';
+		if ($node->getParentId() == '0') {
+			$node->setSortOrder($node->getId());
+
+		} else {
+			$node->setSortOrder($node->getParentId() . ',' . $node->getWeight());
+		}
+	}
+
+	usort($collected_nodes, '_sort_nodes');
+	$nodes = array_reverse($collected_nodes);
+
+	foreach ($nodes as $node) {
+		$output .= '<span class="cp_site_map_element" cp_link_path="' . $node->getLinkPath() . '" cp_title="' . $node->getTitle() . '" cp_node="' . $node->getId() . '" cp_parent_node="' . $node->getParentId() . '" cp_has_children="' . $node->getHasChildren() . '" cp_sort_order="' . $node->getSortOrder() . '"> ' . $node->getTitle() . ' </span>';
 	}
 
 	$output .= '</div>';
@@ -60,14 +72,16 @@ function _build($collected_nodes) {
 	return $output;
 }
 
+
 function _collect_nodes() {
 
 	$list = array();
 
 	$result = db_query('
-			select ml.link_title, ml.mlid, ml.plid, ml.link_path, ml.has_children
+			select ml.link_title, ml.mlid, ml.plid, ml.link_path, ml.weight, ml.has_children
 			from {menu_links} ml
 			where ml.menu_name = :menu_name
+			and ml.external = 0
 			',
 
 		array(':menu_name' => 'main-menu')
@@ -81,6 +95,7 @@ function _collect_nodes() {
 			$node->setId($record->mlid);
 			$node->setParentId($record->plid);
 			$node->setLinkPath($record->link_path);
+			$node->setWeight($record->weight);
 			$node->setHasChildren($record->has_children);
 
 			$list[] = $node;
@@ -88,4 +103,17 @@ function _collect_nodes() {
 	}
 
 	return $list;
+}
+
+
+function _sort_nodes($a, $b) {
+
+	if ($a->getId() == $b->getId()) { return 0; }
+
+	if ($a->getSortOrder() == $b->getSortOrder()) {
+		return $a->getId() > $b->getId() ? 1 : -1;
+
+	} else {
+		return $a->getSortOrder() < $b->getSortOrder() ? 1 : -1;
+	}
 }

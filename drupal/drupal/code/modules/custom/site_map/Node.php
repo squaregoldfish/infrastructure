@@ -10,6 +10,8 @@ class Node {
     private $parent_id;
     private $link_path;
     private $has_children;
+    private $weight;
+    private $sort_order;
 
     public function getTitle() {
         return $this->title;
@@ -49,6 +51,22 @@ class Node {
 
     public function setHasChildren($has_children){
         $this->has_children = $has_children;
+    }
+
+    public function getWeight() {
+        return $this->weight;
+    }
+
+    public function setWeight($weight) {
+        $this->weight = $weight;
+    }
+
+    public function getSortOrder() {
+        return $this->sort_order;
+    }
+
+    public function setSortOrder($sort_order) {
+        $this->sort_order = $sort_order;
     }
 
     function __construct() {
