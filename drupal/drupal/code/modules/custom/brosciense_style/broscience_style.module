@@ -197,7 +197,7 @@ function form($form, &$form_state) {
 
 	$noPadding = '';
 	if (variable_get('broscience_style_disable_no_padding')) {
-		$noPadding = variable_get('broscience_style_block_no_padding');
+		$noPadding = variable_get('broscience_style_disable_no_padding');
 	}
 
 	$form['broscience_style_disable']['broscience_style_disable_no_padding'] = array(

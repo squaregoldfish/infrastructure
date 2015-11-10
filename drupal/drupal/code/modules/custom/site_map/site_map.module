@@ -57,7 +57,7 @@ function _build($collected_nodes) {
 			$node->setSortOrder($node->getWeight() + 50);
 
 		} else {
-			$node->setSortOrder($node->getParentId() . ',' . $node->getWeight());
+			$node->setSortOrder($node->getParentId() . ',' . ($node->getWeight() + 50));
 		}
 	}
 
