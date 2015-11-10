@@ -25,22 +25,38 @@
 var bs_submenu_min = 800;
 
 function bs_submenu_style(elementColor) {
-    if (jQuery(window).width() > bs_submenu_min) {
+
+    var window_size = jQuery(window).width();
+    var container_size = jQuery('.field-title').width();
+    var menu_size = jQuery('#block-menu-block-1').width();
+    var min_size = (window_size - container_size) / 2;
+
+    if (window_size > bs_submenu_min) {
+        jQuery('#block-menu-block-1').show();
+
         jQuery('#block-menu-block-1 .content ul li a').css({'padding': '0'});
         jQuery('#block-menu-block-1 .content ul li.leaf a').css({'padding': '0'});
         jQuery('#block-menu-block-1 .content ul.menu li a').css({'padding': '0'});
         jQuery('#block-menu-block-1 .content ul.menu li.leaf a').css({'padding': '0'});
         jQuery('#block-menu-block-1 .content .menu-block-wrapper').css({'padding': '0'});
 
-        jQuery('#block-menu-block-1').css({'min-width': '12rem', 'padding': '0.2rem', 'background-color': elementColor});
+        jQuery('#block-menu-block-1').css({'min-width': '12rem', 'padding': '0.2rem', 'background-color': elementColor, 'opacity': '1.0'});
         jQuery('#block-menu-block-1 li').css({'display': 'block', 'text-align': 'left'});
         jQuery('#block-menu-block-1 a').css({'padding': '0.4rem', 'color': '#ffffff'});
 
         jQuery('#block-menu-block-1 li.active-trail ul.menu').css({'margin-left': '0.8rem'});
         jQuery('#block-menu-block-1 li.active ul.menu').css({'margin-left': '0.8rem'});
 
-        jQuery('#block-menu-block-1 li.expanded a.active-trail').css({'color': '#414042'});
-        jQuery('#block-menu-block-1 a.active').css({'color': '#414042'});
+        jQuery('#block-menu-block-1 li.expanded a.active-trail').css({'color': '#000000'});
+        jQuery('#block-menu-block-1 a.active').css({'color': '#000000'});
+
+        if ((menu_size < window_size) && (min_size < menu_size)) {
+            jQuery('.grid-wrapper').css({'padding-left': menu_size});
+
+        } else {
+            jQuery('.grid-wrapper').css({'padding-left': '0'});
+        }
+
 
         jQuery('#block-menu-block-1 a').mouseover(function() {
             jQuery(this).css('background-color', 'rgba(0, 0, 0, 0.1)');
@@ -48,7 +64,11 @@ function bs_submenu_style(elementColor) {
         jQuery('#block-menu-block-1 a').mouseout(function() {
             jQuery(this).css('background-color', elementColor);
         });
+
+    } else {
+        jQuery('#block-menu-block-1').hide();
     }
+
 }
 
 function bs_submenu_place() {

@@ -102,7 +102,7 @@ function broscience_preprocess_page(&$vars) {
 
 	$tint = '';
 	if (variable_get('broscience_style_header_tint')) {
-    $tint = '#header .tint {background-color: rgba(' . variable_get('broscience_style_header_tint') . ')}';
+    	$tint = '#header .tint {background-color: rgba(' . variable_get('broscience_style_header_tint') . ')}';
 	}
 
 	$logoPadding = "";
@@ -120,11 +120,11 @@ function broscience_preprocess_page(&$vars) {
 		$hideH2 = '.block-menu-block h2 {display: none}';
 	}
 
-  $noPadding = '';
-  if (variable_get('broscience_style_disable_no_padding')) {
-    $noPadding .= '.field-body h4 {padding: 1rem 0rem 0rem 0rem}';
-    $noPadding .= '.field-body p {padding: 0rem 0rem 0rem 0rem}';
-  }
+  	$noPadding = '';
+  	if (variable_get('broscience_style_disable_no_padding')) {
+		$noPadding .= '.field-body h4 {padding: 1rem 0rem 0rem 0rem}';
+    	$noPadding .= '.field-body p {padding: 0rem 0rem 0rem 0rem}';
+  	}
 
 	$contentsTitleColor = '';
 	$titleColor = '#0A96F0';
@@ -134,25 +134,25 @@ function broscience_preprocess_page(&$vars) {
 		$contentsTitleColor = 'div.pane-content h1 {color: ' . variable_get('broscience_style_contents_title_color') . '}';
 	}
 
-  $contentsElementColor = '';
-  $elementColor = '#0A96F0';
-  if (variable_get('broscience_style_contents_element_color')) {
-    $elementColor = variable_get('broscience_style_contents_element_color');
+  	$contentsElementColor = '';
+  	$elementColor = '#0A96F0';
+  	if (variable_get('broscience_style_contents_element_color')) {
+		$elementColor = variable_get('broscience_style_contents_element_color');
 
-    $contentsElementColor .= '.field-title h1 {color: ' . $elementColor . '}';
-    $contentsElementColor .= '.field-title h3 a {color: ' . $elementColor . '}';
-    $contentsElementColor .= '.field-title a {color: ' . $elementColor . '}';
-    $contentsElementColor .= '.node .button .field-link a  {background-color: ' . $elementColor . '}';
-    $contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button a:hover {background-color: ' . $elementColor . '}';
-    $contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a {background-color: ' . $elementColor . '}';
-    $contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a::after {border-color: transparent transparent transparent ' . $elementColor . '}';
-  }
+    	$contentsElementColor .= '.field-title h1 {color: ' . $elementColor . '}';
+    	$contentsElementColor .= '.field-title h3 a {color: ' . $elementColor . '}';
+		$contentsElementColor .= '.field-title a {color: ' . $elementColor . '}';
+    	$contentsElementColor .= '.node .button .field-link a  {background-color: ' . $elementColor . '}';
+    	$contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button a:hover {background-color: ' . $elementColor . '}';
+    	$contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a {background-color: ' . $elementColor . '}';
+    	$contentsElementColor .= 'div.vertical-tabs .vertical-tabs-list .vertical-tab-button.selected a::after {border-color: transparent transparent transparent ' . $elementColor . '}';
+  	}
 
-  $threeColPanels = '';
-  $threeColPanels .= '.three-col {margin-top: 40px;}';
-  $threeColPanels .= '.three-col .first { }';
-  $threeColPanels .= '.three-col .second { }';
-  $threeColPanels .= '.three-col .third { }';
+  	$threeColPanels = '';
+  	$threeColPanels .= '.three-col {margin-top: 40px;}';
+  	$threeColPanels .= '.three-col .first { }';
+  	$threeColPanels .= '.three-col .second { }';
+  	$threeColPanels .= '.three-col .third { }';
 
 
 	$vars['page']['broscience_styles'] = ""
@@ -178,7 +178,7 @@ function broscience_preprocess_page(&$vars) {
 		. $logoPadding
 		. $menuButtonColor
 		. $hideH2
-    . $noPadding
+    	. $noPadding
 		. $contentsTitleColor
 		. $contentsElementColor
 		. $threeColPanels
