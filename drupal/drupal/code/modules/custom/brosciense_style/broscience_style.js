@@ -22,17 +22,11 @@
 }(jQuery));
 
 
-var bs_submenu_min = 800;
+var bs_submenu_min = 799;
 
 function bs_submenu_style(elementColor) {
 
-    var window_size = jQuery(window).width();
-    var container_size = jQuery('.field-title').width();
-    var menu_size = jQuery('#block-menu-block-1').width();
-    var min_size = (window_size - container_size) / 2;
-
-    if (window_size > bs_submenu_min) {
-        jQuery('#block-menu-block-1').show();
+    if (jQuery(window).width() > bs_submenu_min) {
 
         jQuery('#block-menu-block-1 .content ul li a').css({'padding': '0'});
         jQuery('#block-menu-block-1 .content ul li.leaf a').css({'padding': '0'});
@@ -50,13 +44,6 @@ function bs_submenu_style(elementColor) {
         jQuery('#block-menu-block-1 li.expanded a.active-trail').css({'color': '#000000'});
         jQuery('#block-menu-block-1 a.active').css({'color': '#000000'});
 
-        if ((menu_size < window_size) && (min_size < menu_size)) {
-            jQuery('.grid-wrapper').css({'padding-left': menu_size});
-
-        } else {
-            jQuery('.grid-wrapper').css({'padding-left': '0'});
-        }
-
 
         jQuery('#block-menu-block-1 a').mouseover(function() {
             jQuery(this).css('background-color', 'rgba(0, 0, 0, 0.1)');
@@ -66,20 +53,31 @@ function bs_submenu_style(elementColor) {
         });
 
     } else {
-        jQuery('#block-menu-block-1').hide();
+        jQuery('#block-menu-block-1').css({'background-color': 'ffffff', 'opacity': '0.0'});
     }
 
 }
 
 function bs_submenu_place() {
     if (jQuery(window).width() > bs_submenu_min) {
-        var top_position = jQuery('#header').height() * 2;
 
-        if (jQuery('#tabs').height() > 0) {
-            top_position += 120;
+        var window_size = jQuery(window).width();
+        var container_size = jQuery('.field-title').width();
+        var menu_size = jQuery('#block-menu-block-1').width();
+        var min_size = (window_size - container_size) / 2;
+
+        var o = jQuery('#main').offset();
+        console.log('main pos: ' + o.top);
+
+        jQuery('#block-menu-block-1').css({'position': 'absolute', 'top': o.top});
+
+
+        if ((menu_size < window_size) && (min_size < menu_size)) {
+            jQuery('.grid-wrapper').css({'padding-left': menu_size});
+
+        } else {
+            jQuery('.grid-wrapper').css({'padding-left': '0'});
         }
-
-        jQuery('#block-menu-block-1').css({'position': 'absolute', 'top': top_position})
     }
 }
 
