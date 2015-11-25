@@ -1,0 +1,7 @@
+nexus:
+  image: sonatype/nexus:2.11.4-01
+  ports:
+   - "8881:8081"
+  volumes:
+   - /disk/data/nexus/storage:/sonatype-work
+

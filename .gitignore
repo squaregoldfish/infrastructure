@@ -19,4 +19,9 @@ alfresco/name-prefix.txt
 rdflogdb/docker-compose.yml
 rdflogdb/postgres
 
+# Concrete local Docker configuration for Sonatype Nexus. #
+#############################################
+nexus/docker-compose.yml
+nexus/storage
+
 *.*~
