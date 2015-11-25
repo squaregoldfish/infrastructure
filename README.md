@@ -5,14 +5,23 @@ alfresco
 --------
 Alfresco document management system, deployed at https://docs.icos-cp.eu
 
-thredds
--------
-Unidata's THREDDS Data Server, deployed at http://thredds.icos-cp.eu
-
 drupal
 ------
 ICOS Drupal installation, deployed at https://www.icos-ri.eu/  
 Was developed for ICOS by Aleksi Johansson from [Wunderkraut](http://wunderkraut.com/)
+
+nexus
+-----
+Sonatype Nexus OSS installation, deployed at https://repo.icos-cp.eu . Maven/Ivy/npm artifact repository manager.
+
+rdflogdb
+--------
+PostgreSQL installation used to persist Carbon Portal's metadata database's RDF assertion/retraction log.
+Used internally by the [meta](https://github.com/ICOS-Carbon-Portal/meta) project.
+
+thredds
+-------
+Unidata's THREDDS Data Server, deployed at http://thredds.icos-cp.eu
 
 
 Getting started
