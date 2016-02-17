@@ -25,3 +25,5 @@ nexus/docker-compose.yml
 nexus/storage
 
 *.*~
+.idea
+.editorconfig

@@ -30,28 +30,28 @@ function maillist_manager_view_form($form, &$form_state) {
     $size = count($list['names']);
     $options = array();
  
-    $descriptions = '<ul>';    
+//    $descriptions = '<ul>';    
     
     $email = '';
     $disabled = false;
     
     for ($c = 0; $c < $size; $c++) {
         if (user_is_logged_in()) {  
-            $descriptions .= '<li>' . $list['names'][$c] . ' -- ' . $list['descriptions'][$c] . '</li>'; 
+//            $descriptions .= '<li>' . $list['names'][$c] . ' -- ' . $list['descriptions'][$c] . '</li>'; 
             $options[] = $list['names'][$c];
             
             $email = _maillist_manager_user_email();
             //$disabled = true;
             
         } elseif ($list['internal_uses'][$c] != '1') {
-            $descriptions .= '<li>' . $list['names'][$c] . ' -- ' . $list['descriptions'][$c] . '</li>'; 
+//            $descriptions .= '<li>' . $list['names'][$c] . ' -- ' . $list['descriptions'][$c] . '</li>'; 
             $options[] = $list['names'][$c];            
             
         }
     }
     
-    $descriptions .= '</ul>';
-    
+//    $descriptions .= '</ul>';
+    $descriptions = '';  
     $form['description'] = array(
         '#markup' => t($descriptions),    
     );
@@ -72,7 +72,7 @@ function maillist_manager_view_form($form, &$form_state) {
   
     $form['submit'] = array(
         '#type' => 'submit',
-        '#value' => 'Send for subscribe',
+        '#value' => 'Send to subscribe',
     );  
   
     return $form;    
