@@ -4,7 +4,7 @@ drupal:
    - mariadb
    - memcache
   ports:
-   - "8095:8080"
+   - "127.0.0.1:8095:8080"
   volumes:
    - ../drupal:/var/www/icos-infrastructure.eu
    - ./entrypoint/drupal:/entrypoint

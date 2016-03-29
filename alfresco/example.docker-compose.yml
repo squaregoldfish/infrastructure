@@ -1,7 +1,7 @@
 alfresco:
   build: .
   ports:
-   - "8443:8443"
+   - "127.0.0.1:8443:8443"
   volumes:
    - /opt/alfresco-5.0.c:/opt/alfresco-5.0.c
   environment:

@@ -1,7 +1,7 @@
 thredds:
   build: .
   ports:
-   - "8801:8080"
+   - "127.0.0.1:8801:8080"
   volumes:
    - /disk/data/thredds/webapps:/usr/local/tomcat/webapps
    - /disk/data/thredds/content:/usr/local/tomcat/content/thredds
