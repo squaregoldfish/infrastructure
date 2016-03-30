@@ -1,0 +1,16 @@
+restheart:
+  image: softinstigate/restheart
+  links:
+   - mongodb
+  ports:
+   - "127.0.0.1:8080:8080"
+  volumes:
+   - "./security.yml:/opt/restheart/etc/security.yml:ro"
+mongodb:
+  image: mongo:3.2
+  ports:
+   - "127.0.0.1:27017:27017"
+  volumes:
+   - "/path/to/persistent/folder:/data/db"
+
+
