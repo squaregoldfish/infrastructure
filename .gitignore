@@ -24,6 +24,10 @@ rdflogdb/postgres
 nexus/docker-compose.yml
 nexus/storage
 
+# Concrete local Docker configuration for Kanboard. #
+#############################################
+kanboard/docker-compose.yml
+
 *.*~
 .idea
 .editorconfig
