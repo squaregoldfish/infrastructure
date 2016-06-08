@@ -43,3 +43,9 @@ Run the following from a newly created folder for your new repo:
 `subproject` above must be one of the first-level folders in this repo.
 
 
+Useful commands
+===============
+
+To get a list of Docker container IDs together with their Linux process IDs (run as root):
+`docker ps | awk '{print $1}' | tail -n +2 | xargs docker inspect -f '{{ .Config.Hostname }} {{ .State.Pid }}'`
+
