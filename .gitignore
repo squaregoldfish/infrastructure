@@ -28,6 +28,10 @@ nexus/storage
 #############################################
 kanboard/docker-compose.yml
 
+# Concrete local Docker configuration for Jupyter Notebook. #
+#############################################
+jupyter/docker-compose.yml
+
 *.*~
 .idea
 .editorconfig
