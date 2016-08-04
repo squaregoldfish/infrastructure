@@ -11,8 +11,3 @@ RUN conda install -y -c jacksongs -n python2 mpld3=0.2
 
 USER $NB_USER
 
-RUN mkdir -p /home/$NB_USER/work/Notebooks
-
-COPY Demo_GCP-ICP.ipynb /home/$NB_USER/work/Notebooks/
-COPY read_from_CP.py /home/$NB_USER/work/Notebooks/
-

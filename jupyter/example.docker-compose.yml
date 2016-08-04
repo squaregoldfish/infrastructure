@@ -6,4 +6,5 @@ jupyter:
    - PASSWORD=password
   volumes:
    - /disk/data/common/netcdf/gcp_models:/home/jovyan/work/data
+   - ./storage:/home/jovyan/work/Notebooks
 
