@@ -33,6 +33,10 @@ kanboard/docker-compose.yml
 jupyter/docker-compose.yml
 jupyter/storage/
 
+# Concrete local Docker configuration for STILT. #
+#############################################
+stilt/docker-compose.yml
+
 *.*~
 .idea
 .editorconfig
