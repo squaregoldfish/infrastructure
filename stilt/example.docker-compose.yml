@@ -1,13 +1,15 @@
-jupyter:
-	build:
-		context: .
-		args:
-			JENASVNUSER: username
-			JENASVNPASSWORD: password
-
-	volumes:
-		- /disk/data/STILT:/opt/STILT_modelling/Input:ro
-		- /disk/data/STILT/RData:/opt/STILT_modelling/Output/RData:ro
-		- /disk/data/STILT/Results:/opt/STILT_modelling/Output/Results
-		- /disk/data/STILT/Footprints:/opt/STILT_modelling/Output/Footprints
+version: '2'
+services:
+  stilt:
+    build:
+      context: .
+      args:
+        - JENASVNUSER=username
+        - JENASVNPASSWORD=password
+    volumes:
+      - /disk/data/STILT:/opt/STILT_modelling/Input:ro
+      - /disk/data/STILT/RData:/opt/STILT_modelling/Output/RData:ro
+      - /disk/data/STILT/Results:/opt/STILT_modelling/Output/Results
+      - /disk/data/STILT/Footprints:/opt/STILT_modelling/Output/Footprints
+    tty: true
 
