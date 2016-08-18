@@ -37,6 +37,12 @@ jupyter/storage/
 #############################################
 stilt/docker-compose.yml
 
+
+# Concrete local Docker configuration for RESTHeart. #
+#############################################
+restheart/docker-compose.yml
+restheart/storage/
+
 *.*~
 .idea
 .editorconfig
