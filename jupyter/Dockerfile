@@ -27,4 +27,8 @@ COPY Makefile /opt/pyscrip/PySCRIP-master/PySCRIP/
 RUN cd /opt/pyscrip/PySCRIP-master/PySCRIP/ \
 && make 
 
+RUN apt-get install -y libblas-dev liblapack-dev libfftw3-dev tcsh 
+
 USER $NB_USER
+
+RUN pip install pyshtools
