@@ -9,7 +9,7 @@
 # SVN $URL$
 #===============================================================================
 
-NC_CONFIG = /opt/conda/envs/python2/bin/nc-config
+NC_CONFIG = /opt/conda/envs/py2/bin/nc-config
 LIBDIR    = $(shell $(NC_CONFIG) --prefix)/lib
 INCDIR    = $(shell $(NC_CONFIG) --prefix)/include
 SRCDIR    = $(shell pwd)
@@ -22,7 +22,7 @@ FLAGS     = -fdefault-real-8 -ffixed-form -O2 -fPIC
 LIB       =  $(shell $(NC_CONFIG) --flibs)
 INCLUDE   = -I$(INCDIR) -J$(BUILDIR)
 F2PY      = f2py
-F2PY_LIB  = -L${LIBDIR} -L$(HDF5SERIAL_LIB_DIR_GCC)-lnetcdf -lnetcdff -lhdf5 -lhdf5_hl
+F2PY_LIB  = -L${LIBDIR} -L$(HDF5SERIAL_LIB_DIR_GCC) -lnetcdf -lnetcdff -lhdf5 -lhdf5_hl
 F2PY_INCLUDE  = -I${INCDIR} -I$(BUILDIR)e
 F2PY_F90_FLAG = '-fdefault-real-8 -ffixed-form -O2 -fPIC'
 

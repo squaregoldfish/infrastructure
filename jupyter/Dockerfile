@@ -1,34 +1,45 @@
-FROM jupyter/datascience-notebook:latest
+FROM jupyterhub/jupyterhub
 
-MAINTAINER ingrid.vanderlaan@wur.nl
+MAINTAINER mitch.selander@gis.lu.se
 
-USER root 
-
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/conda/bin \
-    PYTHONPATH=/opt/pyscrip/PySCRIP-master/
+#Use bash instead of sh to allow for the use of source to activate the conda environments
+RUN rm /bin/sh \
+	&& ln -s /bin/bash /bin/sh
 
 RUN apt-get update \
-&& apt-get install -y lsb-core 
+	&& apt-get install -y lsb-core 
 
-RUN conda install -y -c anaconda -c jacksongs -c ncar -c khallock -n python2 netcdf4 matplotlib mpld3=0.2 pynio pyngl
+RUN conda install notebook \
+	&& conda create -n py2 python=2.7 anaconda 
 
-RUN conda install -y -c anaconda -n python2 basemap=1.0.7 
+WORKDIR /opt/conda/envs/py2/lib/python2.7/site-packages/
 
-RUN conda install -y -c ioos -n python2 netcdf-fortran=4.4.2 \
-&& conda clean -tipsy
+RUN python ipykernel install
 
-ENV PATH /opt/conda/envs/python2/bin:$PATH
+RUN source activate py2 \ 
+	&& python ipykernel install 
 
-RUN cd /opt/ \
-&& curl https://static.icos-cp.eu/share/docker/pyscrip.tar.gz | tar xvz
+ENV PATH=/opt/conda/envs/py2/bin:$PATH \
+    PYTHONPATH=/opt/pyscrip/PySCRIP-master/
+
+RUN conda config --add channels conda-forge \
+	&& conda install --name py2 netcdf4 netcdf-fortran 
+
+RUN conda config --add channels ncar \
+	&& conda config --add channels khallock \
+	&& conda install --name py2 mpld3=0.2 pynio pyngl basemap=1.0.7
+
+WORKDIR /opt/
+
+RUN curl https://static.icos-cp.eu/share/docker/pyscrip.tar.gz | tar xvz
 
 COPY Makefile /opt/pyscrip/PySCRIP-master/PySCRIP/
 
-RUN cd /opt/pyscrip/PySCRIP-master/PySCRIP/ \
-&& make 
+WORKDIR /opt/pyscrip/PySCRIP-master/PySCRIP/
 
-RUN apt-get install -y libblas-dev liblapack-dev libfftw3-dev tcsh 
+RUN make
 
-USER $NB_USER
+RUN apt-get install -y libblas-dev liblapack-dev libfftw3-dev tcsh \
+	&& pip install pyshtools
 
-RUN pip install pyshtools
+
