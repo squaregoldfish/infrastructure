@@ -1,0 +1,10 @@
+version: '2'
+services:
+  eudat:
+    build: .
+    image: local/eudatclient
+    volumes:
+      - /disk/data/STILT/:/opt/data:ro
+    stdin_open: true
+    tty: true
+

@@ -43,6 +43,11 @@ stilt/docker-compose.yml
 restheart/docker-compose.yml
 restheart/storage/
 
+# Concrete local Docker configuration for EUDAT client tools. #
+#############################################
+eudat/docker-compose.yml
+eudat/irodsEnv.txt
+
 *.*~
 .idea
 .editorconfig

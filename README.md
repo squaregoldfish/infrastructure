@@ -49,3 +49,14 @@ Useful commands
 To get a list of Docker container IDs together with their Linux process IDs (run as root):
 `docker ps | awk '{print $1}' | tail -n +2 | xargs docker inspect -f '{{ .Config.Hostname }} {{ .State.Pid }}'`
 
+To purge unused Docker images:
+`docker rmi $(docker images --filter "dangling=true" -q --no-trunc)`
+
+To get a list of top 10 processes by memory usage:
+`ps aux --sort -rss | head -n 10`
+
+To get process' command:
+`ps -fp <pid>`
+
+Working dir of a process by id:
+`pwdx <pid>`

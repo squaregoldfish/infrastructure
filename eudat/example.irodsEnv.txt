@@ -1,0 +1,7 @@
+irodsHost eudat-b2safe.pdc.kth.se
+irodsPort 1247
+irodsUserName oleg
+irodsZone eudat.se
+irodsHome /eudat.se/projects/icos
+irodsCwd /eudat.se/projects/icos
+
