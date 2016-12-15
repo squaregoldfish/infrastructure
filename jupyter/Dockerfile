@@ -9,7 +9,7 @@ RUN rm /bin/sh \
 RUN apt-get update \
 	&& apt-get install -y lsb-core 
 
-RUN conda install notebook \
+RUN conda install -y notebook \
 	&& conda create -n py2 python=2.7 anaconda 
 
 WORKDIR /opt/conda/envs/py2/lib/python2.7/site-packages/
@@ -23,7 +23,8 @@ ENV PATH=/opt/conda/envs/py2/bin:$PATH \
     PYTHONPATH=/opt/pyscrip/PySCRIP-master/
 
 RUN conda config --add channels conda-forge \
-	&& conda install --name py2 netcdf4 netcdf-fortran 
+	&& conda install -y --name py2 netcdf4 netcdf-fortran \
+	&& conda install -y ipywidgets
 
 RUN conda config --add channels ncar \
 	&& conda config --add channels khallock \
