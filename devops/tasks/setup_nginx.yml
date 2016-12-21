@@ -1,0 +1,26 @@
+# By default, selinux on centos/7 will disallow the httpd to connect to    
+# cpauth (localhost:8080) You can see it in /var/log/nginx/error.log as    
+# '... [crit] 16897#0: *10 connect() to 127.0.0.1:8080 failed (13:         
+# Permission denied) while connecting to upstream ...'                     
+- name: Set selinux into 'permissive' mode.                                
+  selinux: policy=targeted state=permissive                                             
+  become: yes                                                                           
+                                                                                        
+- name: Starting NGINX                                                                  
+  service: name=nginx state=started enabled=yes                                         
+                                                                                      
+- name: Copy ssl conf                                                                   
+  copy: src=/etc/nginx/ssl dest=/etc/nginx/ owner=root group=root mode=0700             
+  notify: reload nginx config                                                           
+                                                                                        
+- name: Copy nginx configuration                                                        
+  copy: src=nginx/conf.d/ dest=/etc/nginx/conf.d/
+  notify: reload nginx config                                                           
+                                                                                      
+  # - name: Retrieve NGINX frontpage                                                    
+  #   action: uri url="http://{{ ansible_all_ipv4_addresses[0] }}/" return_content=yes  
+  #   register: webpage                                                                 
+                                                                                      
+  # - name: Check for keywords in NGINX frontpage                                       
+  #   fail: msg='service is not happy'                                                  
+  #   when: "'Test Page for the Nginx HTTP Server on Fedora' not in webpage.content"    
