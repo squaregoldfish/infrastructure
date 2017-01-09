@@ -91,11 +91,11 @@ l.remove.Resultfile <- FALSE
 if (exists('remove.Resultfile')) l.remove.Resultfile <- remove.Resultfile
 
 # OVERWRITE WARNING
-if(existsr(paste("stiltresult",part,sep=""),path=pathFP)) {
+if(existsr(paste("stiltresult_",stilt_year,"_",part,sep=""),path=pathFP)) {
    if(l.remove.Resultfile){
       warning("You are attempting to overwrite an existing stiltresult object")
-      unix(paste("rm -f ",paste(pathFP,".Rdata","stiltresult",part,sep=""),sep=""))
-      unix(paste("rm -f ",paste(pathFP,"stiltresult",part,".csv",sep=""),sep=""))
+      unix(paste("rm -f ",paste(pathFP,".Rdata","stiltresult_",stilt_year,"_",part,sep=""),sep=""))
+      unix(paste("rm -f ",paste(pathFP,"stiltresult_",stilt_year,"_",part,".csv",sep=""),sep=""))
       warning("Notice: New stiltresult object will be written ")
    }else{ 
       warning("You are not computing new timeseries you are using an existing stiltresult object")
@@ -321,8 +321,8 @@ for (j in 1:nrows) {
 
 
      # 'traj' is a vector
-     if (existsr(paste("stiltresult", part, sep=""), path=pathFP)) {
-        result <- getr(paste("stiltresult", part, sep=""), path=pathFP)
+     if (existsr(paste("stiltresult_",stilt_year,"_", part, sep=""), path=pathFP)) {
+        result <- getr(paste("stiltresult_",stilt_year,"_", part, sep=""), path=pathFP)
         if (dim(result)[1] != nrows) {
            if (firstflux) print("Trajecmod(): existing stiltresult has wrong dimension; creating new one.")
         } else {
@@ -339,7 +339,7 @@ for (j in 1:nrows) {
      dimnames(result) <- list(NULL, c(names(traj)))
      dimnames(result) <- list(NULL, dimnames(result)[[2]])
      # write the object into default database; object names are, e.g., "Crystal.1"
-     assignr(paste("stiltresult", part, sep=""), result, path=pathFP)
+     assignr(paste("stiltresult_",stilt_year,"_", part, sep=""), result, path=pathFP)
   }
   rownum <- rownum+1
 
@@ -368,10 +368,17 @@ for (j in 1:nrows) {
                           fluxweighting=NULL, coarse=1, vegpath=vegpath,
                           numpix.x=numpix.x, numpix.y=numpix.y,
                           lon.ll=lon.ll, lat.ll=lat.ll, lon.res=lon.res, lat.res=lat.res)
-       assignr(paste("foot", identname, sep=""), foot, pathFP)
-       print(paste("Trajecmod(): foot", identname, " assigned", sep=""))
-     } # if (rerunfoot)
+       # uk check if foot is valid
+#       if (is.null(dim(foot))) stop(paste(" Trajecfoot returned empty footprint for ",identname,sep=""))
+       if (!is.null(foot)) {
+         assignr(paste("foot", identname, sep=""), foot, pathFP)
+         print(paste("Trajecmod(): foot", identname, " assigned", sep=""))
+       } #if (!is.null(dim(foot)))
+    } # if (rerunfoot)
 
+    if (is.null(foot)) { # uk check if foot is valid
+      print(paste("No footprint file written!!!!"))
+    } else {	    
     # write aggregated footprint to netcdf file
     # prepare for ncdf output 
     if (ftintr > 0 | length(foottimes) > 10) {
@@ -386,36 +393,37 @@ for (j in 1:nrows) {
     fac.dig <- 1+10^(-digits)
     errors <- NULL
 	    
-    # foot has dimensions lat,lon,time, netcdf standard requires lon,lat,time
+    # foot has dimensions lat,lon,(backward-)time
+    # introduce initial time as time dimension (needed to contruct yearly files with aggregated footprints)
+    # define backward time as 4th dimension
     footlon <- as.numeric(dimnames(foot)[[2]])
     footlat <- as.numeric(dimnames(foot)[[1]])
-    foothr <- as.numeric(dimnames(foot)[[3]])
-    # shift foothr to represent start time of integration rather than end time
+    foothr <- 1
+    footbhr <- as.numeric(dimnames(foot)[[3]])
+    # shift footbhr to represent start time of integration rather than end time
     # assuming that first integration intervall ends at initial time
-    foothr <- foottimes[2:(length(foottimes))]
+    footbhr <- foottimes[2:(length(foottimes))]
     hr <- round((StartInfo[j,1]-floor(StartInfo[j,1]))*24)
     inittime<-ISOdatetime(dat$year,dat$month,dat$day,hr,0,0,tz="UTC")
-    foottime <- inittime-foothr*3600
+    foottime <- inittime-footbhr*3600
 
-    footdate <- as.numeric(difftime(foottime,epoch,units="days")) # subtract the epoch to make days-since
+    footdate <- as.numeric(difftime(inittime,epoch,units="days")) # subtract the epoch to make days-since
+    footbdate <- as.numeric(difftime(foottime,epoch,units="days")) # subtract the epoch to make days-since
 
     # if netcdf file does not exist or has different content, write new netcdf file
     if (file.exists(paste(pathFP,ncf_name,sep=""))) {
       print(paste("Trajecmod(): found netcdf file ", ncf_name, " in ", pathFP))
       ncf <- nc_open(paste(pathFP,ncf_name,sep=""))
-      #print(ncf)
+      #print(paste("open ",ncf,sep=""))
       for( i in 1:ncf$nvars ) {
         z <- ncf$var[[i]]
         if (z$name=="foot") testfoot<-ncf$var[[i]]
-        if (z$name=="foothr") testfoothr<-ncf$var[[i]]
       }
 
       zfoot <- ncvar_get( ncf, testfoot )
-      zfoothr <- ncvar_get( ncf, testfoothr )
       if(compare.signif(zfoot,drop(aperm(foot,c(2,1,3))),digits,fac.dig) !=0) errors <- c(errors,'foot mismatch')
       #if(compare.signif(z$lat,footlat,digits,fac.dig) !=0) errors <- c(errors,'footlat mismatch')
       #if(compare.signif(z$lon,footlon,digits,fac.dig) !=0) errors <- c(errors,'footlon mismatch')
-      if(sum(zfoothr != foothr) !=0) errors <- c(errors,'foothr mismatch')
       #if(sum(z$time != footdate) !=0) errors <- c(errors,'footdate mismatch')
       print(paste(errors,sep=" "))
       nc_close(ncf)
@@ -430,38 +438,38 @@ for (j in 1:nrows) {
       # dimensions for netcdf file
       footlon.dim <- ncdim_def( "lon", "degrees_east", footlon, longname="degrees longitude of center of grid boxes" )
       footlat.dim <- ncdim_def( "lat", "degrees_north", footlat, longname="degrees latitude of center of grid boxes"  )
-      footdate.dim <- ncdim_def( "time", "days since 2000-01-01 00:00:00 UTC", footdate, longname="footprint intervalls backward time" )
+      footdate.dim <- ncdim_def( "time", "days since 2000-01-01 00:00:00 UTC", footdate, longname="footprint initial date",unlim=TRUE )
+      #footbdate.dim <- ncdim_def( "back", "days since 2000-01-01 00:00:00 UTC", footbdate, longname="footprint intervalls backward time" )
 
       # missing values
       mv <- -1.e30 # missing value to use
       # define variable
       # compress is not working... hdf5 not correctly installed/linked?
-      footprint <- ncvar_def( "foot", "ppm per (micromol m-2 s-1)", list(footlon.dim,footlat.dim,footdate.dim), mv, longname="STILT footprints for backward time intervall" , prec="double", compression=9)
-      footprinthr <- ncvar_def( "foothr", "hours", list(footdate.dim), mv ,longname="hours backward in time from STILT start time" , compression=9)
+      #footprint <- ncvar_def( "foot", "ppm per (micromol m-2 s-1)", list(footbdate.dim,footlon.dim,footlat.dim,footdate.dim), mv, longname="STILT footprints integrated over backward time intervall btime-time" , prec="double", compression=9)
+      footprint <- ncvar_def( "foot", "ppm per (micromol m-2 s-1)", list(footlon.dim,footlat.dim,footdate.dim), mv, longname="STILT footprints integrated over backward time intervall backtime" , prec="double", compression=9)
 
     # Create output file
-      ncf <- nc_create( paste(pathFP,ncf_name,sep=""), list(footprint,footprinthr) )
+      ncf <- nc_create( paste(pathFP,ncf_name,sep=""), list(footprint) )
 
       # write data to the file
-      footT<-aperm(foot,c(2,1,3))   #rearange dimensions for netcdf 
+      #rearange dimensions for netcdf because netcdf standard requires lon,lat,time, use btime as 4th dimension
+      footT<-aperm(foot,c(2,1,3))   
+      #footT<-array(footT,dim=c(dim(footT)[3],dim(footT)[1],dim(footT)[2],1))
+      #ncvar_put( ncf, footprint, footT, start=c(1,1,1,1), count=c(-1,-1,-1,-1) )
       ncvar_put( ncf, footprint, footT, start=c(1,1,1), count=c(-1,-1,-1) )
-      ncvar_put( ncf, footprinthr, foothr, start=c(1), count=c(-1) )
 
       # add attributes
-      ncatt_put( ncf, 0, "init_date",paste(substring(identname,1,4),substring(identname,6,7),substring(identname,9,10),substring(identname,12,13),sep="") )
+      ncatt_put( ncf, 0, "backtime",paste(-nhrs,"hours",sep=" ") )
       ncatt_put( ncf, 0, "description",
-                      paste("aggregated STILT footprints on lon/lat/time grid,  ",
-                            "aggregated in grid boxes and in time prior to the stilt start time up to and including time[1], which ",
-                            "is foothr[1] hours prior to the stilt start time; foot[,,2] is a lat/lon grid of footprints aggregated ",
-                            "in grid boxes and in time prior to time[1] up to and including time[2], which is foothr[2] hours ",
-                            "prior to the stilt start time; etc)",
-                            "stilt start date and time can be found in the global attribute: init_date ",
-		            "(as YYYYMMDDHR representing year, month, day, hour)",sep=""))
+                      paste("aggregated STILT footprints on lon/lat/time grid,",
+		            "aggregated in grid boxes (lat,lon) and stilt start time (time),",
+			    "aggregated over backtime hours prior to start time") )
       nc_close(ncf)
       print(paste("Footprint written to NetCDF file ",ncf_name,"\n",sep=""))
       #system(paste("rsync ",pathFP,ncf_name," ",pathResults,ncf_name,sep=""))
     } 
-  } # if (exists(foottimes))
+  } # !is.null(foot) 
+  } # footprintTF
 
   ##### plot footprint ########
   if (footplotTF) { # plot footprints
@@ -493,9 +501,9 @@ if (biomassburnTF)
 if (fluxTF) {
    dimnames(result) <- list(NULL, dimnames(result)[[2]])
    # write the object into default database; object names are, e.g., "Crystal.1"
-   assignr(paste("stiltresult", part, sep=""), result, path=pathFP)
-   print(paste("stiltresult", part, " assigned in ", pathFP, sep=""))
-   write.table(result, file=paste(pathFP, "stiltresult", part, ".csv", sep=""), na="", row.names=F)
+   assignr(paste("stiltresult_",stilt_year,"_", part, sep=""), result, path=pathFP)
+   print(paste("stiltresult_",stilt_year,"_", part, " assigned in ", pathFP, sep=""))
+   write.table(result, file=paste(pathFP, "stiltresult_",stilt_year,"_", part, ".csv", sep=""), na="", row.names=F)
 }
 
 # If evi and lswi maps from vprm calculations is saved to the global environment; it should be removed here

@@ -48,13 +48,13 @@ RUN cd /opt/STILT_svn/trunk/merged_stilt_hysplit \
 && gunzip maps_3.1.1.tar.gz \
 && R CMD INSTALL maps_3.1.1.tar maps \
 
-&& wget https://cran.r-project.org/src/contrib/spam_1.3-0.tar.gz \ 
-&& gunzip spam_1.3-0.tar.gz  \
-&& R CMD INSTALL spam_1.3-0.tar spam \
+&& wget https://cran.r-project.org/src/contrib/spam_1.4-0.tar.gz \ 
+&& gunzip spam_1.4-0.tar.gz  \
+&& R CMD INSTALL spam_1.4-0.tar spam \
 
-&& wget https://cran.r-project.org/src/contrib/fields_8.4-1.tar.gz \
-&& gunzip fields_8.4-1.tar.gz \
-&& R CMD INSTALL fields_8.4-1.tar fields \
+&& wget https://cran.r-project.org/src/contrib/fields_8.7.tar.gz \
+&& gunzip fields_8.7.tar.gz \
+&& R CMD INSTALL fields_8.7.tar fields \
  
 #========Install package sp for R==========================================================
 && wget https://cran.r-project.org/src/contrib/sp_1.2-3.tar.gz \

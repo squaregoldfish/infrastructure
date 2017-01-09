@@ -1,4 +1,4 @@
-q#script to set edgar tracer names and flux fields for edgar emissions by fuel type and category
+#script to set edgar tracer names and flux fields for edgar emissions by fuel type and category
 #for changing tracer settings make edits in section far below entitled 
 #"HERE SET TRACERS FOR USE IN STILT FORWARD SIMULATIONS"
 
@@ -184,7 +184,7 @@ tr.edg<-tr.edg.tmp
                               tr.edg[grepl("co.",tr.edg,fixed=TRUE)],"co",
                               tr.edg[grepl("ch4.",tr.edg,fixed=TRUE)],"ch4",
                               tr.edg[grepl("n2o.",tr.edg,fixed=TRUE)],"n2o",
-                              "h2","cofire","rn","ch4nat"))	
+                              "h2","cofire","rn","rn_era","ch4nat"))	
   l.traddco2<-length(tr.edg[grepl("co2.",tr.edg,fixed=TRUE)])
   l.traddco <-length(tr.edg[grepl("co.",tr.edg,fixed=TRUE)])
   l.traddch4<-length(tr.edg[grepl("ch4.",tr.edg,fixed=TRUE)])
@@ -196,7 +196,7 @@ tr.edg<-tr.edg.tmp
 tracer.info<-rbind(
 #################################################
 #### edit following part for each tracer ########
-#    "co2",    "co",  "ch4",   "n2o",   "h2",   "cofire",   "rn" ,"ch4nat"
+#    "co2",    "co",  "ch4",   "n2o",   "h2",   "cofire",   "rn" , "rn_era", "ch4nat"
 c(rep(T,l.traddco2),
       T,        							#want CO2 as tracer (using VPRM and other inventory and LBC specified below)? Select T or F
             rep(T,l.traddco),
@@ -205,7 +205,7 @@ c(rep(T,l.traddco2),
                         T,						#want CH4 as tracer (using other inventory specified below)? Select T or F
                             rep(T,l.traddn2o),
                                 F,					#want N2O as tracer (using other inventory specified below)? Select T or F
-                                         F,        F,      T,      F), #want tracer? H2 is not ready at the moment, needs proper implementation in Trajecvprm()
+                                         F,        F,        T,       T,       F), #want tracer? H2 is not ready at the moment, needs proper implementation in Trajecvprm()
 c(rep(T,l.traddco2),
       T,        							# CO2 fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
             rep(T,l.traddco),
@@ -214,24 +214,26 @@ c(rep(T,l.traddco2),
                         T,        							# CH4 fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
                             rep(T,l.traddn2o),
                                 F,        							# N2O fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
-                                         F,        F,      T,      T), #surface fluxes in netCDF format (T) or as R objects (F)? (In case of CO2: same format for fossil fluxes
+                                         F,        F,      T,      T,      T), #surface fluxes in netCDF format (T) or as R objects (F)? (In case of CO2: same format for fossil fluxes
                                           	 #and biospheric fields (veg cover, modis indices)
 c(paste(edgar.path,get(paste("edfs","co2",sep=".")),sep="")[0:l.traddco2],                               #not modify
 #      "/Net/Groups/BSY/people/ukarst/STILT_prepro/EDGAR/EDGAR4.1_BP2012/data/ncdf_stilt_eu2/EDGAR_4.1_0.1x0.1.CO2.2011.nc",                 #full name for emission file (CO2)
-      "./Input/EDGARv4.1_BP2012/STILT_EU2/EDGAR_4.1_0.1x0.1.CO2.2011.nc",                 #full name for emission file (CO2)
+      "./Input/EDGARv4.1_BP2012/STILT_EU2/EDGAR_4.1_0.1x0.1.CO2.XXXX.nc",                 #full name for emission file (CO2)
   paste(edgar.path,get(paste("edfs","co",sep=".")),sep="")[0:l.traddco],                                #not modify
 #              "/Net/Groups/BSY/people/ukarst/STILT_prepro/EDGAR/EDGAR4.1_BP2012/data/ncdf_stilt_eu2/EDGAR_4.1_0.1x0.1.CO.2011.nc",                 #full name for emission file (CO)
-              "./Input/EDGARv4.1_BP2012/STILT_EU2/EDGAR_4.1_0.1x0.1.CO.2011.nc",                 #full name for emission file (CO)
+              "./Input/EDGARv4.1_BP2012/STILT_EU2/EDGAR_4.1_0.1x0.1.CO.XXXX.nc",                 #full name for emission file (CO)
   paste(edgar.path,get(paste("edfs","ch4",sep=".")),sep="")[0:l.traddch4],                                #not modify
 #                    "/Net/Groups/BSY/people/ukarst/STILT_prepro/EDGAR/EDGAR4.1_BP2012/data/ncdf_stilt_eu2/EDGAR_4.1_0.1x0.1.CH4.2011.nc",              #full natme for emission file (CH4)
-                    "./Input/EDGARv4.1_BP2012/STILT_EU2/EDGAR_4.1_0.1x0.1.CH4.2011.nc",              #full natme for emission file (CH4)
+                    "./Input/EDGARv4.1_BP2012/STILT_EU2/EDGAR_4.1_0.1x0.1.CH4.XXXX.nc",              #full natme for emission file (CH4)
   paste(edgar.path,get(paste("edfs","n2o",sep=".")),sep="")[0:l.traddn2o],                                #not modify
                              "/Net/Groups/BSY/tools/STILT/fluxes_input/IER_Stuttgart/Europe/N2O.2000.nc",  #full name for emission file (N2O)
                                         "/Net/Groups/BSY/tools/STILT/fluxes_input/IER_Stuttgart/Europe/N2O.2000.nc",  #full name for H2 emissions NOT READY YET
                                                     "/Net/Groups/BSY/tools/people/cgerbig/RData/ROAM/Fluxes/BARCAfires/ncdf/CO.barcafire2009.nc", #full name for emission file (cofire)
-								"./Input/Radon/InGOS_Rn_map_STILT_EU2_2011_v1.0.nc", #full name for Radon emissions
+#								"./Input/Radon/InGOS_Rn_map_STILT_EU2_XXXX_v1.0.nc", #full name for Radon emissions
+								"./Input/Radon/InGOS_Rn_flux_noah_mq60_STILT_EU2_v2.0_XXXX.nc", #full name for Radon emissions based on GLDAS NOAH soil moisture
+								"./Input/Radon/InGOS_Rn_flux_eraland_mq60_STILT_EU2_v2.0_XXXX.nc", #full name for Radon emissions based on ERA-Interim/land soil moisture
 									"/Net/Groups/BSY/people/svardag/STILT_modelling/CH4_other_emissions/CH4_OTHERS.0.125x0.0.083.nc"),#full name for natural CH4 emissions
-#    "co2",    "co",    "ch4",   "n2o",   "h2",   "cofire",  "rn" , "ch4nat"
+#    "co2",    "co",    "ch4",   "n2o",   "h2",   "cofire",  "rn" , "rn_era", "ch4nat"
 c(   rep("",l.traddco2), 
      "TM3", 
      rep("",l.traddco),
@@ -239,22 +241,24 @@ c(   rep("",l.traddco2),
      rep("",l.traddch4),
                       "TM3",   
      rep("",l.traddn2o),
-                                 "",       "",       "",    "TM3" ,  ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
+                                 "",       "",       "",    "TM3" ,  "TM3",    ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
                                                                                                         #"CT" (CarbonTracker), "TM3", "LMDZ", "" (zero boundary)
 c(rep("",l.traddco2),   #not modify		  	              #full names for initial & boundary cond. files; select "" for climatological LBC ("climat")
 #       "/User/homes/croeden/public_html/download-CO2-3D/INVERSION/OUTPUT/s96_v3.6_mix_2013.nc",		#full name for initial & boundary cond. file (CO2); functions accessing files automatically get correct year
-       "./Input/INI_BDY/TM3/CO2/s04_v3.7_mix_YYYY.nc",		#full name for initial & boundary cond. file (CO2); functions accessing files automatically get correct year
+#       "./Input/INI_BDY/TM3/CO2/s04_v3.7_mix_YYYY.nc",		#full name for initial & boundary cond. file (CO2); functions accessing files automatically get correct year
+       "./Input/INI_BDY/TM3/CO2/mu1.0_070_mix_YYYY.nc",		#full name for initial & boundary cond. file (CO2); functions accessing files automatically get correct year
   rep("",l.traddco),   #not modify                   							  	
           "/Net/Groups/BSY/tools/STILT/fluxes_input/MACC_CO/macc_CO_2010_01.nc",                        #full name for initial & boundary cond. file (CO); functions accessing files automatically get correct year and month
   rep("",l.traddch4),   #not modify
 #                    "/Net/Groups/BSY/tools/STILT/fluxes_input/TM3_CH4_nc/mu1.0_070_mix_2011.nc",        #full name for initial & boundary cond. file (CH4); functions accessing files automatically get correct year
-                    "./Input/INI_BDY/TM3/CH4/mu1.0_070_mix_2011.nc",        #full name for initial & boundary cond. file (CH4); functions accessing files automatically get correct year
+                    "./Input/INI_BDY/TM3/CH4/mu1.0_070_mix_YYYY.nc",        #full name for initial & boundary cond. file (CH4); functions accessing files automatically get correct year
   rep("",l.traddn2o),   #not modify
                                "",                   							#full name for initial & boundary cond. file (N2O) 
                                          "",                                                          	#full name for initial & boundary cond. file (H2)
                                                    "",							#full name for initial & boundary cond. file (COfire)
 #							     "/Net/Groups/BSY/tools/STILT/fluxes_input/TM3/Radon/mix_2011.nc",#full name for initial & boundary cond. file (Rn)
-							     "./Input/INI_BDY/TM3/Rn/mix_2011.nc",#full name for initial & boundary cond. file (Rn)
+							     "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
+							     "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
 								     "")) 				#full name for initial & boundary cond. file (ch4nat)
 
 #################################################

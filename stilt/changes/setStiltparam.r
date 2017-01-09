@@ -90,13 +90,15 @@ metsource<-c("ECmetF")   # Source of Meteorological data, for analysis runs (not
 
 ###### Carbon Portal specific settings #######
 teststation <- Sys.getenv(c("STILT_NAME"),unset = NA)
+stilt_year <- Sys.getenv(c("STILT_YEAR"),unset = NA)
 run_id <- Sys.getenv(c("RUN_ID"),unset = NA)
 print(paste("teststation",teststation,sep=" "))
 print(paste("run_id",run_id,sep=" "))
 station<-teststation
 #station<-"hxHEIi"
 path<-paste(path,station,"/",sep="")
-pathFP<-paste(pathFP,station,"/",sep="")
+#pathFP<-paste(pathFP,station,"/",sep="")
+pathFP<-paste(pathFP,run_id,"/",station,"/",sep="")
 pathResults<-paste(pathResults,run_id,"/",station,"/",sep="")
 #pathResults<-paste(pathResults,run_id,"/","XXX","/",sep="")
 print(paste("RData file should be in ",path))
@@ -105,7 +107,7 @@ print(paste("Results will be in ",pathResults))
 remove.Resultfile=F     # T: remove stiltresult object and csv-file
                         # F: do not overwrite stitlresult object and csv-file, plot results only
 ###### end CP specific settings ######
-Timesname<-paste(".",station,".request",sep="") #name of object containing frac. julian, lat, lon, agl (m) as receptor information;
+Timesname<-paste(".",station,".",stilt_year,".request",sep="") #name of object containing frac. julian, lat, lon, agl (m) as receptor information;
 				#this object needs to be saved (use assignr) in directory 'path' (see above)
 				#can be created with create_times.r
                                 #note that column names must be "fjul","lat","lon","agl"
@@ -173,7 +175,6 @@ if(emisscatTF){
                                                                                                           #in these file names "YYYY" gets automatically
                                                                                                           #substituted by the required year
 } #end of "if(emisscatTF){ } else {"
-
 
 ####### don't modify ##########
 dimnames(tracer.info)<-list(c("wanted","ncdfTF","emissfile","inikind","inifile"),tracer.names.all)

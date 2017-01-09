@@ -212,7 +212,6 @@ if (existsr(ident,pathname)) {
    }
 } #if exists or not
 
-
 # get time and position information from name (ident)
 pos <- id2pos(ident)
 time <- month.day.year(floor(pos[1]))
@@ -484,7 +483,19 @@ for (speci in tracers) { # all fossil fuel emissions, do the ones with netCDF fo
       # print(date())
 #      if(speci!="cofire")emiss <- get.fossEU.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci)
 #      if(speci=="cofire")emiss <- get.fireBARCA.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci)
-      emiss <- get.Emis.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci,numpix_x=numpix.x,numpix_y=numpix.y)
+#      dfile<-emissfile[tolower(speci)]
+      # set year for emission file (changes by uk)
+      if(grepl("XXXX", emissfile[tolower(speci)]   )){
+        yys<-unique(gmtime[, "yr"])
+        print(paste("yys ",yys))
+        # as long as only a single year can be used in the run, make sure that number of days per year is set to current year in case the previous year was a leap year, therefore reset year in fdate to current year 
+	fdate[fdate==(yys[1]-1)] <- yys[1]
+        dfile<-paste(gsub("XXXX",yys[1],emissfile[tolower(speci)]))
+        print(paste("dfile ",dfile,sep=" "))
+        emiss <- get.Emis.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci,numpix_x=numpix.x,numpix_y=numpix.y,dfile=dfile)
+      }else{
+        emiss <- get.Emis.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci,numpix_x=numpix.x,numpix_y=numpix.y)
+      }
       #adjust units to get ppm (foot variable expects fluxes in micro-moles/m2/s)
       if(grepl("data/EDGAR4.2/v42_",  emissfile[tolower(speci)]   )){ #in units of "kg m-2 s-1"
         if(tolower(speci)=="co2")emiss<-emiss*10E9/44
@@ -492,7 +503,7 @@ for (speci in tracers) { # all fossil fuel emissions, do the ones with netCDF fo
         if(tolower(speci)=="ch4")emiss<-emiss*10E9/16
         if(tolower(speci)=="n2o")emiss<-emiss*10E9/44
       }
-      if (speci=="rn"){
+      if (speci=="rn"|speci=="rn_era"){
         EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/(3.82535*24))/0.0224/1000 #rn decay with 3.8 days lifetime, convert to Bq/m3
       } else {
         EMCO <- emiss*part[, "foot"]
@@ -536,8 +547,9 @@ if ((bios=="VPRM"|bios=="GSB")&"co2"%in%tracers) { # VPRM with fortran call to d
         # get EVI parameters, vegetation specific
         #do seperate for different years
         yys<-unique(gmtime[, "yr"])
-        if(length(yys)>1){ #have two years
+        if(length(yys)>1){ #have two years (for trajactories extending back into the previous year) 
           sely<-gmtime[, "yr"]==yys[1];selfd<-as.vector(rbind(sely,sely,sely,sely,sely))#selectors for later year
+          evilswipath<-paste(substring(evilswipath,1,nchar(evilswipath)-5),yys[1],"/",sep="")
           vprmset1  <- get.modis.netcdf(fdate[selfd], i=x[sely], j=y[sely], ires=shrink.x[sely], jres=shrink.y[sely], dpath=evilswipath)#later year
           evilswipath2<-paste(substring(evilswipath,1,nchar(evilswipath)-5),yys[2],"/",sep="")
           vprmset2  <- get.modis.netcdf(fdate[!selfd], i=x[!sely], j=y[!sely], ires=shrink.x[!sely], jres=shrink.y[!sely], dpath=evilswipath2)#earlier year
@@ -549,6 +561,7 @@ if ((bios=="VPRM"|bios=="GSB")&"co2"%in%tracers) { # VPRM with fortran call to d
           lswiMinVec <- rbind(vprmset1$LSWI_amin,vprmset2$LSWI_amin)
           veg.fra<-rbind(vprmset1$VEG_FRA,vprmset2$VEG_FRA)
         } else { #only single year
+          evilswipath<-paste(substring(evilswipath,1,nchar(evilswipath)-5),yys[1],"/",sep="")
           vprmset  <- get.modis.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, dpath=evilswipath)
           eviset <- vprmset$EVI
           lswiset <- vprmset$LSWI
@@ -974,6 +987,14 @@ if ("rn"%in%tracers & inikind["rn"] == "TM3") {
                   result=result, result.sel=selend, tracer=c("rn"))
    if(ftype=="nc")result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
 } 
+#if ("rn_era"%in%tracers & inikind["rn_era"] == "TM3") {
+#   cat("Trajecvprm: using TM3 initial values for Rn.\n")
+#   ftype<-substring(inifile["rn_era"],nchar(inifile["rn_era"])-1,nchar(inifile["rn_era"]))
+#   if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn_era"],
+#                  result=result, result.sel=selend, tracer=c("rn_era"))
+#   if(ftype=="nc")result[selend,"rnini_era"] <- result[selend,"rnini_era"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to l\
+#ateral boundary condition, conv. to Bq/m3
+#}
 
 dimnames(result) <- list(NULL, dimnames(result)[[2]])
 

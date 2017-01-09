@@ -33,7 +33,7 @@ path<-"./Output/RData/"              # path of directories with RData files for 
                                      # directory name = station id
 
 station<-dir(path)
-station<-station[nchar(station)==3]
+#station<-station[nchar(station)==3]
 print(paste("station available:",station,sep=" "))
 
 lat<-c()
