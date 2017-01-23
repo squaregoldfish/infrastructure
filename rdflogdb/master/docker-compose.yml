@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  rdflogdb:
+    build:
+      context: ./build
+      dockerfile: Dockerfile
+    image: "rdflogdb-v${PG_VERSION}-img"
+    container_name: "rdflogdb-v${PG_VERSION}"
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:${HOST_PORT}:5432"
+    volumes:
+      - /disk/data/volumes/rdflogdb-${PG_VERSION}:${PGDATA}
+      - /etc/localtime:/etc/localtime:ro
+
+volumes:
+  rdflogdb:

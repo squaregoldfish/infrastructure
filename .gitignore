@@ -16,8 +16,11 @@ alfresco/name-prefix.txt
 
 # Concrete local Docker configuration for RDF log's Postgres. #
 #############################################
-rdflogdb/docker-compose.yml
-rdflogdb/postgres
+rdflogdb/master/build/init-db.sh
+rdflogdb/master/.env
+rdflogdb/master/postgrestunnel.service
+rdflogdb/slave/build/recovery.conf
+rdflogdb/slave/.env
 
 # Concrete local Docker configuration for Sonatype Nexus. #
 #############################################
