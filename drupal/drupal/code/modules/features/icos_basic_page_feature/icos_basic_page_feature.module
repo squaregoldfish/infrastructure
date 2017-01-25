@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the ICOS Basic page feature.
- */
-
-include_once 'icos_basic_page_feature.features.inc';

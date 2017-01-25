@@ -1,8 +1,0 @@
-////////////////////////
-// Modules - Pane Partial
-////////////////////////
-
-.colored-panel-pane {
-  @include style-theme-instance-background-color();
-  @include style-theme-instance-background-based-color();
-}

@@ -1,8 +1,0 @@
-name = Shiny ICOS
-description = This is a minimal sub-theme of Shiny admin theme. Enabling us to add/override css and js to/from Shiny.
-core = 7.x
-base theme = shiny
-
-stylesheets[all][] = css/shiny_icos.css
-
-scripts[] = js/script.js

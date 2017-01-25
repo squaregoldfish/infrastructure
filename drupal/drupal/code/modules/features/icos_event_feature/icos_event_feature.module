@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the ICOS Event feature.
- */
-
-include_once 'icos_event_feature.features.inc';

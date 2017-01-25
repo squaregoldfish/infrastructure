@@ -1,5 +1,0 @@
-name = Alfresco reader
-description = An Alfresco reader for Drupal 7.
-package = CP
-core = 7.x
-
