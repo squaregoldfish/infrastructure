@@ -52,14 +52,14 @@ RUN cd /opt/STILT_svn/trunk/merged_stilt_hysplit \
 && gunzip spam_1.4-0.tar.gz  \
 && R CMD INSTALL spam_1.4-0.tar spam \
 
-&& wget https://cran.r-project.org/src/contrib/fields_8.7.tar.gz \
-&& gunzip fields_8.7.tar.gz \
-&& R CMD INSTALL fields_8.7.tar fields \
+&& wget https://cran.r-project.org/src/contrib/fields_8.10.tar.gz \
+&& gunzip fields_8.10.tar.gz \
+&& R CMD INSTALL fields_8.10.tar fields \
  
 #========Install package sp for R==========================================================
-&& wget https://cran.r-project.org/src/contrib/sp_1.2-3.tar.gz \
-&& gunzip sp_1.2-3.tar.gz \
-&& R CMD INSTALL sp_1.2-3.tar sp \
+&& wget https://cran.r-project.org/src/contrib/sp_1.2-4.tar.gz \
+&& gunzip sp_1.2-4.tar.gz \
+&& R CMD INSTALL sp_1.2-4.tar sp \
 
 #========Install fortran library for netcdf================================================
 && apt-get update -y \
