@@ -38,7 +38,8 @@ jupyter/storage/
 
 # Concrete local Docker configuration for STILT. #
 #############################################
-stilt/docker-compose.yml
+stilt/base/docker-compose.yml
+stilt/custom/docker-compose.yml
 
 
 # Concrete local Docker configuration for RESTHeart. #
