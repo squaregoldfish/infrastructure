@@ -200,14 +200,14 @@ tracer.info<-rbind(
 c(rep(T,l.traddco2),
       T,        							#want CO2 as tracer (using VPRM and other inventory and LBC specified below)? Select T or F
             rep(T,l.traddco),
-                F,     							#want CO as tracer (using other inventory specified below)? Select T or F
+                T,     							#want CO as tracer (using other inventory specified below)? Select T or F
                     rep(T,l.traddch4),
-                        F,						#want CH4 as tracer (using other inventory specified below)? Select T or F
+                        T,						#want CH4 as tracer (using other inventory specified below)? Select T or F
                             rep(T,l.traddn2o),
                                 F,					#want N2O as tracer (using other inventory specified below)? Select T or F
-                                         F,        F,        T,       F,       F), #want tracer? H2 is not ready at the moment, needs proper implementation in Trajecvprm()
+                                         F,        F,        T,       T,       F), #want tracer? H2 is not ready at the moment, needs proper implementation in Trajecvprm()
 c(rep(T,l.traddco2),
-      F,        							# CO2 fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
+      T,        							# CO2 fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
             rep(T,l.traddco),
                 T,        							# CO fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
                     rep(T,l.traddch4),
@@ -218,8 +218,7 @@ c(rep(T,l.traddco2),
                                           	 #and biospheric fields (veg cover, modis indices)
 c(paste(edgar.path,get(paste("edfs","co2",sep=".")),sep="")[0:l.traddco2],                               #not modify
 #      "/Net/Groups/BSY/people/ukarst/STILT_prepro/EDGAR/EDGAR4.1_BP2012/data/ncdf_stilt_eu2/EDGAR_4.1_0.1x0.1.CO2.2011.nc",                 #full name for emission file (CO2)
-#      "./Input/EDGARv4.1_BP2012/STILT_EU2/EDGAR_4.1_0.1x0.1.CO2.XXXX.nc",                 #full name for emission file (CO2)
-      "./Input/EDGARv4.3/STILT_EU2/emissions.co2.timmean.2010.nc",                 #full name for emission file (CO2)
+      "./Input/EDGARv4.1_BP2012/STILT_EU2/EDGAR_4.1_0.1x0.1.CO2.XXXX.nc",                 #full name for emission file (CO2)
   paste(edgar.path,get(paste("edfs","co",sep=".")),sep="")[0:l.traddco],                                #not modify
 #              "/Net/Groups/BSY/people/ukarst/STILT_prepro/EDGAR/EDGAR4.1_BP2012/data/ncdf_stilt_eu2/EDGAR_4.1_0.1x0.1.CO.2011.nc",                 #full name for emission file (CO)
               "./Input/EDGARv4.1_BP2012/STILT_EU2/EDGAR_4.1_0.1x0.1.CO.XXXX.nc",                 #full name for emission file (CO)
@@ -242,8 +241,7 @@ c(   rep("",l.traddco2),
      rep("",l.traddch4),
                       "TM3",   
      rep("",l.traddn2o),
-#                                 "",       "",       "",    "TM3" ,  "TM3",    ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
-                                 "",       "",       "",    "" ,  "TM3",    ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
+                                 "",       "",       "",    "TM3" ,  "TM3",    ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
                                                                                                         #"CT" (CarbonTracker), "TM3", "LMDZ", "" (zero boundary)
 c(rep("",l.traddco2),   #not modify		  	              #full names for initial & boundary cond. files; select "" for climatological LBC ("climat")
 #       "/User/homes/croeden/public_html/download-CO2-3D/INVERSION/OUTPUT/s96_v3.6_mix_2013.nc",		#full name for initial & boundary cond. file (CO2); functions accessing files automatically get correct year

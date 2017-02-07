@@ -9,22 +9,33 @@ cat("setStiltparam.r: starting...\n")
 
 ###### set directories ######
 ###### make sure they exist, at least the ones in the following first paragraph
-path<-"./Output/RData/" 		#path where output gets saved,
+
+### run-specific parameters and directories for ICOS-CP
+stilt_year <- Sys.getenv(c("STILT_YEAR"),unset = NA)
+run_id <- Sys.getenv(c("RUN_ID"),unset = NA)
+path_id<-paste("./Output/",run_id,"/",sep="")
+
+path<-paste(path_id,"RData/",sep="") 		#path where output gets saved,
                                                          # also input data (Receptor locations and times)
                                                          # and boundary mixing ratio objects are read from 'path'
-pathResults<-"./Output/Results/"
-pathFP<-"./Output/Footprints/"
-pathBinFootprint<-"./Output/"
+pathResults<-paste(path_id,"Results/",sep="")
+pathFP<-paste(path_id,"Footprints/",sep="")
+pathBinFootprint<-paste(path_id,"Footprints/",sep="")
 shlibpath <- "./stiltR/shlib/"   # R extensions
 metpath <- "/opt/STILT_modelling/Input/Metdata/Europe2/"    # where met data are stored in ARL format
 vegpath<-"./Input/VPRM/" 	#path to get to surface fluxes and vegetation grids at various resolutions; not needed for VPRM
-rundir <- "./STILT_Exe/"                               # specifies main directory where different directories are found to run hymodelc
+#rundir <- paste("./STILT_Exe_",run_id,"/",sep="")                               # specifies main directory where different directories are found to run hymodelc
+rundir <- paste("./",run_id,"/STILT_Exe/",sep="")                               # specifies main directory where different directories are found to run hymodelc
+print(paste("cp -r ./STILT_Exe ",rundir,sep=""))
+print(paste(!file.exists(rundir),sep=""))
+if(!file.exists(rundir)){system(paste("cp -r ./STILT_Exe ",rundir,sep=""))}
 
 cat("setStiltparam.r: rundir=", rundir,"\n")
 cat("setStiltparam.r: metpath=", metpath,"\n")
 
 ### optional directories
-evilswipath="./Input/VPRM/VPRM_input_STILT_EU2_2011/"    # VPRM only -- input path for EVI and LSWI files (can be netcdf)
+evilswipath<-paste("./Input/VPRM/VPRM_input_STILT_EU2_",stilt_year,"/",sep="")    # VPRM only -- input path for EVI and LSWI files (can be netcdf)
+#evilswipath="./Input/VPRM/VPRM_input_STILT_EU2_2011/"    # VPRM only -- input path for EVI and LSWI files (can be netcdf)
 #vprmconstantspath="/Net/Groups/BSY/people/cgerbig/RData/CarboEurope/"   # VPRM only -- input path for file with VPRM constants
 vprmconstantspath="./Input/VPRM/VPRMconstants/"   # VPRM only -- input path for file with VPRM constants
 vprmconstantsname="vprmConstants.optEU2007"                                 # VPRM only -- name of file with VPRM constants
@@ -90,21 +101,22 @@ metsource<-c("ECmetF")   # Source of Meteorological data, for analysis runs (not
 
 ###### Carbon Portal specific settings #######
 teststation <- Sys.getenv(c("STILT_NAME"),unset = NA)
-stilt_year <- Sys.getenv(c("STILT_YEAR"),unset = NA)
-run_id <- Sys.getenv(c("RUN_ID"),unset = NA)
+#stilt_year <- Sys.getenv(c("STILT_YEAR"),unset = NA)
+#run_id <- Sys.getenv(c("RUN_ID"),unset = NA)
 print(paste("teststation",teststation,sep=" "))
 print(paste("run_id",run_id,sep=" "))
 station<-teststation
 #station<-"hxHEIi"
 path<-paste(path,station,"/",sep="")
-#pathFP<-paste(pathFP,station,"/",sep="")
-pathFP<-paste(pathFP,run_id,"/",station,"/",sep="")
-pathResults<-paste(pathResults,run_id,"/",station,"/",sep="")
+pathFP<-paste(pathFP,station,"/",sep="")
+#pathFP<-paste(pathFP,run_id,"/",station,"/",sep="")
+pathResults<-paste(pathResults,station,"/",sep="")
+#pathResults<-paste(pathResults,run_id,"/",station,"/",sep="")
 #pathResults<-paste(pathResults,run_id,"/","XXX","/",sep="")
 print(paste("RData file should be in ",path))
 print(paste("Footprints will be in ",pathFP))
 print(paste("Results will be in ",pathResults))
-remove.Resultfile=F     # T: remove stiltresult object and csv-file
+remove.Resultfile=T     # T: remove stiltresult object and csv-file
                         # F: do not overwrite stitlresult object and csv-file, plot results only
 ###### end CP specific settings ######
 Timesname<-paste(".",station,".",stilt_year,".request",sep="") #name of object containing frac. julian, lat, lon, agl (m) as receptor information;
@@ -327,7 +339,8 @@ if (fluxTF & linveg) {dlambda.simp.veg <- getr("dlambda.simp.veg", path="/Net/Gr
 #[3, ]      3 -64.67396 1466.6771 0.18856880  0.4396042 1.188944
 
 ######## check on surface flux grids and vegetation classification after IGBP ########
-if (fluxTF&!ncdfTF["co2"]&any(fluxtracers=="co2")) {
+
+if (fluxTF&(!ncdfTF["co2"]&!emisscatTF)&any(fluxtracers=="co2")) {
   if (landcov == "IGBP") {
     veghead <- "veg."
   } else if (landcov == "GLCC") {

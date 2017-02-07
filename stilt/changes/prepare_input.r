@@ -10,25 +10,32 @@ sourcepath<-"./stiltR/";source(paste(sourcepath,"sourceall.r",sep=""))#provide S
 
 ##############
 
-cprun <- T     # T: use only existing particle location files for calculation on icos-cp.eu to prepare files for footprint tool
+cprun <- F     # T: use only existing particle location files for calculation on icos-cp.eu to prepare files for footprint tool
                # F: allow full STILT run
 
 ##############
-
-path<-"./Output/RData/"              # path of directories with RData files for each station (no other subdirectories in this location)
-                                     # directory name = station id
-
-pathFP<-"./Output/Footprints/"              # path tho save footprints in nc-files
-
-pathResults<-"./Output/Results/"      # path to save file with list of available stations
-                                     # this path contains all run-specific parameters
 
 # get run identifier from environment variable set in stilt.batch.sh
 #
 run_id <- Sys.getenv(c("RUN_ID"), unset = NA)
 print(paste("run id:",run_id,sep=" "))
-pathResults<-paste(pathResults,run_id,"/",sep="")
-pathFP<-paste(pathFP,run_id,"/",sep="")
+
+path_log<-paste("./",run_id,"/",sep="")                 # path for run-specific log files
+
+path_id<-paste("./Output/",run_id,"/",sep="")             # path of new run-specific directory
+
+path<-paste(path_id,"RData/",sep="")                      # path of directories with RData files for each station (no other subdirectories in this location)
+                                                          # directory name = station id
+print(paste(path,sep=""))
+# make new run-specific path 
+system(paste("mkdir -p ",path, sep=""))
+
+pathFP<-paste(path_id,"Footprints/",sep="")               # path to save footprints in nc-files
+print(paste(pathFP,sep=""))
+
+pathResults<-paste(path_id,"Results/",sep="")             # path to save run-specific parameters and time series files
+print(paste(pathResults,sep=""))
+
 
 #------------------------------------------------------------------------------------------------------------------
 # search file system for available stations and extract latitude and longitude from filename (write_sellist.r)
@@ -89,11 +96,22 @@ if(station %in% stations_avail){
   }
   path<-paste(path,station,"/",sep="")
   system(paste("mkdir -p ",path,sep=""))
+  ### link existing particle location files for all sites (must be read-only!!!)
+  print(paste("ln -s ./Input/RData/",station,"/.RData* ",path,".",sep=""))
+  if (file.exists(paste("./Input/RData/",station,sep=""))) {system(paste("ln -s ./Input/RData/",station,"/.RData* ",path,".",sep=""))}
   print(paste("prepare_input.r: no particle location files for station ",station," available  -> full STILT run required !!!",sep=""))
 } # end if(station %in% stations_avail)
 
 pathFP<-paste(pathFP,station,"/",sep="")
 system(paste("mkdir -p ",pathFP,sep=""))
+### link existing footprint files for all sites (must be read-only!!!)
+if (file.exists(paste("./Input/Footprints/",station,sep=""))) {
+  print(paste("ln -s ./Input/Footprints/",station,"/foot* ",pathFP,".",sep=""))
+  system(paste("ln -s ./Input/Footprints/",station,"/foot* ",pathFP,".",sep=""))
+  print(paste("ln -s ./Input/Footprints/",station,"/.RDatafoot* ",pathFP,".",sep=""))
+  system(paste("ln -s ./Input/Footprints/",station,"/.RDatafoot* ",pathFP,".",sep=""))
+}
+
 pathResults<-paste(pathResults,station,"/",sep="")
 system(paste("mkdir -p ",pathResults,sep=""))
 
@@ -148,7 +166,9 @@ for (year in year_start:year_end) {
 
 #-----------------------------------------
   assignr(outname,cbind(fjul,lat,lon,agl),path=pathResults,printTF=T)
-  system(paste("./run.stilt.sh ",station," ",year," ",run_id," > run.stilt.",station,run_id,as.character(year),".log",sep=""))      ## start STILT run
+  system(paste("./run.stilt.sh ",station," ",year," ",run_id," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
+  #system(paste("echo exit status $?",sep=""))
+  #print(paste("run.stilt.sh started",sep=""))
   #system(paste("./run.stilt.sh ",station," ",stilt_part," ",stilt_totpart," ",run_id," > run.stilt.",station,run_id,as.character(year),".log",sep=""))      ## start STILT run
 } # end for years
       

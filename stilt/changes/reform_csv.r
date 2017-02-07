@@ -7,6 +7,8 @@ print(paste("station: ",station,sep=""))
 run_id <- Sys.getenv(c("RUN_ID"),unset = NA)
 stilt_year <- Sys.getenv(c("STILT_YEAR"),unset = NA)
 
+tp <- Sys.getenv(c("STILT_TOTPART"),unset = NA)  # number of parts 
+
 # settings for CarbonPortal
 #large EU2 region
 lon.res <- 1/8                 #resolution in degrees longitude
@@ -16,11 +18,11 @@ lat.ll  <-  33                 #lower left corner of grid
 fluxmod <- "VPRM"
 landcov <- "SYNMAP.VPRM8"
 
-path<-paste("./Output/RData/",station,"/",sep="")
-pathFP<-paste("./Output/Footprints/",run_id,"/",station,"/",sep="")
+path<-paste("./Output/",run_id,"/RData/",station,"/",sep="")
+pathFP<-paste("./Output/",run_id,"/Footprints/",station,"/",sep="")
 #pathFP<-paste("./Output/Footprints/",station,"/",sep="")
 sourcepath<-"./stiltR/";source(paste(sourcepath,"sourceall.r",sep=""))#provide STILT functions
-pathResults<-paste("./Output/Results/",run_id,"/",station,"/",sep="")
+pathResults<-paste("./Output/",run_id,"/Results/",station,"/",sep="")
 #pathResults<-paste("./Output/Results/",run_id,"/","XXX","/",sep="")
 
 Timesname<-paste(".",station,".",stilt_year,".request",sep="")
@@ -30,12 +32,16 @@ time
 
 #merge STILT result objects  ## not used at them moment in CP version 
 rnam<-paste("stiltresult_",stilt_year,sep="")
-part<-1
+#part<-1
+#print(paste(rnam,"_",part,sep=""))
+#print(paste(pathFP))
+#tp<-1
+dat<-NULL
+for(part in 1:tp){
 print(paste(rnam,"_",part,sep=""))
-print(paste(pathFP))
-tp<-1
-dat<-NULL; for(part in 1:tp){dat<-rbind(dat,getr(paste(rnam,"_",part,sep=""),pathFP))} #standard simulation
-print(dim(dat))
+dat<-rbind(dat,getr(paste(rnam,"_",part,sep=""),pathFP))} #standard simulation
+
+print(paste("dim(dat) ",dim(dat)))
 print(dimnames(dat))
 mdy<-month.day.year
 
@@ -46,10 +52,11 @@ return(ISOdate(MDY$year, MDY$month, MDY$day, hour = (fjday-floor(fjday))*24,
        min = 0, sec = 0.0, tz = "GMT"))
 }
 
+print(paste("StartInfo[,1]"))
 print(StartInfo[,1])
 startdate<-format(getmdy(min(StartInfo[,1])),'%Y%m%d')
 enddate<-format(getmdy(max(StartInfo[,1])),'%Y%m%d')
-print(paste(startdate,enddate,sep=" "))
+print(paste("startdate:",startdate,"enddate:",enddate,sep=" "))
 
 list_FP<-dir(pathFP,all.files=T)
 list_FP<-list_FP[nchar(list_FP)==44]
@@ -188,8 +195,8 @@ dat2<-cbind(dat2,co2.total,co2.bio,gee.all,resp.all,co2.fuel,co2.cat.fuel.oil,co
 
 print(colnames(dat2))
 
-system(paste("mkdir ./Output/Results/XXX/",sep=""))
-write.table(dat2, file=paste("./Output/Results/XXX/stiltresults.csv",sep=""), na="", row.names=F, quote=F)
+#system(paste("mkdir ./Output/Results/XXX/",sep=""))
+#write.table(dat2, file=paste("./Output/Results/XXX/stiltresults.csv",sep=""), na="", row.names=F, quote=F)
 
 
 #write.table(dat2, file=paste(pathResults,"/",station,"_","stiltresult", part, "_isodate.csv",sep=""), na="", row.names=F, quote=F)
