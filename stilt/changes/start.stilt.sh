@@ -1,9 +1,10 @@
 date
 cd /opt/STILT_modelling/
-export RUN_ID=$4
 export STILT_NAME=$1
 export START_DATE=$2
 export END_DATE=$3
+export RUN_ID=$4
+export PARTS2=$5
 [[ -z ${RUN_ID} ]] && RUN_ID=RUN
 echo $RUN_ID
 echo $STILT_NAME
