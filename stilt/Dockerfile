@@ -3,42 +3,10 @@ FROM rocker/r-base
 ARG JENASVNUSER
 ARG JENASVNPASSWORD
 
-COPY ./setup.sh /opt/
-
 RUN apt-get update -y \ 
 && apt-get upgrade -y \
 && apt-get install -y build-essential \
 && apt-get install -y csh \
-
-#========Install Utes prefered text editor ==========================================
-&& apt-get install -y emacs \
-
-#=======GET the STIL-project and compile it with Fortran=============================
-&& cd /opt \
-&& mkdir STILT_svn \
-&& mkdir STILT_modelling \
-&& mkdir STILT_modelling/Input \
-
-#subversion depends on this
-&& apt-get install -y libsvn1 \ 
-&& apt-get install -y subversion \
-
-&& cd /opt/STILT_svn \ 
-&& svn --username $JENASVNUSER --password $JENASVNPASSWORD --non-interactive  checkout https://projects.bgc-jena.mpg.de/STILT/svn/trunk \
-&& cp -R /opt/STILT_svn/trunk/stiltR /opt/STILT_modelling/ \
-
-&& cp /opt/setup.sh /opt/STILT_modelling \
-&& chmod +x /opt/STILT_modelling/setup.sh
-
-RUN /opt/STILT_modelling/setup.sh \
-&& rm /opt/STILT_modelling/setup.sh \
-&& rm /opt/setup.sh 
-
-COPY ./Makefile /opt/STILT_svn/trunk/merged_stilt_hysplit/
-
-RUN cd /opt/STILT_svn/trunk/merged_stilt_hysplit \
-&& make \
-&& mv /opt/STILT_svn/trunk/merged_stilt_hysplit/hymodelc /opt/STILT_modelling/ \ 
 
 #==== Install fields package in R - Also download and install packages maps and spam due to dependencies ===========
 #Check this page if links to packages change https://cran.r-project.org/web/packages/available_packages_by_name.html
@@ -95,9 +63,38 @@ RUN cd /opt/STILT_svn/trunk/merged_stilt_hysplit \
 && wget https://cran.r-project.org/src/contrib/ncdf4_1.15.tar.gz \
 && gunzip ncdf4_1.15.tar.gz \
 && tar -xvf ncdf4_1.15.tar \
-&& R CMD INSTALL ncdf4_1.15.tar ncdf \
+&& R CMD INSTALL ncdf4_1.15.tar ncdf 
 
-#===========FINAL STEP====================================================================
+
+#=======GET the STIL-project and compile it with Fortran=============================
+COPY ./setup.sh /opt/ 
+
+RUN cd /opt \
+&& mkdir STILT_svn \
+&& mkdir STILT_modelling \
+&& mkdir STILT_modelling/Input \
+
+#subversion depends on this
+&& apt-get install -y libsvn1 \ 
+&& apt-get install -y subversion 
+
+
+RUN cd /opt/STILT_svn \ 
+&& svn --username $JENASVNUSER --password $JENASVNPASSWORD --non-interactive  checkout https://projects.bgc-jena.mpg.de/STILT/svn/trunk \
+&& cp -R /opt/STILT_svn/trunk/stiltR /opt/STILT_modelling/ \
+
+&& cp /opt/setup.sh /opt/STILT_modelling \
+&& chmod +x /opt/STILT_modelling/setup.sh
+
+RUN /opt/STILT_modelling/setup.sh \
+&& rm /opt/STILT_modelling/setup.sh \
+&& rm /opt/setup.sh 
+
+COPY ./Makefile /opt/STILT_svn/trunk/merged_stilt_hysplit/
+
+RUN cd /opt/STILT_svn/trunk/merged_stilt_hysplit \
+&& make \
+&& mv /opt/STILT_svn/trunk/merged_stilt_hysplit/hymodelc /opt/STILT_modelling/ \ 
 && rm /opt/STILT_modelling/stiltR/shlib/build.sh 
 
 COPY ./build.sh /opt/STILT_modelling/stiltR/shlib/
@@ -109,13 +106,6 @@ RUN cd /opt/STILT_modelling/stiltR/shlib/ \
 && sleep 1 \ 
 
 && ./build.sh \
-
-#===========Make sure all programs are up to date=========================================
-#&& apt-get upgrade -y \
-#&& apt-get update -y 
-
-#=========Install java for the web site===================================================
-&& apt-get install -y openjdk-8-jre \ 
 
 #===========SET UP TEST CASE==============================================================
 && apt-get install -y rsync \
