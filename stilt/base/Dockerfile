@@ -103,7 +103,3 @@ RUN cd /opt/STILT_modelling/stiltR/shlib/ \
 && sleep 1 \
 && ./build.sh
 
-#===========SET UP TEST CASE==============================================================
-
-COPY ./changes/* /opt/STILT_modelling/
-COPY ./changes/stiltR/* /opt/STILT_modelling/stiltR/

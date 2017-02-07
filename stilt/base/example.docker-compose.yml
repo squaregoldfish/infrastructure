@@ -1,0 +1,9 @@
+version: '2'
+services:
+  stilt:
+    build:
+      context: .
+      args:
+        - JENASVNUSER=username
+        - JENASVNPASSWORD=password
+
