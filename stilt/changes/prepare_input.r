@@ -37,70 +37,24 @@ pathResults<-paste(path_id,"Results/",sep="")             # path to save run-spe
 print(paste(pathResults,sep=""))
 
 
-#------------------------------------------------------------------------------------------------------------------
-# search file system for available stations and extract latitude and longitude from filename (write_sellist.r)
-# results are written to allstations.txt
-#system(paste("./liststations.sh",station,sep=" "))
-# read allstations data.frame from file
-# lines starting with # are not processed
-#
-allstations<-read.table("allstations.txt",header=TRUE)
-#
 #-----------------------------------------------------------------------------------------------------------------
-# get station name from environment variable set in stilt.batch.sh
+# get station name, latitude, longitude, altitude from environment variable set in stilt.batch.sh
 #
-selected <- Sys.getenv(c("STILT_NAME"), unset = NA)
-print(paste("selected station:",selected,sep=" "))
+station <- Sys.getenv(c("STILT_NAME"), unset = NA)
+print(paste("selected station:",station,sep=" "))
+lat <- as.numeric(Sys.getenv(c("STILT_LAT"), unset = NA))
+print(paste("selected latitude:",lat,sep=" "))
+lon <- as.numeric(Sys.getenv(c("STILT_LON"), unset = NA))
+print(paste("selected longitude:",lon,sep=" "))
+agl <- as.numeric(Sys.getenv(c("STILT_ALT"), unset = NA))
+print(paste("selected altitude:",agl,sep=" "))
 
-if(selected %in% allstations$station){
-  selected_station<-allstations[ allstations$station == selected, ]
-  print(selected_station)
-
-#-----------------------------------------------------------------------------------------------------------------
-# list all stations available at this moment
-#
-  stations_avail<-dir(path)
-  #stations_avail<-stations_avail[nchar(stations_avail)==3]
-  #print(paste("stations available:",stations_avail,sep=" "))
-
-#-----------------------------------------------------------------------------------------------------------------
-  station <- selected_station$station
-  lat <- selected_station$lat
-  lon <- selected_station$lon
-  agl <- selected_station$agl
-}else{
-  #print(paste("prepare_input.r: station ",selected," not available",sep=""))
-  # get lat, lon, agl from environment
-  stop(paste("prepare_input.r: station ",selected," not available -> stop"))
-} # end if(selected %in% allstations$station)
-
-if(station %in% stations_avail){
-  list_rdata<-dir(paste(path,station,sep="/"),all.files=T)
-  list_rdata<-list_rdata[nchar(list_rdata)==40]
-  #print((substring(list_rdata,nchar(list_rdata)-20,nchar(list_rdata))))
-  ident_avail<-unique(substring(list_rdata,nchar(list_rdata)-19,nchar(list_rdata)))
-  #print(ident_avail)
-  ident<-pos2id(0,lat,lon,agl)
-  ident<-substring(ident,nchar(ident)-19,nchar(ident))
-  #print(ident)
-  if(!(ident %in% ident_avail)){
-    if(cprun){
-      #print(paste("prepare_input.r: lon, lat, agl ",ident," do not agree with available identification ",ident_avail," for ",station,sep=""))
-      stop(paste("prepare_input.r: lon, lat, agl ",ident," do not agree with available identification ",ident_avail," for ",station," -> stop"))
-    }
-  }
-}else{
-  if(cprun){
-    #print(paste("prepare_input.r: no particle location files for station ",station," available",sep=""))
-    stop(paste("prepare_input.r: no particle location files for station ",station," available -> stop"))
-  }
-  path<-paste(path,station,"/",sep="")
-  system(paste("mkdir -p ",path,sep=""))
-  ### link existing particle location files for all sites (must be read-only!!!)
-  print(paste("ln -s ./Input/RData/",station,"/.RData* ",path,".",sep=""))
-  if (file.exists(paste("./Input/RData/",station,sep=""))) {system(paste("ln -s ./Input/RData/",station,"/.RData* ",path,".",sep=""))}
-  print(paste("prepare_input.r: no particle location files for station ",station," available  -> full STILT run required !!!",sep=""))
-} # end if(station %in% stations_avail)
+path<-paste(path,station,"/",sep="")
+system(paste("mkdir -p ",path,sep=""))
+### link existing particle location files for all sites (must be read-only!!!)
+print(paste("ln -s ./Input/RData/",station,"/.RData* ",path,".",sep=""))
+if (file.exists(paste("./Input/RData/",station,sep=""))) {system(paste("ln -s ./Input/RData/",station,"/.RData* ",path,".",sep=""))}
+print(paste("prepare_input.r: no particle location files for station ",station," available  -> full STILT run required !!!",sep=""))
 
 pathFP<-paste(pathFP,station,"/",sep="")
 system(paste("mkdir -p ",pathFP,sep=""))
@@ -162,16 +116,11 @@ for (year in year_start:year_end) {
   fjul<-unique(fjul)
 
   outname<-paste(".",station,".",as.character(year),".request",sep="") #name for object with receptor information
-  #outname<-paste(".",station,".",as.character(stilt_part),".request",sep="") #name for object with receptor information
 
 #-----------------------------------------
   assignr(outname,cbind(fjul,lat,lon,agl),path=pathResults,printTF=T)
   stilt_part <- Sys.getenv(c("PART2"), unset = 1)
   print(paste("run split into",stilt_part,"part(s)",sep=" "))
   system(paste("./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
-  #system(paste("./run.stilt.sh ",station," ",year," ",run_id," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
-  #system(paste("echo exit status $?",sep=""))
-  #print(paste("run.stilt.sh started",sep=""))
-  #system(paste("./run.stilt.sh ",station," ",stilt_part," ",stilt_totpart," ",run_id," > run.stilt.",station,run_id,as.character(year),".log",sep=""))      ## start STILT run
 } # end for years
       

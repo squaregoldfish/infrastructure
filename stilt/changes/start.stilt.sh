@@ -1,13 +1,19 @@
 date
 cd /opt/STILT_modelling/
 export STILT_NAME=$1
-export START_DATE=$2
-export END_DATE=$3
-export RUN_ID=$4
-export PARTS2=$5
+export STILT_LAT=$2
+export STILT_LON=$3
+export STILT_ALT=$4
+export START_DATE=$5
+export END_DATE=$6
+export RUN_ID=$7
+export PARTS2=$8
 [[ -z ${RUN_ID} ]] && RUN_ID=RUN
 echo $RUN_ID
 echo $STILT_NAME
+echo $STILT_LAT
+echo $STILT_LON
+echo $STILT_ALT
 echo $START_DATE
 echo $END_DATE
 [[ ! -d ${RUN_ID} ]] && mkdir ${RUN_ID} || ( rm -f ${RUN_ID}/FAILURE ; rm -f ${RUN_ID}/SUCCESS ) 
