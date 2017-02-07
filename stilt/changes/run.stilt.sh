@@ -9,15 +9,14 @@ export STILT_YEAR=$2
 echo STILT_YEAR $STILT_YEAR
 export RUN_ID=$3
 echo RUN_ID $RUN_ID
+export PART2=$4
+echo RUN_ID $PART2
 
 rm -f $RUN_ID/FAILURE
 rm -f $RUN_ID/SUCCESS
 
 
-NP=$(nproc)
-echo ${NP} CPUs available
 PART1=1
-let PART2=${NP}-1
 TOTPART=${PART2}
 
 LF="" # log file information (additional information in the log file name (e.g. station name

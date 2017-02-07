@@ -19,7 +19,7 @@
 STILT_exe_path=/opt/STILT_modelling/STILT_Exe
 Output_path=/opt/STILT_modelling/Output
 stiltR_path=/opt/STILT_modelling/stiltR
-count_nodes=5 #This is the number of folders Copy0, Copy1 ....
+count_nodes=64 #This is the number of folders Copy0, Copy1 ....
 bdyfiles_dir=/opt/STILT_svn/trunk/stilt_hysplit/bdyfiles # Path to the files  LANDUSE.ASC, ROUGLEN.ASC and ASCDATA.CFG
 
 #echo "The preferences for the main run-time subdirectory is \"STILT_Exe\""

@@ -166,7 +166,10 @@ for (year in year_start:year_end) {
 
 #-----------------------------------------
   assignr(outname,cbind(fjul,lat,lon,agl),path=pathResults,printTF=T)
-  system(paste("./run.stilt.sh ",station," ",year," ",run_id," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
+  stilt_part <- Sys.getenv(c("PART2"), unset = 1)
+  print(paste("run split into",stilt_part,"part(s)",sep=" "))
+  system(paste("./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
+  #system(paste("./run.stilt.sh ",station," ",year," ",run_id," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
   #system(paste("echo exit status $?",sep=""))
   #print(paste("run.stilt.sh started",sep=""))
   #system(paste("./run.stilt.sh ",station," ",stilt_part," ",stilt_totpart," ",run_id," > run.stilt.",station,run_id,as.character(year),".log",sep=""))      ## start STILT run
