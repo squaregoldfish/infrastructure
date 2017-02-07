@@ -1,9 +1,6 @@
 FROM rocker/r-base
 
-ARG JENASVNUSER
-ARG JENASVNPASSWORD
-
-RUN apt-get update -y \ 
+RUN apt-get update -y \
 && apt-get upgrade -y \
 && apt-get install -y build-essential \
 && apt-get install -y csh \
@@ -12,20 +9,20 @@ RUN apt-get update -y \
 #Check this page if links to packages change https://cran.r-project.org/web/packages/available_packages_by_name.html
 #Check this page if links to CRAN mirrors, download sites, https://cran.r-project.org/
 
-&& wget https://cran.r-project.org/src/contrib/maps_3.1.1.tar.gz \
+&& wget https://static.icos-cp.eu/share/docker/stilt/maps_3.1.1.tar.gz \
 && gunzip maps_3.1.1.tar.gz \
 && R CMD INSTALL maps_3.1.1.tar maps \
 
-&& wget https://cran.r-project.org/src/contrib/spam_1.4-0.tar.gz \ 
+&& wget https://static.icos-cp.eu/share/docker/stilt/spam_1.4-0.tar.gz \
 && gunzip spam_1.4-0.tar.gz  \
 && R CMD INSTALL spam_1.4-0.tar spam \
 
-&& wget https://cran.r-project.org/src/contrib/fields_8.10.tar.gz \
+&& wget https://static.icos-cp.eu/share/docker/stilt/fields_8.10.tar.gz \
 && gunzip fields_8.10.tar.gz \
 && R CMD INSTALL fields_8.10.tar fields \
- 
+
 #========Install package sp for R==========================================================
-&& wget https://cran.r-project.org/src/contrib/sp_1.2-4.tar.gz \
+&& wget https://static.icos-cp.eu/share/docker/stilt/sp_1.2-4.tar.gz \
 && gunzip sp_1.2-4.tar.gz \
 && R CMD INSTALL sp_1.2-4.tar sp \
 
@@ -36,16 +33,16 @@ RUN apt-get update -y \
 #========Install HDF-5=====================================================================
 && cd /opt/ \
 
-&& wget https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.15-patch1/src/hdf5-1.8.15-patch1.tar \
+&& wget https://static.icos-cp.eu/share/docker/stilt/hdf5-1.8.15-patch1.tar \
 
 && tar -xvf hdf5-1.8.15-patch1.tar \
 && rm hdf5-1.8.15-patch1.tar \
 && cd hdf5-1.8.15-patch1 \
 && ./configure --prefix=/opt/hdf5 \
 && make \
-&& make check \ 
+&& make check \
 && make install \
-&& make check-install \ 
+&& make check-install \
 
 #========Install netCDF FOR C and FORTRAN=================================================
 && apt-get install -y libnetcdf-dev \
@@ -60,14 +57,17 @@ RUN apt-get update -y \
 #&& ln -s libnetcdff.so.5.1.0 libnetcdff.so \
 
 #========Install package ncdf for R=======================================================
-&& wget https://cran.r-project.org/src/contrib/ncdf4_1.15.tar.gz \
+&& wget https://static.icos-cp.eu/share/docker/stilt/ncdf4_1.15.tar.gz \
 && gunzip ncdf4_1.15.tar.gz \
 && tar -xvf ncdf4_1.15.tar \
-&& R CMD INSTALL ncdf4_1.15.tar ncdf 
+&& R CMD INSTALL ncdf4_1.15.tar ncdf
 
 
 #=======GET the STIL-project and compile it with Fortran=============================
-COPY ./setup.sh /opt/ 
+ARG JENASVNUSER
+ARG JENASVNPASSWORD
+
+COPY ./setup.sh /opt/
 
 RUN cd /opt \
 && mkdir STILT_svn \
@@ -75,41 +75,35 @@ RUN cd /opt \
 && mkdir STILT_modelling/Input \
 
 #subversion depends on this
-&& apt-get install -y libsvn1 \ 
-&& apt-get install -y subversion 
-
-
-RUN cd /opt/STILT_svn \ 
+&& apt-get install -y libsvn1 \
+&& apt-get install -y subversion \
+&& cd /opt/STILT_svn \
 && svn --username $JENASVNUSER --password $JENASVNPASSWORD --non-interactive  checkout https://projects.bgc-jena.mpg.de/STILT/svn/trunk \
 && cp -R /opt/STILT_svn/trunk/stiltR /opt/STILT_modelling/ \
 
 && cp /opt/setup.sh /opt/STILT_modelling \
-&& chmod +x /opt/STILT_modelling/setup.sh
-
-RUN /opt/STILT_modelling/setup.sh \
+&& chmod +x /opt/STILT_modelling/setup.sh \
+&& /opt/STILT_modelling/setup.sh \
 && rm /opt/STILT_modelling/setup.sh \
-&& rm /opt/setup.sh 
+&& rm /opt/setup.sh
 
 COPY ./Makefile /opt/STILT_svn/trunk/merged_stilt_hysplit/
 
 RUN cd /opt/STILT_svn/trunk/merged_stilt_hysplit \
 && make \
-&& mv /opt/STILT_svn/trunk/merged_stilt_hysplit/hymodelc /opt/STILT_modelling/ \ 
-&& rm /opt/STILT_modelling/stiltR/shlib/build.sh 
+&& mv /opt/STILT_svn/trunk/merged_stilt_hysplit/hymodelc /opt/STILT_modelling/ \
+&& rm /opt/STILT_modelling/stiltR/shlib/build.sh
 
 COPY ./build.sh /opt/STILT_modelling/stiltR/shlib/
- 
+
 RUN cd /opt/STILT_modelling/stiltR/shlib/ \
 && chmod u+x build.sh \
 
-#Solves an issue with docker in MACs 
-&& sleep 1 \ 
-
-&& ./build.sh \
+#Solves an issue with docker in MACs
+&& sleep 1 \
+&& ./build.sh
 
 #===========SET UP TEST CASE==============================================================
-&& apt-get install -y rsync \
-&& apt-get install -y procps
 
 COPY ./changes/* /opt/STILT_modelling/
 COPY ./changes/stiltR/* /opt/STILT_modelling/stiltR/
