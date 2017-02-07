@@ -17,12 +17,33 @@ source("setStiltparam.r")
 savename <- gsub(" ", ".", date())
 savename <- substring(savename,4)
 runs.done.dir <- NULL
-if (file.exists('./Runs.done')) runs.done.dir <- './Runs.done/'
-if (is.null(runs.done.dir) && file.exists(paste(sourcepath,'Runs.done',sep='')))
-  runs.done.dir <- paste(sourcepath,'/Runs.done/',sep='')
-if (is.null(runs.done.dir) &&
-    substring(path, nchar(path)-nchar("Runs.done"), nchar(path)) == "Runs.done/")
-  runs.done.dir <- sourcepath
+#if (file.exists('./Runs.done')) runs.done.dir <- './Runs.done/'
+#if (is.null(runs.done.dir) && file.exists(paste(sourcepath,'Runs.done',sep='')))
+#  runs.done.dir <- paste(sourcepath,'/Runs.done/',sep='')
+#if (is.null(runs.done.dir) &&
+#    substring(path, nchar(path)-nchar("Runs.done"), nchar(path)) == "Runs.done/")
+#  runs.done.dir <- sourcepath
+#if (!is.null(runs.done.dir)) {
+#   file.copy("setStiltparam.r",
+#             paste(runs.done.dir, "setStiltparam", savename, ".r", sep=""),
+#             overwrite=T)
+#   cat("Saving copy of setStiltparam.r in ",
+#       paste(runs.done.dir, "setStiltparam", savename, ".r", sep=""),
+#       "\n",sep="")
+#} else {
+#   cat("No Runs.done directory; parameter information not saved\n")
+#}
+
+# ICOS-CP specific settings
+print(paste("run_id ",run_id,sep=""))
+print(paste("path ",path,sep=""))
+runs.done.dir <- NULL
+if (file.exists(paste('./',run_id,'/Runs.done',sep=''))) runs.done.dir <- paste('./',run_id,'/Runs.done/',sep='')
+#if (is.null(runs.done.dir) && file.exists(paste(sourcepath,'Runs.done',sep='')))
+#  runs.done.dir <- paste(sourcepath,'/Runs.done/',sep='')
+#if (is.null(runs.done.dir) &&
+#    substring(path, nchar(path)-nchar("Runs.done"), nchar(path)) == "Runs.done/")
+#  runs.done.dir <- sourcepath
 if (!is.null(runs.done.dir)) {
    file.copy("setStiltparam.r",
              paste(runs.done.dir, "setStiltparam", savename, ".r", sep=""),
@@ -60,6 +81,7 @@ if (!existsr(Timesname, pathResults)) stop(paste("cannot find object ", Timesnam
 StartInfo <- getr(paste(Timesname, sep=""), pathResults) # object containing fractional julian day, lat, lon, agl for starting position and time
 
 #print(paste("StartInfo ",StartInfo))
+
 # SELECTION OF A FEW Receptors for testing!
 if (Times.startrow > 0) StartInfo <- StartInfo[Times.startrow:Times.endrow,, drop=FALSE] # can be just one (Times.startrow=Times.endrow)
 

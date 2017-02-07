@@ -7,9 +7,7 @@ services:
         - JENASVNUSER=username
         - JENASVNPASSWORD=password
     volumes:
-      - /disk/data/STILT:/opt/STILT_modelling/Input:ro
-      - /disk/data/STILT/RData:/opt/STILT_modelling/Output/RData:ro
-      - /disk/data/STILT/Results:/opt/STILT_modelling/Output/Results
-      - /disk/data/STILT/Footprints:/opt/STILT_modelling/Output/Footprints
+      - /mnt/additional_disk/TEST/Input:/opt/STILT_modelling/Input:ro
+      - /mnt/additional_disk/TEST/Output:/opt/STILT_modelling/Output
     tty: true
     restart: unless-stopped
