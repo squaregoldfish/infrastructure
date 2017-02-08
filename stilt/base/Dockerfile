@@ -103,3 +103,4 @@ RUN cd /opt/STILT_modelling/stiltR/shlib/ \
 && sleep 1 \
 && ./build.sh
 
+ENV JENASVNUSER="" JENASVNPASSWORD="" 

@@ -3,9 +3,12 @@
 Standard Docker image build file and docker-compose config file for STILT langrangian transport model software.
 Build process requires username and password for access to MPI-BCG's SVN repository (in Jena). Edit the docker-compose config accordingly.
 
-## Importing the pre-build base STILT Docker image
+## Saving a pre-build Docker image
+`docker save <image> | gzip > <file>`
+
+## Loading the pre-build base STILT Docker image
 Run as a member of `docker` group or as root:
-`wget -O- https://static.icos-cp.eu/share/docker/stilt/image_cd65ca564e63.tgz | gunzip -c | docker import - local/stiltbase`
+`wget -O- https://static.icos-cp.eu/share/docker/stilt/baseimage.tgz | gunzip -c | docker load`
 
 
 ## Useful commands for running on Mac machine
