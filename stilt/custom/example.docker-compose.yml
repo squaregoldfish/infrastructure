@@ -3,6 +3,7 @@ services:
   stilt:
     build:
       context: .
+    image: local/stiltcustom
     volumes:
       - /mnt/additional_disk/TEST/Input:/opt/STILT_modelling/Input:ro
       - /mnt/additional_disk/TEST/Output:/opt/STILT_modelling/Output
