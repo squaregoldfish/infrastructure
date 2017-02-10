@@ -1,0 +1,25 @@
+---
+# tasks file for icos.doi
+- name: Add doi user
+  user:
+    name: doi
+
+- name: Install JAR and config
+  copy: dest=/home/doi/ src={{ item }} owner=doi group=doi
+  with_items:
+    - "{{ doi_app_conf }}"
+    - "{{ doi_jar_file }}"
+  notify: restart doi
+
+- name: Create JAR symlink
+  file: src={{ doi_jar_file | basename }} dest=/home/doi/doi.jar state=link
+
+- name: Add systemd doi.service
+  copy: src=doi.service dest=/etc/systemd/system/
+
+- name: Enable systemd doi service
+  service: name=doi enabled=yes
+
+- name: Add nginx config file
+  copy: src=doi.conf dest=/etc/nginx/conf.d/
+  notify: reload nginx config 

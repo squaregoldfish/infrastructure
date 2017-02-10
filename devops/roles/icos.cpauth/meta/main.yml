@@ -1,0 +1,4 @@
+dependencies:
+  - {role: icos.linux}
+  - {role: icos.nginx}
+  - {role: icos.sbt}

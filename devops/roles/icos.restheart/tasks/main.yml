@@ -1,0 +1,35 @@
+- name: Add restheart user
+  user:
+    name: restheart
+    groups: "{{ docker_group }}"
+    append: yes
+
+- name: Clone infrastructure
+  become_user: restheart
+  git:
+    repo: https://github.com/ICOS-Carbon-Portal/infrastructure.git
+    dest: /home/restheart/infrastructure
+
+- name: Launch MongoDB
+  docker:
+    docker_api_version: 1.22
+    name: mongodb
+    image: mongo:3.2
+    volumes:
+      - /home/restheart/infrastructure/restheart/storage:/data/db
+    
+- name: Launch RestHeart
+  docker:
+    docker_api_version: 1.22
+    name: restheart
+    image: softinstigate/restheart:2.0.2
+    links:
+      - mongodb
+    ports:
+      - "127.0.0.1:8088:8080"
+    volumes:
+      - /home/restheart/infrastructure/restheart/security.yml:/opt/restheart/etc/security.yml:ro
+   
+# - name: Create 'users' collection in mongodb
+#   uri: method=PUT url="http://127.0.0.1:8088/db/users"  status_code=201,200
+

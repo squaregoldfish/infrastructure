@@ -1,0 +1,32 @@
+- name: Add {{ username }} user
+  user:
+    name: "{{ username }}"
+
+- name: Install JAR and config
+  copy: src={{ jarfile }} dest=/home/{{ username }}/  owner={{ username }} group={{ username }}
+  register: installed_jarfile
+  tags: deploy
+
+- name: Create JAR symlink
+  file:
+    src: "{{ jarfile | basename }}"
+    dest: "/home/{{ username }}/{{ jarfile | basename }}"
+  when: installed_jarfile.changed
+  tags: deploy
+  
+- name: Add systemd {{ servicename }} servicefile
+  template: src={{ servicetemplate }} dest=/etc/systemd/system/{{ servicename }}.service
+  register: added_service
+  tags: deploy
+  
+- block:
+    - name: Reload systemd configuration
+      command: systemctl daemon-reload
+
+    - name: Enable systemd {{ servicename }}
+      service: name={{ servicename }} enabled=yes state=started
+
+    - name: Restart {{ servicename }} service
+      service: name={{ servicename }} state=restarted
+  when: added_service.changed or installed_jarfile.changed
+  tags: deploy

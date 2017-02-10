@@ -1,0 +1,4 @@
+# When first installed, 'sbt' is just a wrapper that run will download all it's
+# depenencies. We run this command to get that out of the way.
+- name: bootstrap sbt
+  command: sbt -version

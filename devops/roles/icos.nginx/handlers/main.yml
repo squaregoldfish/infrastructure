@@ -1,0 +1,4 @@
+---
+# handlers file for icos.nginx
+- name: reload nginx config
+  service: name=nginx state=reloaded

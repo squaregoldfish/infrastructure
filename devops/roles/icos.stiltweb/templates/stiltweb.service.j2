@@ -1,0 +1,14 @@
+# /etc/systemd/system/stiltweb.service
+[Unit]
+Description=STILT web frontend
+After=network.target
+
+[Service]
+Type=simple
+User=stiltweb
+ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ stilt_master_host }} "/home/stiltweb/stiltweb.jar"
+Restart=on-abort
+WorkingDirectory=/home/stiltweb
+
+[Install]
+WantedBy=multi-user.target

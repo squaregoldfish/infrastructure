@@ -1,0 +1,14 @@
+# /etc/systemd/system/doi.service
+[Unit]
+Description=DOI minting service
+After=network.target
+
+[Service]
+Type=simple
+User=doi
+ExecStart=/usr/bin/java -jar "/home/doi/doi.jar"
+Restart=on-abort
+WorkingDirectory=/home/doi
+
+[Install]
+WantedBy=multi-user.target

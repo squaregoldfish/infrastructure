@@ -1,0 +1,5 @@
+---
+# handlers file for icos.doi
+- name: restart doi
+  service: name=doi state=restarted
+
