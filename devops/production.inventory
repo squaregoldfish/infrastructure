@@ -1,0 +1,10 @@
+# Inventory file
+[icosprod]
+fsicos.lunarc.lu.se
+
+[stiltmaster]
+stilt.icos-cp.eu stiltcluster_is_seed=1
+
+[stiltcluster]
+stilt.icos-cp.eu stiltcluster_is_seed=1
+

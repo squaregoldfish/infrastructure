@@ -1,0 +1,3 @@
+---
+# defaults file for icos.nginx
+nginx_ssl_conf_dir: /etc/nginx/ssl 

@@ -1,0 +1,21 @@
+- name: Add stiltcluster user
+  user:
+    name: stiltcluster
+    groups: docker
+    append: yes
+
+- name: Run the jarservice role
+  include_role:
+    name: icos.jarservice
+  vars:
+    username        : "{{ stiltcluster_username }}"
+    jarfile         : "{{ stiltcluster_jar_file }}"
+    servicename     : "{{ stiltcluster_servicename }}"
+    servicetemplate : "{{ stiltcluster_template }}"
+
+- name: Spoof stiltweb in /etc/hosts
+  lineinfile:
+    dest: "/etc/hosts"
+    line: "{{ stilt_spoof_ip }} stilt.icos-cp.eu"
+    state: present
+  when: stilt_spoof_ip is defined

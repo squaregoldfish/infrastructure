@@ -1,0 +1,16 @@
+# /etc/systemd/system/stiltweb.service
+[Unit]
+Description=Stiltweb
+After=network.target
+
+[Service]
+Type=simple
+User=stiltweb
+ExecStart=/usr/bin/java -jar "/home/stiltweb/stiltweb.jar"
+Restart=on-abort
+WorkingDirectory=/home/stiltweb
+
+[Install]
+WantedBy=multi-user.target
+        
+

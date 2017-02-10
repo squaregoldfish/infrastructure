@@ -1,0 +1,8 @@
+stilt_master_host: stilt.icos-cp.eu
+stiltweb_username: stiltweb
+stiltweb_servicename: stiltweb
+# Sadly, we cannot use our {{role_path}} to define this path, since that
+# variable wont be resolved until in the role_included jarservice, by which
+# point it'll point to jarservice.
+# https://github.com/ansible/ansible/issues/15439
+stiltweb_template: roles/icos.stiltweb/templates/stiltweb.service.j2

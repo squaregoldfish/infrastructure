@@ -1,0 +1,13 @@
+# This ansible playbook will provision our production server.
+
+- hosts: icosprod
+  become: true
+  vars_files:
+    - vars.yml
+  roles:
+    - icos.linux
+    - icos.nginx
+    - icos.restheart
+    - icos.cpauth
+    - icos.doi
+

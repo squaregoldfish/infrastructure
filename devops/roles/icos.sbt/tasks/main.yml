@@ -1,0 +1,39 @@
+# Having this simple test speeds up execution of the playbook quite a bit.
+- stat: path=/usr/bin/sbt
+  register: java_sbt_present
+
+- block:
+    - yum_repository:
+        name: bintray-sbt
+        description: Official Scala RPM repository
+        baseurl: https://dl.bintray.com/sbt/rpm
+        gpgcheck: no
+        repo_gpgcheck: no
+    - yum:
+        name: sbt
+        state: present
+  when: ansible_distribution == 'CentOS' and not java_sbt_present.stat.exists
+
+
+# The official way of installing SBT via APT
+# (http://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Linux.html) doesn't work
+# (http://stackoverflow.com/a/28580403).
+
+# - block:
+#   - apt_key:
+#       keyserver: hkp://keyserver.ubuntu.com:80
+#       id: 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+#       state: present
+#   - apt_repository:
+#         repo: deb https://dl.bintray.com/sbt/debian /
+#   - apt:
+#       name: sbt
+#   when: ansible_distribution == "Ubuntu"
+
+  
+# Instead we do it manually
+# (https://gist.github.com/samklr/8ca9051d5e1e72a0caf1)
+- name: Install SBT DEB 
+  apt:
+    deb={{sbt_deb_url}}
+  when: ansible_distribution == 'Ubuntu' and not java_sbt_present.stat.exists

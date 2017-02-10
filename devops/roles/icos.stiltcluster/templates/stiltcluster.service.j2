@@ -1,0 +1,22 @@
+# /etc/systemd/system/stiltcluster.service
+[Unit]
+Description=STILT cluster node
+After=network.target
+
+[Service]
+Type=simple
+User=stiltcluster
+{% if stiltcluster_is_seed | bool %}
+ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ stilt_master_host }} "/home/stiltcluster/stiltcluster.jar"
+{% else %}
+  {% for ip in ansible_all_ipv4_addresses if not ip.startswith("10") and not ip.startswith("172") %}
+	{% if loop.first  %}
+ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ ip }} "/home/stiltcluster/stiltcluster.jar"
+    {% endif %}
+  {% endfor %}
+{% endif %}
+Restart=on-abort
+WorkingDirectory=/home/stiltcluster
+
+[Install]
+WantedBy=multi-user.target
