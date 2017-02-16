@@ -173,9 +173,9 @@ co2.background<-dat[,"co2ini"]
 
 co2.ini<-dat[,"co2ini"]
 
-dat2<-cbind(dat2,co2.total,co2.bio,gee.all,resp.all,co2.fuel,co2.cat.fuel.oil,co2.cat.fuel.coal,co2.cat.fuel.gas,co2.cat.fuel.bio,co2.ini,rn)
+#dat2<-cbind(dat2,co2.total,co2.bio,gee.all,resp.all,co2.fuel,co2.cat.fuel.oil,co2.cat.fuel.coal,co2.cat.fuel.gas,co2.cat.fuel.bio,co2.ini,rn)
 
-#dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.energy,co2.transport,co2.industry,co2.others,co2.background,rn)
+dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.energy,co2.transport,co2.industry,co2.others,co2.background,rn)
 
 # add unit in column name
 # components in ppm
