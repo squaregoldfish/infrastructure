@@ -4,5 +4,7 @@ jupyterhub:
    - "127.0.0.1:8888:8000"
   volumes:
    - /disk/data/common/netcdf/gcp_models:/opt/data
+   - /disk/data/common/stilt:/opt/stiltdata
+   - /disk/data/common/users/jupyterhub:/opt/users
    - ./storage:/home
 
