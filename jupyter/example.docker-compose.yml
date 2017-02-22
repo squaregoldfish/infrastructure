@@ -5,6 +5,6 @@ jupyterhub:
   volumes:
    - /disk/data/common/netcdf/gcp_models:/opt/data
    - /disk/data/common/stilt:/opt/stiltdata
-   - /disk/data/common/users/jupyterhub:/opt/users
    - ./storage:/home
+   - ./users:/opt/users
 

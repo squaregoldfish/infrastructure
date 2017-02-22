@@ -38,9 +38,11 @@ COPY Makefile /opt/pyscrip/PySCRIP-master/PySCRIP/
 
 WORKDIR /opt/pyscrip/PySCRIP-master/PySCRIP/
 
-RUN make
+RUN apt-get install -y gfortran \
+	&& make
 
 RUN apt-get install -y libblas-dev liblapack-dev libfftw3-dev tcsh \
+	&& pip install --upgrade pip \
 	&& pip install pyshtools
 
 
