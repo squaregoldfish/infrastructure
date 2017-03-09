@@ -1,3 +1,4 @@
+#!/bin/bash
 date
 cd /opt/STILT_modelling/
 export STILT_NAME=$1

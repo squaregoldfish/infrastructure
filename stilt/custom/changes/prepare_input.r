@@ -77,11 +77,6 @@ if ((nchar(sel_startdate) < 8) | (nchar(sel_enddate) < 8)){
   cat(format(Sys.time(), "%FT%T"),"ERROR Undefined start or end date: ",sel_startdate," - ",sel_enddate,"\n")
   cat(format(Sys.time(), "%FT%T"),"ERROR stop\n"
   stop
-  #year_start<-year_end<-2011
-  #month_start<-7
-  #day_start<-1
-  #month_end<-7
-  #day_end<-2
 }else{
   year_start<-as.numeric(substr(sel_startdate,1,4))
   month_start<-as.numeric(substr(sel_startdate,5,6))
@@ -100,10 +95,7 @@ cat(format(Sys.time(), "%FT%T"),"INFO frequency: ",dh,"hourly","\n",sep=" ")
 
 fjul_start<-julian(month_start,day_start,year_start)
 fjul_end<-julian(month_end,day_end,year_end)
-#stilt_part<-0
-#stilt_totpart<-year_end-year_start+1
 for (year in year_start:year_end) {
-#  stilt_part<-stilt_part+1
   fjul_split1<-julian(1,1,year)
   fjul_split2<-julian(12,31,year)
   fjul_1<-max(fjul_start,fjul_split1)
@@ -111,7 +103,6 @@ for (year in year_start:year_end) {
   fjul<-((fjul_1*dhpd):(fjul_2*dhpd))/dhpd
   fjul<-c(fjul,fjul[length(fjul)]+(1:dhpd-1)/dhpd)  #get full last day
   fjul<-round(fjul,6)
-  #print(fjul)
   ident<-pos2id(fjul,lat,lon,agl)
   if(cprun){
     ident_time<-substring(list_rdata,nchar(list_rdata)-33,nchar(list_rdata))
@@ -126,7 +117,7 @@ for (year in year_start:year_end) {
   assignr(outname,cbind(fjul,lat,lon,agl),path=pathResults,printTF=T)
   stilt_part <- Sys.getenv(c("PARTS2"), unset = 1)
   cat(format(Sys.time(), "%FT%T"),"INFO run split into",stilt_part,"part(s)\n",sep=" ")
-  cat(format(Sys.time(), "%FT%T"),"DEBUG","./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log\n",sep=""))      ## start STILT run
+  cat(format(Sys.time(), "%FT%T")," DEBUG ","./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log","\n",sep="")      ## start STILT run
   system(paste("./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
 } # end for years
       
