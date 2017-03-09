@@ -75,7 +75,7 @@ sel_startdate <- Sys.getenv(c("START_DATE"), unset = NA)
 sel_enddate <- Sys.getenv(c("END_DATE"), unset = NA)
 if ((nchar(sel_startdate) < 8) | (nchar(sel_enddate) < 8)){
   cat(format(Sys.time(), "%FT%T"),"ERROR Undefined start or end date: ",sel_startdate," - ",sel_enddate,"\n")
-  cat(format(Sys.time(), "%FT%T"),"ERROR stop\n"
+  cat(format(Sys.time(), "%FT%T"),"ERROR stop\n")
   stop
 }else{
   year_start<-as.numeric(substr(sel_startdate,1,4))
