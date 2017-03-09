@@ -16,8 +16,8 @@ if (! exists("sourcepath")) {
       quit(status=1)
    }
 }
-cat("stilt.r: using sourcepath", sourcepath, "\n")
 
+  cat(format(Sys.time(), "%FT%T"),"DEBUG stilt.r: using sourcepath", sourcepath, "\n")
 if (! file.exists(paste(sourcepath, "sourceall.r", sep=""))) stop('stilt.r: "sourcepath" is not a valid source path')
 source(paste(sourcepath,"sourceall.r",sep=""))
 
@@ -65,6 +65,6 @@ if (!is.null(runs.done.dir)) {
   savename <- substring(savename,4)
   assignr(paste("run.info",savename,sep=""),run.info,runs.done.dir,printTF=T)
 } else {
-  cat("stilt.r: Runs.done not found in ./ or sourcepath, not saving run.info\n")
+    cat(format(Sys.time(), "%FT%T"),"DEBUG stilt.r: Runs.done not found in ./ or sourcepath, not saving run.info\n")
 }
 

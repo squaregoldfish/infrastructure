@@ -23,7 +23,6 @@ getfs<-function(path,tr){
 }
 
 for(tracer in c("co2","ch4","co","n2o")){
-  print(paste("tracer",tracer))
   edfs<-getfs(edgar.path,tracer)
   edfsn<-edfs[[2]]
   edfs<-edfs[[1]]
@@ -173,6 +172,7 @@ tr.edg<-c(paste("co2",get(paste("ipcc","co2",sep=".")),get(paste("fuelnames","co
 #spec.want.catfuel<-c("co2","co","ch4","n2o") ######MODIFY HERE, any combination of "co2","co","ch4", or "n2o"
 spec.want.catfuel<-c("co2") ######MODIFY HERE, any combination of "co2","co","ch4", or "n2o"
 ############################################################################################################
+cat(format(Sys.time(), "%FT%T"),"INFO set.edgar(): EDGAR categories/fuel types for tracer(s): ",spec.want.catfuel,"\n")
 
 
 #which of the four species do you want to simulate based on EDGAR Categories/fueltypes? (this results in about 60 tracers per species in STILT output from Trajecvprm.r)

@@ -3,7 +3,7 @@
 #6/12/2016 by UK
 
 station <- Sys.getenv(c("STILT_NAME"), unset = NA)
-print(paste("station: ",station,sep=""))
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: selected station: ",station,"\n")
 run_id <- Sys.getenv(c("RUN_ID"),unset = NA)
 stilt_year <- Sys.getenv(c("STILT_YEAR"),unset = NA)
 
@@ -20,29 +20,21 @@ landcov <- "SYNMAP.VPRM8"
 
 path<-paste("./Output/",run_id,"/RData/",station,"/",sep="")
 pathFP<-paste("./Output/",run_id,"/Footprints/",station,"/",sep="")
-#pathFP<-paste("./Output/Footprints/",station,"/",sep="")
 sourcepath<-"./stiltR/";source(paste(sourcepath,"sourceall.r",sep=""))#provide STILT functions
 pathResults<-paste("./Output/",run_id,"/Results/",station,"/",sep="")
-#pathResults<-paste("./Output/Results/",run_id,"/","XXX","/",sep="")
 
 Timesname<-paste(".",station,".",stilt_year,".request",sep="")
-print(Timesname)
-StartInfo <- getr(paste(Timesname, sep=""), pathResults) # object containing fractional julian day, lat, lon, agl for starting position and
-time
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: Timesname ",Timesname,"\n")
+StartInfo <- getr(paste(Timesname, sep=""), pathResults) # object containing fractional julian day, lat, lon, agl for starting position and time
 
 #merge STILT result objects  ## not used at them moment in CP version 
 rnam<-paste("stiltresult_",stilt_year,sep="")
-#part<-1
-#print(paste(rnam,"_",part,sep=""))
-#print(paste(pathFP))
-#tp<-1
 dat<-NULL
 for(part in 1:tp){
-print(paste(rnam,"_",part,sep=""))
 dat<-rbind(dat,getr(paste(rnam,"_",part,sep=""),pathFP))} #standard simulation
 
-print(paste("dim(dat) ",dim(dat)))
-print(dimnames(dat))
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dim(dat) ",dim(dat),"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dimnames(dat) ",dimnames(dat),"\n")
 mdy<-month.day.year
 
 getmdy<-function(fjday){#nice x axis
@@ -52,22 +44,19 @@ return(ISOdate(MDY$year, MDY$month, MDY$day, hour = (fjday-floor(fjday))*24,
        min = 0, sec = 0.0, tz = "GMT"))
 }
 
-print(paste("StartInfo[,1]"))
-print(StartInfo[,1])
 startdate<-format(getmdy(min(StartInfo[,1])),'%Y%m%d')
 enddate<-format(getmdy(max(StartInfo[,1])),'%Y%m%d')
-print(paste("startdate:",startdate,"enddate:",enddate,sep=" "))
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: startdate: ",startdate,"  enddate: ",enddate,"\n")
 
 list_FP<-dir(pathFP,all.files=T)
 list_FP<-list_FP[nchar(list_FP)==44]
 ident_time<-substring(list_FP,nchar(list_FP)-33,nchar(list_FP))
 ident_test<-pos2id(dat[,1],dat[,2],dat[,3],dat[,4])
 good<-(ident_test %in% ident_time)
-print(good)
+
 dat<-dat[good,]
 dat<-unique(dat)
 
-#dat2<-subset(dat,(dat[,1] %in% StartInfo[,1]))
 dat2<-dat
 dat<-dat2
 
@@ -104,8 +93,8 @@ for(i in 1:lengths(dimnames(dat)[2])){
 }
 ucats<-unique(pars[,"cats"])  #length: 22
 ufs<-unique(pars[,"fuels"])   #length: 13
-#print(ucats)
-#print(ufs)
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ucats ",ucats,"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ufs ",ufs,"\n")
 
 selco2<-pars[(pars[,1]==tracer & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 co2.cat.fuel.all<-rowSums (dat[,paste(selco2[,1],selco2[,2],selco2[,3],sep=".")], na.rm = FALSE)
@@ -137,8 +126,8 @@ test.plot<-rowSums (dat[,test.all], na.rm = FALSE)
 dat<-cbind(dat,test.plot)
 
 output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "others") #"peat" is replaced by "others" in Jena VPRM preproc.
-print(paste("output.veg",output.veg))
-print(paste("fluxmod ",fluxmod,sep=""))
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: output.veg",output.veg,"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: fluxmod ",fluxmod,"\n")
   if (fluxmod == "GSB") {
       output.veg <- c("frst", "shrb", "crop")#, "wetl")
    }
@@ -148,13 +137,8 @@ print(paste("fluxmod ",fluxmod,sep=""))
       output.veg <- c("evergreenA", "evergreenB", "evergreenC", "evergreenD", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "peat")
 output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "others") #"peat" is replaced by "others" in Jena VPRM preproc.
 
-#print(paste("vor resp",dim(dat),sep=""))
 #calculate CO2 from vegetation
-#print(paste("output.veg",output.veg))
-#paste(paste("resp",output.veg,sep=""))
-#print(dat[,paste("resp",output.veg,sep="")])
 resp.all<-rowSums (dat[,paste("resp",output.veg,sep="")], na.rm = FALSE)
-#print(paste("resp.all ",resp.all,sep=""))
 gee.all<-rowSums (dat[,paste("gee",output.veg,sep="")], na.rm = FALSE)
 infl.all<-rowSums (dat[,paste("infl",output.veg,sep="")], na.rm = FALSE)#+dat[,"inflwater"]
 co2.stilt<-resp.all+gee.all+dat[,"co2ini"]+dat[,"co2.cat.fuel.all"]
@@ -173,32 +157,8 @@ co2.background<-dat[,"co2ini"]
 
 co2.ini<-dat[,"co2ini"]
 
-#dat2<-cbind(dat2,co2.total,co2.bio,gee.all,resp.all,co2.fuel,co2.cat.fuel.oil,co2.cat.fuel.coal,co2.cat.fuel.gas,co2.cat.fuel.bio,co2.ini,rn)
-
 dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.energy,co2.transport,co2.industry,co2.others,co2.background,rn)
 
-# add unit in column name
-# components in ppm
-#output.nu <- c("co2.total","co2.bio","gee.all","resp.all","co2.fuel","co2.cat.fuel.oil","co2.cat.fuel.coal","co2.cat.fuel.gas","co2.cat.fuel.bio","co2.ini")
-#output.unit<-paste(colnames(dat2[,output.nu]),"[ppm]",sep="#")
-#colnames(dat2)[colnames(dat2)%in% output.nu] <- output.unit
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: colnames(dat2) ",colnames(dat2),"\n")
 
-# components in Bq/m3
-#output.nu <- c("rn","rn")
-#output.unit<-paste(colnames(dat2[,output.nu]),"[Bq/m2]",sep="#") 
-#colnames(dat2)[colnames(dat2)%in% output.nu] <- output.unit
-
-# components in m
-#output.nu <- c("zi","zi") 
-#output.unit<-paste(colnames(dat2[,output.nu]),"[m]",sep="#")  
-#colnames(dat2)[colnames(dat2)%in% output.nu] <- output.unit
-
-print(colnames(dat2))
-
-#system(paste("mkdir ./Output/Results/XXX/",sep=""))
-#write.table(dat2, file=paste("./Output/Results/XXX/stiltresults.csv",sep=""), na="", row.names=F, quote=F)
-
-
-#write.table(dat2, file=paste(pathResults,"/",station,"_","stiltresult", part, "_isodate.csv",sep=""), na="", row.names=F, quote=F)
 write.table(dat2, file=paste(pathResults,"/","stiltresults",stilt_year,".csv",sep=""), na="", row.names=F, quote=F)
-#system(paste("chmod a+rwx ",pathResults,"/","stiltresults.csv",sep=""))

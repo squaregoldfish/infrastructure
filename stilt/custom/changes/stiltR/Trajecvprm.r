@@ -174,7 +174,7 @@ if ("co2"%in%tracers)  {
       stop("Trajecvprm: parameter bios incorrectly specified. Redefine as GSB or VPRM or quote-unquote.")
    if (bios == "GSB" | bios == "VPRM"){
       out.type <- c("infl", "gee", "resp")
-      cat(bios, "\n")
+      cat(format(Sys.time(), "%FT%T"),"DEBUG Biosphere model ",bios, "\n")
       if (bios == "GSB") {
          output.veg <- c("frst", "shrb", "crop", "wetl")
       }
@@ -196,15 +196,15 @@ names.output <- c(names.output, tracers, paste("sd", tracers, sep=""))
 
 # Check if object exists
 if (existsr(ident,pathname)) {
-   cat("Trajecvprm(): starting with ident=", ident, "\n")   #found object
+   cat(format(Sys.time(), "%FT%T"),"INFO Trajecvprm(): starting with ident=", ident, "\n")   #found object
    part <- getr(ident,pathname)                             #get it
 } else {
    if (paste(pathname,".RData",ident,".gz",sep="") %in%
       dir(pathname,pattern=paste(".RData",ident,sep=""),all.files=TRUE)) {
-      cat("Trajecvprm(): starting with .gz ident=",ident, "\n") #found .gz object
+      cat(format(Sys.time(), "%FT%T"),"INFO Trajecvprm(): starting with .gz ident=",ident, "\n") #found .gz object
       part <- getr(ident,pathname,gz=TRUE)                  #get it
    } else {
-    cat("object ", pathname,".RData", ident, " NOT FOUND\n", sep="")
+    cat(format(Sys.time(), "%FT%T"),"INFO object ", pathname,".RData", ident, " NOT FOUND\n", sep="")
     lastresult <- rep(NA,length(names.output)-1)
     lastresult <- c(ident,lastresult)
     names(lastresult) <- names.output
@@ -232,7 +232,7 @@ if (dmassTF)
         rqdnames <- c(rqdnames, "dmass")
 for (nm in rqdnames) {
    if (!(nm%in%dimnames(part)[[2]])) {
-      cat("need column '", nm, "' for this run\n", sep="")
+      cat(format(Sys.time(), "%FT%T"),"DEBUG need column '", nm, "' for this run\n", sep="")
       lastresult <- rep(NA, length(names.output)-1)
       lastresult <- c(ident, lastresult)
       names(lastresult) <- names.output
@@ -487,11 +487,11 @@ for (speci in tracers) { # all fossil fuel emissions, do the ones with netCDF fo
       # set year for emission file (changes by uk)
       if(grepl("XXXX", emissfile[tolower(speci)]   )){
         yys<-unique(gmtime[, "yr"])
-        print(paste("yys ",yys))
+          cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm(): working on years ",yys,"\n")
         # as long as only a single year can be used in the run, make sure that number of days per year is set to current year in case the previous year was a leap year, therefore reset year in fdate to current year 
 	fdate[fdate==(yys[1]-1)] <- yys[1]
         dfile<-paste(gsub("XXXX",yys[1],emissfile[tolower(speci)]))
-        print(paste("dfile ",dfile,sep=" "))
+          cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm(): dfile ",dfile,"\n")
         emiss <- get.Emis.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci,numpix_x=numpix.x,numpix_y=numpix.y,dfile=dfile)
       }else{
         emiss <- get.Emis.netcdf(fdate, i=x, j=y, ires=shrink.x, jres=shrink.y, spec=speci,numpix_x=numpix.x,numpix_y=numpix.y)
@@ -887,8 +887,8 @@ tracers.clim<-tracers[inikind[tracers]=="climat"]
 if(length(tracers.clim)>0){ #are there climatological boundary files to be used
         # get 1st boundary field to set things up
    if (!existsr(paste(tracers.clim[1], ".ini", sep=""), pathname)){
-           print("need to use read.bg() to get boundary condition")
-           stop(paste("need ", tracers.clim[1], " boundary condition", sep=""))
+           cat(format(Sys.time(), "%FT%T"),"ERROR need to use read.bg() to get boundary condition\n")
+           stop(cat(format(Sys.time(), "%FT%T"),"ERROR need ", tracers.clim[1], " boundary condition\n"))
    }
    ini <- getr(paste(tracers.clim[1], ".ini", sep=""), pathname)
 
@@ -898,9 +898,9 @@ if(length(tracers.clim)>0){ #are there climatological boundary files to be used
    pointer <- cbind(aglg+1, latg+1, round(sasdate/delday)+1) # array indices must start with 1
            # use constant ini field when no initial data available
    if (any(pointer[,3]>dim(ini)[3]))
-           cat("Trajecvprm(): extrapolating ", tracers.clim[1], ".ini, need later times\n", sep="")
+           cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm(): extrapolating ", tracers.clim[1], ".ini, need later times\n", sep="")
    if (any(pointer[,3]<1))
-           cat("Trajecvprm(): extrapolating ", tracers.clim[1], ".ini, need earlier times\n", sep="")
+           cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm(): extrapolating ", tracers.clim[1], ".ini, need earlier times\n", sep="")
    pointer[pointer[,3]>dim(ini)[3],3] <- dim(ini)[3]
    pointer[pointer[,3]<1,3] <- 1
 
@@ -926,22 +926,22 @@ if(length(tracers.clim)>0){ #are there climatological boundary files to be used
 result <- cbind(result, cini, vegresult)
 
 if ("co2"%in%tracers & inikind["co2"] == "CT") {
-   cat("Trajecvprm: using CarbonTracker initial values.\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using CarbonTracker initial values.\n")
    result <- get.CarbonTracker.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co2"],
                               result=result, result.sel=selend)
 } else if ("co2"%in%tracers & inikind["co2"] == "TM3") {
-   cat("Trajecvprm: using TM3 initial values.\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values.\n")
    ftype<-substring(inifile["co2"],nchar(inifile["co2"])-1,nchar(inifile["co2"]))
    if(ftype==".b")result <- get.TM3.bin(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co2"],
                     result=result, result.sel=selend)
    if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["co2"],
                     result=result, result.sel=selend, tracer=c("co2"))
 } else if ("co2"%in%tracers & inikind["co2"] == "LMDZ") {
-   cat("Trajecvprm: using LMDZ initial values.\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using LMDZ initial values.\n")
    result <- get.LMDZ.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co2"],
                     result=result, result.sel=selend)
 } else if ("co2"%in%tracers & inikind["co2"] == "MACCfc") {
-   cat("Trajecvprm: using MACC/CAMS forecast as initial values.\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using MACC/CAMS forecast as initial values.\n")
    result <- get.MACC_CO2.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co2"],
                     result=result, result.sel=selend)
 }
@@ -952,14 +952,14 @@ if ("co"%in%tracers & inikind["co"] != "GEMS" & inikind["co"] != "MACC") {      
    result[selend, "coini"] <- result[selend, "CO.fact"]*coinio[selend]+result[selend, "CO.frCH4"] #add chemistry (linearized)
    result <- cbind(result, coinio)
 } else if ("co"%in%tracers & inikind["co"] == "GEMS") {
-   cat("Trajecvprm: using GEMS CO initial values.\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using GEMS CO initial values.\n")
    result <- get.GEMS_CO.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co"],
                     result=result, result.sel=selend,spec="coini")
    coinio <- result[, "coini"]                              # no chemistry yet
    result[selend, "coini"] <- result[selend, "CO.fact"]*coinio[selend]+result[selend, "CO.frCH4"] #add chemistry (linearized)
    result <- cbind(result, coinio)
 } else if ("co"%in%tracers & inikind["co"] == "MACC") {
-   cat("Trajecvprm: using MACC CO initial values.\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using MACC CO initial values.\n")
    result <- get.MACC_CO.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["co"],
                     result=result, result.sel=selend,spec="coini")
    coinio <- result[, "coini"]                              # no chemistry yet
@@ -967,28 +967,28 @@ if ("co"%in%tracers & inikind["co"] != "GEMS" & inikind["co"] != "MACC") {      
    result <- cbind(result, coinio)
 }
 if ("cofire"%in%tracers & inikind["cofire"] == "GEMS") {                                      # CO: need also advected boundary value with no chemistry
-   cat("Trajecvprm: using GEMS CO initial values for cofire.\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using GEMS CO initial values for cofire.\n")
    result <- get.GEMS_CO.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, co2inifile=inifile["cofire"],
                     result=result, result.sel=selend,spec="cofireini")
 }
 
 
 if ("ch4"%in%tracers & inikind["ch4"] == "TM3") {
-   cat("Trajecvprm: using TM3 initial values for CH4.\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for CH4.\n")
    ftype<-substring(inifile["ch4"],nchar(inifile["ch4"])-1,nchar(inifile["ch4"]))
      if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["ch4"],
                     result=result, result.sel=selend, tracer=c("ch4"))
 }
 
 if ("rn"%in%tracers & inikind["rn"] == "TM3") { 
-   cat("Trajecvprm: using TM3 initial values for Rn.\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn.\n")
    ftype<-substring(inifile["rn"],nchar(inifile["rn"])-1,nchar(inifile["rn"]))
    if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn"],
                   result=result, result.sel=selend, tracer=c("rn"))
    if(ftype=="nc")result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
 } 
 #if ("rn_era"%in%tracers & inikind["rn_era"] == "TM3") {
-#   cat("Trajecvprm: using TM3 initial values for Rn.\n")
+#   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn.\n")
 #   ftype<-substring(inifile["rn_era"],nchar(inifile["rn_era"])-1,nchar(inifile["rn_era"]))
 #   if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn_era"],
 #                  result=result, result.sel=selend, tracer=c("rn_era"))

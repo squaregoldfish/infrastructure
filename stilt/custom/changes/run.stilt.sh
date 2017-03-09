@@ -10,11 +10,11 @@ echo STILT_YEAR $STILT_YEAR
 export RUN_ID=$3
 echo RUN_ID $RUN_ID
 export PART2=$4
-echo RUN_ID $PART2
+echo PART2 $PART2
 
 rm -f $RUN_ID/FAILURE
 rm -f $RUN_ID/SUCCESS
-
+cp -r STILT_Exe $RUN_ID/.
 
 PART1=1
 TOTPART=${PART2}
