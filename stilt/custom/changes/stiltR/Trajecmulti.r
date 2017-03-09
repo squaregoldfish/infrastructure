@@ -257,7 +257,7 @@ outdat<-NULL
    metfile<-c(metfile,metf) 
     }
   }
-cat("Trajec(): metfile that will be used: ", metfile, "\n")
+cat(format(Sys.time(), "%FT%T"),"INFO Trajec(): metfile that will be used: ", metfile, "\n")
 
 #check if metfiles available
 for(mm in metfile){  #loop over the number of meteorological files

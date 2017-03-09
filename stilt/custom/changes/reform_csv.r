@@ -34,7 +34,7 @@ for(part in 1:tp){
 dat<-rbind(dat,getr(paste(rnam,"_",part,sep=""),pathFP))} #standard simulation
 
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dim(dat) ",dim(dat),"\n")
-cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dimnames(dat) ",dimnames(dat),"\n")
+#cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dimnames(dat) ",dimnames(dat),"\n")
 mdy<-month.day.year
 
 getmdy<-function(fjday){#nice x axis
@@ -93,8 +93,8 @@ for(i in 1:lengths(dimnames(dat)[2])){
 }
 ucats<-unique(pars[,"cats"])  #length: 22
 ufs<-unique(pars[,"fuels"])   #length: 13
-cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ucats ",ucats,"\n")
-cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ufs ",ufs,"\n")
+#cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ucats ",ucats,"\n")
+#cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ufs ",ufs,"\n")
 
 selco2<-pars[(pars[,1]==tracer & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 co2.cat.fuel.all<-rowSums (dat[,paste(selco2[,1],selco2[,2],selco2[,3],sep=".")], na.rm = FALSE)
@@ -126,7 +126,7 @@ test.plot<-rowSums (dat[,test.all], na.rm = FALSE)
 dat<-cbind(dat,test.plot)
 
 output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "others") #"peat" is replaced by "others" in Jena VPRM preproc.
-cat(format(Sys.time(), "%FT%T"),"DEBUG reform: output.veg",output.veg,"\n")
+#cat(format(Sys.time(), "%FT%T"),"DEBUG reform: output.veg",output.veg,"\n")
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: fluxmod ",fluxmod,"\n")
   if (fluxmod == "GSB") {
       output.veg <- c("frst", "shrb", "crop")#, "wetl")
@@ -159,6 +159,6 @@ co2.ini<-dat[,"co2ini"]
 
 dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.energy,co2.transport,co2.industry,co2.others,co2.background,rn)
 
-cat(format(Sys.time(), "%FT%T"),"DEBUG reform: colnames(dat2) ",colnames(dat2),"\n")
+#cat(format(Sys.time(), "%FT%T"),"DEBUG reform: colnames(dat2) ",colnames(dat2),"\n")
 
 write.table(dat2, file=paste(pathResults,"/","stiltresults",stilt_year,".csv",sep=""), na="", row.names=F, quote=F)
