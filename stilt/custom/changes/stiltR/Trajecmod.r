@@ -35,8 +35,9 @@ runs.done.dir <- NULL
 #}
 
 # ICOS-CP specific settings
-print(paste("run_id ",run_id,sep=""))
-print(paste("path ",path,sep=""))
+cat(format(Sys.time(), "%FT%T"),"DEBUG run_id ",run_id,"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG path ",path,"\n")
+
 runs.done.dir <- NULL
 if (file.exists(paste('./',run_id,'/Runs.done',sep=''))) runs.done.dir <- paste('./',run_id,'/Runs.done/',sep='')
 #if (is.null(runs.done.dir) && file.exists(paste(sourcepath,'Runs.done',sep='')))
@@ -48,28 +49,28 @@ if (!is.null(runs.done.dir)) {
    file.copy("setStiltparam.r",
              paste(runs.done.dir, "setStiltparam", savename, ".r", sep=""),
              overwrite=T)
-   cat("Saving copy of setStiltparam.r in ",
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Saving copy of setStiltparam.r in ",
        paste(runs.done.dir, "setStiltparam", savename, ".r", sep=""),
-       "\n",sep="")
+       "\n")
 } else {
-   cat("No Runs.done directory; parameter information not saved\n")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG No Runs.done directory; parameter information not saved\n")
 }
 
 
 
 totpart <- 1
 if (!is.null(totpartarg)) {
-  cat('resetting totpart=', totpart, ' to totpartarg=', totpartarg, '\n', sep='')
+    cat(format(Sys.time(), "%FT%T"),'DEBUG resetting totpart=', totpart, ' to totpartarg=', totpartarg, '\n')
   totpart <- totpartarg
 }
 part <- 1
 if (!is.null(partarg)) {
-  cat('Using totpart=', totpart, ' resetting part=', part, ' to partarg=', partarg, '\n', sep='')
+    cat(format(Sys.time(), "%FT%T"),'DEBUG Using totpart=', totpart, ' resetting part=', part, ' to partarg=', partarg, '\n')
   part <- partarg
 }
 if (!is.null(nodeoffset)) {
   nummodel <- part+nodeoffset
-  cat('Using nodeoffset= ', nodeoffset, ' ,results in nummmodel= ', nummodel, '\n', sep='')
+    cat(format(Sys.time(), "%FT%T"),'DEBUG Using nodeoffset= ', nodeoffset, ' ,results in nummmodel= ', nummodel, '\n')
 } else {
   nummodel <- part
 }
@@ -80,8 +81,7 @@ if (!is.null(nodeoffset)) {
 if (!existsr(Timesname, pathResults)) stop(paste("cannot find object ", Timesname, " in directory ", pathResults, sep=""))
 StartInfo <- getr(paste(Timesname, sep=""), pathResults) # object containing fractional julian day, lat, lon, agl for starting position and time
 
-#print(paste("StartInfo ",StartInfo))
-
+  cat(format(Sys.time(), "%FT%T"),"DEBUG StartInfo ",StartInfo[1,]," - ",StartInfo[dim(StartInfo)[1],],"\n")
 # SELECTION OF A FEW Receptors for testing!
 if (Times.startrow > 0) StartInfo <- StartInfo[Times.startrow:Times.endrow,, drop=FALSE] # can be just one (Times.startrow=Times.endrow)
 
@@ -91,8 +91,8 @@ if (dim(StartInfo)[1] < totpart) {
   totpart <- dim(StartInfo)[1]
 }
 if (part > totpart) {
-  stop.message <- paste('Specified part=', part, ' > totpart=', totpart, ', stopping\n')
-  cat(stop.message)
+  stop.message <- paste('ERROR Specified part=', part, ' > totpart=', totpart, ', stopping\n')
+  cat(format(Sys.time(), "%FT%T"),stop.message)
   stop(stop.message)
 }
 start.rows <- c(1 + (0:(totpart-1))*floor(dim(StartInfo)[1]/totpart), dim(StartInfo)[1]+1)
@@ -115,17 +115,17 @@ if (exists('remove.Resultfile')) l.remove.Resultfile <- remove.Resultfile
 # OVERWRITE WARNING
 if(existsr(paste("stiltresult_",stilt_year,"_",part,sep=""),path=pathFP)) {
    if(l.remove.Resultfile){
-      warning("You are attempting to overwrite an existing stiltresult object")
+      cat(format(Sys.time(), "%FT%T"),"DEBUG You are attempting to overwrite an existing stiltresult object\n")
       unix(paste("rm -f ",paste(pathFP,".Rdata","stiltresult_",stilt_year,"_",part,sep=""),sep=""))
       unix(paste("rm -f ",paste(pathFP,"stiltresult_",stilt_year,"_",part,".csv",sep=""),sep=""))
-      warning("Notice: New stiltresult object will be written ")
+      cat(format(Sys.time(), "%FT%T"),"DEBUG Notice: New stiltresult object will be written \n")
    }else{ 
-      warning("You are not computing new timeseries you are using an existing stiltresult object")
-      warning("Notice: If you have changed parameters and Trajecmod fails, first try to move or remove the existing stiltresult object")
+      cat(format(Sys.time(), "%FT%T"),"DEBUG You are not computing new timeseries you are using an existing stiltresult object\n")
+      cat(format(Sys.time(), "%FT%T"),"DEBUG Notice: If you have changed parameters and Trajecmod fails, first try to move or remove the existing stiltresult object\n")
       fluxTF<-F    # no new time series are computed
    }
 }else{
-   warning("Notice: New stiltresult object will be written ")
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Notice: New stiltresult object will be written \n")
 }
 ###### end: added for CP setup UK ########
 
@@ -142,7 +142,7 @@ for (j in 1:nrows) {
   ###############################################
   lat <- StartInfo[j, "LAT"]; lon <- StartInfo[j, "LON"]; agl <- StartInfo[j, "AGL"]
   identname <- pos2id(StartInfo[j,1], lat, lon, agl)
-  cat("Trajecmod(): ", identname, " running at ", date(), "\n", sep="")
+  cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): ", identname, " running at ", date(), "\n")
   dat <- month.day.year(floor(StartInfo[j,1])) # from julian to mmddyy
   yr4 <- dat$year # 4 digit year
   yr <- yr4%%100 # 2 digit year (or 1 digit...)
@@ -217,6 +217,13 @@ for (j in 1:nrows) {
 
     pathBinFootprintstation<-paste(pathBinFootprint,station,"/",sep="")
     if (file.access(pathBinFootprintstation,0)!=0) {
+i
+D
+D
+D
+D
+D
+D
      system(paste("mkdir ",pathBinFootprintstation,sep=""))
      }
 
@@ -330,8 +337,8 @@ for (j in 1:nrows) {
   ##### calculate mixing ratios at receptor points, save in result ########
 
   if (fluxTF) {
-     print(paste("Trajecmod(): rownumber j:", j))
 
+       cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): rownumber j:", j,"\n")
 
      traj <- Trajecvprm(ident=identname, pathname=path, tracers=fluxtracers, coarse=aggregation,
                 dmassTF=T, nhrs=nhrs, vegpath=vegpath, evilswipath=evilswipath,
@@ -346,9 +353,9 @@ for (j in 1:nrows) {
      if (existsr(paste("stiltresult_",stilt_year,"_", part, sep=""), path=pathFP)) {
         result <- getr(paste("stiltresult_",stilt_year,"_", part, sep=""), path=pathFP)
         if (dim(result)[1] != nrows) {
-           if (firstflux) print("Trajecmod(): existing stiltresult has wrong dimension; creating new one.")
+           if (firstflux) cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): existing stiltresult has wrong dimension; creating new one.\n")
         } else {
-           if (firstflux) print("Trajecmod(): found existing stiltresult, update rows in that.")
+           if (firstflux) cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): found existing stiltresult, update rows in that.\n")
            firstflux <- FALSE
         }
      }
@@ -369,7 +376,8 @@ for (j in 1:nrows) {
   if (footprintTF) {
     rerunfoot <- FALSE
     if(existsr(paste("foot", identname, sep=""),pathFP)){
-       print(paste("Trajecmod(): found object", paste("foot", identname, sep=""), " in ", pathFP))
+       #print(paste("Trajecmod(): found object", paste("foot", identname, sep=""), " in ", pathFP))
+       cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): found object: foot", identname)
        foot <- getr(paste("foot", identname, sep=""), pathFP)
        # test if object has same foottimes, if not rerun Trajecfoot
        foothr <- as.numeric(dimnames(foot)[[3]])
@@ -384,8 +392,9 @@ for (j in 1:nrows) {
     }
 
     if (rerunfoot) {
-       print(paste("Trajecmod(): ", identname, " running footprint at ", unix("date"), sep=""))
-       print(paste("Trajecmod(): memory in use:", memory.size()[1]))
+       #print(paste("Trajecmod(): ", identname, " running footprint at ", unix("date"), sep=""))
+       cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): ", identname, " running footprint at ",format(Sys.time(), "%d %b %Y %H:%M:%S"),"\n")
+       #print(paste("Trajecmod(): memory in use:", memory.size()[1]))
        foot <- Trajecfoot(identname, pathname=path, foottimes=foottimes, zlim=c(zbot, ztop),
                           fluxweighting=NULL, coarse=1, vegpath=vegpath,
                           numpix.x=numpix.x, numpix.y=numpix.y,
@@ -394,7 +403,7 @@ for (j in 1:nrows) {
 #       if (is.null(dim(foot))) stop(paste(" Trajecfoot returned empty footprint for ",identname,sep=""))
        if (!is.null(foot)) {
          assignr(paste("foot", identname, sep=""), foot, pathFP)
-         print(paste("Trajecmod(): foot", identname, " assigned", sep=""))
+           cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): foot", identname, " assigned\n")
        } #if (!is.null(dim(foot)))
     } # if (rerunfoot)
 
@@ -434,9 +443,10 @@ for (j in 1:nrows) {
 
     # if netcdf file does not exist or has different content, write new netcdf file
     if (file.exists(paste(pathFP,ncf_name,sep=""))) {
-      print(paste("Trajecmod(): found netcdf file ", ncf_name, " in ", pathFP))
+      cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): found netcdf file ", ncf_name,"\n")
       ncf <- nc_open(paste(pathFP,ncf_name,sep=""))
-      #print(paste("open ",ncf,sep=""))
+        cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): found netcdf file ", ncf_name, " in ", pathFP,"\n")
+        #cat(format(Sys.time(), "%FT%T"),"DEBUG open ",ncf,"\n")
       for( i in 1:ncf$nvars ) {
         z <- ncf$var[[i]]
         if (z$name=="foot") testfoot<-ncf$var[[i]]
@@ -447,12 +457,13 @@ for (j in 1:nrows) {
       #if(compare.signif(z$lat,footlat,digits,fac.dig) !=0) errors <- c(errors,'footlat mismatch')
       #if(compare.signif(z$lon,footlon,digits,fac.dig) !=0) errors <- c(errors,'footlon mismatch')
       #if(sum(z$time != footdate) !=0) errors <- c(errors,'footdate mismatch')
-      print(paste(errors,sep=" "))
+      cat(format(Sys.time(), "%FT%T"),"DEBUG ",paste(errors,sep=" "),"\n")
       nc_close(ncf)
       if (!is.null(errors)) {
-         print(paste("; but content does not match.\n"))
+         cat(format(Sys.time(), "%FT%T"),"DEBUG ; but content does not match.\n")
+         cat(format(Sys.time(), "%FT%T"),"DEBUG ; mismatch in ",errors,"\n")
       } else {
-         print(paste("; use this.\n"))
+         cat(format(Sys.time(), "%FT%T"),"DEBUG ; use this.\n")
          #system(paste("rsync ",pathFP,ncf_name," ",pathResults,ncf_name,sep=""))
       }
     }
@@ -487,7 +498,7 @@ for (j in 1:nrows) {
 		            "aggregated in grid boxes (lat,lon) and stilt start time (time),",
 			    "aggregated over backtime hours prior to start time") )
       nc_close(ncf)
-      print(paste("Footprint written to NetCDF file ",ncf_name,"\n",sep=""))
+      cat(format(Sys.time(), "%FT%T"),"DEBUG Footprint written to NetCDF file ",ncf_name,"\n")
       #system(paste("rsync ",pathFP,ncf_name," ",pathResults,ncf_name,sep=""))
     } 
   } # !is.null(foot) 
@@ -524,7 +535,7 @@ if (fluxTF) {
    dimnames(result) <- list(NULL, dimnames(result)[[2]])
    # write the object into default database; object names are, e.g., "Crystal.1"
    assignr(paste("stiltresult_",stilt_year,"_", part, sep=""), result, path=pathFP)
-   print(paste("stiltresult_",stilt_year,"_", part, " assigned in ", pathFP, sep=""))
+     cat(format(Sys.time(), "%FT%T"),"DEBUG stiltresult_",stilt_year,"_", part, " assigned in ", pathFP, "\n")
    write.table(result, file=paste(pathFP, "stiltresult_",stilt_year,"_", part, ".csv", sep=""), na="", row.names=F)
 }
 

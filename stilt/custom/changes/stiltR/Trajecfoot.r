@@ -33,7 +33,7 @@ Trajecfoot<-function(ident,part=NULL,timelabel=NULL,pathname="",foottimes=c(0,36
 if(is.null(part)){   #when object wasn't passed on
 #Check if object exists
 if(length(unix.shell(paste("if (-e ",pathname,".RData",ident,") echo 'found it!'; endif",sep=""),shell="/bin/csh"))>0){
-  print(paste("Trajecfoot(): starting with ident=",ident,sep="")) #found object
+  cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecfoot(): starting with ident=",ident,"\n") #found object
   part<-getr(ident,pathname) #get it
 }else{#if not there, break out of function, return NA's
 print(paste("Trajecfoot(): object=",pathname,".RData",ident," NOT FOUND",sep=""))

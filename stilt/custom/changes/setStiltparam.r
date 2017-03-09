@@ -5,7 +5,7 @@
 # $Id: setStiltparam.r,v 1.1 2010/03/01 17:18:05 trn Exp trn $
 #---------------------------------------------------------------------------------------------------
 
-cat("setStiltparam.r: starting...\n")
+cat(format(Sys.time(), "%FT%T"),"INFO setStiltparam.r: starting at ",format(Sys.time(), "%d %b %Y %H:%M:%S"),"\n")
 
 ###### set directories ######
 ###### make sure they exist, at least the ones in the following first paragraph
@@ -24,15 +24,9 @@ pathBinFootprint<-paste(path_id,"Footprints/",sep="")
 shlibpath <- "./stiltR/shlib/"   # R extensions
 metpath <- "/opt/STILT_modelling/Input/Metdata/Europe2/"    # where met data are stored in ARL format
 vegpath<-"./Input/VPRM/" 	#path to get to surface fluxes and vegetation grids at various resolutions; not needed for VPRM
-#rundir <- paste("./STILT_Exe_",run_id,"/",sep="")                               # specifies main directory where different directories are found to run hymodelc
 rundir <- paste("./",run_id,"/STILT_Exe/",sep="")                               # specifies main directory where different directories are found to run hymodelc
-print(paste("cp -r ./STILT_Exe ",rundir,sep=""))
-print(paste(!file.exists(rundir),sep=""))
-if(!file.exists(rundir)){system(paste("cp -r ./STILT_Exe ",rundir,sep=""))}
-
-cat("setStiltparam.r: rundir=", rundir,"\n")
-cat("setStiltparam.r: metpath=", metpath,"\n")
-
+cat(format(Sys.time(), "%FT%T"),"DEBUG setStiltparam.r: rundir=", rundir,"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG setStiltparam.r: metpath=", metpath,"\n")
 ### optional directories
 evilswipath<-paste("./Input/VPRM/VPRM_input_STILT_EU2_",stilt_year,"/",sep="")    # VPRM only -- input path for EVI and LSWI files (can be netcdf)
 #evilswipath="./Input/VPRM/VPRM_input_STILT_EU2_2011/"    # VPRM only -- input path for EVI and LSWI files (can be netcdf)
@@ -40,7 +34,6 @@ evilswipath<-paste("./Input/VPRM/VPRM_input_STILT_EU2_",stilt_year,"/",sep="")  
 vprmconstantspath="./Input/VPRM/VPRMconstants/"   # VPRM only -- input path for file with VPRM constants
 vprmconstantsname="vprmConstants.optEU2007"                                 # VPRM only -- name of file with VPRM constants
 nldaspath="/project/p1229/Radiation/NLDAS/"                             # VPRM only -- input path for NLDAS temperature and radiation
-
 
 
 ###### basic parameters ######
@@ -100,22 +93,14 @@ metsource<-c("ECmetF")   # Source of Meteorological data, for analysis runs (not
 ###### define receptors ######
 
 ###### Carbon Portal specific settings #######
-teststation <- Sys.getenv(c("STILT_NAME"),unset = NA)
-#stilt_year <- Sys.getenv(c("STILT_YEAR"),unset = NA)
-#run_id <- Sys.getenv(c("RUN_ID"),unset = NA)
-print(paste("teststation",teststation,sep=" "))
-print(paste("run_id",run_id,sep=" "))
-station<-teststation
-#station<-"hxHEIi"
+station <- Sys.getenv(c("STILT_NAME"),unset = NA)
 path<-paste(path,station,"/",sep="")
 pathFP<-paste(pathFP,station,"/",sep="")
-#pathFP<-paste(pathFP,run_id,"/",station,"/",sep="")
 pathResults<-paste(pathResults,station,"/",sep="")
-#pathResults<-paste(pathResults,run_id,"/",station,"/",sep="")
-#pathResults<-paste(pathResults,run_id,"/","XXX","/",sep="")
-print(paste("RData file should be in ",path))
-print(paste("Footprints will be in ",pathFP))
-print(paste("Results will be in ",pathResults))
+cat(format(Sys.time(), "%FT%T"),"INFO setStiltparam.r: station = ",station,"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG Particle location files should be in ",path,"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG Footprints will be in ",pathFP,"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG Results will be in ",pathResults,"\n")
 remove.Resultfile=T     # T: remove stiltresult object and csv-file
                         # F: do not overwrite stitlresult object and csv-file, plot results only
 ###### end CP specific settings ######
@@ -125,7 +110,7 @@ Timesname<-paste(".",station,".",stilt_year,".request",sep="") #name of object c
                                 #note that column names must be "fjul","lat","lon","agl"
 Times.startrow=0        # for short test run; "Times.startrow" = row of Timesname object to start with; set to 0 for full run
 Times.endrow=3; if (Times.startrow == 0) Times.endrow <- 0   # for short test run; "Times.endrow"= row of Timesname object to end with
-print(paste("Timesname",Timesname,sep=""))
+cat(format(Sys.time(), "%FT%T"),"DEBUG Timesname ",Timesname,"\n")
 
 #####################################
 ####### PARTICLE LOCATIONS ##########
@@ -191,12 +176,12 @@ if(emisscatTF){
 ####### don't modify ##########
 dimnames(tracer.info)<-list(c("wanted","ncdfTF","emissfile","inikind","inifile"),tracer.names.all)
 fluxtracers<-tracer.names.all[as.logical(tracer.info["wanted",])]
-print(paste("fluxtracers ",fluxtracers,sep=""))
 ncdfTF<-as.logical(tracer.info["ncdfTF",]); names(ncdfTF)<-tracer.names.all
 emissfile<-tracer.info["emissfile",]; names(emissfile)<-tracer.names.all
 inikind<-tracer.info["inikind",]; names(inikind)<-tracer.names.all
 inifile<-tracer.info["inifile",]; names(inifile)<-tracer.names.all
 ####### END don't modify ##########
+cat(format(Sys.time(), "%FT%T"),"DEBUG fluxtracers ",paste(fluxtracers,sep="\n"),"\n")
 
 aggregation <- 1                # degrade resolution (for aggregation error): 0: use only highest resolution at 20 km;
         #  1-32: dynamic resolution.
@@ -229,6 +214,7 @@ keepevimaps <- FALSE            # this assigns evi and lswi maps to the global e
         # allocation problems are anticipated, this feature should NOT be used!!!
                                 #this variable does not matter when using netCDF format
 
+cat(format(Sys.time(), "%FT%T"),"INFO Biosphere model: ",fluxmod,"\n")
 
 ###########################################
 ####### FOOTPRINTS AND INFLUENCE ##########
@@ -252,7 +238,9 @@ if(ftintr==1){            # hourly intervals for coupling to fluxes are independ
   for(ft in 1:nfoottimes){
   foottimes[ft]<-0+(ft-1)*ftintr
 }}
-print(paste("foottimes ",foottimes))
+
+cat(format(Sys.time(), "%FT%T"),"DEBUG foottimes ",foottimes,"\n")
+
 zbot <- 0               # lower vertical bound for influence projection, in meters agl
 ztop <- 0               # upper vertical bound for influence projection, in meters agl
                         # if ztop set to zero, surface influence will be calculated
@@ -328,7 +316,7 @@ if(any(inikind[fluxtracers]=="climat")){
   }
 }
 # get CO2 flux parameters
-if (fluxTF) {library(foreign); data.restore(paste(sourcepath, "dlambda.veg.dmp", sep=""), print=T)}
+if (fluxTF) {library(foreign); data.restore(paste(sourcepath, "dlambda.veg.dmp", sep=""), print=F)}
 if (fluxTF & linveg) {dlambda.simp.veg <- getr("dlambda.simp.veg", path="/Net/Groups/BSY/BSY_3/cgerbig/Rsource/polarR/")}
 # object dlambda.veg contains parameters of simple light and temperature fit to Fluxnet data
 # NEE=drdt * T  + a3 * swrad / (a4 + swrad)
