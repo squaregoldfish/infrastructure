@@ -8,6 +8,7 @@
   vars_files:
     - vars.yml
   roles:
+    - role: icos.stiltrun
     - role: icos.stiltweb
     - role: icos.stiltcluster
       stiltcluster_is_seed: yes
@@ -19,5 +20,5 @@
   vars_files:
     - vars.yml
   roles:
-    - role: icos.stiltweb
     - role: icos.stiltrun
+    - role: icos.stiltcluster
