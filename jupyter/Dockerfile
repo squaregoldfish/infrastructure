@@ -43,6 +43,6 @@ RUN apt-get install -y gfortran \
 
 RUN apt-get install -y libblas-dev liblapack-dev libfftw3-dev tcsh \
 	&& pip install --upgrade pip \
-	&& pip install pyshtools
-
+	&& pip install pyshtools \
+	&& pip install shapely[vectorized]==1.6b2
 
