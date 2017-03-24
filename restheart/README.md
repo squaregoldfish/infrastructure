@@ -16,3 +16,13 @@ Intended to be used for storing usage statistics of Carbon Portal services and s
 * Fetch the images, create and start the RESTHeart and MongoDB containers
   * `docker-compose up -d`
 
+
+## Useful commands
+
+Specify aggregations for a collection:
+
+`curl -H "Content-Type: application/json" --upload-file dobjAggrs.json http://127.0.0.1:8088/db/dobjdls`
+
+Users that specified ORCID ID in their user profile:
+
+`curl -G --data-urlencode 'keys={"_id":1, "profile.orcid":1}' --data-urlencode 'filter={"profile.orcid":{"$regex": ".+"}}' http://127.0.0.1:8088/db/users`
