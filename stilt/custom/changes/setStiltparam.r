@@ -101,8 +101,9 @@ cat(format(Sys.time(), "%FT%T"),"INFO setStiltparam.r: station = ",station,"\n")
 cat(format(Sys.time(), "%FT%T"),"DEBUG Particle location files should be in ",path,"\n")
 cat(format(Sys.time(), "%FT%T"),"DEBUG Footprints will be in ",pathFP,"\n")
 cat(format(Sys.time(), "%FT%T"),"DEBUG Results will be in ",pathResults,"\n")
-remove.Resultfile=T     # T: remove stiltresult object and csv-file
+remove.Resultfile<-T     # T: remove stiltresult object and csv-file
                         # F: do not overwrite stitlresult object and csv-file, plot results only
+modelwind<-T
 ###### end CP specific settings ######
 Timesname<-paste(".",station,".",stilt_year,".request",sep="") #name of object containing frac. julian, lat, lon, agl (m) as receptor information;
 				#this object needs to be saved (use assignr) in directory 'path' (see above)
