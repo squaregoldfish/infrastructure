@@ -116,7 +116,7 @@ if (exists('remove.Resultfile')) l.remove.Resultfile <- remove.Resultfile
 if(existsr(paste("stiltresult_",stilt_year,"_",part,sep=""),path=pathFP)) {
    if(l.remove.Resultfile){
       cat(format(Sys.time(), "%FT%T"),"DEBUG You are attempting to overwrite an existing stiltresult object\n")
-      unix(paste("rm -f ",paste(pathFP,".Rdata","stiltresult_",stilt_year,"_",part,sep=""),sep=""))
+      unix(paste("rm -f ",paste(pathFP,".RData","stiltresult_",stilt_year,"_",part,sep=""),sep=""))
       unix(paste("rm -f ",paste(pathFP,"stiltresult_",stilt_year,"_",part,".csv",sep=""),sep=""))
       cat(format(Sys.time(), "%FT%T"),"DEBUG Notice: New stiltresult object will be written \n")
    }else{ 
@@ -178,6 +178,28 @@ for (j in 1:nrows) {
                    siguverr=siguverr,TLuverr=TLuverr,zcoruverr=zcoruverr,horcoruverr=horcoruverr,
                    sigzierr=sigzierr,TLzierr=TLzierr,horcorzierr=horcorzierr)
   }
+
+  #=====================extracted from trajwind.r
+  if(modelwind){
+    tdat<-getr(info["outname"],path=info["outpath"])# search .RData in outpath
+    if(length(tdat)==0){ubar <- vbar <- wbar <- dir <- NA}
+    if(length(tdat)==1){if(is.na(tdat))  ubar <- vbar <- wbar <- dir <- NA}
+    if(length(tdat)>1) {
+      sel<-abs(tdat[,"time"])==min(unique(abs(tdat[,"time"])))
+
+      nmins<-abs(tdat[sel,"time"])
+      delx<-1000*distance(x1=tdat[sel,"lon"],x2=lon,y1=lat,y2=lat)    #distance in [m]
+      ubar<-mean(sign(tdat[sel,"lon"]-lon)*delx/(nmins*60))     #U-velocity [m/s]
+      dely<-1000*distance(x1=lon,x2=lon,y1=tdat[sel,"lat"],y2=lat)    #distance in [m]
+      vbar<-mean(sign(tdat[sel,"lat"]-lat)*dely/(nmins*60))     #V-velocity [m/s]
+      delz<-abs(tdat[sel,"agl"]-agl)                                    #distance in [m]
+      wbar<-mean(sign(tdat[sel,"agl"]-agl)*delz/(nmins*60))     #W-velocity [m/s]
+      dir<-270.-atan2(vbar,ubar)*(180/(pi))
+      if(dir>360) dir <- dir-360          
+    }
+  }
+  #================end trajwind.r
+
   if (firsttraj) { # set up array for run info
     run.info <- matrix(NA, nrow=nrows, ncol=length(info))
     dimnames(run.info) <- list(NULL, names(info))
@@ -217,13 +239,6 @@ for (j in 1:nrows) {
 
     pathBinFootprintstation<-paste(pathBinFootprint,station,"/",sep="")
     if (file.access(pathBinFootprintstation,0)!=0) {
-i
-D
-D
-D
-D
-D
-D
      system(paste("mkdir ",pathBinFootprintstation,sep=""))
      }
 
@@ -348,6 +363,13 @@ D
                 numpix.x=numpix.x, numpix.y=numpix.y, lon.ll=lon.ll, lat.ll=lat.ll,
                 lon.res=lon.res, lat.res=lat.res)
 
+     #=====================use trajwind.r 
+     if(modelwind){
+       trajnames<-c(names(traj),"ubar","vbar","wbar","wind.dir")
+       traj<-c(t(traj),ubar,vbar,wbar,dir);
+       names(traj)<-trajnames
+     }
+     #=====================end trajwind.r 
 
      # 'traj' is a vector
      if (existsr(paste("stiltresult_",stilt_year,"_", part, sep=""), path=pathFP)) {
@@ -408,7 +430,7 @@ D
     } # if (rerunfoot)
 
     if (is.null(foot)) { # uk check if foot is valid
-      print(paste("No footprint file written!!!!"))
+      cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): No footprint file written!!!!|n")
     } else {	    
     # write aggregated footprint to netcdf file
     # prepare for ncdf output 
