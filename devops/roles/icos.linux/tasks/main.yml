@@ -1,6 +1,6 @@
 - name: Change linux timezone
   # <2017-01-09 mån> My version of ansible doesn't have the 'timezone' module so
-  # I'll just to the linking myself.
+  # I'll just do the linking myself.
   file:
     dest: /etc/localtime
     src: "{{ linux_timezone_path }}"

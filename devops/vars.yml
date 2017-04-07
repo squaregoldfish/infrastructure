@@ -1,6 +1,6 @@
-doi_jar_file: ../../doi/target/scala-2.10/doi-assembly-0.1-SNAPSHOT.jar
-doi_app_conf: ../../doi/application.conf
-stiltweb_jar_file: ../../stiltweb/target/scala-2.11/stiltweb-assembly-0.1.0.jar
-stiltcluster_jar_file: ../../stiltweb/stiltcluster/target/scala-2.11/stiltcluster-assembly-0.1.0.jar
-cpauth_swamid_xml: ../../cpauth/src/main/resources/swamid-idps.xml
+doi_jar_file          : ../../doi/target/scala-2.10/doi-assembly-0.1-SNAPSHOT.jar
+doi_app_conf          : ../../doi/application.conf
+stiltweb_jar_file     : ../../stiltweb/target/scala-2.11/stiltweb-assembly-0.1.0.jar
+stiltcluster_jar_file : ../../stiltweb/stiltcluster/target/scala-2.11/stiltcluster-assembly-0.1.0.jar
+cpauth_swamid_xml     : ../../cpauth/src/main/resources/swamid-idps.xml
 
