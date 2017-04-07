@@ -2,23 +2,13 @@
 
 ---
 - hosts: stiltmaster
-  tags:
-    - stilt
+  tags: stilt
   become: true
-  vars_files:
-    - vars.yml
-  roles:
-    - role: icos.stiltrun
-    - role: icos.stiltweb
-    - role: icos.stiltcluster
-      stiltcluster_is_seed: yes
+  vars_files: [vars.yml]
+  roles: [icos.stiltweb]
 
 - hosts: stiltcluster
-  tags:
-    - stilt
+  tags: stilt
   become: true
-  vars_files:
-    - vars.yml
-  roles:
-    - role: icos.stiltrun
-    - role: icos.stiltcluster
+  vars_files: [vars.yml]
+  roles: [icos.stiltrun, icos.stiltcluster]

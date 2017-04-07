@@ -12,5 +12,9 @@ linux_add_ssh_root=
 [stiltmaster]
 ubuntu stilt_spoof_ip="192.168.99.20"
 
+[stiltcluster:vars]
+stilt_spoof_ip="192.168.99.20"
+
 [stiltcluster]
-centos stilt_spoof_ip="192.168.99.20"
+ubuntu stiltcluster_is_seed="yes" 
+centos
