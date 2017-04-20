@@ -94,8 +94,8 @@ metsource<-c("ECmetF")   # Source of Meteorological data, for analysis runs (not
 
 ###### Carbon Portal specific settings #######
 station <- Sys.getenv(c("STILT_NAME"),unset = NA)
-path<-paste(path,station,"/",sep="")
-pathFP<-paste(pathFP,station,"/",sep="")
+path<-paste(path,station,"/",stilt_year,"/",sep="")
+pathFP<-paste(pathFP,station,"/",stilt_year,"/",sep="")
 pathResults<-paste(pathResults,station,"/",sep="")
 cat(format(Sys.time(), "%FT%T"),"INFO setStiltparam.r: station = ",station,"\n")
 cat(format(Sys.time(), "%FT%T"),"DEBUG Particle location files should be in ",path,"\n")

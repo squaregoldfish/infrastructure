@@ -111,13 +111,16 @@ if (file.access(pathResults,0)!=0) {
 ###### added for CP setup UK ########
 l.remove.Resultfile <- FALSE
 if (exists('remove.Resultfile')) l.remove.Resultfile <- remove.Resultfile
-
+lat <- StartInfo[1, "LAT"]; lon <- StartInfo[1, "LON"]; agl <- StartInfo[1, "AGL"]
+identname <- pos2id(StartInfo[1,1], lat, lon, agl)
+stiltresultname <- paste("stiltresult",stilt_year,substr(identname,14,34),sep="")
+cat(format(Sys.time(), "%FT%T"),"INFO new result filename: ",stiltresultname,"\n")
 # OVERWRITE WARNING
-if(existsr(paste("stiltresult_",stilt_year,"_",part,sep=""),path=pathFP)) {
+if(existsr(paste(stiltresultname,"_",part,sep=""),path=pathFP)) {
    if(l.remove.Resultfile){
       cat(format(Sys.time(), "%FT%T"),"DEBUG You are attempting to overwrite an existing stiltresult object\n")
-      unix(paste("rm -f ",paste(pathFP,".RData","stiltresult_",stilt_year,"_",part,sep=""),sep=""))
-      unix(paste("rm -f ",paste(pathFP,"stiltresult_",stilt_year,"_",part,".csv",sep=""),sep=""))
+      unix(paste("rm -f ",paste(pathFP,".RData",stiltresultname,"_",part,sep=""),sep=""))
+      unix(paste("rm -f ",paste(pathFP,stiltresultname,"_",part,".csv",sep=""),sep=""))
       cat(format(Sys.time(), "%FT%T"),"DEBUG Notice: New stiltresult object will be written \n")
    }else{ 
       cat(format(Sys.time(), "%FT%T"),"DEBUG You are not computing new timeseries you are using an existing stiltresult object\n")
@@ -194,6 +197,12 @@ for (j in 1:nrows) {
       vbar<-mean(sign(tdat[sel,"lat"]-lat)*dely/(nmins*60))     #V-velocity [m/s]
       delz<-abs(tdat[sel,"agl"]-agl)                                    #distance in [m]
       wbar<-mean(sign(tdat[sel,"agl"]-agl)*delz/(nmins*60))     #W-velocity [m/s]
+      if (nhrs<0) {
+        #if run backward in time then wind direction needs to be reversed 
+        ubar <- -ubar
+        vbar <- -vbar
+        wbar <- -wbar
+      }
       dir<-270.-atan2(vbar,ubar)*(180/(pi))
       if(dir>360) dir <- dir-360          
     }
@@ -372,8 +381,8 @@ for (j in 1:nrows) {
      #=====================end trajwind.r 
 
      # 'traj' is a vector
-     if (existsr(paste("stiltresult_",stilt_year,"_", part, sep=""), path=pathFP)) {
-        result <- getr(paste("stiltresult_",stilt_year,"_", part, sep=""), path=pathFP)
+     if (existsr(paste(stiltresultname,"_", part, sep=""), path=pathFP)) {
+        result <- getr(paste(stiltresultname,"_", part, sep=""), path=pathFP)
         if (dim(result)[1] != nrows) {
            if (firstflux) cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): existing stiltresult has wrong dimension; creating new one.\n")
         } else {
@@ -390,7 +399,7 @@ for (j in 1:nrows) {
      dimnames(result) <- list(NULL, c(names(traj)))
      dimnames(result) <- list(NULL, dimnames(result)[[2]])
      # write the object into default database; object names are, e.g., "Crystal.1"
-     assignr(paste("stiltresult_",stilt_year,"_", part, sep=""), result, path=pathFP)
+     assignr(paste(stiltresultname,"_", part, sep=""), result, path=pathFP)
   }
   rownum <- rownum+1
 
@@ -556,9 +565,9 @@ if (biomassburnTF)
 if (fluxTF) {
    dimnames(result) <- list(NULL, dimnames(result)[[2]])
    # write the object into default database; object names are, e.g., "Crystal.1"
-   assignr(paste("stiltresult_",stilt_year,"_", part, sep=""), result, path=pathFP)
-     cat(format(Sys.time(), "%FT%T"),"DEBUG stiltresult_",stilt_year,"_", part, " assigned in ", pathFP, "\n")
-   write.table(result, file=paste(pathFP, "stiltresult_",stilt_year,"_", part, ".csv", sep=""), na="", row.names=F)
+   assignr(paste(stiltresultname,"_", part, sep=""), result, path=pathFP)
+     cat(format(Sys.time(), "%FT%T"),"DEBUG ",stiltresultname,"_", part, " assigned in ", pathFP, "\n")
+   write.table(result, file=paste(pathFP, stiltresultname,"_", part, ".csv", sep=""), na="", row.names=F)
 }
 
 # If evi and lswi maps from vprm calculations is saved to the global environment; it should be removed here
@@ -583,4 +592,3 @@ mask <- signif(x,digits) != signif(y,digits)
     nfail <- sum(signif(fac.dig*x[mask],digits) != signif(fac.dig*y[mask],digits))
   nfail
 }
-		

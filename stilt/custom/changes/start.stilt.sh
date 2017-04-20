@@ -8,7 +8,7 @@ export STILT_ALT=$4
 export START_DATE=$5
 export END_DATE=$6
 export RUN_ID=$7
-export PARTS2=$8
+#export PARTS2=$8
 [[ -z ${RUN_ID} ]] && RUN_ID=RUN
 echo $RUN_ID
 echo $STILT_NAME
