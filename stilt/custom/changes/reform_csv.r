@@ -1,3 +1,4 @@
+
 #Reformat STILT results
 #source("/Net/Groups/BSY/people/cgerbig/Rsource/CarboEurope/stiltR.bialystok/lookstilt.r")
 #6/12/2016 by UK
@@ -18,23 +19,28 @@ lat.ll  <-  33                 #lower left corner of grid
 fluxmod <- "VPRM"
 landcov <- "SYNMAP.VPRM8"
 
-path<-paste("./Output/",run_id,"/RData/",station,"/",sep="")
-pathFP<-paste("./Output/",run_id,"/Footprints/",station,"/",sep="")
+path<-paste("./Output/",run_id,"/RData/",station,"/",stilt_year,"/",sep="")
+pathFP<-paste("./Output/",run_id,"/Footprints/",station,"/",stilt_year,"/",sep="")
 sourcepath<-"./stiltR/";source(paste(sourcepath,"sourceall.r",sep=""))#provide STILT functions
 pathResults<-paste("./Output/",run_id,"/Results/",station,"/",sep="")
 
 Timesname<-paste(".",station,".",stilt_year,".request",sep="")
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: Timesname ",Timesname,"\n")
 StartInfo <- getr(paste(Timesname, sep=""), pathResults) # object containing fractional julian day, lat, lon, agl for starting position and time
+identname <- pos2id(StartInfo[1,1],StartInfo[1,2],StartInfo[1,3],StartInfo[1,4])
+stiltresultname <- paste("stiltresult",stilt_year,substr(identname,14,34),sep="")
+cat(format(Sys.time(), "%FT%T"),"INFO new result filename: ",stiltresultname,"\n")
 
 #merge STILT result objects  ## not used at them moment in CP version 
-rnam<-paste("stiltresult_",stilt_year,sep="")
+#rnam<-paste("stiltresult_",stilt_year,sep="")
+rnam<-stiltresultname
 dat<-NULL
 for(part in 1:tp){
 dat<-rbind(dat,getr(paste(rnam,"_",part,sep=""),pathFP))} #standard simulation
 
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: part ",part,"\n")
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dim(dat) ",dim(dat),"\n")
-cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dimnames(dat) ",dimnames(dat),"\n")
+#cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dimnames(dat) ",dimnames(dat),"\n")
 mdy<-month.day.year
 
 getmdy<-function(fjday){#nice x axis
@@ -168,8 +174,8 @@ if ("ubar" %in% colnames(dat)) {
   wind.dir<-dat[,"wind.dir"]
   dat3<-cbind(dat2,wind.u,wind.v,wind.w,wind.dir)
   cat(format(Sys.time(), "%FT%T"),"DEBUG reform wind: colnames(dat3) ",colnames(dat3),"\n")
-  write.table(dat3, file=paste(pathResults,"/","stiltresults",stilt_year,".csv",sep=""), na="", row.names=F, quote=F)
+  write.table(dat3, file=paste(pathResults,"/",stiltresultname,".csv",sep=""), na="", row.names=F, quote=F)
 } else {
   cat(format(Sys.time(), "%FT%T"),"DEBUG reform: colnames(dat2) ",colnames(dat2),"\n")
-  write.table(dat2, file=paste(pathResults,"/","stiltresults",stilt_year,".csv",sep=""), na="", row.names=F, quote=F)
+  write.table(dat2, file=paste(pathResults,"/",stiltresultname,".csv",sep=""), na="", row.names=F, quote=F)
 }

@@ -24,21 +24,6 @@ path_log<-paste("./",run_id,"/",sep="")                 # path for run-specific 
 
 path_id<-paste("./Output/",run_id,"/",sep="")             # path of new run-specific directory
 
-path<-paste(path_id,"RData/",sep="")                      # path of directories with RData files for each station (no other subdirectories in this location)
-                                                          # directory name = station id
-cat(format(Sys.time(), "%FT%T"),"DEBUG run-specific path for partical location files ",path,"\n")
-# make new run-specific path 
-system(paste("mkdir -p ",path, sep=""))
-
-pathFP<-paste(path_id,"Footprints/",sep="")               # path to save footprints in nc-files
-print(paste(pathFP,sep=""))
-cat(format(Sys.time(), "%FT%T"),"DEBUG run-specific path for footprint files ",pathFP,"\n")
-
-pathResults<-paste(path_id,"Results/",sep="")             # path to save run-specific parameters and time series files
-print(paste(pathResults,sep=""))
-cat(format(Sys.time(), "%FT%T"),"DEBUG run-specific path for time series files ",pathResults,"\n")
-
-
 #-----------------------------------------------------------------------------------------------------------------
 # get station name, latitude, longitude, altitude from environment variable set in stilt.batch.sh
 #
@@ -51,23 +36,8 @@ cat(format(Sys.time(), "%FT%T"),"INFO selected longitude: ",lon,"\n")
 agl <- as.numeric(Sys.getenv(c("STILT_ALT"), unset = NA))
 cat(format(Sys.time(), "%FT%T"),"INFO selected inlet height: ",agl,"\n")
 
-path<-paste(path,station,"/",sep="")
-system(paste("mkdir -p ",path,sep=""))
-### link existing particle location files for all sites (must be read-only!!!)
-cat(format(Sys.time(), "%FT%T"),"INFO ln -s ./Input/RData/",station,"/.RData* ",path,".","\n")
-if (file.exists(paste("./Input/RData/",station,sep=""))) {system(paste("ln -s ./Input/RData/",station,"/.RData* ",path,".",sep=""))}
-cat(format(Sys.time(), "%FT%T"),"DEBUG prepare_input.r: no particle location files for station ",station," available  -> full STILT run required !!!","\n")
-
-pathFP<-paste(pathFP,station,"/",sep="")
-system(paste("mkdir -p ",pathFP,sep=""))
-### link existing footprint files for all sites (must be read-only!!!)
-if (file.exists(paste("./Input/Footprints/",station,sep=""))) {
-  cat(format(Sys.time(), "%FT%T"),"DEBUG ln -s ./Input/Footprints/",station,"/foot* ",pathFP,".","\n")
-  system(paste("ln -s ./Input/Footprints/",station,"/foot* ",pathFP,".",sep=""))
-  cat(format(Sys.time(), "%FT%T"),"DEBUG ln -s ./Input/Footprints/",station,"/.RDatafoot* ",pathFP,".","\n")
-  system(paste("ln -s ./Input/Footprints/",station,"/.RDatafoot* ",pathFP,".",sep=""))
-}
-
+pathResults<-paste(path_id,"Results/",sep="")             # path to save run-specific parameters and time series files
+cat(format(Sys.time(), "%FT%T"),"DEBUG run-specific path for time series files ",pathResults,"\n")
 pathResults<-paste(pathResults,station,"/",sep="")
 system(paste("mkdir -p ",pathResults,sep=""))
 
@@ -112,12 +82,33 @@ for (year in year_start:year_end) {
   fjul<-unique(fjul)
 
   outname<-paste(".",station,".",as.character(year),".request",sep="") #name for object with receptor information
-
-#-----------------------------------------
   assignr(outname,cbind(fjul,lat,lon,agl),path=pathResults,printTF=T)
-  stilt_part <- Sys.getenv(c("PARTS2"), unset = 1)
+
+## define directory names and make directories
+  path<-paste(path_id,"RData/",sep="")         # path of directories with RData files for each station 
+  path<-paste(path,station,"/",sep="")
+  path<-paste(path,as.character(year),"/",sep="")
+  system(paste("mkdir -p ",path,sep=""))
+  cat(format(Sys.time(), "%FT%T"),"DEBUG run-specific path for partical location files ",path,"\n")
+
+  pathFP<-paste(path_id,"Footprints/",sep="")  # path to save footprints in nc-files
+  pathFP<-paste(pathFP,station,"/",sep="")
+  pathFP<-paste(pathFP,as.character(year),"/",sep="")
+  system(paste("mkdir -p ",pathFP,sep=""))
+  cat(format(Sys.time(), "%FT%T"),"DEBUG run-specific path for footprint files ",pathFP,"\n")
+  
+## split STILT run into parts
+  copydirs<-dir("STILT_Exe")
+  allowed_parts<-max(as.integer(substring(copydirs,5)))
+  cat(format(Sys.time(), "%FT%T"),"DEBUG no of allowed parts:",allowed_parts,"\n")
+  #stilt_part <- as.numeric(Sys.getenv(c("PARTS2"), unset = 1))
+  stilt_part <- length(fjul)
+  if ( stilt_part > allowed_parts) {
+    stop(cat(format(Sys.time(), "%FT%T"),"INFO need ",stilt_part," Copy directories, have only ",allowed_parts,"\n"))
+  }
   cat(format(Sys.time(), "%FT%T"),"INFO run split into",stilt_part,"part(s)\n",sep=" ")
-  cat(format(Sys.time(), "%FT%T")," DEBUG ","./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log","\n",sep="")      ## start STILT run
+## start STILT run
+  cat(format(Sys.time(), "%FT%T")," DEBUG ","./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log","\n",sep="")      
   system(paste("./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
 } # end for years
       
