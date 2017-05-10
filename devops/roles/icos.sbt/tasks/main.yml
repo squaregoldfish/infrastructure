@@ -1,17 +1,18 @@
 # Having this simple test speeds up execution of the playbook quite a bit.
-- stat: path=/usr/bin/sbt
+- name: Check whether sbt is present
+  stat: path=/usr/bin/sbt
   register: java_sbt_present
 
 - block:
-    - yum_repository:
+    - name: add official sbt RPM repository
+      yum_repository:
         name: bintray-sbt
         description: Official Scala RPM repository
         baseurl: https://dl.bintray.com/sbt/rpm
         gpgcheck: no
         repo_gpgcheck: no
-    - yum:
-        name: sbt
-        state: present
+    - name: install sbt
+      yum: name=sbt state=present
   when: ansible_distribution == 'CentOS' and not java_sbt_present.stat.exists
 
 
@@ -30,10 +31,10 @@
 #       name: sbt
 #   when: ansible_distribution == "Ubuntu"
 
-  
+
 # Instead we do it manually
 # (https://gist.github.com/samklr/8ca9051d5e1e72a0caf1)
-- name: Install SBT DEB 
+- name: Install SBT DEB
   apt:
     deb={{sbt_deb_url}}
   when: ansible_distribution == 'Ubuntu' and not java_sbt_present.stat.exists

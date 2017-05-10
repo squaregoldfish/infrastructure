@@ -1,29 +1,35 @@
 ---
 # Having this simple test speeds up execution of the playbook quite a bit.
-- stat: path=/usr/bin/java
+- name: Check whether the java binary is present
+  stat: path=/usr/bin/java
   register: java_bin_present
 
 - block:
     # https://www.digitalocean.com/community/tutorials/how-to-install-java-on-centos-and-fedora
-    - get_url:
+    - name: Retrieve Java as RPM
+      get_url:
         headers='Cookie:oraclelicense=accept-securebackup-cookie'
         url={{java_rpm_url}}
         dest=/tmp/{{java_rpm_url | basename}}
         mode=0644
-    - package:
+    - name: Install Java using RPM
+      package:
         name=/tmp/{{java_rpm_url | basename}}
         state=present
   when: ansible_distribution == 'CentOS' and not java_bin_present.stat.exists
 
 - block:
     # http://stackoverflow.com/a/19391042
-    - shell: 'echo debconf shared/accepted-oracle-license-v1-1 {{item}} true | debconf-set-selections'
+    - name: Accept Oracles java license
+      shell: 'echo debconf shared/accepted-oracle-license-v1-1 {{item}} true | debconf-set-selections'
       with_items :
         - select
         - seen
-    - apt_repository:
+    - name: Add PPA for Oracle installer
+      apt_repository:
         repo='ppa:webupd8team/java'
-    - package:
+    - name: Install Oracles java installer
+      package:
         name=oracle-java8-installer
         state=present
   when: ansible_distribution == 'Ubuntu' and not java_bin_present.stat.exists

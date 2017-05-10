@@ -22,7 +22,7 @@
     - name: install python (required by ansible)
       # http://docs.ansible.com/ansible/intro_installation.html
       raw: "test -e /usr/bin/python || apt install -y python-minimal"
-      
+
 
 - include: icosprod.yml
-- include: stilt.yml    
+- include: stilt.yml

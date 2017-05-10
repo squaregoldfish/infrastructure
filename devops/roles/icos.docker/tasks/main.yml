@@ -13,7 +13,7 @@
     gpgcheck: yes
     gpgkey: https://yum.dockerproject.org/gpg
   when: ansible_distribution == 'CentOS'
-  
+
 - name: Install docker
   package:
     name={{docker_package_name}} state=present
@@ -24,5 +24,3 @@
 # Required to be present for ansible's docker module to work properly.
 - name: Install docker python bindings
   package: name="{{ docker_python_package_name }}" state=present
-
-    

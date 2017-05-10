@@ -9,7 +9,7 @@
   register: docker_images
   tags: deploy
   changed_when: False
-  
+
 - block:
     - name: Download baseimage
       get_url:
@@ -17,11 +17,13 @@
         dest: "{{ stilt_baseimage_tmp_fname }}"
     - name: Load baseimage into docker
       command: docker load -i "{{ stilt_baseimage_tmp_fname }}"
+  become: True
   become_user: stilt
   when: "stilt_baseimage_imageid not in docker_images.stdout"
   tags: deploy
 
 - name: Clone infrastructure repo
+  become: True
   become_user: stilt
   git:
     repo: "{{ stilt_repo_url }}"
@@ -29,12 +31,13 @@
     version: "{{ stilt_repo_ver }}"
   register: stilt_updated
   tags: deploy
-  
+
 - block:
     - name: Build production image
+      become: True
       become_user: stilt
-      shell: docker build -t "{{ stilt_prodimage_tag }}" .
-      args: 
+      command: docker build -t "{{ stilt_prodimage_tag }}" .
+      args:
         chdir: "{{ stilt_repo_dir }}/stilt/custom/"
 
     - name: Remove existing docker container
@@ -44,8 +47,8 @@
       command: docker run -v /mnt/additional_disk/WORKER/Input:/opt/STILT_modelling/Input:ro -v /mnt/additional_disk/WORKER/Output:/opt/STILT_modelling/Output --name {{ stilt_prodcont_tag }} -dt {{ stilt_prodimage_tag }}
   # Only re-create production container when the git repository has changed.
   when: stilt_updated.changed == true
-  tags: deploy      
-        
+  tags: deploy
+
 # Tried using ansible's docker_image module but ran into this error.
 #    Error building webstilt_nc_production - code: None message: Invalid
 #    repository name

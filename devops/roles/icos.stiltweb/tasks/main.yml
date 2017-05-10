@@ -1,6 +1,6 @@
 - name: Add nginx config file
   copy: src=stiltweb.conf dest=/etc/nginx/conf.d/
-  notify: reload nginx config 
+  notify: reload nginx config
 
 - name: Run the jarservice role
   include_role:
@@ -10,7 +10,7 @@
     jarfile         : "{{ stiltweb_jar_file }}"
     servicename     : "{{ stiltweb_servicename }}"
     servicetemplate : "{{ stiltweb_template }}"
-    
+
 - name: Spoof stiltweb in /etc/hosts
   lineinfile:
     dest: "/etc/hosts"
