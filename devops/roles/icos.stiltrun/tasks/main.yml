@@ -42,11 +42,12 @@
 
     - name: Remove existing docker container
       command: docker rm -f {{ stilt_prodcont_tag }}
-
+      ignore_errors: yes
+      
     - name: Start new docker container
       command: docker run -v /mnt/additional_disk/WORKER/Input:/opt/STILT_modelling/Input:ro -v /mnt/additional_disk/WORKER/Output:/opt/STILT_modelling/Output --name {{ stilt_prodcont_tag }} -dt {{ stilt_prodimage_tag }}
   # Only re-create production container when the git repository has changed.
-  when: stilt_updated.changed == true
+  when: stilt_prodimage_tag not in docker_images.stdout or stilt_updated.changed == true
   tags: deploy
 
 # Tried using ansible's docker_image module but ran into this error.
