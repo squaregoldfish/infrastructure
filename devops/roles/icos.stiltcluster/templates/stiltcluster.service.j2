@@ -12,7 +12,7 @@ ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ stilt_master_host }} "/home/st
   {% for ip in ansible_all_ipv4_addresses if not ip.startswith("10") and not ip.startswith("172") %}
 	{% if loop.first  %}
 ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ ip }} "/home/stiltcluster/stiltcluster.jar"
-    {% endif %}
+	{% endif %}
   {% endfor %}
 {% endif %}
 Restart=on-abort
