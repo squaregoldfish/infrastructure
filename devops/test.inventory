@@ -16,5 +16,7 @@ ubuntu stilt_spoof_ip="192.168.99.20"
 stilt_spoof_ip="192.168.99.20"
 
 [stiltcluster]
-ubuntu stiltcluster_is_seed="yes" 
-centos
+ubuntu stiltcluster_is_seed="yes"
+# We need to manually configure IP since Vagrant/Virtualbox creates a bunch of
+# it's own and it's unclear how to find the "right" one from inside ansible.
+centos stiltcluster_ip=192.168.99.10

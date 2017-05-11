@@ -6,14 +6,24 @@ After=network.target
 [Service]
 Type=simple
 User=stiltcluster
+{# Case 1: This host is the seed node. We start it using the name of its akka
+   group. That will be a hostname that is either known from DNS or - in our test
+   environment - spoofed in /etc/hosts
+#}
 {% if stiltcluster_is_seed | bool %}
 ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ stilt_master_host }} "/home/stiltcluster/stiltcluster.jar"
+{# Case 2: An external stiltcluster IP has been configured. This is the IP that
+   other akka nodes can use to reach this one. The reason we might have to set
+   it manually is because finding it automatically can be very tricky depending
+   on a combination of Vagrant/Virtualbox/Ansible versions/bugs.
+#}
+{% elif stiltcluster_ip | default(None) %}
+ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ stiltcluster_ip }} "/home/stiltcluster/stiltcluster.jar"
+{# Case 3: This is not the seed node and an external IP has not been
+  provided. Pick the first one provided by ansible.
+#}
 {% else %}
-  {% for ip in ansible_all_ipv4_addresses if not ip.startswith("10") and not ip.startswith("172") %}
-	{% if loop.first  %}
-ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ ip }} "/home/stiltcluster/stiltcluster.jar"
-	{% endif %}
-  {% endfor %}
+ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ ansible_all_ipv4_addresses[0] }} "/home/stiltcluster/stiltcluster.jar"
 {% endif %}
 Restart=on-abort
 WorkingDirectory=/home/stiltcluster
