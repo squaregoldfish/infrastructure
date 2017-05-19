@@ -1,14 +1,14 @@
 # This ansible playbook will provision the STILT servers.
 
 ---
+- include: setup.yml
+  
 - hosts: stiltmaster
-  tags: stilt
   become: true
   vars_files: [vars.yml]
   roles: [icos.stiltweb]
 
 - hosts: stiltcluster
-  tags: stilt
   become: true
   vars_files: [vars.yml]
   roles: [icos.stiltrun, icos.stiltcluster]
