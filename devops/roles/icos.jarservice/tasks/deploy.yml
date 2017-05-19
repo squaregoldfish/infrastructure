@@ -1,0 +1,73 @@
+- name: Add {{ username }} user
+  user:
+    name: "{{ username }}"
+
+# We set up a directory where we keep not only the current jar files but also
+# older copies. This makes it easier to roll back to earlier versions of the
+# service - simply change the symbolic link and restart.
+- name: Create directory for jar files
+  file:
+    path: /home/{{ username }}/jarfiles
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  register: jardir
+
+# Since we keep multiple versions of the jar files around, we need to
+# distinguish their file names by appending their checksum.
+- name: Get checksum of local jar file.
+  # Stop ansible from running local_action as root (toplevel "become: true")
+  become: false 
+  local_action: stat path="{{jarfile}}" checksum_algorithm=sha256
+  register: jarfilestat
+
+# Compute the destination filename, we'll be using it more than once.
+- set_fact:
+    destjarfile: "{{jardir.path}}/{{jarfile|basename}}-{{jarfilestat.stat.checksum}}"
+     
+- name: Copy {{servicename }} jar file
+  copy:
+    src: "{{ jarfile }}"
+    dest: "{{ destjarfile }}"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+# The systemd unit file references the symbolic link in the service users' home
+# directory. This operation makes that link point to the jar files we've just
+# copied.
+- name: Create {{ servicename}} jar symlink
+  file:
+    src: "{{ destjarfile }}"
+    dest: "/home/{{ username }}/{{ servicename }}.jar"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    state: link
+  register: installed_jarfile
+  
+- name: Add systemd {{ servicename }} servicefile
+  template: src={{ servicetemplate }} dest=/etc/systemd/system/{{ servicename }}.service
+  register: added_service
+
+# If we've just added or changed the unit file then we systemd needs reloading.  
+- name: Reload systemd configuration
+  command: systemctl daemon-reload
+  when: added_service.changed
+
+- name: Restart {{ servicename }} service
+  service: name={{ servicename }} state=restarted
+  when: installed_jarfile.changed
+  
+- name: Enable systemd {{ servicename }}
+  service: name={{ servicename }} enabled=yes state=started
+
+# This is a garbage collection thing to keep the jarfiles directory from filling
+# up with old files.
+- name: Enumerate old jarfiles
+  shell: ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null | tail -n+{{jarservice_keep_n_old}}
+  register: oldjarfiles
+
+- name: Remove old jarfiles
+  file: path={{ item }} state=absent
+  with_items:
+    - "{{ oldjarfiles.stdout_lines }}"
+    

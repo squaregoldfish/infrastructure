@@ -1,7 +1,8 @@
 This role wraps a Java application consisting of a single jar file running as a
 systemd service.
 
-It's meant to be used with ansible's 'include_role' directive, like this:
+To use it you must first set up some variables and then use ansibles
+'include_role' directive, like this:
 
 	- name: Run the jarservice role
 	  include_role:
@@ -11,3 +12,4 @@ It's meant to be used with ansible's 'include_role' directive, like this:
 		jarfile         : foo.jar
 		servicename     : foo
 		servicetemplate : roles/foo/templates/service.j2
+

@@ -1,35 +1,6 @@
-- name: Add {{ username }} user
-  user:
-    name: "{{ username }}"
-
-- name: Install {{servicename }} JAR and config
-  copy: src={{ jarfile }} dest=/home/{{ username }}/  owner={{ username }} group={{ username }}
-  register: installed_jarfile
+# We store the tasks in another file just so we can add a tag when including
+# them. While it might have be easier to add the tag at the point of
+# 'include_role', that might have tainted this roles' dependencies with a tag
+# meant only for this role.
+- include: deploy.yml
   tags: deploy
-  
-- name: Create {{ servicename}} JAR symlink
-  file:
-    src: "{{ installed_jarfile.dest }}"
-    dest: "/home/{{ username }}/{{ servicename }}.jar"
-    state: link
-  tags: deploy
-
-- name: Add systemd {{ servicename }} servicefile
-  template: src={{ servicetemplate }} dest=/etc/systemd/system/{{ servicename }}.service
-  register: added_service
-  tags: deploy
-  
-- block:
-    - name: Reload systemd configuration
-      command: systemctl daemon-reload
-
-    - name: Restart {{ servicename }} service
-      service: name={{ servicename }} state=restarted
-  when: added_service.changed or installed_jarfile.changed
-  tags: deploy
-
-- name: Enable systemd {{ servicename }}
-  service: name={{ servicename }} enabled=yes state=started
-  tags: deploy
-
-  

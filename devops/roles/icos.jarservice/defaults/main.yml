@@ -1,0 +1,2 @@
+# keep this many old jarfiles around
+jarservice_keep_n_old: 10
