@@ -1,0 +1,34 @@
+- name: List docker images
+  command: docker images -qa
+  register: docker_images
+  changed_when: False
+
+- block:
+    - name: Download baseimage
+      get_url:
+        url: "{{ stilt_baseimage_url }}"
+        dest: "{{ stilt_baseimage_tmp_fname }}"
+    - name: Load baseimage into docker
+      command: docker load -i "{{ stilt_baseimage_tmp_fname }}"
+  when: stilt_baseimage_imageid not in docker_images.stdout
+
+- name: Clone infrastructure repo
+  git:
+    repo: "{{ stilt_repo_url }}"
+    dest: "{{ stilt_repo_dir }}"
+    version: "{{ stilt_repo_ver }}"
+  register: stilt_updated
+
+- block:
+    - name: Build production image
+      command: docker build -t "{{ stilt_prodimage_tag }}" .
+      args:
+        chdir: "{{ stilt_repo_dir }}/stilt/custom/"
+
+    - name: Remove existing docker container
+      command: docker rm -f {{ stilt_prodcont_tag }}
+      ignore_errors: yes
+
+    - name: Start new docker container
+      command: docker run -v /mnt/additional_disk/WORKER/Input:/opt/STILT_modelling/Input:ro -v /mnt/additional_disk/WORKER/Output:/opt/STILT_modelling/Output --name {{ stilt_prodcont_tag }} -dt {{ stilt_prodimage_tag }}
+  when: stilt_prodimage_tag not in docker_images.stdout or stilt_updated.changed == true
