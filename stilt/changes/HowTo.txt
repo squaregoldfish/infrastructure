@@ -1,0 +1,20 @@
+1. Check that the following directories exist (could be links):
+   Input/	  contains emisisons, inital+boundary
+   Output/RData/  contains Rdata files: particle locations, eventually footprints
+   Output/Results/   contains run specific files like 'Timesname' file with station location and time
+   
+2. Prepare list of all available stations - needs to be done only once or if new stations are available
+   write_sellist.r
+   -> allstations.txt
+
+3. Start STILT for station XXX
+   ./start.stilt.sh XXX
+   this shell script starts prepare_input.r
+      prepare_input.r
+        checks if station XXX is in allstations.txt and extracts lat, lon information from allstations.txt
+	checks if RDatat file for station XXX actually exists in Output/
+	prepares Timensname file
+	specifies time peroide  <- needs to be adapted!!!
+	starts run.stilt.sh  (if station exists)
+      run.stilt.sh script starts the STILT run
+        
