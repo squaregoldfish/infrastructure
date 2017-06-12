@@ -43,24 +43,39 @@ system(paste("mkdir -p ",pathResults,sep=""))
 
 sel_startdate <- Sys.getenv(c("START_DATE"), unset = NA)
 sel_enddate <- Sys.getenv(c("END_DATE"), unset = NA)
-if ((nchar(sel_startdate) < 8) | (nchar(sel_enddate) < 8)){
-  cat(format(Sys.time(), "%FT%T"),"ERROR Undefined start or end date: ",sel_startdate," - ",sel_enddate,"\n")
-  cat(format(Sys.time(), "%FT%T"),"ERROR stop\n")
-  stop
-}else{
+
+# 3-hourly
+dh<-3
+dhpd<-24/dh
+
+if ((nchar(sel_startdate) < 10) | (nchar(sel_enddate) < 10)){
+  if ((nchar(sel_startdate) < 8) | (nchar(sel_enddate) < 8)){
+    cat(format(Sys.time(), "%FT%T"),"ERROR Undefined start or end date: ",sel_startdate," - ",sel_enddate,"\n")
+    cat(format(Sys.time(), "%FT%T"),"ERROR stop\n")
+    stop
+  }else{
+    year_start<-as.numeric(substr(sel_startdate,1,4))
+    month_start<-as.numeric(substr(sel_startdate,5,6))
+    day_start<-as.numeric(substr(sel_startdate,7,8))
+    year_end<-as.numeric(substr(sel_enddate,1,4))
+    month_end<-as.numeric(substr(sel_enddate,5,6))
+    day_end<-as.numeric(substr(sel_enddate,7,8))
+    hour_start<-0
+    hour_end<-((dhpd-1)*dh)
+}}else{
   year_start<-as.numeric(substr(sel_startdate,1,4))
   month_start<-as.numeric(substr(sel_startdate,5,6))
   day_start<-as.numeric(substr(sel_startdate,7,8))
   year_end<-as.numeric(substr(sel_enddate,1,4))
   month_end<-as.numeric(substr(sel_enddate,5,6))
   day_end<-as.numeric(substr(sel_enddate,7,8))
+  hour_start<-as.numeric(substr(sel_startdate,9,10))
+  hour_end<-as.numeric(substr(sel_enddate,9,10))
 }
+
 cat(format(Sys.time(), "%FT%T"),"INFO start_date: ",year_start,month_start,day_start,"\n",sep=" ")
 cat(format(Sys.time(), "%FT%T"),"INFO end_date: ",year_end,month_end,day_end,"\n",sep=" ")
 
-# 3-hourly
-dh<-3
-dhpd<-24/dh
 cat(format(Sys.time(), "%FT%T"),"INFO frequency: ",dh,"hourly","\n",sep=" ")
 
 fjul_start<-julian(month_start,day_start,year_start)
@@ -72,6 +87,7 @@ for (year in year_start:year_end) {
   fjul_2<-min(fjul_end,fjul_split2)
   fjul<-((fjul_1*dhpd):(fjul_2*dhpd))/dhpd
   fjul<-c(fjul,fjul[length(fjul)]+(1:dhpd-1)/dhpd)  #get full last day
+  fjul<-fjul[(fjul>=(fjul_start+(hour_start/24))) & (fjul<=(fjul_end+(hour_end/24)))]
   fjul<-round(fjul,6)
   ident<-pos2id(fjul,lat,lon,agl)
   if(cprun){
@@ -79,8 +95,9 @@ for (year in year_start:year_end) {
     good<-(ident %in% ident_time)
     fjul<-fjul[good]
   }
-  fjul<-unique(fjul)
 
+  fjul<-unique(fjul)
+print(paste("fjul",fjul,sep=""))
   outname<-paste(".",station,".",as.character(year),".request",sep="") #name for object with receptor information
   assignr(outname,cbind(fjul,lat,lon,agl),path=pathResults,printTF=T)
 
@@ -109,6 +126,6 @@ for (year in year_start:year_end) {
   cat(format(Sys.time(), "%FT%T"),"INFO run split into",stilt_part,"part(s)\n",sep=" ")
 ## start STILT run
   cat(format(Sys.time(), "%FT%T")," DEBUG ","./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log","\n",sep="")      
-  system(paste("./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
+  #system(paste("./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
 } # end for years
       
