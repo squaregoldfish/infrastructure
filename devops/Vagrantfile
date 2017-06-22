@@ -12,13 +12,27 @@ Vagrant.configure("2") do |config|
     inventory.vm.hostname = "centos"
     inventory.vm.network "private_network", ip: "192.168.99.10"
     inventory.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # Due to a bug in the box (i.e, the Vagrant base image), eth1 won't come up
+    # by itself. This makes it impossible to ssh to the machine using the
+    # "192.168.99.10" ip. The following command will bring up eth1 during
+    # Vagrants provisioning phase. The funny thing is that Vagrant will execute
+    # this command over ssh(!) but using it's own private interface (the one
+    # used when running "vagrant ssh hostname").
+    inventory.vm.provision "shell", inline: "ifup eth1"
   end
   
   # UBUNTU 16.04
   config.vm.define "ubuntu" do |inventory|
     inventory.ssh.insert_key = true
     inventory.vm.box = "ubuntu/xenial64"
-    inventory.vm.hostname = "ubuntu"
+
+    # If we set hostname to anything but "ubuntu-xenial" we'll run into problems
+    # since that hostname is hardcoded into /etc/hosts. So if hostname is set to
+    # plain "ubuntu" then sudo(1) will take about 10 seconds to execute since
+    # it's trying to resolve "ubuntu" while only "ubuntu-xenial" is available in
+    # /etc/hosts. That timeout will be enough for ansible to hang up.
+    inventory.vm.hostname = "ubuntu-xenial"
     inventory.vm.network "private_network", ip: "192.168.99.20"
     inventory.vm.synced_folder ".", "/vagrant", disabled: true
   end
