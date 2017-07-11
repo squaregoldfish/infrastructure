@@ -1,10 +1,13 @@
-jupyterhub:
-  build: .
-  ports:
-   - "127.0.0.1:8888:8000"
-  volumes:
-   - /disk/data/common/netcdf/gcp_models:/opt/data
-   - /disk/data/STILT:/opt/stiltdata
-   - ./storage:/home
-   - ./users:/opt/users
+version: '2'
+services:
+  jupyterhub:
+    build: .
+    ports:
+      - "127.0.0.1:8888:8000"
+    volumes:
+      - /disk/data/common/netcdf/gcp_models:/opt/data
+      - /disk/data/STILT:/opt/stiltdata
+      - ./storage:/home
+      - ./users:/opt/users
+    restart: unless-stopped
 

@@ -12,4 +12,4 @@ services:
       - /disk/data/STILT/Results:/opt/STILT_modelling/Output/Results
       - /disk/data/STILT/Footprints:/opt/STILT_modelling/Output/Footprints
     tty: true
-
+    restart: unless-stopped

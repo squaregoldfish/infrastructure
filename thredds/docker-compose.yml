@@ -1,8 +1,11 @@
-thredds:
-  build: .
-  ports:
-   - "127.0.0.1:8801:8080"
-  volumes:
-   - /disk/data/thredds/webapps:/usr/local/tomcat/webapps
-   - /disk/data/thredds/content:/usr/local/tomcat/content/thredds
-   - /disk/data/carbontracker:/usr/local/tomcat/content/thredds/public/carbontracker
+version: '2'
+services:
+  thredds:
+    build: .
+    ports:
+      - "127.0.0.1:8801:8080"
+    volumes:
+      - /disk/data/thredds/webapps:/usr/local/tomcat/webapps
+      - /disk/data/thredds/content:/usr/local/tomcat/content/thredds
+      - /disk/data/carbontracker:/usr/local/tomcat/content/thredds/public/carbontracker
+    restart: unless-stopped

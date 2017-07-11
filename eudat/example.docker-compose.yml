@@ -7,4 +7,5 @@ services:
       - /disk/data/STILT/:/opt/data:ro
     stdin_open: true
     tty: true
+    restart: unless-stopped
 

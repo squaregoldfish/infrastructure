@@ -1,5 +1,4 @@
 version: '2'
-
 services:
   rdflogdb:
     network_mode: "host"
@@ -14,6 +13,6 @@ services:
       - /disk/data/volumes/rdflogdb-${PG_VERSION}:${PGDATA}
       - /disk/data/volumes/rdflogdb-tmp-${PG_VERSION}:/pg-tmp
       - /etc/localtime:/etc/localtime:ro
-
+    restart: unless-stopped
 volumes:
   rdflogdb:

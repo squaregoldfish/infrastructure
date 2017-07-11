@@ -1,5 +1,4 @@
 version: '2'
-
 services:
   rdflogdb:
     build:
@@ -14,6 +13,6 @@ services:
     volumes:
       - /disk/data/volumes/rdflogdb-${PG_VERSION}:${PGDATA}
       - /etc/localtime:/etc/localtime:ro
-
+    restart: unless-stopped
 volumes:
   rdflogdb:
