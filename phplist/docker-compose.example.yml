@@ -4,8 +4,9 @@ services:
     build: .
     links:
       - mariadb
-    ports:
-      - "80:80"
+    ports:  
+      - "127.0.0.1:8105:80"
+
     volumes:
       - ./files:/files
     restart: unless-stopped
