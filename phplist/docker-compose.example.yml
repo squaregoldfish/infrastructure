@@ -13,7 +13,7 @@ services:
   mariadb:
     image: mariadb:10.0.21
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3326:3306"
     environment:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_DATABASE: db
