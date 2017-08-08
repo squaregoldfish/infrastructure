@@ -1,0 +1,13 @@
+[Unit]
+Description=ICOS authentication service
+After=network.target
+
+[Service]
+Type=simple
+User={{ username }}
+ExecStart=/usr/bin/java -jar "{{ installed_jarfile.dest }}"
+Restart=on-abort
+WorkingDirectory=/home/{{ username }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,49 +1,10 @@
-# Install the cpauth software, compile it and start it as a systemd service.
-- name: Add cpauth user
-  user:
-    name: cpauth
-
-- name: Clone cpauth
-  become: True
-  become_user: cpauth
-  git:
-    repo: "{{ cpauth_repo_url }}"
-    version: master
-    dest: /home/cpauth/cpauth
-  register: cpauth_updated
-
-- name: compile cpauth
-  become: True
-  become_user: cpauth
-  command: sbt assembly chdir=/home/cpauth/cpauth
-  when: cpauth_updated.changed == true
-  notify: restart cpauth
-
-# This solves "Exception in thread "main" spray.json.DeserializationException:
-# Object is missing required member 'clientId'"
-- name: Install application.conf
-  become: True
-  become_user: cpauth
-  copy: src=application.conf dest=/home/cpauth/cpauth/
-  notify: restart cpauth
-
-- name: Install nginx config
-  copy: src=cpauth.conf dest=/etc/nginx/conf.d/
-  notify: reload nginx config
-
-# This solves "Exception in thread "main" java.lang.IllegalArgumentException:
-# InputStream cannot be null"
-- name: Copy xml config
-  become: True
-  become_user: cpauth
-  copy:
-    src="{{ cpauth_swamid_xml }}"
-    dest=/home/cpauth/cpauth/src/main/resources
-  notify: restart cpauth
-
-- name: Add systemd service
-  copy: src=cpauth.service dest=/etc/systemd/system/
-  notify: reload systemd config
-
-- name: Enable and start cpauth service
-  service: name=cpauth state=started enabled=yes
+- name: Run the jarservice role
+  include_role:
+    name: icos.jarservice
+  vars:
+    username        : "{{ cpauth_username }}"
+    jarfile         : "{{ cpauth_jar_file }}"
+    appconfig       : "{{ cpauth_appconfig }}"
+    nginxconfig     : "{{ cpauth_nginxconfig }}"
+    servicename     : "{{ cpauth_servicename }}"
+    servicetemplate : "{{ cpauth_template }}"
