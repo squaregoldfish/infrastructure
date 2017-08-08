@@ -4,21 +4,22 @@ services:
     build: .
     links:
       - mariadb
-    ports:  
-      - "127.0.0.1:8105:80"
-
+    ports:
+      - "8080:80"
     volumes:
+      - ./lists:/var/www/html/lists
       - ./files:/files
     restart: unless-stopped
-
   mariadb:
     image: mariadb:10.0.21
     ports:
-      - "127.0.0.1:3326:3306"
+      - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: pass
-      MYSQL_DATABASE: db
+      MYSQL_ROOT_PASSWORD: xxxxxxxx
+      MYSQL_DATABASE: database
       MYSQL_USER: user
-      MYSQL_PASSWORD: pass
+      MYSQL_PASSWORD: xxxxxxxx
     restart: unless-stopped
-
+    volumes:
+      - ./db:/var/lib/mysql/:rw
+    
