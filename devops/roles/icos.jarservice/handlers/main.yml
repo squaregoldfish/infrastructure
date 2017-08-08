@@ -1,0 +1,6 @@
+# Variable is not always expanded - https://github.com/ansible/ansible/issues/15505
+- name: restart {{ servicename }}
+  command: systemctl restart {{ servicename }}
+
+- name: reload systemd config
+  command: systemctl daemon-reload

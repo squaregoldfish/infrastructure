@@ -2,7 +2,7 @@
   user:
     name: "{{ username }}"
 
-# We set up a directory where we keep not only the current jar files but also
+# We set up a directory where we keep not only the current jar file but also
 # older copies. This makes it easier to roll back to earlier versions of the
 # service - simply change the symbolic link and restart.
 - name: Create directory for jar files
@@ -21,17 +21,42 @@
   local_action: stat path="{{jarfile}}" checksum_algorithm=sha256
   register: jarfilestat
 
+# If the jar file doesn't exist, this rule will make it obvious - later on it
+# might not be.
+- name: Ensure that local jar file exists
+  fail:
+    msg: "{{ jarfile }} doesn't exist!"
+  when: not jarfilestat.stat.exists
+    
 # Compute the destination filename, we'll be using it more than once.
 - set_fact:
     destjarfile: "{{jardir.path}}/{{jarfile|basename}}-{{jarfilestat.stat.checksum}}"
      
-- name: Copy {{servicename }} jar file
+- name: Copy {{ servicename }} jar file
   copy:
     src: "{{ jarfile }}"
     dest: "{{ destjarfile }}"
     owner: "{{ username }}"
     group: "{{ username }}"
 
+- name: Copy {{ servicename }} application config file
+  copy:
+    src: "{{ appconfig }}"
+    dest: "/home/{{ username }}/{{ appconfig | basename}}"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  when: "{{ appconfig is defined }}"
+  notify: restart {{ servicename }}
+  
+- name: Copy {{ servicename }} nginx config file
+  copy:
+    src: "{{ nginxconfig }}"
+    dest: /etc/nginx/conf.d/
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  when: "{{ nginxconfig is defined }}"
+  notify: reload nginx config
+  
 # The systemd unit file references the symbolic link in the service users' home
 # directory. This operation makes that link point to the jar files we've just
 # copied.
@@ -43,19 +68,13 @@
     group: "{{ username }}"
     state: link
   register: installed_jarfile
+  notify: restart {{ servicename }}
   
 - name: Add systemd {{ servicename }} servicefile
   template: src={{ servicetemplate }} dest=/etc/systemd/system/{{ servicename }}.service
-  register: added_service
-
-# If we've just added or changed the unit file then we systemd needs reloading.  
-- name: Reload systemd configuration
-  command: systemctl daemon-reload
-  when: added_service.changed
-
-- name: Restart {{ servicename }} service
-  service: name={{ servicename }} state=restarted
-  when: installed_jarfile.changed
+  notify:
+    - reload systemd config
+    - restart {{ servicename }}
   
 - name: Enable systemd {{ servicename }}
   service: name={{ servicename }} enabled=yes state=started
@@ -65,7 +84,8 @@
 - name: Enumerate old jarfiles
   shell: ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null | tail -n+{{jarservice_keep_n_old}}
   register: oldjarfiles
-
+  changed_when: False
+  
 - name: Remove old jarfiles
   file: path={{ item }} state=absent
   with_items:
