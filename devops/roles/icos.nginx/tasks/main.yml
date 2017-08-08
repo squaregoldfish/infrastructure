@@ -17,6 +17,10 @@
   package:
     name=nginx state=present
 
+- name: Start NGINX
+  service:
+    name=nginx state=started
+    
 - name: Copy ssl conf
   copy: src={{ nginx_ssl_conf_dir }} dest=/etc/nginx/ owner=root group=root mode=0700
   notify: reload nginx config
