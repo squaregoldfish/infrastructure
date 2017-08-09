@@ -10,5 +10,6 @@
     - icos.nginx
     - icos.restheart
     - icos.cpauth
+    - icos.cpmeta
     - icos.doi
 

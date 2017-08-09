@@ -5,10 +5,10 @@ After=network.target
 
 [Service]
 Type=simple
-User=doi
-ExecStart=/usr/bin/java -jar "/home/doi/doi.jar"
+User={{ username }}
+ExecStart=/usr/bin/java -jar "{{ installed_jarfile.dest }}"
 Restart=on-abort
-WorkingDirectory=/home/doi
+WorkingDirectory=/home/{{ username }}
 
 [Install]
 WantedBy=multi-user.target
