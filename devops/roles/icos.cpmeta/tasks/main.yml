@@ -1,0 +1,10 @@
+- name: Run the jarservice role
+  include_role:
+    name: icos.jarservice
+  vars:
+    username        : "{{ cpmeta_username }}"
+    jarfile         : "{{ cpmeta_jar_file }}"
+    appconfig       : "{{ cpmeta_appconfig }}"
+    nginxconfig     : "{{ cpmeta_nginxconfig }}"
+    servicename     : "{{ cpmeta_servicename }}"
+    servicetemplate : "{{ cpmeta_template }}"

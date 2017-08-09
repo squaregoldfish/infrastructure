@@ -1,0 +1,10 @@
+cpmeta_username: cpmeta
+cpmeta_servicename: cpmeta
+# Sadly, we cannot use our {{role_path}} to define the following paths, since
+# that variable wont be resolved until in the role_included jarservice, by which
+# point it'll point to jarservice.
+# https://github.com/ansible/ansible/issues/15439
+cpmeta_template: roles/icos.cpmeta/templates/cpmeta.service.j2
+cpmeta_appconfig:  roles/icos.cpmeta/files/application.conf
+cpmeta_nginxconfig:  roles/icos.cpmeta/files/cpmeta.conf
+
