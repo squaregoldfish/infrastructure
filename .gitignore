@@ -54,3 +54,4 @@ eudat/irodsEnv.txt
 *.*~
 .idea
 .editorconfig
+application.conf
