@@ -4,6 +4,7 @@
 - hosts: icosprod
   become: true
   vars_files:
+    - vault.yml
     - vars.yml
   roles:
     - icos.linux
