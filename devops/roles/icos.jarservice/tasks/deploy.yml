@@ -39,6 +39,8 @@
     owner: "{{ username }}"
     group: "{{ username }}"
 
+# We support installing an application.conf file, both by copying and (next
+# task) by templating.
 - name: Copy {{ servicename }} application config file
   copy:
     src: "{{ appconfig }}"
@@ -46,6 +48,15 @@
     owner: "{{ username }}"
     group: "{{ username }}"
   when: "{{ appconfig is defined }}"
+  notify: restart {{ servicename }}
+
+- name: Install {{ servicename }} application config file
+  template:
+    src: "{{ apptemplate }}"
+    dest: "/home/{{ username }}/application.conf"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  when: "{{ apptemplate is defined }}"
   notify: restart {{ servicename }}
   
 - name: Copy {{ servicename }} nginx config file
