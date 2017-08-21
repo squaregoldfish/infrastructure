@@ -16,3 +16,5 @@ mariadb:
     MYSQL_DATABASE: database
     MYSQL_USER: user
     MYSQL_PASSWORD: xxxxxxxx
+  volumes:
+    - ./db:/var/lib/mysql/:rw
