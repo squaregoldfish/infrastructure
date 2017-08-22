@@ -1,10 +1,12 @@
 - name: Run the jarservice role
+  tags: cpauth
   include_role:
     name: icos.jarservice
   vars:
     username        : "{{ cpauth_username }}"
     jarfile         : "{{ cpauth_jar_file }}"
-    appconfig       : "{{ cpauth_appconfig }}"
+    # https://github.com/ansible/ansible/issues/20597
+    apptemplate     : roles/icos.cpauth/templates/application.conf.j2
     nginxconfig     : "{{ cpauth_nginxconfig }}"
     servicename     : "{{ cpauth_servicename }}"
     servicetemplate : "{{ cpauth_template }}"
