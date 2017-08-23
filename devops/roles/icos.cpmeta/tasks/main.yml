@@ -1,4 +1,5 @@
 - name: Run the jarservice role
+  tags: cpmeta
   include_role:
     name: icos.jarservice
   vars:
