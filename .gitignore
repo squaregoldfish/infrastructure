@@ -55,3 +55,4 @@ eudat/irodsEnv.txt
 .idea
 .editorconfig
 application.conf
+.cache-main
