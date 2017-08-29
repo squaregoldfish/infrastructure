@@ -1,0 +1,10 @@
+cpdata_username: cpdata
+cpdata_servicename: cpdata
+# Sadly, we cannot use our {{role_path}} to define the following paths, since
+# that variable wont be resolved until in the role_included jarservice, by which
+# point it'll point to jarservice.
+# https://github.com/ansible/ansible/issues/15439
+cpdata_template: roles/icos.cpdata/templates/cpdata.service.j2
+#cpdata_appconfig:  roles/icos.cpdata/files/application.conf
+cpdata_nginxconfig:  roles/icos.cpdata/files/data.conf
+

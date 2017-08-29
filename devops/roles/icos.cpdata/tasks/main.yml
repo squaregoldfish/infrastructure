@@ -1,0 +1,11 @@
+- name: Run the jarservice role
+  tags: cpdata
+  include_role:
+    name: icos.jarservice
+  vars:
+    username        : "{{ cpdata_username }}"
+    jarfile         : "{{ cpdata_jar_file }}"
+#    appconfig       : "{{ cpdata_appconfig }}"
+    nginxconfig     : "{{ cpdata_nginxconfig }}"
+    servicename     : "{{ cpdata_servicename }}"
+    servicetemplate : "{{ cpdata_template }}"
