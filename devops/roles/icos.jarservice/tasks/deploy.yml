@@ -93,7 +93,7 @@
 # This is a garbage collection thing to keep the jarfiles directory from filling
 # up with old files.
 - name: Enumerate old jarfiles
-  shell: ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null | tail -n+{{jarservice_keep_n_old}}
+  shell: ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null | sed '1,{{jarservice_keep_n_old}}d'
   register: oldjarfiles
   changed_when: False
   
