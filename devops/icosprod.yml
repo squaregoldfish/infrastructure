@@ -12,5 +12,6 @@
     - icos.restheart
     - icos.cpauth
     - icos.cpmeta
+    - icos.cpdata
     - icos.doi
 
