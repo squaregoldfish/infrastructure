@@ -47,7 +47,7 @@
     dest: "/home/{{ username }}/{{ appconfig | basename}}"
     owner: "{{ username }}"
     group: "{{ username }}"
-  when: "{{ appconfig is defined }}"
+  when: appconfig is defined
   notify: restart {{ servicename }}
 
 - name: Install {{ servicename }} application config file
@@ -56,7 +56,7 @@
     dest: "/home/{{ username }}/application.conf"
     owner: "{{ username }}"
     group: "{{ username }}"
-  when: "{{ apptemplate is defined }}"
+  when: apptemplate is defined
   notify: restart {{ servicename }}
   
 - name: Copy {{ servicename }} nginx config file
@@ -65,7 +65,7 @@
     dest: /etc/nginx/conf.d/
     owner: "{{ username }}"
     group: "{{ username }}"
-  when: "{{ nginxconfig is defined }}"
+  when: nginxconfig is defined
   notify: reload nginx config
   
 # The systemd unit file references the symbolic link in the service users' home
