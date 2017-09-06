@@ -1,20 +1,26 @@
-phpserver:
-  build: .
-  links:
-   - mariadb
-  ports:
-   - "8080:80"
-  volumes:
-   - ./phpBB3:/var/www/html/bb
-   - ./files:/files
-mariadb:
-  image: mariadb:10.0.21
-  ports:
-   - "3306:3306"
-  environment:
-    MYSQL_ROOT_PASSWORD: xxxxxxxx
-    MYSQL_DATABASE: database
-    MYSQL_USER: user
-    MYSQL_PASSWORD: xxxxxxxx
-  volumes:
-    - ./db:/var/lib/mysql/:rw
+version: '2'
+services:
+  phpserver:
+    build: .
+    links:
+      - mariadb
+    ports:
+      - "127.0.0.1:8106:80"
+    volumes:
+      - ./phpBB3:/var/www/html/bb
+      - ./files:/files
+    restart: unless-stopped
+    container_name: phpbb_phpserver_1
+  mariadb:
+    image: mariadb:10.0.21
+    ports:
+      - "127.0.0.1:3332:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: xxxxxxxx
+      MYSQL_DATABASE: database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: xxxxxxxx
+    volumes:
+      - ./db:/var/lib/mysql/:rw
+    restart: unless-stopped
+    container_name: phpbb_mariadb_1

@@ -5,21 +5,25 @@ services:
     links:
       - mariadb
     ports:
-      - "8080:80"
+      - "8180:80"
     volumes:
       - ./lists:/var/www/html/lists
       - ./files:/files
     restart: unless-stopped
+    container-name: phplist_phpserver_1
   mariadb:
     image: mariadb:10.0.21
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3332:3306"
     environment:
       MYSQL_ROOT_PASSWORD: xxxxxxxx
       MYSQL_DATABASE: database
       MYSQL_USER: user
       MYSQL_PASSWORD: xxxxxxxx
-    restart: unless-stopped
     volumes:
       - ./db:/var/lib/mysql/:rw
+    restart: unless-stopped
+    container-name: phplist_mariadb_1
+
+
     
