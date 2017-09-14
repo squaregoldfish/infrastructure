@@ -34,36 +34,63 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 			val log = streams.value.log
 			val args: Seq[String] = sbt.Def.spaceDelimited().parsed
 
-			val check = args.toList match{
+			val (check, test) = args.toList match{
 				case "to" :: "production" :: Nil =>
-					log.info("Performing a REAL deployment to production")
-					false
+					log.info("Performing a REAL deployment to production environment")
+					(false, false)
+				case "to" :: "test" :: Nil =>
+					log.info("Performing a REAL deployment to test environment")
+					(false, true)
 				case _ =>
-					log.warn("Performing a TEST deployment, use 'cpDeploy to production' for a real one")
-					true
+					log.warn("""Performing a TEST deployment to production environment, use\
+								cpDeploy to production' for a real one""")
+					(true, false)
 			}
 
+			// The full path of the "fat" jarfile. The jarfile contains the
+			// entire application and this is the file we will deploy.
 			val jarPath = assembly.value.getCanonicalPath
 
+			// The ansible inventory file. This file contains a list of servers
+			// that we deploy to. Running "cpDeploy to production" will make
+			// ansible use our production environment and "cpDeploy to test"
+			// will make ansible use test servers (i.e virtual machines running
+			// on the developer host)
+			val inventory = if (test) "test.inventory" else "production.inventory"
+
+			// The name of the target, i.e the name of the current project
+			// ("cpauth", "data", "meta" etc).
 			val target = cpDeployTarget.value
 
-			val mandatoryArgs = Seq(
-				"--ask-sudo", "-t" + target,
-				"-e", s"""${target}_jar_file="$jarPath"""",
-				"-i", "production.inventory", "icosprod.yml"
-			)
+			val ansibleArgs = Seq(
+				// "--check" will make ansible simulate all its actions. It's
+				// only useful when running against the production inventory.
+				if (check && !test) "--check" else None,
 
-			val cmd = "ansible-playbook" +: (
-				if(check) "--check" +: mandatoryArgs else mandatoryArgs
-			)
+				// We only need to ask for sudo password in the production environment.
+				if (!test) "--ask-sudo" else None,
+
+				// Add an ansible tag, e.g '-tcpdata'
+				"-t" + target,
+
+				// Add an extra ansible variable specifying which jarfile to deploy.
+				"-e", s"""${target}_jar_file="$jarPath"""",
+
+				// Specify which inventory to use
+				"-i", (if (test) "test.inventory" else "production.inventory"),
+
+				// The main icos playbook.
+				"icosprod.yml"
+			) collect { case s:String => s }
+			val ansibleCmd = "ansible-playbook" +: ansibleArgs
 
 			val ansibleDir = new java.io.File("../infrastructure/devops/").getCanonicalFile
 			val ansiblePath = ansibleDir.getAbsolutePath
 			if(!ansibleDir.exists || !ansibleDir.isDirectory) sys.error("Folder not found: " + ansiblePath)
 
-			log.info(cmd.mkString("RUNNING:\n", " ", "\nIN DIRECTORY " + ansiblePath))
+			log.info(ansibleCmd.mkString("RUNNING:\n", " ", "\nIN DIRECTORY " + ansiblePath))
 
-			sbt.Process(cmd, ansibleDir).run(true).exitValue()
+			sbt.Process(ansibleCmd, ansibleDir).run(true).exitValue()
 		},
 		buildInfoKeys := Seq[BuildInfoKey](name, version),
 		buildInfoPackage := cpDeployBuildInfoPackage.value,
