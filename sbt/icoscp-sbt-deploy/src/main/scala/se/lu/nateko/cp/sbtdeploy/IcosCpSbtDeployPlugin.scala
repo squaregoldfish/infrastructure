@@ -20,6 +20,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 		val cpDeploy = inputKey[Unit]("Deploys to production using Ansible (depends on 'infrastructure' project)")
 		val cpDeployTarget = settingKey[String]("Ansible target role for cpDeploy")
 		val cpDeployBuildInfoPackage = settingKey[String]("Java/Scala package to put BuildInfo object into")
+		val cpDeployPlaybook = settingKey[String]("The ansible playbook")
 	}
 
 	import autoImport._
@@ -27,6 +28,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 	import BuildInfoPlugin.autoImport._
 
 	override lazy val projectSettings = Seq(
+		cpDeployPlaybook := "icosprod.yml",
 		cpDeploy := {
 			val gitStatus = sbt.Process("git status -s").lines.mkString("").trim
 			if(!gitStatus.isEmpty) sys.error("Please clean your 'git status -s' before deploying!")
@@ -61,6 +63,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 			// The name of the target, i.e the name of the current project
 			// ("cpauth", "data", "meta" etc).
 			val target = cpDeployTarget.value
+			val playbook = cpDeployPlaybook.value
 
 			val ansibleArgs = Seq(
 				// "--check" will make ansible simulate all its actions. It's
@@ -79,8 +82,8 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 				// Specify which inventory to use
 				"-i", (if (test) "test.inventory" else "production.inventory"),
 
-				// The main icos playbook.
-				"icosprod.yml"
+				playbook
+
 			) collect { case s:String => s }
 			val ansibleCmd = "ansible-playbook" +: ansibleArgs
 
