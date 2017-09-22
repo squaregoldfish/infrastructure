@@ -12,6 +12,7 @@
     jarfile         : "{{ stiltweb_jar_file }}"
     servicename     : "{{ stiltweb_servicename }}"
     servicetemplate : "{{ stiltweb_template }}"
+    nginxconfig     : "{{ stiltweb_nginxconfig }}"
 
 - name: Spoof stiltweb in /etc/hosts
   tags: stiltweb
