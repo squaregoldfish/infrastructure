@@ -2,6 +2,7 @@
 # Version check play.
 # Not that it'll work properly - https://github.com/ansible/ansible/issues/18375
 - hosts: all
+  tags: setup
   gather_facts: no
   pre_tasks:
     - name: Ansible version check
@@ -16,6 +17,7 @@
 # python on Ubuntu. The play needs to have gather_facts turned off, because
 # gather_facts requires python to be already installed.
 - hosts: all
+  tags: setup
   become: true
   gather_facts: no
   pre_tasks:
