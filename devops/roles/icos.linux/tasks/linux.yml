@@ -1,0 +1,20 @@
+- name: Change linux timezone
+  # <2017-01-09 mån> My version of ansible doesn't have the 'timezone' module so
+  # I'll just do the linking myself.
+  file:
+    dest: /etc/localtime
+    src: "{{ linux_timezone_path }}"
+    state: link
+  # By default we do nothing. I mostly use this for some vagrant VMs that act up.
+  when: "{{ linux_timezone_path is defined }}"
+
+- name: Add ssh key to root
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+  # Mostly set this when testing
+  when: "{{ linux_add_ssh_root is defined }}"
+
+- name: Install git
+  package: name=git state=present
