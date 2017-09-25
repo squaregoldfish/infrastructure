@@ -1,6 +1,7 @@
 ---
-# tasks file for icos.nginx
-
+- include_vars:
+    file: vars/{{ ansible_distribution }}.yml
+    
 # By default, selinux on centos/7 will disallow the httpd to connect to
 # cpauth (localhost:8080) You can see it in /var/log/nginx/error.log as
 # '... [crit] 16897#0: *10 connect() to 127.0.0.1:8080 failed (13:
@@ -20,19 +21,15 @@
 - name: Start NGINX
   service:
     name=nginx state=started
-    
+
+- name: Install nginx.conf
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+  notify: reload nginx config
+  
 - name: Copy ssl conf
   copy: src={{ nginx_ssl_conf_dir }} dest=/etc/nginx/ owner=root group=root mode=0700
   notify: reload nginx config
-
-- name: Copy nginx configuration
-  copy: src=conf.d/ dest=/etc/nginx/conf.d/
-  notify: reload nginx config
-
-# The default /etc/nginx/nginx.conf file contains several ssl directives which
-# will clash with our ssl.conf. Comment those out.
-- name: Disable nginx default ssl configuration
-  replace:
-    dest: /etc/nginx/nginx.conf
-    regexp: '(^\s+ssl_.*)$'
-    replace: '# \1'
