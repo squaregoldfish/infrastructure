@@ -469,7 +469,7 @@ def cmd_run(*args):
 
     """
     if len(args) != 6:
-        die("example: stilt run [--setup=FILE] "
+        die("Wrong number of arguments: stilt run [--setup=FILE] "
             "HTM 56.10 13.42 150 2012061500 2012061500")
     sc = STILTContainer()
     sc.add_run_dir_volume('logs', '/opt/STILT_modelling/%s' % sc.name)
