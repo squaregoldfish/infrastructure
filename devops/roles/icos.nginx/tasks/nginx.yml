@@ -10,10 +10,6 @@
   selinux: policy=targeted state=permissive
   when: ansible_distribution == 'CentOS'
 
-- name: Add the EPEL repo
-  yum: name=epel-release state=present
-  when: ansible_distribution == 'CentOS'
-
 - name: Install NGINX
   package:
     name=nginx state=present

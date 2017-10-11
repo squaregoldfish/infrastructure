@@ -16,5 +16,9 @@
   # Mostly set this when testing
   when: "{{ linux_add_ssh_root is defined }}"
 
+- name: Add the EPEL repo
+  yum: name=epel-release state=present
+  when: ansible_distribution == 'CentOS'
+
 - name: Install git
   package: name=git state=present
