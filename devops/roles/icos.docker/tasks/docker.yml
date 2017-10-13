@@ -17,10 +17,12 @@
 - name: Install docker
   package:
     name={{docker_package_name}} state=present
-
 - name: Start docker
   service: name=docker state=started enabled=yes
 
 # Required to be present for ansible's docker module to work properly.
 - name: Install docker python bindings
   package: name="{{ docker_python_package_name }}" state=present
+
+- name: Install docker-compose
+  package: name=docker-compose state=present
