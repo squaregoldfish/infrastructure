@@ -1,0 +1,10 @@
+filedrop_username: filedrop
+filedrop_servicename: filedrop
+# Sadly, we cannot use our {{role_path}} to define the following paths, since
+# that variable wont be resolved until in the role_included jarservice, by which
+# point it'll point to jarservice.
+# https://github.com/ansible/ansible/issues/15439
+filedrop_template: roles/icos.filedrop/templates/filedrop.service.j2
+#filedrop_appconfig:  roles/icos.filedrop/files/application.conf
+filedrop_nginxconfig:  roles/icos.filedrop/files/filedrop.conf
+
