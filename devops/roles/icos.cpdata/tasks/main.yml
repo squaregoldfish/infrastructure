@@ -5,7 +5,7 @@
   vars:
     username        : "{{ cpdata_username }}"
     jarfile         : "{{ cpdata_jar_file }}"
-#    appconfig       : "{{ cpdata_appconfig }}"
+    appconfig       : "{{ cpdata_appconfig }}"
     nginxconfig     : "{{ cpdata_nginxconfig }}"
     servicename     : "{{ cpdata_servicename }}"
     servicetemplate : "{{ cpdata_template }}"

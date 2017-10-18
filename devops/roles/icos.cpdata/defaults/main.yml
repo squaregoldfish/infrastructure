@@ -5,6 +5,6 @@ cpdata_servicename: cpdata
 # point it'll point to jarservice.
 # https://github.com/ansible/ansible/issues/15439
 cpdata_template: roles/icos.cpdata/templates/cpdata.service.j2
-#cpdata_appconfig:  roles/icos.cpdata/files/application.conf
+cpdata_appconfig:  roles/icos.cpdata/files/application.conf
 cpdata_nginxconfig:  roles/icos.cpdata/files/data.conf
 
