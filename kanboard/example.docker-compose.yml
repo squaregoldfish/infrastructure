@@ -1,10 +1,10 @@
 version: '2'
 services:
   kanboard:
-    image: kanboard/kanboard:latest
+    image: kanboard/kanboard:stable
     ports:
      - "127.0.0.1:8099:80"
     volumes:
-     - /disk/data/kanboard/data:/var/www/kanboard/data
+     - /disk/data/kanboard/data:/var/www/app/data
     restart: unless-stopped
 
