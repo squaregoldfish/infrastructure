@@ -3,9 +3,14 @@ cpauth{
 		"www.icos-cp.eu": {ipv4Host: "127.0.0.1", path: "/cp_login/", port: 8107}
 		"otc.icos-cp.eu": {ipv4Host: "127.0.0.1", path: "/cp_login/", port: 8109}
 		"no.icos-cp.eu": {ipv4Host: "127.0.0.1", path: "/cp_login/", port: 8108}
-	        "fora.icos-cp.eu": {ipv4Host: "127.0.0.1", path: "/bb/cp_login", port: 8106}
-                "ac.icos-cp.eu": {ipv4Host: "127.0.0.1", path: "/cp_login/", port: 8111}
+		"fora.icos-cp.eu": {ipv4Host: "127.0.0.1", path: "/bb/cp_login", port: 8106}
+		"ac.icos-cp.eu": {ipv4Host: "127.0.0.1", path: "/cp_login/", port: 8111}
 	}
 
-    {{ cpauth_oauth_conf | indent}}
+	mailing{
+		password = "{{ cpauth_mailing_pass }}"
+	}
+
+	{{ cpauth_oauth_conf | indent}}
 }
+
