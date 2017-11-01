@@ -10,11 +10,7 @@
     owner: root
     group: root
     mode: 0700
-
-- name: restart nginx
-  service: 
-    name: nginx
-    state: reloaded
+  notify: reload nginx config
 
 - name: Create path for docker compose file
   file: path=/disk/data/kanboard/kanboard/ state=directory
