@@ -27,6 +27,7 @@
     project_src: /disk/data/kanboard/kanboard
     state: present
 
+#To restore from backup you must set the variable restore in devops/vars.yml to true 
 - name: Copy backed up data for kanboard
   copy: 
     src: "{{ backup_path }}kanboard/rsyncBackup/db.sqlite"
