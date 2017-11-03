@@ -1,4 +1,5 @@
 dependencies:
-  - {role: icos.docker, role: icos.nginx}
+  - { role: icos.docker } 
+  - { role: icos.nginx }
 
 
