@@ -6,7 +6,7 @@
     src: "{{ linux_timezone_path }}"
     state: link
   # By default we do nothing. I mostly use this for some vagrant VMs that act up.
-  when: "{{ linux_timezone_path is defined }}"
+  when: linux_timezone_path is defined
 
 - name: Add ssh key to root
   authorized_key:
@@ -14,7 +14,7 @@
     state: present
     key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
   # Mostly set this when testing
-  when: "{{ linux_add_ssh_root is defined }}"
+  when: linux_add_ssh_root is defined
 
 - name: Add the EPEL repo
   yum: name=epel-release state=present
