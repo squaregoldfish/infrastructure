@@ -38,4 +38,3 @@
 
 - name: Change owner of kanboard database
   shell: "docker exec kanboard_kanboard_1 chown -R nginx:nginx /var/www/app/data"
-  when: restore
