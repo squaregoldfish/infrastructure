@@ -17,7 +17,7 @@
 
 - name: Copy docker-compose.yml
   copy:
-    src: ../../../../kanboard/example.docker-compose.yml
+    src: docker-compose.yml
     dest: /disk/data/kanboard/kanboard/docker-compose.yml
     owner: root
     mode: g=rw
