@@ -1,0 +1,80 @@
+---
+- include_vars:
+    file: vars/{{ ansible_distribution }}.yml
+
+- name: Copy nginx conf
+  copy:
+    src: sitesdata.conf
+    dest: /etc/nginx/conf.d/
+    mode: 0700
+  notify: reload nginx config
+
+- name: Get SSL certificate
+  import_tasks: ssl-certificate.yml
+  when: get_ssl
+
+- name: Add sites user
+  user:
+    name: sites
+    append: yes
+
+- name: Copy SSH key
+  copy:
+    src: id_rsa
+    dest: ~/.ssh/
+
+- name: Create project directory
+  file:
+    path: /disk/data/station-form
+    state: directory
+
+# TODO: Pull code from git instead of copying it
+# - name: Pull source from git
+- name: Copy source code
+  synchronize:
+    src: ../../station-form/app
+    dest: /disk/data/station-form/
+
+- name: Copy Dockerfile
+  copy:
+    src: Dockerfile
+    dest: /disk/data/station-form/
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: /disk/data/station-form/docker-compose.yml
+
+- name: Run docker-compose
+  docker_service:
+    project_src: /disk/data/station-form
+    state: present
+
+- name: Copy database dump
+  copy:
+    src: application_sites.sql
+    dest: /disk/data/station-form/db/
+  when: restore
+
+- name: Copy database conf file
+  template:
+    src: station-form-mysql.conf.j2
+    dest: /disk/data/station-form/db/station-form-mysql.conf
+  when: restore
+
+- name: Move database conf file
+  command: 'docker exec stationform_mysql_1 mv /var/lib/mysql/station-form-mysql.conf ~/.my.cnf'
+  when: restore
+
+- name: Restore database
+  shell:
+    >
+    docker exec -i stationform_mysql_1 sh -c
+    'mysql -e "DROP DATABASE IF EXISTS application_sites"
+    && mysql -e "CREATE DATABASE application_sites"
+    && mysql application_sites < /var/lib/mysql/application_sites.sql'
+  register: result
+  until: result.stderr == ""
+  retries: 3
+  delay: 5
+  when: restore
