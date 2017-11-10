@@ -7,6 +7,7 @@ services:
     volumes:
       - /disk/data/common/netcdf/gcp_models:/opt/data
       - /disk/data/STILT:/opt/stiltdata
+      - /disk/data/eurocom:/opt/eurocom
       - ./storage:/home
       - ./users:/opt/users
     restart: unless-stopped
