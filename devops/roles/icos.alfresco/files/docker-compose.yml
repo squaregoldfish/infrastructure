@@ -1,0 +1,13 @@
+version: '2'
+services:
+  alfresco:
+    build: .
+    ports:
+      - "127.0.0.1:8444:8443"
+    volumes:
+      - /disk/data/alfresco/alfresco-5.0.d:/opt/alfresco-5.0.d
+    restart: unless-stopped
+    environment: 
+      - ALFRESCO_VERSION=5.0.d
+    command:
+      alfrescostart.sh
