@@ -19,7 +19,7 @@
   copy:
     src: docker-compose.yml
     dest: /disk/data/kanboard/kanboard/docker-compose.yml
-    owner: root
+    owner: kanboard
     mode: g=rw
 
 - name: Run kanboard docker compose
