@@ -1,0 +1,12 @@
+<?php
+
+// server key for authentication
+define('SERVER_KEY', '{{ vault_sites_stations_server_key }}');
+
+// ignore webhooks without the server key as the 'key' url parameter
+if (!($_REQUEST['key'] == SERVER_KEY)) {
+    exit();
+}
+
+// pull the git changes into project directory
+$output = shell_exec( 'git reset --hard HEAD && git pull {{ vault_sites_stations_git_repo }} 2>&1; echo $?' );

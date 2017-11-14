@@ -18,22 +18,13 @@
     name: sites
     append: yes
 
-- name: Copy SSH key
-  copy:
-    src: id_rsa
-    dest: ~/.ssh/
-
 - name: Create project directory
   file:
     path: /disk/data/station-form
     state: directory
 
-# TODO: Pull code from git instead of copying it
-# - name: Pull source from git
-- name: Copy source code
-  synchronize:
-    src: ../../station-form/app
-    dest: /disk/data/station-form/
+- import_tasks: sites.yml
+  become_user: sites
 
 - name: Copy Dockerfile
   copy:

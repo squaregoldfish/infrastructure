@@ -1,0 +1,39 @@
+---
+- name: Copy SSH public key
+  copy:
+    src: id_rsa.pub
+    dest: ~/.ssh/
+    mode: 0644
+
+- name: Copy SSH private key
+  copy:
+    src: id_rsa
+    dest: ~/.ssh/
+    mode: 0600
+
+# - name: Pull source from git
+#   git:
+#     repo: {{ vault_sites_stations_git_repo }}
+#     dest: /disk/data/station-form/app
+
+- name: Copy source code
+  synchronize:
+    src: ../../station-form/app
+    dest: /disk/data/station-form/
+
+- name: Set code owner
+  file:
+    path: /disk/data/station-form/app
+    state: directory
+    owner: sites
+  become_user: root
+
+- name: Copy update script
+  template:
+    src: bitbucket.php.j2
+    dest: /disk/data/station-form/app/bitbucket.php
+
+- name: Copy php config
+  template:
+    src: config.php.j2
+    dest: /disk/data/station-form/app/config.php

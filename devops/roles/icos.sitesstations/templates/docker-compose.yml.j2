@@ -19,7 +19,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: {{ vault_sites_stations_mysql_root_password }}
       MYSQL_DATABASE: application_sites
-      MYSQL_USER: sites
+      MYSQL_USER: {{ vault_sites_stations_mysql_user }}
       MYSQL_PASSWORD: {{ vault_sites_stations_mysql_password }}
     ports:
       - "3338:3306"
