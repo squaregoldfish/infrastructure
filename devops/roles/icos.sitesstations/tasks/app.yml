@@ -14,16 +14,16 @@
 # - name: Pull source from git
 #   git:
 #     repo: {{ vault_sites_stations_git_repo }}
-#     dest: /disk/data/station-form/app
+#     dest: {{ project_dir }}/app
 
 - name: Copy source code
   synchronize:
     src: ../../station-form/app
-    dest: /disk/data/station-form/
+    dest: {{ project_dir }}/
 
 - name: Set code owner
   file:
-    path: /disk/data/station-form/app
+    path: {{ project_dir }}/app
     state: directory
     owner: sites
   become_user: root
@@ -31,9 +31,9 @@
 - name: Copy update script
   template:
     src: bitbucket.php.j2
-    dest: /disk/data/station-form/app/bitbucket.php
+    dest: {{ project_dir }}/app/bitbucket.php
 
 - name: Copy php config
   template:
     src: config.php.j2
-    dest: /disk/data/station-form/app/config.php
+    dest: {{ project_dir }}/app/config.php
