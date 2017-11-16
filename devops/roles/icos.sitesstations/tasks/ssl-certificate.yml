@@ -5,6 +5,15 @@
   register: cert_installed
 
 - name: Install certificate
-  command: "{{ certbot_command }} certonly -a webroot -i nginx -n -w /usr/share/nginx/html/ -d data.fieldsites.se -d admin.fieldsites.se -m {{ vault_sites_stations_SSL_email }} --agree-tos"
+  command: >
+    {{ certbot_command }} certonly
+    --authenticator webroot
+    --installer nginx
+    --non-interactive
+    --webroot-path /usr/share/nginx/html/
+    --domain data.fieldsites.se
+    --domain admin.fieldsites.se
+    --email {{ vault_sites_stations_SSL_email }}
+    --agree-tos
   when: not cert_installed.stat.exists
   notify: reload nginx config
