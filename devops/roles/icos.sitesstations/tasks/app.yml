@@ -11,29 +11,29 @@
     dest: ~/.ssh/
     mode: 0600
 
-# - name: Pull source from git
-#   git:
-#     repo: {{ vault_sites_stations_git_repo }}
-#     dest: {{ project_dir }}/app
+- name: Check if known_hosts contains bitbucket
+  command: ssh-keygen -F bitbucket.org
+  register: bitbucket_known_hosts
+  failed_when: false
+  changed_when: false
 
-- name: Copy source code
-  synchronize:
-    src: ../../station-form/app
-    dest: {{ project_dir }}/
+- name: Update bitbucket known hosts
+  known_hosts:
+    name: bitbucket.org
+    key: "{{ lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`') }}"
+  when: bitbucket_known_hosts.stdout == ""
 
-- name: Set code owner
-  file:
-    path: {{ project_dir }}/app
-    state: directory
-    owner: sites
-  become_user: root
+- name: Pull source from git
+  git:
+    repo: "{{ vault_sites_stations_git_repo }}"
+    dest: "{{ project_dir }}/app"
 
 - name: Copy update script
   template:
     src: bitbucket.php.j2
-    dest: {{ project_dir }}/app/bitbucket.php
+    dest: "{{ project_dir }}/app/bitbucket.php"
 
 - name: Copy php config
   template:
     src: config.php.j2
-    dest: {{ project_dir }}/app/config.php
+    dest: "{{ project_dir }}/app/config.php"

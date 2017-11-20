@@ -1,1 +1,2 @@
+nginx_user: www-data
 certbot_command: letsencrypt

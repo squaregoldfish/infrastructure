@@ -4,7 +4,7 @@
 
 - name: Copy nginx conf
   copy:
-    src: sitesdata.conf
+    src: sites-station-form.conf
     dest: /etc/nginx/conf.d/
     mode: 0700
   notify: reload nginx config
@@ -13,33 +13,38 @@
   import_tasks: ssl-certificate.yml
   when: get_ssl
 
-- name: Add sites user
-  user:
-    name: sites
-    append: yes
+- name: Create ssh directory
+  file:
+    path: /var/www/.ssh
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
 
 - name: Create project directory
   file:
-    path: {{ project_dir }}
+    path: "{{ project_dir }}"
     state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
 
-- import_tasks: sites.yml
-  become_user: sites
+- import_tasks: app.yml
+  become_user: "{{ nginx_user }}"
 
 - name: Copy Dockerfile
   copy:
     src: Dockerfile
-    dest: {{ project_dir }}/
+    dest: "{{ project_dir }}/"
 
 - name: Copy docker-compose.yml
   template:
     src: docker-compose.yml.j2
-    dest: {{ project_dir }}/docker-compose.yml
+    dest: "{{ project_dir }}/docker-compose.yml"
 
 - name: Run docker-compose
   docker_service:
-    project_src: {{ project_dir }}
+    project_src: "{{ project_dir }}"
     state: present
+  notify: reload nginx config
 
 - name: Restore database
   import_tasks: database.yml

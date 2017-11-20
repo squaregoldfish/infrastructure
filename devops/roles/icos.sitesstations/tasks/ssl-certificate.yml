@@ -1,7 +1,7 @@
 ---
 - name: Check if SSL certificate exists
   stat:
-    path: "/etc/letsencryt/renewal/data.fieldsites.se.conf"
+    path: "/etc/letsencryt/renewal/apply.fieldsites.se.conf"
   register: cert_installed
 
 - name: Install certificate
@@ -11,7 +11,7 @@
     --installer nginx
     --non-interactive
     --webroot-path /usr/share/nginx/html/
-    --domain data.fieldsites.se
+    --domain apply.fieldsites.se
     --domain admin.fieldsites.se
     --email {{ vault_sites_stations_SSL_email }}
     --agree-tos

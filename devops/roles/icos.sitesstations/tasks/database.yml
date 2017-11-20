@@ -1,15 +1,17 @@
 - name: Copy database dump
   copy:
     src: application_sites.sql
-    dest: {{ project_dir }}/db/
+    dest: "{{ project_dir }}/db/"
 
 - name: Copy database conf file
   template:
     src: station-form-mysql.conf.j2
-    dest: {{ project_dir }}/db/station-form-mysql.conf
+    dest: "{{ project_dir }}/db/station-form-mysql.conf"
+  register: database_conf
 
 - name: Move database conf file
-  command: 'docker exec stationform_mysql_1 mv /var/lib/mysql/station-form-mysql.conf ~/.my.cnf'
+  command: 'docker exec stationform_mysql_1 cp /var/lib/mysql/station-form-mysql.conf ~/.my.cnf'
+  when: database_conf.changed
 
 - name: Restore database
   shell:

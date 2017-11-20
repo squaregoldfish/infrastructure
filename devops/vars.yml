@@ -18,4 +18,3 @@ cpauth_mailing_pass   : "{{ vault_cpauth_mailing_pass }}"
 cpauth_jar_file       : "../../cpauth/target/scala-2.12/Carbon Portal Authentication Service-assembly-0.4.jar"
 cpmeta_jar_file       : ../../meta/target/scala-2.12/meta-assembly-0.3.2.jar
 cpdata_jar_file       : ../../data/target/scala-2.12/data-assembly-0.4.2.jar
-
