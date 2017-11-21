@@ -6,7 +6,7 @@
 
 - name: Install certificate
   command: >
-    {{ certbot_command }} certonly
+    certbot
     --authenticator webroot
     --installer nginx
     --non-interactive

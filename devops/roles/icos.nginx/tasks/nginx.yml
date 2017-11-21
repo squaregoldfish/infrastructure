@@ -32,5 +32,4 @@
   copy: src=files/ dest=/etc/nginx/ owner=root group=root mode=0700
   notify: reload nginx config
 
-- name: Install Certbot
-  package: name={{ certbot_package }} state=present
+- import_tasks: certbot.yml

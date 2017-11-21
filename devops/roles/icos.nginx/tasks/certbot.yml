@@ -1,0 +1,14 @@
+---
+- block:
+    - name: Install Certbot
+      package: name=certbot-nginx state=present
+  when: ansible_distribution == 'CentOS'
+
+- block:
+    - name: Install software-properties-common
+      package: name=software-properties-common state=present
+    - name: Add PPA for Certbot
+      apt_repository: repo='ppa:certbot/certbot'
+    - name: Install Certbot
+      package: name=python-certbot-nginx state=present
+  when: ansible_distribution == 'Ubuntu'
