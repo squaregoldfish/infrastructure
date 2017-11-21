@@ -1,2 +1,3 @@
 nginx_user: www-data
+nginx_user_home_directory: /var/www
 certbot_command: letsencrypt

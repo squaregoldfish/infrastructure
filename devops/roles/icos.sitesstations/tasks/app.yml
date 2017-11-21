@@ -2,13 +2,13 @@
 - name: Copy SSH public key
   copy:
     src: id_rsa.pub
-    dest: ~/.ssh/
+    dest: "{{ nginx_user_home_directory }}/.ssh/"
     mode: 0644
 
 - name: Copy SSH private key
   copy:
     src: id_rsa
-    dest: ~/.ssh/
+    dest: "{{ nginx_user_home_directory }}/.ssh/"
     mode: 0600
 
 - name: Check if known_hosts contains bitbucket
@@ -23,10 +23,16 @@
     key: "{{ lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`') }}"
   when: bitbucket_known_hosts.stdout == ""
 
+- name: Check if app exists
+  stat:
+    path: "{{ project_dir }}/app"
+  register: app_directory
+
 - name: Pull source from git
   git:
     repo: "{{ vault_sites_stations_git_repo }}"
     dest: "{{ project_dir }}/app"
+  when: not app_directory.stat.exists
 
 - name: Copy update script
   template:

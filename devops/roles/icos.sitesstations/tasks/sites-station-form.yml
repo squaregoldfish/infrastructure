@@ -9,13 +9,15 @@
     mode: 0700
   notify: reload nginx config
 
+- meta: flush_handlers
+
 - name: Get SSL certificate
   import_tasks: ssl-certificate.yml
   when: get_ssl
 
 - name: Create ssh directory
   file:
-    path: /var/www/.ssh
+    path: "{{ nginx_user_home_directory }}/.ssh"
     state: directory
     owner: "{{ nginx_user }}"
     group: "{{ nginx_user }}"
@@ -45,6 +47,9 @@
     project_src: "{{ project_dir }}"
     state: present
   notify: reload nginx config
+
+- name: Change code owner
+  command: docker exec stationform_php_1 chown -R www-data:www-data /var/www/html /var/www/.ssh
 
 - name: Restore database
   import_tasks: database.yml

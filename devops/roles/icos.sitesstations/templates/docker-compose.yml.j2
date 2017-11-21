@@ -6,7 +6,7 @@ services:
       - "8112:80"
     volumes:
       - ./app:/var/www/html
-      - /var/www/.ssh:/var/www/.ssh
+      - {{ nginx_user_home_directory }}/.ssh:/var/www/.ssh
     restart: unless-stopped
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
