@@ -12,3 +12,9 @@
     - name: Install Certbot
       package: name=python-certbot-nginx state=present
   when: ansible_distribution == 'Ubuntu'
+
+- name: Add job to renew certificates
+  cron:
+    name: Certbot renewal
+    job: "certbot renew --post-hook 'service nginx reload'"
+    special_time: weekly
