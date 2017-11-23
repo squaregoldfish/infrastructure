@@ -24,10 +24,11 @@
 
 - name: Create project directory
   file:
-    path: "{{ project_dir }}"
+    path: "{{ project_dir }}/app"
     state: directory
     owner: "{{ nginx_user }}"
     group: "{{ nginx_user }}"
+    recurse: yes
 
 - import_tasks: app.yml
   become_user: "{{ nginx_user }}"

@@ -23,16 +23,10 @@
     key: "{{ lookup('pipe', 'ssh-keyscan bitbucket.org, `dig +short bitbucket.org`') }}"
   when: bitbucket_known_hosts.stdout == ""
 
-- name: Check if app exists
-  stat:
-    path: "{{ project_dir }}/app"
-  register: app_directory
-
 - name: Pull source from git
   git:
     repo: "{{ vault_sites_stations_git_repo }}"
     dest: "{{ project_dir }}/app"
-  when: not app_directory.stat.exists
 
 - name: Copy update script
   template:
@@ -43,3 +37,13 @@
   template:
     src: config.php.j2
     dest: "{{ project_dir }}/app/config.php"
+
+- name: Create files directory
+  file:
+    path: "{{ project_dir }}/app/files"
+    state: directory
+
+- name: Pull PHP mailer from github
+  git:
+    repo: https://github.com/PHPMailer/PHPMailer
+    dest: "{{ project_dir }}/app/PHPMailer"
