@@ -3,9 +3,6 @@ restore               : false
 #Base path for backup directory. Only used if backup is set to true, else ignore
 backup_path           : /disk/ServerBackup/Backup/
 
-# Set get_ssl to true to get an SSL certificate
-get_ssl               : false
-
 doi_jar_file          : ../../doi/jvm/target/scala-2.12/doi-jvm-assembly-0.1-SNAPSHOT.jar
 doi_password          : "{{ vault_doi_password }}"
 

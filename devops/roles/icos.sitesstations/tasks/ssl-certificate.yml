@@ -1,10 +1,5 @@
 ---
-- name: Check if SSL certificate exists
-  stat:
-    path: "/etc/letsencryt/renewal/apply.fieldsites.se.conf"
-  register: cert_installed
-
-- name: Install certificate
+- name: Install SSL certificate
   command: >
     certbot
     --authenticator webroot
@@ -15,5 +10,6 @@
     --domain admin.fieldsites.se
     --email {{ vault_sites_stations_SSL_email }}
     --agree-tos
-  when: not cert_installed.stat.exists
   notify: reload nginx config
+
+- meta: flush_handlers

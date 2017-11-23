@@ -2,9 +2,11 @@
 [icosprod]
 fsicos.lunarc.lu.se
 
+[icosprod:vars]
+get_ssl=true
+
 [stiltmaster]
 stilt.icos-cp.eu stiltcluster_is_seed=1
 
 [stiltcluster]
 stilt.icos-cp.eu stiltcluster_is_seed=1
-

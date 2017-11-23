@@ -8,6 +8,7 @@ centos
 [icosprod:vars]
 linux_timezone_path=/usr/share/zoneinfo/Europe/Stockholm
 linux_add_ssh_root=
+get_ssl=false
 
 [stiltmaster]
 ubuntu stilt_spoof_ip="192.168.99.20"
