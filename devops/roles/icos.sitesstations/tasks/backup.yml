@@ -1,0 +1,27 @@
+---
+- name: Check if backup script exists
+  stat:
+    path: "/home/backup/Backup/backup_server.sh"
+  register: backup_exists
+
+- block:
+  - name: Create backup directory
+    file:
+      path: /home/backup/Backup/sitesStationForm
+      state: directory
+
+  - name: Install backup script
+    template:
+      src: backup.sh
+      dest: /home/backup/Backup/sitesStationForm/sitesStationFormBackupScript.sh
+      mode: u+x
+
+  - name: Call backup script from backup_ser.sh
+    blockinfile:
+      path: /home/backup/Backup/backup_server.sh
+      block: |
+        printf "\n####################################\n\n"
+
+        ./sitesStationForm/sitesStationFormBackupScript.sh
+      insertbefore: ./copy_offsite.sh
+  when: backup_exists.stat.exists
