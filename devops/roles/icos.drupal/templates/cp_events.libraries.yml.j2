@@ -1,0 +1,12 @@
+style:
+  css:
+    theme:
+      css/{{ cp_events | default(cp_events) }}.css: {}
+
+script:
+  js:
+    js/{{ cp_events | default(cp_events) }}.js: {}
+
+  dependencies:
+    - core/jquery
+    - core/jquery.once
