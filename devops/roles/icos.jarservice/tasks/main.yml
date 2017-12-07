@@ -2,5 +2,5 @@
 # them. While it might have be easier to add the tag at the point of
 # 'include_role', that might have tainted this roles' dependencies with a tag
 # meant only for this role.
-- include: deploy.yml
+- import_tasks: deploy.yml
   tags: deploy

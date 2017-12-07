@@ -4,7 +4,7 @@
     groups: docker
     append: true
 
-- include: stiltrun.yml
+- import_tasks: stilt_with_setup.yml
   become: True
   become_user: stilt
   tags: deploy

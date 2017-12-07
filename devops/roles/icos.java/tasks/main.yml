@@ -1,2 +1,2 @@
-- include: java.yml
+- import_tasks: java.yml
   tags: java

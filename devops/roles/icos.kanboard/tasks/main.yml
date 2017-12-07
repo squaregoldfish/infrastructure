@@ -1,2 +1,2 @@
-- include: kanboard.yml
+- import_tasks: kanboard.yml
   tags: kanboard

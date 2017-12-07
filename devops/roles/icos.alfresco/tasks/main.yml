@@ -1,2 +1,2 @@
-- include: alfresco.yml
+- import_tasks: alfresco.yml
   tags: alfresco

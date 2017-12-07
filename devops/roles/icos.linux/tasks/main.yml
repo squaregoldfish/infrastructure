@@ -1,2 +1,2 @@
-- include: linux.yml
+- import_tasks: linux.yml
   tags: linux
