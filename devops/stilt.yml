@@ -1,8 +1,6 @@
 # This ansible playbook will provision the STILT servers.
 
 ---
-- include: setup.yml
-  
 - hosts: stiltmaster
   become: true
   vars_files: [vars.yml, vault.yml]

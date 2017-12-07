@@ -1,3 +1,21 @@
+---
+# Version check play.
+# Not that it'll work properly - https://github.com/ansible/ansible/issues/18375
+- name: Ansible version check
+  assert:
+    that: "ansible_version.full | version_compare('2.4', '>=')"
+    msg: >
+      "This playbook uses features that requires ansible >= 2.4"
+
+# The system that is being provisioned needs to have python installed. Of the
+# two systems we currently support, CentOS 7 and Ubuntu 16.04, only CentOS have
+# python installed out of the box. This play will attempt to blindly install
+# python on Ubuntu. The play needs to have gather_facts turned off, because
+# gather_facts requires python to be already installed.
+- name: install python (required by ansible)
+  # http://docs.ansible.com/ansible/intro_installation.html
+  raw: "test -e /usr/bin/python || apt install -y python-minimal"
+
 - name: Change linux timezone
   # <2017-01-09 mån> My version of ansible doesn't have the 'timezone' module so
   # I'll just do the linking myself.
