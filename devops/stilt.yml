@@ -1,7 +1,7 @@
 # This ansible playbook will provision the STILT servers.
 
 ---
-- include: setup.yml
+- import_playbook: setup.yml
   
 - hosts: stiltmaster
   become: true
