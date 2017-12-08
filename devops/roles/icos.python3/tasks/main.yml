@@ -1,0 +1,30 @@
+# Install python 3.5 (or higher as might be the case with Ubuntu).
+# The requirement comes from one of our python scripts that uses os.scandir()
+# (introduced in 3.5)
+
+# For Ubuntu 16.04 and up, python 3.5 is in the standard repo.
+- block:
+    - name: Install python 3
+      apt: name=python3 state=present
+  when:
+    - ansible_distribution == 'RedHat'
+  become: true
+  become_user: root
+
+# CentOS - as per usual - requires a bit more work
+- block:
+    # The EPEL-release only has 3.4 - use the IUS repo instead.
+    - name: Add the IUS repo
+      yum: name=https://centos7.iuscommunity.org/ius-release.rpm state=present
+    - name: Install python 3.5
+      yum: name=python35u state=present
+    - name: Create symbolic link for python3
+      file: dest=/bin/python3 src=/bin/python3.5 state=link
+  when:
+    - ansible_distribution == 'CentOS'
+  become: true
+  become_user: root
+
+- name: Check that python3 version is >= 3.5
+  shell: "python3 --version 2>&1 | grep -q '^Python 3.[56789]'"
+  changed_when: false  
