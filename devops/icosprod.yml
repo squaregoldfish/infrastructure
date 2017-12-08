@@ -8,8 +8,6 @@
     - vault.yml
     - vars.yml
   roles:
-    - icos.linux
-    - icos.nginx
     - icos.restheart
     - icos.cpauth
     - icos.cpmeta
