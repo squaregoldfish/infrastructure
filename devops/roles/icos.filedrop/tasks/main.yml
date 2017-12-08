@@ -1,5 +1,4 @@
 - name: Run the jarservice role
-  tags: filedrop
   include_role:
     name: icos.jarservice
   vars:

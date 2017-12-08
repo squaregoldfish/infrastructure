@@ -1,2 +1,41 @@
-- import_tasks: alfresco.yml
-  tags: alfresco
+- name: Add alfresco user
+  user:
+    name: alfresco
+    append: yes
+
+- name: Copy alfresco nginx conf to nginx/conf.d
+  copy:
+    src: alfresco.conf
+    dest: /etc/nginx/conf.d/alfresco.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload nginx config
+
+- name: Create directory for docker compose and other needed files
+  file: path=/disk/data/alfresco/docker/alfresco state=directory
+
+- name: Copy the files needed to start the alfresco docker container to /disk/data/alfresco/docker/alfresco/
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: alfresco
+  with_items:
+    - { src: docker-compose.yml, dest: /disk/data/alfresco/docker/alfresco/, mode: u=rw}
+    - { src: alfrescostart.sh, dest: /disk/data/alfresco/docker/alfresco/, mode: u=rwx }
+    - { src: Dockerfile, dest: /disk/data/alfresco/docker/alfresco/, mode: u=rw }
+    - { src: env, dest: /disk/data/alfresco/docker/alfresco/.env, mode: u=rw }
+
+- name: Run alfresco docker-compose
+  docker_service:
+    project_src: /disk/data/alfresco/docker/alfresco/
+    state: present
+
+# To restore from backup you must set the variable restore in devops/vars.yml to true. 
+# WARNING: The backup for alfresco is currently 80G large. 
+- name: Copy backed up data for alfresco
+  synchronize: 
+    src: "{{ backup_path }}alfresco/rsyncBackup/alfresco-5.0.d/"
+    dest: /disk/data/alfresco/
+  when: restore

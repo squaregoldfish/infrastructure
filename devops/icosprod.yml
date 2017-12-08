@@ -8,12 +8,21 @@
     - vault.yml
     - vars.yml
   roles:
-    - icos.restheart
-    - icos.cpauth
-    - icos.cpmeta
-    - icos.cpdata
-    - icos.doi
-    - icos.filedrop
-    - icos.kanboard
-    - icos.sitesstations
-    - icos.drupal
+    - role: icos.restheart
+      tags: restheart
+    - role: icos.cpauth
+      tags: cpauth
+    - role: icos.cpmeta
+      tags: cpmeta
+    - role: icos.cpdata
+      tags: cpdata
+    - role: icos.doi
+      tags: doi
+    - role: icos.filedrop
+      tags: filedrop
+    - role: icos.kanboard
+      tags: kanboard
+    - role: icos.sitesstations
+      tags: sitesstations
+    - role: icos.drupal
+      tags: drupal

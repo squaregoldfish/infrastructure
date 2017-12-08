@@ -1,5 +1,4 @@
 - name: Run the jarservice role
-  tags: cpmeta
   include_role:
     name: icos.jarservice
   vars:
@@ -12,13 +11,11 @@
 
 # https://github.com/ansible/ansible/issues/15901
 - name: Get home directory of {{ cpmeta_username }}
-  tags: cpmeta
   become_user: "{{ cpmeta_username }}"
   shell: "getent passwd {{ cpmeta_username }} | cut -d: -f6"
   register: cpmeta_home
 
 - name: Create link to file storage
-  tags: cpmeta
   become: yes
   become_user: "{{ cpmeta_username }}"
   file:

@@ -1,5 +1,4 @@
 - import_tasks: drupal.yml
-  tags: icos-cp
   vars:
     project_name: cp
     drupal_docker_port: 8107
@@ -7,7 +6,6 @@
     trusted_host: ^www\.icos-cp\.eu$
 
 - import_tasks: drupal.yml
-  tags: icos-ri
   vars:
     project_name: ri
     drupal_docker_port: 8102

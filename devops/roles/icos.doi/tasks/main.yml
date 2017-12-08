@@ -1,5 +1,4 @@
 - name: Run the jarservice role
-  tags: doi
   include_role:
     name: icos.jarservice
   vars:
