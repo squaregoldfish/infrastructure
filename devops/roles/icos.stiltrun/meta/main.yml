@@ -1,3 +1,4 @@
 dependencies:
   - {role: icos.linux}
   - {role: icos.docker}
+  - {role: icos.python3}

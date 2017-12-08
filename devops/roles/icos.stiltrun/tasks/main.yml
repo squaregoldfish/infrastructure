@@ -1,10 +1,9 @@
 - name: Create STILT user
   user:
-    name: stilt
+    name: "{{ stilt_user_name }}"
     groups: docker
     append: true
 
 - import_tasks: stilt_with_setup.yml
   become: True
-  become_user: stilt
-  tags: deploy
+  become_user: "{{ stilt_user_name }}"

@@ -1,0 +1,41 @@
+- name: List docker images
+  command: docker images -qa
+  register: docker_images
+  changed_when: False
+
+- block:
+    - name: Set image tmp name
+      set_fact: stilt_with_setup_tmp_fname="/tmp/{{ stilt_with_setup_url | basename }}"
+      changed_when: false
+    - name: Download image
+      get_url:
+        url: "{{ stilt_with_setup_url }}"
+        dest: "{{ stilt_with_setup_tmp_fname }}"
+    - name: Load stilt_with_setup into docker
+      command: docker load -i "{{ stilt_with_setup_tmp_fname }}"
+    - name: Check that stilt_with_setup was properly loaded
+      shell: docker images -q | grep {{ stilt_with_setup_imageid }} -q
+  when: stilt_with_setup_imageid not in docker_images.stdout
+
+# The assumption is that $HOME/bin is already in $PATH (this is true for our
+# current instances of both CentOS and Ubuntu)
+- name: "Create bin directory in stiltrun's home directory"
+  file:
+    path: /home/{{ stilt_user_name }}/bin
+    state: directory
+    
+- name: Install the stilt python wrapper
+  copy:
+    src: stilt.py
+    dest: /home/{{ stilt_user_name }}/bin/stilt
+    mode: 0755
+  register: stiltrun_bin
+
+- name: Do a test of the stiltrun installation
+  command: "{{ stiltrun_bin.path }} calcslots 2012010100 2012010106"
+  register: stilt_output
+
+- name: Check the output of the testrun
+  assert:
+    that: stilt_output.stdout == "2012010100\n2012010103\n2012010106"
+

@@ -41,7 +41,7 @@ import tempfile
 
 METFILES_DIR = "/mnt/additional_disk/WORKER/Input/Metdata/Europe2"
 STILT_IMAGE = 'stilt_with_setup'
-RUN_DIRECTORY = os.path.join(os.environ['HOME'], 'stiltruns')
+RUN_DIRECTORY = os.path.join(os.environ['HOME'], '.stiltruns')
 DEBUG_FILES = []
 
 
@@ -152,7 +152,8 @@ class STILTContainer:
     # PREPARATION
     def _create_rundir(self, base=RUN_DIRECTORY):
         if not os.path.isdir(base):
-            die("The '%s' directory must exist." % base)
+            os.mkdir(base)
+            debug("Created the %s directory" % base)
         self._run_dir = make_run_dir()
         DEBUG_FILES.append(open(os.path.join(self._run_dir, 'debug.log'), 'w'))
         debug("Created directory %s" % self._run_dir)
