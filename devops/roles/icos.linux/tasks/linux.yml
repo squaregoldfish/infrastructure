@@ -20,8 +20,8 @@
   yum: name=epel-release state=present
   when: ansible_distribution == 'CentOS'
 
-- name: Install git
-  package: name=git state=present
-
-- name: Install mg (Micro Emacs)
-  package: name=mg state=present
+- name: Install utilities
+  package: name={{ item }} state=present
+  with_items:
+    - git
+    - mg
