@@ -1,5 +1,6 @@
 # This ansible playbook will provision our production server.
 
+- include: setup.yml
 - hosts: icosprod
   become: true
   vars_files:
