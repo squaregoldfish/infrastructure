@@ -1,12 +1,10 @@
 - name: Add nginx config file
   copy: src=stiltweb.conf dest=/etc/nginx/conf.d/
   notify: reload nginx config
-  tags: stiltweb
 
 - name: Run the jarservice role
   include_role:
     name: icos.jarservice
-  tags: stiltweb
   vars:
     username        : "{{ stiltweb_username }}"
     jarfile         : "{{ stiltweb_jar_file }}"
@@ -15,7 +13,6 @@
     nginxconfig     : "{{ stiltweb_nginxconfig }}"
 
 - name: Spoof stiltweb in /etc/hosts
-  tags: stiltweb
   lineinfile:
     dest: "/etc/hosts"
     line: "{{ stilt_spoof_ip }} stilt.icos-cp.eu"

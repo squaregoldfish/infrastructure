@@ -6,9 +6,15 @@
 - hosts: stiltmaster
   become: true
   vars_files: [vars.yml, vault.yml]
-  roles: [icos.stiltweb]
+  roles:
+    - role: icos.stiltweb
+      tags: stiltweb
 
 - hosts: stiltcluster
   become: true
   vars_files: [vars.yml, vault.yml]
-  roles: [icos.stiltrun, icos.stiltcluster]
+  roles:
+    - role: icos.stiltrun
+      tags: stiltrun
+    - role: icos.stiltcluster
+      tags: stiltcluster
