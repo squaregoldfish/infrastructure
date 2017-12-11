@@ -1,11 +1,11 @@
 style:
   css:
     theme:
-      css/{{ cp_cmis | default(cp_cmis) }}.css: {}
+      css/{{ cp_cmis | default("cp_cmis") }}.css: {}
 
 script:
   js:
-    js/{{ cp_cmis | default(cp_cmis) }}.js: {}
+    js/{{ cp_cmis | default("cp_cmis") }}.js: {}
 
   dependencies:
     - core/drupal
@@ -28,11 +28,11 @@ script_files:
 style_documents:
   css:
     theme:
-      css/{{ cp_cmis_documents | default(cp_cmis_documents) }}.css: {}
+      css/{{ cp_cmis_documents | default("cp_cmis_documents") }}.css: {}
 
 script_documents:
   js:
-    js/{{ cp_cmis_documents | default(cp_cmis_documents) }}.js: {}
+    js/{{ cp_cmis_documents | default("cp_cmis_documents") }}.js: {}
 
   dependencies:
     - core/drupal

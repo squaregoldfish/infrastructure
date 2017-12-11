@@ -1,12 +1,12 @@
 global-css:
   css:
     theme:
-      css/{{ cp_theme_d8 | default(cp_theme_d8) }}.css: {}
+      css/{{ cp_theme_d8 | default("cp_theme_d8") }}.css: {}
       css/bootstrap.3.3.5.min.css: {}
 
 global-js:
   js:
-    js/{{ cp_theme_d8 | default(cp_theme_d8) }}.js: {}
+    js/{{ cp_theme_d8 | default("cp_theme_d8") }}.js: {}
     js/bootstrap.3.3.5.min.js: {}
 
   dependencies:

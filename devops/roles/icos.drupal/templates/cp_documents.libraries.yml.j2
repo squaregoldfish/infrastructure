@@ -1,12 +1,12 @@
 style:
   css:
     theme:
-      css/{{ cp_documents | default(cp_documents) }}.css: {}
+      css/{{ cp_documents | default("cp_documents") }}.css: {}
       css/cp_documents_layout_fix.css: {}
 
 script:
   js:
-    js/{{ cp_documents | default(cp_documents) }}.js: {}
+    js/{{ cp_documents | default("cp_documents") }}.js: {}
 
   dependencies:
     - core/jquery

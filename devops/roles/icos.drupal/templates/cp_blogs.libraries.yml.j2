@@ -1,11 +1,11 @@
 style:
   css:
     theme:
-      css/{{ cp_blogs | default(cp_blogs) }}.css: {}
+      css/{{ cp_blogs | default("cp_blogs") }}.css: {}
 
 script:
   js:
-    js/{{ cp_blogs | default(cp_blogs) }}.js: {}
+    js/{{ cp_blogs | default("cp_blogs") }}.js: {}
 
   dependencies:
     - core/jquery
