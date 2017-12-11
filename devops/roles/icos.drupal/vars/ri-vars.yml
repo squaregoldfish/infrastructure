@@ -1,0 +1,11 @@
+drupal_docker_port: 8102
+mysql_docker_port: 3333
+trusted_host: ^www\.icos-ri\.eu$
+cp_blogs: cp_blogs-ri
+cp_files: cp_files-ri
+cp_cmis: cp_cmis-ri
+cp_cmis_documents: cp_cmis_documents-ri
+cp_documents: cp_documents-ri
+cp_events: cp_events-ri
+cp_events: cp_events-ri
+cp_theme_d8: cp_theme_d8-ri

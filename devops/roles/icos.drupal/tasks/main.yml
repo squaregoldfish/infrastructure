@@ -1,31 +1,4 @@
-- import_tasks: drupal.yml
-  tags: icos-cp
-  vars:
-    project_name: cp
-    drupal_docker_port: 8107
-    mysql_docker_port: 3334
-    trusted_host: ^www\.icos-cp\.eu$
-
-- import_tasks: drupal.yml
-  tags: icos-ri
-  vars:
-    project_name: ri
-    drupal_docker_port: 8102
-    mysql_docker_port: 3333
-    trusted_host: ^www\.icos-ri\.eu$
-    cp_blogs: cp_blogs-ri
-    cp_files: cp_files-ri
-    cp_cmis: cp_cmis-ri
-    cp_cmis_documents: cp_cmis_documents-ri
-    cp_documents: cp_documents-ri
-    cp_events: cp_events-ri
-    cp_theme_d8: cp_theme_d8-ri
-
-- import_tasks: drupal.yml
-  tags: icos-ac
-  vars:
-    project_name: ac
-    drupal_docker_port: 8111
-    mysql_docker_port: 3340
-    trusted_host: ^ac\.icos-cp\.eu$
-    cp_theme_d8: cp_theme_d8-ac
+- include_tasks: drupal.yml
+  with_items: "{{ websites }}"
+  loop_control:
+    loop_var: project_name

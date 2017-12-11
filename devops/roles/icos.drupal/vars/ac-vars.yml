@@ -1,0 +1,4 @@
+drupal_docker_port: 8111
+mysql_docker_port: 3340
+trusted_host: ^ac\.icos-cp\.eu$
+cp_theme_d8: cp_theme_d8-ac

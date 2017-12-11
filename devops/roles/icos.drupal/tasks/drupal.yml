@@ -1,4 +1,7 @@
 ---
+- name: Include website vars
+  include_vars: "{{ project_name }}-vars.yml"
+
 - name: Include vault
   include_vars: "{{ project_name }}-vault.yml"
 
