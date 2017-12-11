@@ -25,3 +25,9 @@
   with_items:
     - git
     - mg
+
+- name: Copy utilities
+  copy:
+    src: retrieve-original.sh
+    dest: /usr/local/sbin/retrieve-original
+    mode: 0755
