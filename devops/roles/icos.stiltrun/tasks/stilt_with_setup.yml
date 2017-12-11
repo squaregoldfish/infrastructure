@@ -23,16 +23,18 @@
   file:
     path: /home/{{ stilt_user_name }}/bin
     state: directory
+
+- set_fact:
+    stiltrun_binary: /home/{{ stilt_user_name }}/bin/stilt
     
 - name: Install the stilt python wrapper
   copy:
     src: stilt.py
-    dest: /home/{{ stilt_user_name }}/bin/stilt
+    dest: "{{ stiltrun_binary }}"
     mode: 0755
-  register: stiltrun_bin
 
 - name: Do a test of the stiltrun installation
-  command: "{{ stiltrun_bin.path }} calcslots 2012010100 2012010106"
+  command: "{{ stiltrun_binary }} calcslots 2012010100 2012010106"
   register: stilt_output
 
 - name: Check the output of the testrun
