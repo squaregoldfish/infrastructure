@@ -6,8 +6,8 @@ backup_path           : /disk/ServerBackup/Backup/
 doi_jar_file          : ../../doi/jvm/target/scala-2.12/doi-jvm-assembly-0.1-SNAPSHOT.jar
 doi_password          : "{{ vault_doi_password }}"
 
-stiltweb_jar_file     : ../../stiltweb/target/scala-2.11/stiltweb-assembly-0.1.0.jar
-stiltcluster_jar_file : ../../stiltweb/stiltcluster/target/scala-2.11/stiltcluster-assembly-0.1.0.jar
+stiltweb_jar_file     : ../../stiltweb/target/scala-2.12/stiltweb-assembly-0.1.0.jar
+stiltcluster_jar_file : ../../stiltweb/stiltcluster/target/scala-2.12/stiltcluster-assembly-0.1.0.jar
 
 cpauth_oauth_conf     : "{{ vault_cpauth_oauth_conf }}"
 cpauth_mailing_pass   : "{{ vault_cpauth_mailing_pass }}"
