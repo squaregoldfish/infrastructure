@@ -14,8 +14,17 @@
   git:
     repo: https://github.com/ICOS-Carbon-Portal/drupal
     dest: "{{ project_dir }}"
-    version: "{{ project_name }}"
     force: yes
+
+- name: Restore file archives
+  unarchive:
+    src: "{{ backup_path }}/files/{{ item }}.tar.gz"
+    dest: /
+  with_items:
+    - files_backup
+    - modules_backup
+    - themes_backup
+  when: restore
 
 - name: Copy settings.php
   template:
@@ -37,26 +46,12 @@
     - cp_documents
     - cp_events
     - cp_files
+  notify: reload nginx config
 
 - name: Copy theme library
   template:
     src: cp_theme_d8.libraries.yml.j2
     dest: "{{ project_dir }}/themes/cp_theme_d8/cp_theme_d8.libraries.yml"
-
-- name: Restore database
-  import_tasks: database.yml
-  when: restore
-
-- name: Restore file archives
-  unarchive:
-    src: "{{ backup_path }}/files/{{ item }}.tar.gz"
-    dest: /
-    # unsafe_writes: yes
-  with_items:
-    - files_backup
-    - modules_backup
-    - themes_backup
-  when: restore
 
 - name: Copy docker-compose.yml
   template:
@@ -73,6 +68,10 @@
     project_src: "{{ project_dir }}/docker"
     state: present
   notify: reload nginx config
+
+- name: Restore database
+  import_tasks: database.yml
+  when: restore
 
 # - name: Setup backup script
 #   import_tasks: backup.yml
