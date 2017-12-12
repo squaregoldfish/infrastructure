@@ -1,6 +1,9 @@
+- name: Wait for 10 seconds before restoring the database
+  wait_for: timeout=10
+
 - name: Copy database dump
   copy:
-    src: "{{ backup_path }}/db/"
+    src: "{{ backup_path }}/{{ project_name }}Drupal/db/"
     dest: "{{ project_dir }}/db/"
 
 - name: Copy database conf file
