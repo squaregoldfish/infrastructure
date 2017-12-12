@@ -1,0 +1,5 @@
+drupal_docker_port: 8109
+mysql_docker_port: 3336
+trusted_host: ^otc\.icos-cp\.eu$
+cp_events: cp_events-otc
+cp_theme_d8: cp_theme_d8-otc
