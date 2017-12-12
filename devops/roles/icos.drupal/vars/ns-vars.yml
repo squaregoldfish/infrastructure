@@ -1,0 +1,4 @@
+drupal_docker_port: 8104
+mysql_docker_port: 3331
+trusted_host: ^nordspec\.icos-cp\.eu$
+database_prefix: drupal_
