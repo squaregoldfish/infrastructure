@@ -1,0 +1,6 @@
+drupal_docker_port: 8108
+mysql_docker_port: 3335
+trusted_host: ^no\.icos-cp\.eu$
+cp_events: cp_events-no
+cp_files: cp_files-no
+cp_theme_d8: cp_theme_d8-no
