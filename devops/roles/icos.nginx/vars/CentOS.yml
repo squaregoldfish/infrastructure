@@ -1,2 +1,4 @@
 nginx_user: nginx
+nginx_user_home_directory: /var/lib/nginx
 certbot_package: certbot
+bash_path: /usr/bin/bash
