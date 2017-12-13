@@ -26,5 +26,6 @@
         printf "\n####################################\n\n"
 
         ./{{ project_name }}Drupal/{{ project_name }}DrupalBackupScript.sh
+      marker: "# {mark} ANSIBLE MANAGED BLOCK FOR {{ project_name | upper }}"
       insertbefore: ./copy_offsite.sh
   when: backup_exists.stat.exists

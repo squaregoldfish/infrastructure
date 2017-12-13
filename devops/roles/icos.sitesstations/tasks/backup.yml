@@ -23,5 +23,6 @@
         printf "\n####################################\n\n"
 
         ./sitesStationForm/sitesStationFormBackupScript.sh
+      marker: "# {mark} ANSIBLE MANAGED BLOCK FOR SITES STATIONS FORM"
       insertbefore: ./copy_offsite.sh
   when: backup_exists.stat.exists
