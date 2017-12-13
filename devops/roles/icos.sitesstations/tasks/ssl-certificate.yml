@@ -8,7 +8,7 @@
     --webroot-path /usr/share/nginx/html/
     --domain apply.fieldsites.se
     --domain admin.fieldsites.se
-    --email {{ vault_sites_stations_SSL_email }}
+    --email {{ vault_SSL_email }}
     --agree-tos
   notify: reload nginx config
 
