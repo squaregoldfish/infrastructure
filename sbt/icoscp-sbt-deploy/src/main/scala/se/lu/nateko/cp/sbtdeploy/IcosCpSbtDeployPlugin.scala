@@ -6,6 +6,8 @@ import sbt.plugins.JvmPlugin
 import sbtassembly.AssemblyPlugin
 import sbtbuildinfo.BuildInfoPlugin
 
+import scala.sys.process.Process
+
 
 object IcosCpSbtDeployPlugin extends AutoPlugin {
 
@@ -30,7 +32,7 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 	override lazy val projectSettings = Seq(
 		cpDeployPlaybook := "icosprod.yml",
 		cpDeploy := {
-			val gitStatus = sbt.Process("git status -s").lines.mkString("").trim
+			val gitStatus = Process("git status -s").lineStream.mkString("").trim
 			if(!gitStatus.isEmpty) sys.error("Please clean your 'git status -s' before deploying!")
 
 			val log = streams.value.log
@@ -93,17 +95,17 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 
 			log.info(ansibleCmd.mkString("RUNNING:\n", " ", "\nIN DIRECTORY " + ansiblePath))
 
-			sbt.Process(ansibleCmd, ansibleDir).run(true).exitValue()
+			Process(ansibleCmd, ansibleDir).run(true).exitValue()
 		},
 		buildInfoKeys := Seq[BuildInfoKey](name, version),
 		buildInfoPackage := cpDeployBuildInfoPackage.value,
 		buildInfoKeys ++= Seq(
 			BuildInfoKey.action("buildTime") {java.time.Instant.now()},
 			BuildInfoKey.action("gitOriginRemote") {
-				sbt.Process("git config --get remote.origin.url").lines.mkString("")
+				Process("git config --get remote.origin.url").lineStream.mkString("")
 			},
 			BuildInfoKey.action("gitHash") {
-				sbt.Process("git rev-parse HEAD").lines.mkString("")
+				Process("git rev-parse HEAD").lineStream.mkString("")
 			}
 		)
 	)

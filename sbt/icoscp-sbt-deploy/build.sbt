@@ -1,6 +1,6 @@
 name := "icoscp-sbt-deploy"
 organization := "se.lu.nateko.cp"
-version := "0.1-SNAPSHOT"
+version := "0.2.0-SNAPSHOT"
 
 sbtPlugin := true
 
@@ -20,7 +20,7 @@ libraryDependencies ++= {
 		Defaults.sbtPluginExtra(pluginModule, sbtBinaryVersion.value, scalaBinaryVersion.value)
 
 	Seq(
-		pluginDependency("com.eed3si9n" % "sbt-assembly" % "0.14.5"),
+		pluginDependency("com.eed3si9n" % "sbt-assembly" % "0.14.6"),
 		pluginDependency("com.eed3si9n" % "sbt-buildinfo" % "0.7.0")
 	)
 }
