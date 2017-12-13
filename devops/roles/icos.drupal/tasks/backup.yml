@@ -5,15 +5,18 @@
   register: backup_exists
 
 - block:
-  - name: Create backup directory
+  - name: Create backup directories
     file:
-      path: "{{ backup_scripts_path }}/sitesStationForm"
+      path: "{{ backup_scripts_path }}/{{ project_name }}Drupal/{{ item }}"
       state: directory
+    with_items:
+      - files
+      - db
 
   - name: Install backup script
     template:
       src: backup.sh
-      dest: "{{ backup_scripts_path }}/sitesStationForm/sitesStationFormBackupScript.sh"
+      dest: "{{ backup_scripts_path }}/{{ project_name }}Drupal/{{ project_name }}DrupalBackupScript.sh"
       mode: u+x
 
   - name: Call backup script from backup_server.sh
@@ -22,6 +25,6 @@
       block: |
         printf "\n####################################\n\n"
 
-        ./sitesStationForm/sitesStationFormBackupScript.sh
+        ./{{ project_name }}Drupal/{{ project_name }}DrupalBackupScript.sh
       insertbefore: ./copy_offsite.sh
   when: backup_exists.stat.exists

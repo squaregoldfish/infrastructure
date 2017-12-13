@@ -79,5 +79,5 @@
   import_tasks: database.yml
   when: restore
 
-# - name: Setup backup script
-#   import_tasks: backup.yml
+- name: Setup backup script
+  import_tasks: backup.yml
