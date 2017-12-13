@@ -1,12 +1,24 @@
 ---
-- name: Include website vars
+- name: Include {{ project_name }} vars
   include_vars: "{{ project_name }}-vars.yml"
 
-- name: Include vault
+- name: Include {{ project_name }} vault
   include_vars: "{{ project_name }}-vault.yml"
 
 - name: Include vars
   include_vars: drupal.yml
+
+- name: Copy nginx {{ name }}.conf
+  template:
+    src: icos.conf
+    dest: /etc/nginx/conf.d/{{ name }}.conf
+    mode: 0700
+  notify: reload nginx config
+  when: project_name != "cp" and project_name != "ns"
+
+- name: Get SSL certificate
+  import_tasks: ssl-certificate.yml
+  when: get_ssl
 
 - name: Create project directory
   file:

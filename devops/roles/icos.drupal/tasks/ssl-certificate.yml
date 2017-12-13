@@ -1,0 +1,14 @@
+---
+- name: Install SSL certificate
+  command: >
+    certbot
+    --authenticator webroot
+    --installer nginx
+    --non-interactive
+    --webroot-path /usr/share/nginx/html/
+    --domain {{ domain }}
+    --email {{ vault_SSL_email }}
+    --agree-tos
+  notify: reload nginx config
+
+- meta: flush_handlers
