@@ -16,6 +16,8 @@
   notify: reload nginx config
   when: project_name != "cp" and project_name != "ns"
 
+- meta: flush_handlers
+
 - name: Get SSL certificate
   import_tasks: ssl-certificate.yml
   when: get_ssl
