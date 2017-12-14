@@ -1,3 +1,8 @@
+- name: Copy extra nginx config file
+  copy:
+    src: meta.conf.common
+    dest: /etc/nginx/conf.d/
+
 - name: Run the jarservice role
   include_role:
     name: icos.jarservice
@@ -22,4 +27,20 @@
     dest: "{{ cpmeta_home.stdout }}/fileStorage"
     src: "{{ cpmeta_filestorage_target }}"
     state: link
-  
+
+
+- meta: flush_handlers
+
+- name: Install SSL certificate
+  command: >
+    certbot
+    --authenticator webroot
+    --installer nginx
+    --non-interactive
+    --webroot-path /usr/share/nginx/html/
+    --domain meta.fieldsites.se
+    --email carbon.admin@nateko.lu.se
+    --agree-tos
+  notify: reload nginx config
+
+- meta: flush_handlers

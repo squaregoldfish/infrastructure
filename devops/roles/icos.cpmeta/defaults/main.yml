@@ -6,6 +6,6 @@ cpmeta_servicename: cpmeta
 # https://github.com/ansible/ansible/issues/15439
 cpmeta_template: roles/icos.cpmeta/templates/cpmeta.service.j2
 cpmeta_appconfig:  roles/icos.cpmeta/files/application.conf
-cpmeta_nginxconfig:  roles/icos.cpmeta/files/cpmeta.conf
+cpmeta_nginxconfig:  roles/icos.cpmeta/files/meta.conf
 cpmeta_filestorage_target: /disk/data/metaAppStorage
 
