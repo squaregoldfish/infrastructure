@@ -1,3 +1,4 @@
 - import_tasks: sites-station-form.yml
   vars:
     project_dir: /disk/data/station-form
+    backup_path: /home/backup/Backup

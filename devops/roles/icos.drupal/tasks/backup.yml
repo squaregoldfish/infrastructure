@@ -1,13 +1,13 @@
 ---
 - name: Check if backup script exists
   stat:
-    path: "{{ backup_scripts_path }}/backup_server.sh"
+    path: "{{ backup_path }}/backup_server.sh"
   register: backup_exists
 
 - block:
   - name: Create backup directories
     file:
-      path: "{{ backup_scripts_path }}/{{ project_name }}Drupal/{{ item }}"
+      path: "{{ backup_path }}/{{ project_name }}Drupal/{{ item }}"
       state: directory
     with_items:
       - files
@@ -16,12 +16,12 @@
   - name: Install backup script
     template:
       src: backup.sh
-      dest: "{{ backup_scripts_path }}/{{ project_name }}Drupal/{{ project_name }}DrupalBackupScript.sh"
+      dest: "{{ backup_path }}/{{ project_name }}Drupal/{{ project_name }}DrupalBackupScript.sh"
       mode: u+x
 
   - name: Call backup script from backup_server.sh
     blockinfile:
-      path: "{{ backup_scripts_path }}/backup_server.sh"
+      path: "{{ backup_path }}/backup_server.sh"
       block: |
         printf "\n####################################\n\n"
 

@@ -1,24 +1,24 @@
 ---
 - name: Check if backup script exists
   stat:
-    path: "{{ backup_scripts_path }}/backup_server.sh"
+    path: "{{ backup_path }}/backup_server.sh"
   register: backup_exists
 
 - block:
   - name: Create backup directory
     file:
-      path: "{{ backup_scripts_path }}/sitesStationForm"
+      path: "{{ backup_path }}/sitesStationForm"
       state: directory
 
   - name: Install backup script
     template:
       src: backup.sh
-      dest: "{{ backup_scripts_path }}/sitesStationForm/sitesStationFormBackupScript.sh"
+      dest: "{{ backup_path }}/sitesStationForm/sitesStationFormBackupScript.sh"
       mode: u+x
 
   - name: Call backup script from backup_server.sh
     blockinfile:
-      path: "{{ backup_scripts_path }}/backup_server.sh"
+      path: "{{ backup_path }}/backup_server.sh"
       block: |
         printf "\n####################################\n\n"
 
