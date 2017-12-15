@@ -1,7 +1,7 @@
 version: '2'
 services:
   drupal:
-    build: .
+    image: drupal:8.4
     links:
       - mariadb
     ports:
