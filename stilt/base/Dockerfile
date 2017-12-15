@@ -1,106 +1,65 @@
 FROM rocker/r-base
 
-RUN apt-get update -y \
-&& apt-get upgrade -y \
-&& apt-get install -y build-essential \
-&& apt-get install -y csh \
+RUN apt-get update -y && apt-get install -y subversion
 
-#==== Install fields package in R - Also download and install packages maps and spam due to dependencies ===========
-#Check this page if links to packages change https://cran.r-project.org/web/packages/available_packages_by_name.html
-#Check this page if links to CRAN mirrors, download sites, https://cran.r-project.org/
+# Install HDF-5.
+# Start of with this package since it's compilation is very time consuming and
+# having this layer cached makeis it easier to experiment with the rest of this
+# file.
+WORKDIR /opt/build
+RUN wget https://static.icos-cp.eu/share/docker/stilt/hdf5-1.8.15-patch1.tar -O - | tar xf -
 
-&& wget https://static.icos-cp.eu/share/docker/stilt/maps_3.1.1.tar.gz \
-&& gunzip maps_3.1.1.tar.gz \
-&& R CMD INSTALL maps_3.1.1.tar maps \
-
-&& wget https://static.icos-cp.eu/share/docker/stilt/spam_1.4-0.tar.gz \
-&& gunzip spam_1.4-0.tar.gz  \
-&& R CMD INSTALL spam_1.4-0.tar spam \
-
-&& wget https://static.icos-cp.eu/share/docker/stilt/fields_8.10.tar.gz \
-&& gunzip fields_8.10.tar.gz \
-&& R CMD INSTALL fields_8.10.tar fields \
-
-#========Install package sp for R==========================================================
-&& wget https://static.icos-cp.eu/share/docker/stilt/sp_1.2-4.tar.gz \
-&& gunzip sp_1.2-4.tar.gz \
-&& R CMD INSTALL sp_1.2-4.tar sp \
-
-#========Install fortran library for netcdf================================================
-&& apt-get update -y \
-&& apt-get install -y libnetcdff6 \
-
-#========Install HDF-5=====================================================================
-&& cd /opt/ \
-
-&& wget https://static.icos-cp.eu/share/docker/stilt/hdf5-1.8.15-patch1.tar \
-
-&& tar -xvf hdf5-1.8.15-patch1.tar \
-&& rm hdf5-1.8.15-patch1.tar \
-&& cd hdf5-1.8.15-patch1 \
-&& ./configure --prefix=/opt/hdf5 \
-&& make \
-&& make check \
-&& make install \
-&& make check-install \
-
-#========Install netCDF FOR C and FORTRAN=================================================
-&& apt-get install -y libnetcdf-dev \
-&& apt-get install -y libnetcdff-dev \
-
-&& cd /usr/lib \
-&& ln -s x86_64-linux-gnu/libnetcdf.so libnetcdf.so \
-&& ln -s x86_64-linux-gnu/libnetcdff.so libnetcdff.so \
-#&& ln -s x86_64-linux-gnu/libnetcdf.so.11.0.0 libnetcdf.so \
-#&& ln -s x86_64-linux-gnu/libnetcdff.so.6.1.1 libnetcdff.so \
-#&& ln -s libnetcdf.so.7.1.1 libnetcdf.so \
-#&& ln -s libnetcdff.so.5.1.0 libnetcdff.so \
-
-#========Install package ncdf for R=======================================================
-&& wget https://static.icos-cp.eu/share/docker/stilt/ncdf4_1.15.tar.gz \
-&& gunzip ncdf4_1.15.tar.gz \
-&& tar -xvf ncdf4_1.15.tar \
-&& R CMD INSTALL ncdf4_1.15.tar ncdf
+WORKDIR hdf5-1.8.15-patch1
+RUN ./configure --prefix=/opt/hdf5
+# This will spew out hundreds of pages of C compiler warnings, silence those
+RUN make > /dev/null 2>&1
+RUN make check install check-install
 
 
-#=======GET the STIL-project and compile it with Fortran=============================
+# Install R packages
+# Check this page if links to packages change:
+#   https://cran.r-project.org/web/packages/available_packages_by_name.html
+WORKDIR /opt/build
+
+RUN wget https://static.icos-cp.eu/share/docker/stilt/maps_3.1.1.tar.gz
+RUN R CMD INSTALL maps_3.1.1.tar.gz
+
+RUN wget https://static.icos-cp.eu/share/docker/stilt/spam_1.4-0.tar.gz
+RUN R CMD INSTALL spam_1.4-0.tar.gz
+
+RUN wget https://static.icos-cp.eu/share/docker/stilt/fields_8.10.tar.gz
+RUN R CMD INSTALL fields_8.10.tar.gz
+
+RUN wget https://static.icos-cp.eu/share/docker/stilt/sp_1.2-4.tar.gz
+RUN R CMD INSTALL sp_1.2-4.tar.gz
+
+
+# Install NetCDF
+RUN apt-get install -y libnetcdf-dev libnetcdff-dev
+# Use bash in order to get brace expansion
+RUN ["/bin/bash", "-c", "ln -s /usr/lib/x86_64-linux-gnu/libnetcd{f,ff}.so /usr/lib/"]
+RUN wget https://static.icos-cp.eu/share/docker/stilt/ncdf4_1.15.tar.gz
+RUN R CMD INSTALL ncdf4_1.15.tar.gz
+
+
+# Check out the STILT project and compile it.
 ARG JENASVNUSER
 ARG JENASVNPASSWORD
 
-COPY ./setup.sh /opt/
+WORKDIR /opt/STILT_svn
+RUN svn --username $JENASVNUSER --password $JENASVNPASSWORD --non-interactive checkout https://projects.bgc-jena.mpg.de/STILT/svn/trunk
 
-RUN cd /opt \
-&& mkdir STILT_svn \
-&& mkdir STILT_modelling \
-&& mkdir STILT_modelling/Input \
+WORKDIR /opt/STILT_modelling/
+RUN cp -r /opt/STILT_svn/trunk/stiltR .
+COPY setup.sh .
+RUN chmod +x setup.sh && ./setup.sh && rm setup.sh
 
-#subversion depends on this
-&& apt-get install -y libsvn1 \
-&& apt-get install -y subversion \
-&& cd /opt/STILT_svn \
-&& svn --username $JENASVNUSER --password $JENASVNPASSWORD --non-interactive  checkout https://projects.bgc-jena.mpg.de/STILT/svn/trunk \
-&& cp -R /opt/STILT_svn/trunk/stiltR /opt/STILT_modelling/ \
+WORKDIR /opt/STILT_svn/trunk/merged_stilt_hysplit
+COPY Makefile .
+RUN make
+RUN mv hymodelc /opt/STILT_modelling/
 
-&& cp /opt/setup.sh /opt/STILT_modelling \
-&& chmod +x /opt/STILT_modelling/setup.sh \
-&& /opt/STILT_modelling/setup.sh \
-&& rm /opt/STILT_modelling/setup.sh \
-&& rm /opt/setup.sh
-
-COPY ./Makefile /opt/STILT_svn/trunk/merged_stilt_hysplit/
-
-RUN cd /opt/STILT_svn/trunk/merged_stilt_hysplit \
-&& make \
-&& mv /opt/STILT_svn/trunk/merged_stilt_hysplit/hymodelc /opt/STILT_modelling/ \
-&& rm /opt/STILT_modelling/stiltR/shlib/build.sh
-
-COPY ./build.sh /opt/STILT_modelling/stiltR/shlib/
-
-RUN cd /opt/STILT_modelling/stiltR/shlib/ \
-&& chmod u+x build.sh \
-
-#Solves an issue with docker in MACs
-&& sleep 1 \
-&& ./build.sh
-
-ENV JENASVNUSER="" JENASVNPASSWORD="" 
+WORKDIR /opt/STILT_modelling/stiltR/shlib
+COPY build.sh .
+# The sleep is to solve an issue with docker on MACs
+RUN sleep 1 && chmod +x build.sh && ./build.sh
