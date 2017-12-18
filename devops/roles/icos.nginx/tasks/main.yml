@@ -14,6 +14,19 @@
   package:
     name=nginx state=present
 
+- name: Add mitigation for systemd/nginx race-condition
+  block:
+    - file:
+        path: /etc/systemd/system/nginx.service.d
+        state: directory
+    - copy:
+        content: |
+          # https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1581864
+          [Service]
+          ExecStartPost=/bin/sleep 0.1
+        dest: /etc/systemd/system/nginx.service.d/override.conf
+      notify: reload systemd config
+
 - name: Start NGINX
   service:
     name=nginx state=started
