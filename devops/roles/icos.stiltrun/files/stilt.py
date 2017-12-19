@@ -40,7 +40,7 @@ import tempfile
 # GLOBALS
 
 METFILES_DIR = "/mnt/additional_disk/WORKER/Input/Metdata/Europe2"
-STILT_IMAGE = 'stilt_with_setup'
+STILT_IMAGE = 'stiltute'
 RUN_DIRECTORY = os.path.join(os.environ['HOME'], '.stiltruns')
 DEBUG_FILES = []
 
@@ -142,28 +142,31 @@ class STILTContainer:
     keep_rundir = False
     image = None
 
-    def __init__(self):
-        self._run_dir = None
+    def __init__(self, run_dir=None):
+        self._run_dir = None if run_dir is None else os.path.abspath(run_dir)
         self.name = None
         self._volumes = []
         self._cid = None
-        self._create_rundir()
+        self._setup_rundir()
 
     # PREPARATION
-    def _create_rundir(self, base=RUN_DIRECTORY):
-        if not os.path.isdir(base):
-            os.mkdir(base)
-            debug("Created the %s directory" % base)
-        self._run_dir = make_run_dir()
-        DEBUG_FILES.append(open(os.path.join(self._run_dir, 'debug.log'), 'w'))
-        debug("Created directory %s" % self._run_dir)
+    def _setup_rundir(self, base=RUN_DIRECTORY):
+        # We're gonna reuse an earlier run directory
+        if self._run_dir is not None:
+            assert(os.path.isdir(self._run_dir))
+        else:
+            if not os.path.isdir(base):
+                os.mkdir(base)
+                debug("Created the %s directory" % base)
+            self._run_dir = make_run_dir()
+            debug("Created directory %s" % self._run_dir)
+        DEBUG_FILES.append(open(os.path.join(self._run_dir, 'debug.log'), 'a'))
         self.name = os.path.basename(self._run_dir)
         debug("The name of the container will be %s" % self.name)
         return self.name
 
-    def add_volume(self, host_dir, cont_dir, readonly=False):
-        self._volumes.append(self.Volume(host_dir, cont_dir,
-                                         readonly, chown=False))
+    def add_volume(self, host_dir, cont_dir, readonly=False, chown=False):
+        self._volumes.append(self.Volume(host_dir, cont_dir, readonly, chown))
 
     def remove_rundir(self):
         if self.keep_rundir:
@@ -175,10 +178,10 @@ class STILTContainer:
     def add_run_dir_volume(self, name, cont_dir, readonly=False):
         assert self._run_dir is not None
         host_dir = os.path.join(self._run_dir, name)
-        os.mkdir(host_dir)
-        debug("Created directory %s" % host_dir)
-        self._volumes.append(self.Volume(host_dir, cont_dir,
-                                         readonly, chown=True))
+        if not os.path.isdir(host_dir):
+            os.mkdir(host_dir)
+            debug("Created directory %s" % host_dir)
+        self.add_volume(host_dir, cont_dir,  readonly, chown=True)
         return host_dir
 
     # CREATE / SETUP / REMOVE
@@ -475,8 +478,44 @@ def cmd_run(*args):
     sc = STILTContainer()
     sc.add_run_dir_volume('logs', '/opt/STILT_modelling/%s' % sc.name)
     sc.add_run_dir_volume('output', '/opt/STILT_modelling/Output/%s' % sc.name)
+    # The third to last argument to start.stilt.sh is the RUN_ID (the name of
+    # the directory containing outputs and logs.  The second to last argument
+    # is always 1 (number of "parts" i.e cpus). The last argument [0-2], 0
+    # means calculate slots, 1 means final merging run (calculation of csv
+    # files using existing particle location files), 2 means full run.
     cmd = ('cd /opt/STILT_modelling && '
-           './start.stilt.sh %s %s >& %s/start.stilt.log' % (
+           './start.stilt.sh %s %s 1 2 >& %s/start.stilt.log' % (
+               ' '.join(args), sc.name, sc.name))
+    print(sc._run_dir)
+    sc.run(cmd, background=False)
+    post_stilt_run_cleanup(sc._run_dir, verbose=False)
+
+
+def cmd_merge(*args):
+    """Merge a previous stilt simulation.
+
+    e.g - "stilt merge /run/dir HTM 56.10 13.42 150 2012061500 2012061500"
+
+    Start a final merging run of the files outputted by earlier stilt runs.
+
+    """
+    if len(args) != 7:
+        die("Wrong number of arguments: stilt merge "
+            "/run/dir HTM 56.10 13.42 150 2012061500 2012061500")
+
+    rundir, args = os.path.abspath(args[0]), args[1:]
+    if not os.path.isdir(rundir):
+        die("%s must be a run directory" % rundir)
+    for d in ('logs', 'output'):
+        d = os.path.join(rundir, d)
+        if not os.path.isdir(d):
+            die("expected to find the directory %s" % d)
+
+    sc = STILTContainer(rundir)
+    sc.add_run_dir_volume('logs', '/opt/STILT_modelling/%s' % sc.name)
+    sc.add_run_dir_volume('output', '/opt/STILT_modelling/Output/%s' % sc.name)
+    cmd = ('cd /opt/STILT_modelling && '
+           './start.stilt.sh %s %s 1 1 >& %s/start.stilt.log' % (
                ' '.join(args), sc.name, sc.name))
     print(sc._run_dir)
     sc.run(cmd, background=False)
@@ -510,8 +549,10 @@ def cmd_calcslots(start_slot, end_slot):
     """
     dc = STILTContainer()
     log_dir = dc.add_run_dir_volume('logs', '/opt/STILT_modelling/RUNID')
+    # "; ./start.stilt.sh SITE _ _ _ %s %s RUNID 0 > /dev/null"
+    # "; ./start.prepare.sh SITE _ _ _ %s %s RUNID > /dev/null"
     cmd = ("cd /opt/STILT_modelling"
-           "; ./start.prepare.sh SITE _ _ _ %s %s RUNID > /dev/null" % (
+            "; ./start.stilt.sh SITE _ _ _ %s %s RUNID 1 0 > /dev/null" % (
                start_slot, end_slot))
     dc.run(cmd, keep_rundir=True)
     for line in open(os.path.join(log_dir, 'output.txt'), 'r'):
@@ -565,6 +606,7 @@ if __name__ == '__main__':
             "metinfo": cmd_metinfo,
             "info": cmd_info,
             "run": cmd_run,
+            "merge": cmd_merge,
             "shell": cmd_shell,
             "calcslots": cmd_calcslots,
             "cleanup": cmd_cleanup}
