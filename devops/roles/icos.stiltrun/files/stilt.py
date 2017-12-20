@@ -190,6 +190,15 @@ class STILTContainer:
     def add_volume(self, host_dir, cont_dir, readonly=False, chown=False):
         self._volumes.append(self.Volume(host_dir, cont_dir, readonly, chown))
 
+    # Basically we should only remove temporary run directories - when stilt.py
+    # is done with them. This means the following for different subcommands:
+    #   + calcslots - remove once we've extracted the slot list
+    #   + shell - always remove
+    #   + run - never remove, the user will remove
+    #   + merge - never remove, the user will remove
+    #
+    # We do _not_ remove the directory if we're re-using a previous directory or
+    # if the user specified --keep-rundir.
     def remove_rundir(self):
         if self.keep_rundir:
             debug("Not removing run directory")
@@ -278,7 +287,7 @@ class STILTContainer:
         subprocess.check_call(['docker', 'start', '-i', self._cid])
         debug("Docker has finished.")
 
-    def run(self, cmd=None, background=False, keep_rundir=True):
+    def run(self, cmd=None, background=False):
         self._create_container(cmd)
         self._setup_container()
         if background:
@@ -288,8 +297,6 @@ class STILTContainer:
             remove_container = True
         if remove_container:
             self.remove_container()
-        if not keep_rundir:
-            self.remove_rundir()
 
     # PRIVATE
     def _ensure_input_output_volumes(self):
@@ -548,6 +555,7 @@ def cmd_shell():
     dc = STILTContainer()
     dc.add_run_dir_volume('logs', '/opt/STILT_modelling/RUNID')
     dc.run('/bin/bash -i')
+    dc.remove_rundir()
 
 
 def cmd_calcslots(start_slot, end_slot):
@@ -569,7 +577,7 @@ def cmd_calcslots(start_slot, end_slot):
     cmd = ("cd /opt/STILT_modelling"
             "; ./start.stilt.sh SITE _ _ _ %s %s RUNID 1 0 > /dev/null" % (
                start_slot, end_slot))
-    dc.run(cmd, keep_rundir=True)
+    dc.run(cmd)
     for line in open(os.path.join(log_dir, 'output.txt'), 'r'):
         line = line.strip()
         if not line:
