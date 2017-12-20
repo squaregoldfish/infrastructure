@@ -7,5 +7,5 @@ stiltcluster_servicename: stiltcluster
 # point it'll point to jarservice.
 # https://github.com/ansible/ansible/issues/15439
 stiltcluster_template: roles/icos.stiltcluster/templates/stiltcluster.service.j2
-
+stiltcluster_appconfig:  roles/icos.stiltcluster/files/local.conf
 

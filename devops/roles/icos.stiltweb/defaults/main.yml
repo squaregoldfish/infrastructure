@@ -7,3 +7,5 @@ stiltweb_servicename: stiltweb
 # https://github.com/ansible/ansible/issues/15439
 stiltweb_template: roles/icos.stiltweb/templates/stiltweb.service.j2
 stiltweb_nginxconfig:  roles/icos.stiltweb/files/stiltweb.conf
+stiltweb_appconfig: roles/icos.stiltweb/files/local.conf
+

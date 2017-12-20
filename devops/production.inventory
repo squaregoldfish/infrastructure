@@ -6,7 +6,7 @@ fsicos.lunarc.lu.se
 get_ssl=true
 
 [stiltmaster]
-stilt.icos-cp.eu stiltcluster_is_seed=1
+fsicos2.lunarc.lu.se stiltcluster_is_seed=1
 
 [stiltcluster]
-stilt.icos-cp.eu stiltcluster_is_seed=1
+fsicos2.lunarc.lu.se stiltcluster_is_seed=1

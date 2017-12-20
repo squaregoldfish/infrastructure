@@ -12,6 +12,7 @@
     jarfile         : "{{ stiltcluster_jar_file }}"
     servicename     : "{{ stiltcluster_servicename }}"
     servicetemplate : "{{ stiltcluster_template }}"
+    appconfig       : "{{ stiltcluster_appconfig }}"
 
 - name: Spoof stiltweb in /etc/hosts
   lineinfile:
