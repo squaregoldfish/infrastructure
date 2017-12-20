@@ -53,7 +53,8 @@
 - name: Install {{ servicename }} application config file
   template:
     src: "{{ apptemplate }}"
-    dest: "/home/{{ username }}/application.conf"
+    # Assumes that {{apptemplate}} ends in .j2 (jinja2 template)
+    dest: "/home/{{ username }}/{{ apptemplate | basename | splitext | first }}"
     owner: "{{ username }}"
     group: "{{ username }}"
   when: apptemplate is defined
