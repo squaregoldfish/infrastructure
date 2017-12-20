@@ -1,6 +1,6 @@
 FROM rocker/r-base
 
-RUN apt-get update -y && apt-get install -y subversion
+RUN apt-get update -y && apt-get upgrade -y
 
 # Install HDF-5.
 # Start of with this package since it's compilation is very time consuming and
@@ -15,6 +15,12 @@ RUN ./configure --prefix=/opt/hdf5
 RUN make > /dev/null 2>&1
 RUN make check install check-install
 
+# Install extra packages
+RUN apt-get install -y \
+  # required to check out stilt source code
+  subversion \
+  # required by some of the stilt shell scripts
+  csh
 
 # Install R packages
 # Check this page if links to packages change:
