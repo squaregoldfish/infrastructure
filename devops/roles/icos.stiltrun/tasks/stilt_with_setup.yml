@@ -17,24 +17,21 @@
       shell: docker images -q | grep {{ stilt_with_setup_imageid }} -q
   when: stilt_with_setup_imageid not in docker_images.stdout
 
-# The assumption is that $HOME/bin is already in $PATH (this is true for our
-# current instances of both CentOS and Ubuntu)
-- name: "Create bin directory in stiltrun's home directory"
-  file:
-    path: /home/{{ stilt_user_name }}/bin
-    state: directory
-
-- set_fact:
-    stiltrun_binary: /home/{{ stilt_user_name }}/bin/stilt
-    
 - name: Install the stilt python wrapper
+  become: True
+  become_user: root
   copy:
     src: stilt.py
-    dest: "{{ stiltrun_binary }}"
+    # /usr/local/bin is per default in the PATH of systemd services, which is
+    # important since stiltweb runs as a systemd service (and stiltweb is the
+    # main user of the stilt python wrapper).
+    dest: /usr/local/bin/stilt
     mode: 0755
 
 - name: Do a test of the stiltrun installation
-  command: "{{ stiltrun_binary }} calcslots 2012010100 2012010106"
+  # Note that we have to use the full path since /usr/local/bin _isn't_ in the
+  # PATH used by ansible's shell module.
+  shell: /usr/local/bin/stilt calcslots 2012010100 2012010106
   register: stilt_output
 
 - name: Check the output of the testrun
