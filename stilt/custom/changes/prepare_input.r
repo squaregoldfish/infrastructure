@@ -7,15 +7,26 @@
 ##
 
 sourcepath<-"./stiltR/";source(paste(sourcepath,"sourceall.r",sep=""))#provide STILT functions
+source(paste("./create_times.r"))
 
-##############
+mdy<-month.day.year
+getmdy<-function(fjday){#get date and time formatted 
+MDY<-mdy(floor(fjday))
+return(ISOdate(MDY$year, MDY$month, MDY$day, hour = (fjday-floor(fjday))*24, 
+       min = 0, sec = 0.0, tz = "GMT"))
+}
 
-cprun <- F     # T: use only existing particle location files for calculation on icos-cp.eu to prepare files for footprint tool
-               # F: allow full STILT run
+######
 
-##############
+######
+# select type of run CPRUN
+# 0: only prepare list of time slots
+# 1: use only existing particle location files for calculation on icos-cp.eu to prepare files for footprint tool
+# 2: allow full STILT run
+#
+cprun <- Sys.getenv(c("CPRUN"), unset = 0)
 
-# get run identifier from environment variable set in stilt.batch.sh
+# get run identifier from environment variable set in start.stilt.sh
 #
 run_id <- Sys.getenv(c("RUN_ID"), unset = NA)
 cat(format(Sys.time(), "%FT%T"),"INFO run id:",run_id,"\n")
@@ -25,7 +36,7 @@ path_log<-paste("./",run_id,"/",sep="")                 # path for run-specific 
 path_id<-paste("./Output/",run_id,"/",sep="")             # path of new run-specific directory
 
 #-----------------------------------------------------------------------------------------------------------------
-# get station name, latitude, longitude, altitude from environment variable set in stilt.batch.sh
+# get station name, latitude, longitude, altitude from environment variable set in start.stilt.sh
 #
 station <- Sys.getenv(c("STILT_NAME"), unset = NA)
 cat(format(Sys.time(), "%FT%T"),"INFO selected station: ",station,"\n")
@@ -43,54 +54,49 @@ system(paste("mkdir -p ",pathResults,sep=""))
 
 sel_startdate <- Sys.getenv(c("START_DATE"), unset = NA)
 sel_enddate <- Sys.getenv(c("END_DATE"), unset = NA)
-if ((nchar(sel_startdate) < 8) | (nchar(sel_enddate) < 8)){
-  cat(format(Sys.time(), "%FT%T"),"ERROR Undefined start or end date: ",sel_startdate," - ",sel_enddate,"\n")
-  cat(format(Sys.time(), "%FT%T"),"ERROR stop\n")
-  stop
-}else{
-  year_start<-as.numeric(substr(sel_startdate,1,4))
-  month_start<-as.numeric(substr(sel_startdate,5,6))
-  day_start<-as.numeric(substr(sel_startdate,7,8))
-  year_end<-as.numeric(substr(sel_enddate,1,4))
-  month_end<-as.numeric(substr(sel_enddate,5,6))
-  day_end<-as.numeric(substr(sel_enddate,7,8))
-}
-cat(format(Sys.time(), "%FT%T"),"INFO start_date: ",year_start,month_start,day_start,"\n",sep=" ")
-cat(format(Sys.time(), "%FT%T"),"INFO end_date: ",year_end,month_end,day_end,"\n",sep=" ")
 
-# 3-hourly
+# default 3-hourly time slots
 dh<-3
-dhpd<-24/dh
-cat(format(Sys.time(), "%FT%T"),"INFO frequency: ",dh,"hourly","\n",sep=" ")
 
-fjul_start<-julian(month_start,day_start,year_start)
-fjul_end<-julian(month_end,day_end,year_end)
+# compute list of julian days for frequency dh
+fjul_all <- create_times(sel_startdate,sel_enddate,dh=dh)
+
+if (cprun==1) {
+  ident<-pos2id(fjul_all,lat,lon,agl)
+  list_rdata<-dir(paste(path_id,"RData/",station,sep=""),all.files=T)
+  list_rdata<-list_rdata[nchar(list_rdata)==40]
+  ident_time<-substr(list_rdata,nchar(list_rdata)-33,nchar(list_rdata))
+  good<-(ident %in% ident_time)
+  fjul_all<-fjul_all[good]
+}
+
+if (length(fjul_all)>0) {
+
+# output list as ascii file (only for prepration, not used in stilt)
+ymdh<-format(getmdy(fjul_all),'%Y%m%d%H')
+write(ymdh, paste(path_log,"output.txt",sep=""), sep="\n")
+
+# split into separate runs for each year
+fjul_start<-fjul_all[1]
+fjul_end<-fjul_all[length(fjul_all)]
+year_start<-mdy(floor(fjul_start))$year
+year_end<-mdy(floor(fjul_end))$year
+
 for (year in year_start:year_end) {
-  fjul_split1<-julian(1,1,year)
-  fjul_split2<-julian(12,31,year)
-  fjul_1<-max(fjul_start,fjul_split1)
-  fjul_2<-min(fjul_end,fjul_split2)
-  fjul<-((fjul_1*dhpd):(fjul_2*dhpd))/dhpd
-  fjul<-c(fjul,fjul[length(fjul)]+(1:dhpd-1)/dhpd)  #get full last day
-  fjul<-round(fjul,6)
-  ident<-pos2id(fjul,lat,lon,agl)
-  if(cprun){
-    ident_time<-substring(list_rdata,nchar(list_rdata)-33,nchar(list_rdata))
-    good<-(ident %in% ident_time)
-    fjul<-fjul[good]
-  }
+  fjul_1<-max(fjul_start,julian(1,1,year))
+  fjul_2<-min(fjul_end,julian(12,31,year)+(1-dh/24))
+  fjul<-fjul_all[(fjul_all>=fjul_1) & (fjul_all<=fjul_2)]
   fjul<-unique(fjul)
 
   outname<-paste(".",station,".",as.character(year),".request",sep="") #name for object with receptor information
   assignr(outname,cbind(fjul,lat,lon,agl),path=pathResults,printTF=T)
-
+  
 ## define directory names and make directories
   path<-paste(path_id,"RData/",sep="")         # path of directories with RData files for each station 
   path<-paste(path,station,"/",sep="")
   path<-paste(path,as.character(year),"/",sep="")
   system(paste("mkdir -p ",path,sep=""))
   cat(format(Sys.time(), "%FT%T"),"DEBUG run-specific path for partical location files ",path,"\n")
-
   pathFP<-paste(path_id,"Footprints/",sep="")  # path to save footprints in nc-files
   pathFP<-paste(pathFP,station,"/",sep="")
   pathFP<-paste(pathFP,as.character(year),"/",sep="")
@@ -101,14 +107,24 @@ for (year in year_start:year_end) {
   copydirs<-dir("STILT_Exe")
   allowed_parts<-max(as.integer(substring(copydirs,5)))
   cat(format(Sys.time(), "%FT%T"),"DEBUG no of allowed parts:",allowed_parts,"\n")
-  #stilt_part <- as.numeric(Sys.getenv(c("PARTS2"), unset = 1))
-  stilt_part <- length(fjul)
+  stilt_part <- as.numeric(Sys.getenv(c("PARTS2"), unset = NA))
+  print(paste("stilt_part ",stilt_part))
+  if (is.na(stilt_part)) {
+    stilt_part <- length(fjul)
+  }
   if ( stilt_part > allowed_parts) {
     stop(cat(format(Sys.time(), "%FT%T"),"INFO need ",stilt_part," Copy directories, have only ",allowed_parts,"\n"))
   }
-  cat(format(Sys.time(), "%FT%T"),"INFO run split into",stilt_part,"part(s)\n",sep=" ")
-## start STILT run
-  cat(format(Sys.time(), "%FT%T")," DEBUG ","./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log","\n",sep="")      
-  system(paste("./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
+  if (cprun > 0){
+    cat(format(Sys.time(), "%FT%T"),"INFO run split into",stilt_part,"part(s)\n",sep=" ")
+## start STILT run 
+    cat(format(Sys.time(), "%FT%T")," DEBUG ","./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log","\n",sep="")      
+    system(paste("./run.stilt.sh ",station," ",year," ",run_id," ",stilt_part," > ",path_log,"run.stilt.",station,as.character(year),run_id,".log",sep=""))      ## start STILT run
+  } else {
+    cat(format(Sys.time(), "%FT%T")," INFO only produce list of time slots","\n",sep=" ")
+  } # end cprun > 0
 } # end for years
-      
+} else {
+stop(cat(format(Sys.time(), "%FT%T")," DEBUG ","Concentration time series run only but no particle location files available!","\n",sep=" "))
+} # end length(fjul_all)>0
+

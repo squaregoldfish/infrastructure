@@ -458,8 +458,12 @@ for (j in 1:nrows) {
     # foot has dimensions lat,lon,(backward-)time
     # introduce initial time as time dimension (needed to contruct yearly files with aggregated footprints)
     # define backward time as 4th dimension
-    footlon <- as.numeric(dimnames(foot)[[2]])
-    footlat <- as.numeric(dimnames(foot)[[1]])
+    # latitude and longitude are defined at the lower left corner of the grid cells
+    # also in .RDatafoot output
+    # but need to be shifted for output in netcdf files
+    #  
+    footlon <- as.numeric(dimnames(foot)[[2]])+(as.numeric(lon.res)/2.)
+    footlat <- as.numeric(dimnames(foot)[[1]])+(as.numeric(lat.res)/2.)
     foothr <- 1
     footbhr <- as.numeric(dimnames(foot)[[3]])
     # shift footbhr to represent start time of integration rather than end time

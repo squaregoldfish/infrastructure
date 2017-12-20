@@ -1,4 +1,3 @@
-
 #Reformat STILT results
 #source("/Net/Groups/BSY/people/cgerbig/Rsource/CarboEurope/stiltR.bialystok/lookstilt.r")
 #6/12/2016 by UK
@@ -19,8 +18,8 @@ lat.ll  <-  33                 #lower left corner of grid
 fluxmod <- "VPRM"
 landcov <- "SYNMAP.VPRM8"
 
-path<-paste("./Output/",run_id,"/RData/",station,"/",stilt_year,"/",sep="")
-pathFP<-paste("./Output/",run_id,"/Footprints/",station,"/",stilt_year,"/",sep="")
+path<-paste("./Output/",run_id,"/RData/",station,"/",sep="")
+pathFP<-paste("./Output/",run_id,"/Footprints/",station,"/",sep="")
 sourcepath<-"./stiltR/";source(paste(sourcepath,"sourceall.r",sep=""))#provide STILT functions
 pathResults<-paste("./Output/",run_id,"/Results/",station,"/",sep="")
 
@@ -32,7 +31,6 @@ stiltresultname <- paste("stiltresult",stilt_year,substr(identname,14,34),sep=""
 cat(format(Sys.time(), "%FT%T"),"INFO new result filename: ",stiltresultname,"\n")
 
 #merge STILT result objects  ## not used at them moment in CP version 
-#rnam<-paste("stiltresult_",stilt_year,sep="")
 rnam<-stiltresultname
 dat<-NULL
 for(part in 1:tp){
@@ -40,7 +38,7 @@ dat<-rbind(dat,getr(paste(rnam,"_",part,sep=""),pathFP))} #standard simulation
 
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: part ",part,"\n")
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dim(dat) ",dim(dat),"\n")
-#cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dimnames(dat) ",dimnames(dat),"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dimnames(dat) ",paste(dimnames(dat),sep=" "),"\n")
 mdy<-month.day.year
 
 getmdy<-function(fjday){#nice x axis
@@ -55,33 +53,27 @@ enddate<-format(getmdy(max(StartInfo[,1])),'%Y%m%d')
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: startdate: ",startdate,"  enddate: ",enddate,"\n")
 
 list_FP<-dir(pathFP,all.files=T)
-list_FP<-list_FP[nchar(list_FP)==44]
+list_FP<-list_FP[(nchar(list_FP)==44) & (substring(list_FP,2,10)=="RDatafoot")]
 ident_time<-substring(list_FP,nchar(list_FP)-33,nchar(list_FP))
 ident_test<-pos2id(dat[,1],dat[,2],dat[,3],dat[,4])
 good<-(ident_test %in% ident_time)
-
-dat<-dat[good,]
+dat<-dat[good,,drop=F]
 dat<-unique(dat)
 
-dat2<-dat
-dat<-dat2
-
-ymdh<-getmdy(dat2[,1]) 
-MDY<-mdy(floor(dat2[,1])) 
-year<-MDY$year 
-month<-MDY$month 
-day<-MDY$day 
-hour<-(dat2[,1]-floor(dat2[,1]))*24 
+ymdh<-getmdy(dat[,1])
+MDY<-mdy(floor(dat[,1]))
+year<-MDY$year
+month<-MDY$month
+day<-MDY$day
+hour<-round((dat[,1]-floor(dat[,1]))*24)
 
 zi<-dat[,"zi"]
-dat2<-cbind(year,month,day,hour,dat[,1:4],zi)
+dat2<-dat[,1:4,drop=F]
 isodate<-as.numeric(as.POSIXct(ymdh))
-dat2<-cbind(isodate,dat2)
 date<-format(ymdh,'%Y/%m/%d#%H:%M')
-dat2<-cbind(date,dat2)
+dat2<-cbind(date,isodate,year,month,day,hour,dat2,zi)
 
 #character to real ...
-dat<-dat[!is.na(as.numeric(dat[,1])),]
 nms<-dimnames(dat)
 dat<-matrix(as.numeric(dat),ncol=length(dimnames(dat)[[2]]),dimnames=nms)
 
@@ -103,32 +95,32 @@ cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ucats ",ucats,"\n")
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ufs ",ufs,"\n")
 
 selco2<-pars[(pars[,1]==tracer & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
-co2.cat.fuel.all<-rowSums (dat[,paste(selco2[,1],selco2[,2],selco2[,3],sep=".")], na.rm = FALSE)
+co2.cat.fuel.all<-rowSums (dat[,paste(selco2[,1],selco2[,2],selco2[,3],sep="."),drop=F], na.rm = FALSE)
 
 selco2bio<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="bio" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selco2gas<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="gas" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selco2coal<-pars[(pars[,1]==tracer & substring(pars[,3],1,4)=="coal" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selco2oil<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="oil" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 
-co2.cat.fuel.all<-rowSums (dat[,paste(selco2[,1],selco2[,2],selco2[,3],sep=".")], na.rm = FALSE)
-co2.cat.fuel.bio<-rowSums (dat[,paste(selco2bio[,1],selco2bio[,2],selco2bio[,3],sep=".")], na.rm = FALSE)
-co2.cat.fuel.gas<-rowSums (dat[,paste(selco2gas[,1],selco2gas[,2],selco2gas[,3],sep=".")], na.rm = FALSE)
-co2.cat.fuel.coal<-rowSums (dat[,paste(selco2coal[,1],selco2coal[,2],selco2coal[,3],sep=".")], na.rm = FALSE)
-co2.cat.fuel.oil<-rowSums (dat[,paste(selco2oil[,1],selco2oil[,2],selco2oil[,3],sep=".")], na.rm = FALSE)
+co2.cat.fuel.all<-rowSums (dat[,paste(selco2[,1],selco2[,2],selco2[,3],sep="."),drop=F], na.rm = FALSE)
+co2.cat.fuel.bio<-rowSums (dat[,paste(selco2bio[,1],selco2bio[,2],selco2bio[,3],sep="."),drop=F], na.rm = FALSE)
+co2.cat.fuel.gas<-rowSums (dat[,paste(selco2gas[,1],selco2gas[,2],selco2gas[,3],sep="."),drop=F], na.rm = FALSE)
+co2.cat.fuel.coal<-rowSums (dat[,paste(selco2coal[,1],selco2coal[,2],selco2coal[,3],sep="."),drop=F], na.rm = FALSE)
+co2.cat.fuel.oil<-rowSums (dat[,paste(selco2oil[,1],selco2oil[,2],selco2oil[,3],sep="."),drop=F], na.rm = FALSE)
 
 selco2energy<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a1a","1a1bcr")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selco2transport<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a3b","1a3ce","1a3a+1c1","1a3d+1c2")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selco2industry<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a2+6cd","2a","2befg+3","2c")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 selco2others<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1b2abc","7a","1a4","4f")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
 
-co2.energy<-rowSums (dat[,paste(selco2energy[,1],selco2energy[,2],selco2energy[,3],sep=".")], na.rm = FALSE)
-co2.industry<-rowSums (dat[,paste(selco2industry[,1],selco2industry[,2],selco2industry[,3],sep=".")], na.rm = FALSE)
-co2.transport<-rowSums (dat[,paste(selco2transport[,1],selco2transport[,2],selco2transport[,3],sep=".")], na.rm = FALSE)
-co2.others<-rowSums (dat[,paste(selco2others[,1],selco2others[,2],selco2others[,3],sep=".")], na.rm = FALSE)
+co2.energy<-rowSums (dat[,paste(selco2energy[,1],selco2energy[,2],selco2energy[,3],sep="."),drop=F], na.rm = FALSE)
+co2.industry<-rowSums (dat[,paste(selco2industry[,1],selco2industry[,2],selco2industry[,3],sep="."),drop=F], na.rm = FALSE)
+co2.transport<-rowSums (dat[,paste(selco2transport[,1],selco2transport[,2],selco2transport[,3],sep="."),drop=F], na.rm = FALSE)
+co2.others<-rowSums (dat[,paste(selco2others[,1],selco2others[,2],selco2others[,3],sep="."),drop=F], na.rm = FALSE)
 
 dat<-cbind(dat,co2.cat.fuel.all,co2.cat.fuel.bio,co2.cat.fuel.gas,co2.cat.fuel.coal,co2.cat.fuel.oil,co2.energy,co2.transport,co2.industry,co2.others)
 test.all<-c("co2.cat.fuel.bio","co2.cat.fuel.gas","co2.cat.fuel.coal","co2.cat.fuel.oil")
-test.plot<-rowSums (dat[,test.all], na.rm = FALSE)
+test.plot<-rowSums (dat[,test.all,drop=F], na.rm = FALSE)
 dat<-cbind(dat,test.plot)
 
 output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "others") #"peat" is replaced by "others" in Jena VPRM preproc.
@@ -144,9 +136,9 @@ cat(format(Sys.time(), "%FT%T"),"DEBUG reform: fluxmod ",fluxmod,"\n")
 output.veg <- c("evergreen", "decid", "mixfrst", "shrb", "savan", "crop", "grass", "others") #"peat" is replaced by "others" in Jena VPRM preproc.
 
 #calculate CO2 from vegetation
-resp.all<-rowSums (dat[,paste("resp",output.veg,sep="")], na.rm = FALSE)
-gee.all<-rowSums (dat[,paste("gee",output.veg,sep="")], na.rm = FALSE)
-infl.all<-rowSums (dat[,paste("infl",output.veg,sep="")], na.rm = FALSE)#+dat[,"inflwater"]
+resp.all<-rowSums (dat[,paste("resp",output.veg,sep=""),drop=F], na.rm = FALSE)
+gee.all<-rowSums (dat[,paste("gee",output.veg,sep=""),drop=F], na.rm = FALSE)
+infl.all<-rowSums (dat[,paste("infl",output.veg,sep=""),drop=F], na.rm = FALSE)#+dat[,"inflwater"]
 co2.stilt<-resp.all+gee.all+dat[,"co2ini"]+dat[,"co2.cat.fuel.all"]
 co2.bio<-resp.all+gee.all
 co2.bio.gee<-gee.all
@@ -179,3 +171,4 @@ if ("ubar" %in% colnames(dat)) {
   cat(format(Sys.time(), "%FT%T"),"DEBUG reform: colnames(dat2) ",colnames(dat2),"\n")
   write.table(dat2, file=paste(pathResults,"/",stiltresultname,".csv",sep=""), na="", row.names=F, quote=F)
 }
+
