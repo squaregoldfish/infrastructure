@@ -92,6 +92,18 @@ def rundir_lookup_dwim(s):
     die("Cannot find rundir '%s'" % s)
 
 
+def rundir_is_existing(d):
+    d = os.path.abspath(d)
+    if not os.path.isdir(d):
+        die("%s must be a run directory" % d)
+    for d in ('logs', 'output'):
+        d = os.path.join(d, d)
+        if not os.path.isdir(d):
+            die("expected to find the directory %s" % d)
+    return d
+
+
+
 # ARGUMENT PARSING
 
 def parse_setup_arg(arg):
@@ -111,6 +123,13 @@ def parse_image_arg(arg):
     if not m:
         return None
     return m.group(1)
+
+
+def parse_rundir_arg(arg):
+    m = re.match(r"--rundir=(.+)", arg)
+    if not m:
+        return None
+    return rundir_is_existing(m.group(1))
 
 
 def find_arg(args, parse_func, default=None):
@@ -139,11 +158,14 @@ class STILTContainer:
         'Volume', ['host_dir', 'cont_dir', 'readonly', 'chown'])
 
     setup = None
+    rundir = None
     keep_rundir = False
     image = None
 
-    def __init__(self, run_dir=None):
-        self._run_dir = None if run_dir is None else os.path.abspath(run_dir)
+    def __init__(self):
+        self._run_dir = self.rundir
+        if self.rundir is not None:
+            self.keep_rundir = True
         self.name = None
         self._volumes = []
         self._cid = None
@@ -503,15 +525,8 @@ def cmd_merge(*args):
         die("Wrong number of arguments: stilt merge "
             "/run/dir HTM 56.10 13.42 150 2012061500 2012061500")
 
-    rundir, args = os.path.abspath(args[0]), args[1:]
-    if not os.path.isdir(rundir):
-        die("%s must be a run directory" % rundir)
-    for d in ('logs', 'output'):
-        d = os.path.join(rundir, d)
-        if not os.path.isdir(d):
-            die("expected to find the directory %s" % d)
-
-    sc = STILTContainer(rundir)
+    STILTContainer.rundir, args = rundir_is_existing(args[0]), args[1:]
+    sc = STILTContainer()
     sc.add_run_dir_volume('logs', '/opt/STILT_modelling/%s' % sc.name)
     sc.add_run_dir_volume('output', '/opt/STILT_modelling/Output/%s' % sc.name)
     cmd = ('cd /opt/STILT_modelling && '
@@ -588,6 +603,7 @@ def cmd_help(cmds):
               "OPTS include\n",
               "\t--keep-rundir\t- Never remove the generated run directory\n"
               "\t--debug\t\t\t- Debug logging\n",
+              "\t--rundir=DIR\t- Re-use an existing run directory\n"
               "\t--setup=FILE\t- Run FILE with container ID before starting\n"
               "\t--image=IMAGE\t- Specify another docker image (%s)\n" % (
                   STILT_IMAGE))
@@ -619,6 +635,7 @@ if __name__ == '__main__':
         args, parse_image_arg, STILT_IMAGE)
     STILTContainer.keep_rundir, args = find_arg(
         args, lambda a: a == '--keep-rundir' or None)
+    STILTContainer.rundir, args = find_arg(args, parse_rundir_arg)
     if len(args) < 1 or args[0] == "help":
         cmd_help(cmds)
     elif args[0] not in cmds:
