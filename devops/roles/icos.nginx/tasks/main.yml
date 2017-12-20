@@ -50,7 +50,9 @@
   notify: reload nginx config
 
 - name: Copy nginx conf folder
-  copy: src=files/conf/ dest=/etc/nginx/conf/ owner="{{nginx_user}}" group="{{nginx_user}}" mode=0770
+  copy: >-
+    src=files/conf/ dest=/etc/nginx/conf/ mode=0770
+    group="{{nginx_user}}" owner="{{nginx_user}}"
   notify: reload nginx config
 
 - import_tasks: certbot.yml
