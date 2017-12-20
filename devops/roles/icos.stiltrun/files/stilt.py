@@ -589,7 +589,7 @@ def cmd_help(cmds):
               "\t--keep-rundir\t- Never remove the generated run directory\n"
               "\t--debug\t\t\t- Debug logging\n",
               "\t--setup=FILE\t- Run FILE with container ID before starting\n"
-              "\t--image=FILE\t- Specify another docker image (%s)\n" % (
+              "\t--image=IMAGE\t- Specify another docker image (%s)\n" % (
                   STILT_IMAGE))
         longest = max([len(n) for n in cmds])
         for c in sorted(cmds):
