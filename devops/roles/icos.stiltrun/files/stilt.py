@@ -73,7 +73,7 @@ def users_id_and_gid():
     return pw.pw_uid, pw.pw_gid
 
 
-def rundir_dwim(s):
+def rundir_lookup_dwim(s):
     if not os.path.isdir(s):
         if s.isdigit():
             g = glob.glob('%s/*-%s' % (RUN_DIRECTORY, s))
@@ -569,7 +569,7 @@ def cmd_cleanup(rundir):
     $ stilt cleanup 43 # cleans $HOME/stiltruns/stilt-run-*-43
     $ stilt cleanup .
     """
-    rundir = rundir_dwim(rundir)
+    rundir = rundir_lookup_dwim(rundir)
     post_stilt_run_cleanup(rundir)
 
 
