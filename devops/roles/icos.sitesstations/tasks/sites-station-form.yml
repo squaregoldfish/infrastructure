@@ -1,7 +1,4 @@
 ---
-- include_vars:
-    file: vars/{{ ansible_distribution }}.yml
-
 - name: Copy nginx conf
   copy:
     src: sites-station-form.conf

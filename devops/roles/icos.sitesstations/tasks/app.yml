@@ -47,3 +47,4 @@
   git:
     repo: https://github.com/PHPMailer/PHPMailer
     dest: "{{ project_dir }}/app/PHPMailer"
+    version: v5.2.26
