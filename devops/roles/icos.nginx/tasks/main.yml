@@ -63,6 +63,7 @@
     - name: See if firewalld is active
       command: systemctl -q is-active firewalld
       register: firewalld_running
+      failed_when: false
       
     - name: Open up ports 80 and 443 in the firewall  
       firewalld:
