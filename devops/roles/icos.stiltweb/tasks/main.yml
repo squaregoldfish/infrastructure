@@ -19,3 +19,10 @@
     line: "{{ stilt_spoof_ip }} stilt.icos-cp.eu"
     state: present
   when: stilt_spoof_ip is defined
+
+- name: Add the stiltweb user to the docker group
+  user:
+    name: "{{ stiltweb_username }}"
+    group: docker
+    append: yes
+  
