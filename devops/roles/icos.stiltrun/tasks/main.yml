@@ -1,9 +1,41 @@
-- name: Create STILT user
-  user:
-    name: "{{ stilt_user_name }}"
-    groups: docker
-    append: true
+- name: List docker images
+  command: docker images -qa
+  register: docker_images
+  changed_when: False
 
-- import_tasks: stilt_with_setup.yml
-  become: True
-  become_user: "{{ stilt_user_name }}"
+- block:
+    - name: Set image tmp name
+      set_fact: stiltrun_image_tmp_fname="/tmp/{{ stiltrun_image_url | basename }}"
+      changed_when: false
+      
+    - name: Download image
+      get_url:
+        url: "{{ stiltrun_image_url }}"
+        dest: "{{ stiltrun_image_tmp_fname }}"
+        
+    - name: Load stiltrun_image into docker
+      command: docker load -i "{{ stiltrun_image_tmp_fname }}"
+      
+    - name: Check that stiltrun_image was properly loaded
+      shell: docker images -q | grep {{ stiltrun_image_id }} -q
+  when: stiltrun_image_id not in docker_images.stdout
+
+- name: Install the stilt python wrapper
+  copy:
+    src: stilt.py
+    # /usr/local/bin is per default in the PATH of systemd services, which is
+    # important since stiltweb runs as a systemd service (and stiltweb is the
+    # main user of the stilt python wrapper).
+    dest: /usr/local/bin/stilt
+    mode: 0755
+
+- name: Do a test of the stiltrun installation
+  # Note that we have to use the full path since /usr/local/bin _isn't_ in the
+  # PATH used by ansible's shell module.
+  shell: /usr/local/bin/stilt calcslots 2012010100 2012010106
+  register: stilt_output
+
+- name: Check the output of the testrun
+  assert:
+    that: stilt_output.stdout == "2012010100\n2012010103\n2012010106"
+

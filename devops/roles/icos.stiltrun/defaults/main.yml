@@ -1,14 +1,2 @@
-stilt_user_name           : stiltrun
-stilt_baseimage_url       : https://static.icos-cp.eu/share/docker/stilt/baseimage.tgz
-stilt_baseimage_fname     : "{{ stilt_baseimage_url | basename }}"
-stilt_baseimage_tmp_fname : "/tmp/{{ stilt_baseimage_fname }}"
-stilt_baseimage_imageid   : ce9d61cb8e6d
-stilt_repo_url            : https://github.com/ICOS-Carbon-Portal/infrastructure
-stilt_repo_ver            : stiltfull
-stilt_repo_dir            : /home/stilt/infrastructure
-stilt_prodimage_tag       : webstilt_nc_production
-stilt_prodcont_tag        : custom_stilt_1
-
-# FIXME: "with_setup" is a crappy suffix with no real meaning
-stilt_with_setup_imageid  : ebcde61e0130
-stilt_with_setup_url      : https://static.icos-cp.eu/share/docker/stilt/stilt_with_setup.tgz
+stiltrun_image_url : https://static.icos-cp.eu/share/docker/stilt/stilt_with_setup.tgz
+stiltrun_image_id  : ebcde61e0130
