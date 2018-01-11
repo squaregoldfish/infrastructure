@@ -1,6 +1,8 @@
 - name: Add {{ username }} user
   user:
     name: "{{ username }}"
+    groups: "{{ extra_groups }}"
+    append: yes
 
 # We set up a directory where we keep not only the current jar file but also
 # older copies. This makes it easier to roll back to earlier versions of the

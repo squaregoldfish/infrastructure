@@ -1,14 +1,9 @@
-- name: Add stiltcluster user
-  user:
-    name: stiltcluster
-    groups: docker
-    append: yes
-
 - name: Run the jarservice role
   include_role:
     name: icos.jarservice
   vars:
     username        : "{{ stiltcluster_username }}"
+    extra_groups    : docker
     jarfile         : "{{ stiltcluster_jar_file }}"
     servicename     : "{{ stiltcluster_servicename }}"
     servicetemplate : "{{ stiltcluster_template }}"
