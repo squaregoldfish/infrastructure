@@ -35,6 +35,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import json
 
 
 # GLOBALS
@@ -96,10 +97,10 @@ def rundir_is_existing(d):
     d = os.path.abspath(d)
     if not os.path.isdir(d):
         die("%s must be a run directory" % d)
-    for d in ('logs', 'output'):
-        d = os.path.join(d, d)
-        if not os.path.isdir(d):
-            die("expected to find the directory %s" % d)
+    for s in ('logs', 'output'):
+        p = os.path.join(d, s)
+        if not os.path.isdir(p):
+            die("expected to find the directory %s" % p)
     return d
 
 
@@ -194,7 +195,7 @@ class STILTContainer:
     # is done with them. This means the following for different subcommands:
     #   + calcslots - remove once we've extracted the slot list
     #   + shell - always remove
-    #   + run - never remove, the user will remove
+    #   + run   - never remove, the user will remove
     #   + merge - never remove, the user will remove
     #
     # We do _not_ remove the directory if we're re-using a previous directory or
@@ -520,7 +521,16 @@ def cmd_run(*args):
     post_stilt_run_cleanup(sc._run_dir, verbose=False)
 
 
-def cmd_merge(*args):
+def read_merge_args_from_rundir(d):
+    f = "job.json"
+    p = os.path.join(d, f)
+    if not os.path.exists(p):
+        die("Expected to find %s in %d" % (f, d))
+    j = json.load(open(p))
+    return (j['siteId'], j['lat'], j['lon'], j['alt'], j['start'], j['stop'])
+
+
+def cmd_merge(rundir, *args):
     """Merge a previous stilt simulation.
 
     e.g - "stilt merge /run/dir HTM 56.10 13.42 150 2012061500 2012061500"
@@ -528,17 +538,20 @@ def cmd_merge(*args):
     Start a final merging run of the files outputted by earlier stilt runs.
 
     """
-    if len(args) != 7:
+    rundir = rundir_is_existing(rundir)
+    if len(args) == 0:
+        args = read_merge_args_from_rundir(rundir)
+    if len(args) != 6:
         die("Wrong number of arguments: stilt merge "
-            "/run/dir HTM 56.10 13.42 150 2012061500 2012061500")
+            "/run/dir [HTM 56.10 13.42 150 2012061500 2012061500]")
 
-    STILTContainer.rundir, args = rundir_is_existing(args[0]), args[1:]
+    STILTContainer.rundir, args = rundir, args
     sc = STILTContainer()
     sc.add_run_dir_volume('logs', '/opt/STILT_modelling/%s' % sc.name)
     sc.add_run_dir_volume('output', '/opt/STILT_modelling/Output/%s' % sc.name)
     cmd = ('cd /opt/STILT_modelling && '
            './start.stilt.sh %s %s 1 1 >& %s/start.stilt.log' % (
-               ' '.join(args), sc.name, sc.name))
+               ' '.join(map(str,args)), sc.name, sc.name))
     print(sc._run_dir)
     sc.run(cmd, background=False)
     post_stilt_run_cleanup(sc._run_dir, verbose=False)
