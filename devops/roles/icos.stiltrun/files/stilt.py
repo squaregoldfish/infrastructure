@@ -64,6 +64,16 @@ def debug(msg):
         f.flush()
 
 
+def start_debug_log(rundir):
+    f = open(os.path.join(rundir, 'debug.log'), 'a')
+    # Outputting a separator makes the log easier to read when we're
+    # reusing a run directory (and its logfile).
+    print("\n" + "-- New invocation of stilt", file=f)
+    DEBUG_FILES.append(f)
+    debug("cwd = %s" % os.getcwd())
+    debug("cmd = %s" % ' '.join(map(str,sys.argv)))
+
+
 def die(msg):
     print(msg, file=sys.stderr)
     sys.exit(1)
@@ -183,7 +193,7 @@ class STILTContainer:
                 debug("Created the %s directory" % base)
             self._run_dir = make_run_dir()
             debug("Created directory %s" % self._run_dir)
-        DEBUG_FILES.append(open(os.path.join(self._run_dir, 'debug.log'), 'a'))
+        start_debug_log(self._run_dir)
         self.name = os.path.basename(self._run_dir)
         debug("The name of the container will be %s" % self.name)
         return self.name
@@ -541,6 +551,7 @@ def cmd_merge(rundir, *args):
     rundir = rundir_is_existing(rundir)
     if len(args) == 0:
         args = read_merge_args_from_rundir(rundir)
+
     if len(args) != 6:
         die("Wrong number of arguments: stilt merge "
             "/run/dir [HTM 56.10 13.42 150 2012061500 2012061500]")
