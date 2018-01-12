@@ -6,7 +6,7 @@
     --installer nginx
     --non-interactive
     --webroot-path /usr/share/nginx/html/
-    --domain {{ domain }}
+    --domain {{ ssl_domains | default(domain) }}
     --email {{ vault_SSL_email }}
     --agree-tos
   notify: reload nginx config
