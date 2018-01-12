@@ -73,6 +73,9 @@
 #     src: cp_theme_d8.libraries.yml.j2
 #     dest: "{{ project_dir }}/themes/cp_theme_d8/cp_theme_d8.libraries.yml"
 
+- name: Ensure {{ project_dir }}/docker/ directory exists
+  file: path={{ project_dir }}/docker/ state=directory recurse=yes
+
 - name: Copy docker-compose.yml
   template:
     src: docker-compose.yml.j2
