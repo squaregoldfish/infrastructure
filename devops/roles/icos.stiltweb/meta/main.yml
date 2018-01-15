@@ -2,3 +2,4 @@ dependencies:
  - {role: icos.linux}
  - {role: icos.nginx}
  - {role: icos.java}
+ - {role: icos.docker}

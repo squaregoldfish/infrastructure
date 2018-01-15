@@ -44,6 +44,7 @@ METFILES_DIR = "/mnt/additional_disk/WORKER/Input/Metdata/Europe2"
 STILT_IMAGE = 'stiltute'
 RUN_DIRECTORY = os.path.join(os.environ['HOME'], '.stiltruns')
 DEBUG_FILES = []
+DEFAULT_SITE_NAME = 'XXX'
 
 
 # HELPERS
@@ -71,7 +72,7 @@ def start_debug_log(rundir):
     print("\n" + "-- New invocation of stilt", file=f)
     DEBUG_FILES.append(f)
     debug("cwd = %s" % os.getcwd())
-    debug("cmd = %s" % ' '.join(map(str,sys.argv)))
+    debug("cmd = %s" % ' '.join(map(str, sys.argv)))
 
 
 def die(msg):
@@ -112,7 +113,6 @@ def rundir_is_existing(d):
         if not os.path.isdir(p):
             die("expected to find the directory %s" % p)
     return d
-
 
 
 # ARGUMENT PARSING
@@ -172,12 +172,12 @@ class STILTContainer:
     rundir = None
     keep_rundir = False
     image = None
+    name = None
 
     def __init__(self):
         self._run_dir = self.rundir
         if self.rundir is not None:
             self.keep_rundir = True
-        self.name = None
         self._volumes = []
         self._cid = None
         self._setup_rundir()
@@ -194,7 +194,8 @@ class STILTContainer:
             self._run_dir = make_run_dir()
             debug("Created directory %s" % self._run_dir)
         start_debug_log(self._run_dir)
-        self.name = os.path.basename(self._run_dir)
+        if self.name is None:
+            self.name = os.path.basename(self._run_dir)
         debug("The name of the container will be %s" % self.name)
         return self.name
 
@@ -208,8 +209,8 @@ class STILTContainer:
     #   + run   - never remove, the user will remove
     #   + merge - never remove, the user will remove
     #
-    # We do _not_ remove the directory if we're re-using a previous directory or
-    # if the user specified --keep-rundir.
+    # We do _not_ remove the directory if we're re-using a previous directory
+    # or if the user specified --keep-rundir.
     def remove_rundir(self):
         if self.keep_rundir:
             debug("Not removing run directory")
@@ -531,16 +532,36 @@ def cmd_run(*args):
     post_stilt_run_cleanup(sc._run_dir, verbose=False)
 
 
-def read_merge_args_from_rundir(d):
+def read_merge_args_from_jobdir(d):
     f = "job.json"
     p = os.path.join(d, f)
     if not os.path.exists(p):
         die("Expected to find %s in %d" % (f, d))
     j = json.load(open(p))
-    return (j['siteId'], j['lat'], j['lon'], j['alt'], j['start'], j['stop'])
+    # Convert "2012-12-25" to "2012122500"
+    start = ''.join(str(j['start']).split('-') + ['00'])
+    stop = ''.join(str(j['stop']).split('-') + ['00'])
+    return (DEFAULT_SITE_NAME, j['lat'], j['lon'], j['alt'], start, stop)
 
 
-def cmd_merge(rundir, *args):
+def create_merge_directory(rundir, sitename=DEFAULT_SITE_NAME):
+    mergedir = os.path.join(rundir, 'merge')
+    os.makedirs(os.path.join(mergedir, 'logs'), exist_ok=True)
+    for typ in ('Footprints', 'RData'):
+        dst = os.path.join(rundir, 'merge', 'output', typ, sitename)
+        os.makedirs(dst, exist_ok=True)
+        with os.scandir(os.path.join(rundir, 'slots', typ, sitename)) as sd:
+            for e in sd:
+                if not e.is_symlink():
+                    continue
+                l = os.readlink(e.path)
+                d = os.path.join(dst, e.name)
+                if not os.path.exists(d):
+                    os.link(l, d)
+    return mergedir
+
+
+def cmd_merge(jobdir):
     """Merge a previous stilt simulation.
 
     e.g - "stilt merge /run/dir HTM 56.10 13.42 150 2012061500 2012061500"
@@ -548,21 +569,19 @@ def cmd_merge(rundir, *args):
     Start a final merging run of the files outputted by earlier stilt runs.
 
     """
-    rundir = rundir_is_existing(rundir)
-    if len(args) == 0:
-        args = read_merge_args_from_rundir(rundir)
 
-    if len(args) != 6:
-        die("Wrong number of arguments: stilt merge "
-            "/run/dir [HTM 56.10 13.42 150 2012061500 2012061500]")
+    jobdir = os.path.abspath(jobdir)
+    args = read_merge_args_from_jobdir(jobdir)
+    mergedir = create_merge_directory(jobdir)
 
-    STILTContainer.rundir, args = rundir, args
+    STILTContainer.rundir = mergedir
+    STILTContainer.name = '%s_merge' % os.path.basename(jobdir)
     sc = STILTContainer()
     sc.add_run_dir_volume('logs', '/opt/STILT_modelling/%s' % sc.name)
     sc.add_run_dir_volume('output', '/opt/STILT_modelling/Output/%s' % sc.name)
     cmd = ('cd /opt/STILT_modelling && '
            './start.stilt.sh %s %s 1 1 >& %s/start.stilt.log' % (
-               ' '.join(map(str,args)), sc.name, sc.name))
+               ' '.join(map(str, args)), sc.name, sc.name))
     print(sc._run_dir)
     sc.run(cmd, background=False)
     post_stilt_run_cleanup(sc._run_dir, verbose=False)
@@ -599,7 +618,7 @@ def cmd_calcslots(start_slot, end_slot):
     # "; ./start.stilt.sh SITE _ _ _ %s %s RUNID 0 > /dev/null"
     # "; ./start.prepare.sh SITE _ _ _ %s %s RUNID > /dev/null"
     cmd = ("cd /opt/STILT_modelling"
-            "; ./start.stilt.sh SITE _ _ _ %s %s RUNID 1 0 > /dev/null" % (
+           "; ./start.stilt.sh SITE _ _ _ %s %s RUNID 1 0 > /dev/null" % (
                start_slot, end_slot))
     dc.run(cmd)
     for line in open(os.path.join(log_dir, 'output.txt'), 'r'):
