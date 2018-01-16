@@ -550,14 +550,13 @@ def create_merge_directory(rundir, sitename=DEFAULT_SITE_NAME):
     for typ in ('Footprints', 'RData'):
         dst = os.path.join(rundir, 'merge', 'output', typ, sitename)
         os.makedirs(dst, exist_ok=True)
-        with os.scandir(os.path.join(rundir, 'slots', typ, sitename)) as sd:
-            for e in sd:
-                if not e.is_symlink():
-                    continue
-                l = os.readlink(e.path)
-                d = os.path.join(dst, e.name)
-                if not os.path.exists(d):
-                    os.link(l, d)
+        for e in os.scandir(os.path.join(rundir, 'slots', typ, sitename)):
+            if not e.is_symlink():
+                continue
+            l = os.readlink(e.path)
+            d = os.path.join(dst, e.name)
+            if not os.path.exists(d):
+                os.link(l, d)
     return mergedir
 
 
