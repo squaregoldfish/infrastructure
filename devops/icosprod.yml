@@ -1,4 +1,4 @@
-# This ansible playbook will provision our production server.
+# This ansible playbook will provision our production servers.
 
 - import_playbook: setup.yml
   
@@ -8,8 +8,22 @@
     - vault.yml
     - vars.yml
   roles:
+    # Lower-level roles that are dependencies of service-level roles. Having
+    # them as top-level roles allows for easier testing via tags.
+    - role: icos.linux
+      tags: linux
+    - role: icos.java
+      tags: java
+    - role: icos.nginx
+      tags: nginx
+    - role: icos.python3
+      tags: python3
+    - role: icos.docker
+      tags: docker
     - role: icos.restheart
       tags: restheart
+
+    # Higher level service-level roles.
     - role: icos.cpauth
       tags: cpauth
     - role: icos.cpmeta
@@ -26,3 +40,30 @@
       tags: sitesstations
     - role: icos.drupal
       tags: drupal
+
+      
+- hosts: icosprod2
+  become: true
+  vars_files:
+    - vault.yml
+    - vars.yml
+  roles:
+    # Lower-level roles
+    - role: icos.linux
+      tags: linux
+    - role: icos.java
+      tags: java
+    - role: icos.nginx
+      tags: nginx
+    - role: icos.python3
+      tags: python3
+    - role: icos.docker
+      tags: docker
+
+    # Service-level roles.
+    - role: icos.stiltrun
+      tags: stiltrun
+    - role: icos.stiltcluster
+      tags: stiltcluster
+
+      

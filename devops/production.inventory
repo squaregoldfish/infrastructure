@@ -1,9 +1,14 @@
-# Inventory file
 [icosprod]
 fsicos.lunarc.lu.se
 
 [icosprod:vars]
 get_ssl=true
+
+[icosprod2]
+fsicos2.lunarc.lu.se
+
+[icosprod2:vars]
+get_ssl=false
 
 [stiltmaster]
 fsicos2.lunarc.lu.se stiltcluster_is_seed=1
