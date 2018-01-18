@@ -1,7 +1,7 @@
 ---
 # Version check play.
 - hosts: all
-  tags: always
+  tags: setup
   gather_facts: no
   pre_tasks:
     # Use fail since assert is to verbose.
@@ -17,7 +17,7 @@
 # python on Ubuntu. The play needs to have gather_facts turned off, because
 # gather_facts requires python to be already installed.
 - hosts: all
-  tags: always
+  tags: setup
   become: true
   become_user: root
   gather_facts: no
