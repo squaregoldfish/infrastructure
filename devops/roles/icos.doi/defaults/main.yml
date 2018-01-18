@@ -6,3 +6,4 @@ doi_servicename: doi
 # https://github.com/ansible/ansible/issues/15439
 doi_template: roles/icos.doi/templates/doi.service.j2
 doi_nginxconfig:  roles/icos.doi/files/doi.conf
+doi_password: "{{ vault_doi_password }}"
