@@ -16,8 +16,15 @@
   # Mostly set this when testing
   when: linux_add_ssh_root is defined
 
-- name: Add the EPEL repo
-  yum: name=epel-release state=present
+- block:
+    - name: Add the EPEL repo
+      yum: name=epel-release state=present
+
+    # This will enable the chronyd service which will keep the clock correct.
+    - name: Enable NTP
+      command: timedatectl set-ntp yes
+      # timedatctl always returns 0 and doesn't print anything
+      changed_when: false 
   when: ansible_distribution == 'CentOS'
 
 - name: Install utilities
