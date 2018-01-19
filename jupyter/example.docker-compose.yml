@@ -2,6 +2,7 @@ version: '2'
 services:
   jupyterhub:
     build: .
+    image: jupyter_jupyterhub:2018.01.18
     ports:
       - "127.0.0.1:8888:8000"
     volumes:
@@ -10,5 +11,5 @@ services:
       - /disk/data/eurocom:/opt/eurocom
       - ./storage:/home
       - ./users:/opt/users
-    restart: unless-stopped
-
+      - /disk/data/dataAppStorage/netcdf:/opt/icisnetcdf
+restart: unless-stopp
