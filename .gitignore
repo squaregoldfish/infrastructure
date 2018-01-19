@@ -52,6 +52,10 @@ restheart/storage/
 eudat/docker-compose.yml
 eudat/irodsEnv.txt
 
+# Ansible
+############################################
+devops/ubuntu-xenial-16.04-cloudimg-console.log
+
 *.*~
 .idea
 .editorconfig
