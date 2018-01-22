@@ -10,7 +10,7 @@
 
 - name: Copy nginx {{ name }}.conf
   template:
-    src: icos.conf
+    src: nginx.conf.j2
     dest: /etc/nginx/conf.d/{{ name }}.conf
     mode: 0700
   notify: reload nginx config
