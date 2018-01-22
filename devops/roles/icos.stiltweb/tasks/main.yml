@@ -16,3 +16,11 @@
     line: "{{ stilt_spoof_ip }} stilt.icos-cp.eu"
     state: present
   when: stilt_spoof_ip is defined
+
+- name: Install tail-latest.sh
+  template:
+    src: tail-latest.sh.j2
+    dst: tail-latest.sh
+    mode: 0755
+    owner: "{{ stiltweb_username }}"
+    group: "{{ stiltweb_username }}"
