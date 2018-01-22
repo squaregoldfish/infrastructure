@@ -17,4 +17,4 @@
   cron:
     name: Certbot renewal
     job: "certbot renew --post-hook 'service nginx reload'"
-    special_time: weekly
+    special_time: daily
