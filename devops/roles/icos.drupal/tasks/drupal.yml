@@ -56,22 +56,22 @@
     src: services.yml
     dest: "{{ project_dir }}/files/default/"
 
-# - name: Copy modules library
-#   template:
-#     src: "{{ item }}.libraries.yml.j2"
-#     dest: "{{ project_dir }}/modules/{{ item }}/{{ item }}.libraries.yml"
-#   with_items:
-#     - cp_blogs
-#     - cp_cmis
-#     - cp_documents
-#     - cp_events
-#     - cp_files
-#   notify: reload nginx config
-#
-# - name: Copy theme library
-#   template:
-#     src: cp_theme_d8.libraries.yml.j2
-#     dest: "{{ project_dir }}/themes/cp_theme_d8/cp_theme_d8.libraries.yml"
+- name: Copy modules library
+  template:
+    src: "{{ item }}.libraries.yml.j2"
+    dest: "{{ project_dir }}/modules/{{ item }}/{{ item }}.libraries.yml"
+  with_items:
+    - cp_blogs
+    - cp_cmis
+    - cp_documents
+    - cp_events
+    - cp_files
+  notify: reload nginx config
+
+- name: Copy theme library
+  template:
+    src: cp_theme_d8.libraries.yml.j2
+    dest: "{{ project_dir }}/themes/cp_theme_d8/cp_theme_d8.libraries.yml"
 
 - name: Ensure {{ project_dir }}/docker/ directory exists
   file: path={{ project_dir }}/docker/ state=directory recurse=yes
