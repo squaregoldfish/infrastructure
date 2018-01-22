@@ -48,7 +48,7 @@ server {
 {% elif project_name == "ri" %}
 server {
   listen       80;
-  server_name  icos-ri.eu www.icos-ri.eu icos-infrastructure.eu www.icos-infrastructure.eu;
+  server_name  icos-ri.eu icos-infrastructure.eu www.icos-infrastructure.eu;
   return 301   https://www.icos-ri.eu$request_uri;
 }
 
