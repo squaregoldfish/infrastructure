@@ -1,7 +1,3 @@
-- name: Add nginx config file
-  copy: src=stiltweb.conf dest=/etc/nginx/conf.d/
-  notify: reload nginx config
-
 - name: Run the jarservice role
   include_role:
     name: icos.jarservice
