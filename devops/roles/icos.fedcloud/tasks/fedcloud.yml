@@ -1,0 +1,96 @@
+- name: Getent of {{ fedcloud_user }}
+  shell: "getent passwd {{ fedcloud_user }}"
+  register: fedcloud_ent
+  changed_when: false
+
+- name: Set fedcloud facts
+  set_fact:
+    # stdout = "fedcloud:x:1003:1003:fedcloud,,,:/home/fedcloud:/bin/bash"
+    fedcloud_uid: "{{ fedcloud_ent.stdout.split(':')[2] }}"
+    fedcloud_gid: "{{ fedcloud_ent.stdout.split(':')[3] }}"
+    fedcloud_home_dir: "{{ fedcloud_ent.stdout.split(':')[5] }}"
+    fedcloud_mount_dir: "{{ fedcloud_ent.stdout.split(':')[5] }}/mounts"
+    
+- name: Create docker mounts
+  file:
+    dest: "{{ item }}"
+    state: directory
+    mode: 0700
+  with_items:
+    - "{{ fedcloud_mount_dir }}"
+    - "{{ fedcloud_mount_dir }}/certificates"
+    - "{{ fedcloud_mount_dir }}/data"
+    - "{{ fedcloud_mount_dir }}/tmp"
+    
+- name: Create ssh
+  file:
+    dest: "{{ fedcloud_home_dir }}/.ssh"
+    state: directory
+    mode: 0700
+  register: fedcloud_ssh_dir
+- copy:
+    src: "{{ item }}"
+    dest: "{{ fedcloud_ssh_dir.path }}"
+    mode: 0600
+  with_items:
+    - fedcloud
+    - fedcloud.pub
+
+- name: Create globus
+  file:
+    dest: "{{ fedcloud_home_dir }}/mounts/globus"
+    state: directory
+    mode: 0700
+  register: fedcloud_globus_dir
+- copy:
+    src: "{{ item }}"
+    dest: "{{ fedcloud_globus_dir.path }}"
+    mode: 0600
+  with_items:
+    - usercert.pem
+    - userkey.pem
+
+- name: Create bin directory
+  file:
+    dest: "/home/{{ fedcloud_user}}/bin"
+    state: directory
+    mode: 0700
+  register: fedcloud_bin_dir
+
+- name: Install cesnet script
+  template: 
+    src: occi_cesnet.j2
+    dest: "{{ fedcloud_bin_dir.path }}/occi_cesnet"
+    mode: 0700
+  register: fedcloud_script_cesnet
+
+- name: Install fedcloud script
+  template: 
+    src: fedcloud.j2
+    dest: "{{ fedcloud_bin_dir.path }}/fedcloud"
+    mode: 0700
+  
+- name: Create docker build dir
+  file:
+    dest: "{{ fedcloud_home_dir }}/build"
+    state: directory
+  register: fedcloud_build_dir
+
+- name: Install Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: "{{ fedcloud_build_dir.path }}/Dockerfile"
+  register: fedcloud_dockerfile
+    
+- name: Build fedcloud image
+  docker_image:
+    path: "{{ fedcloud_build_dir.path }}"
+    name: "{{ fedcloud_image_custom }}"
+    force: "{{ fedcloud_dockerfile.changed }}"
+
+- name: Install integration script
+  template:
+    src: egi-eudat-integration-icos.yml.j2
+    dest: "{{ fedcloud_integration_yml}}"
+
+    

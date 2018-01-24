@@ -1,0 +1,60 @@
+#!/bin/bash
+
+set -e
+set -u
+
+OCCI_ENDPOINT="https://carach5.ics.muni.cz:11443"
+VO="fedcloud.egi.eu"
+OCCI_IMAGE="{{ fedcloud_image_custom }}"
+
+
+MOUNTS="{{ fedcloud_mount_dir }}"
+VOLOPT="-v fedcloud_certificates:/etc/grid-security/certificates:rw"
+VOLOPT+=" -v $MOUNTS/globus:/home/occi/.globus:ro"
+VOLOPT+=" -v $HOME/.ssh:/ssh:ro"
+VOLOPT+=" -v $MOUNTS/data:/data:rw"
+VOLOPT+=" -v $MOUNTS/tmp:/tmp:rw"
+
+
+if [ -d "$MOUNTS/vomses" ] && [ -d "$MOUNTS/vomsdir" ] ; then
+	VOLOPT+=" -v $MOUNTS/vomses:/etc/vomses:ro"
+	VOLOPT+=" -v $MOUNTS/vomsdir:/etc/grid-security/vomsdir:ro"
+fi
+
+
+function init {
+	# /etc/grid-security/certificates was pouplated by the
+	# egifedcloud/fedcloud-userinterface image and then made into a volume. That
+	# means that those permissions can't be changed by without running
+	# chown. Just mounting the directory won't work since we need the existing
+	# data in place.
+	cmd="sudo chown -R occi:occi /etc/grid-security/certificates /data /tmp; "
+	# This step will check that the certificates are in order. One might run
+	# these every time (as part of every command) but since this step spams
+	# stdout I prefer to have it separately.
+	cmd+="if ! voms-proxy-info -exists --file /tmp/x509up2; then "
+	cmd+="fetch-crl -v -T 30; "
+	cmd+="voms-proxy-init --out /tmp/x509up2 --voms $VO --rfc; fi; "
+	docker run --rm $VOLOPT "$OCCI_IMAGE" bash -c "$cmd"
+}
+
+
+if [[ "${1:-}" == "--debug" ]]; then
+	shift
+	set -x
+fi
+
+
+case "${1:-}" in
+	"shell")
+		# When troubleshooting the container it nice to easily create a shell.
+		docker run --rm -it $VOLOPT "$OCCI_IMAGE" bash -i
+		;;
+	"init")
+		init
+		;;
+	*)
+		cmd="sudo occi -n x509 -x /tmp/x509up2 -X -e ${OCCI_ENDPOINT} $*"
+		docker run --rm $VOLOPT "$OCCI_IMAGE" bash -c "$cmd"
+		;;
+esac

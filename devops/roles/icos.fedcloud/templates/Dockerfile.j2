@@ -1,0 +1,10 @@
+# We create our own derivate image so that the UID/GID inside the container
+# matches that of the fedcloud user. This is important since e.g ssh is finicky
+# about ownership of files. Unfortunately there is no point in issuing any
+# chown(1) commands for /etc/grid-security/certificates and /tmp since those are
+# marked as volumes and docker will throw away those changes.
+
+FROM egifedcloud/fedcloud-userinterface
+RUN sudo groupmod --gid {{ fedcloud_gid }} occi
+RUN sudo usermod --uid {{ fedcloud_uid }} occi
+WORKDIR /home/occi

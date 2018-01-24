@@ -1,0 +1,7 @@
+- import_playbook: setup.yml
+
+- hosts: ubuntu centos
+  become: yes
+  roles:
+    - role: icos.fedcloud
+      tags: fedcloud

@@ -11,6 +11,10 @@
   roles:
     - role: icos.stiltweb
       tags: stiltweb
+    - role: icos.stiltrun
+      tags: stiltrun
+    - role: icos.fedcloud
+      tags: fedcloud
 
 - hosts: stiltcluster
   become: true

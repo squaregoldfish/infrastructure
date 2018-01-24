@@ -1,0 +1,4 @@
+fedcloud_user: fedcloud
+fedcloud_image_base: egifedcloud/fedcloud-userinterface
+fedcloud_image_custom: fedcloud
+fedcloud_integration_yml: /home/fedcloud/mounts/data/egi.yml

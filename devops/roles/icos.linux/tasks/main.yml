@@ -31,7 +31,9 @@
   package: name={{ item }} state=present
   with_items:
     - git
-    - mg
+    - mg   # microemacs
+    - htop # a better top(1)
+    - jq   # like sed for json
 
 - name: Copy utilities
   copy:

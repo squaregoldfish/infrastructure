@@ -1,0 +1,23 @@
+- name: Create {{ fedcloud_user }} user
+  user:
+    name: "{{ fedcloud_user }}"
+    groups: docker
+    append: true
+    
+- become: yes
+  become_user: "{{ fedcloud_user }}"
+  import_tasks: fedcloud.yml
+  tags: [fedcloud_only]
+
+- name: Create link
+  file:
+    # If the script has changed then the path is available as ".dest", otherwise
+    # it's ".path". Sigh.
+    src: "{{ fedcloud_script_cesnet.dest | default(None) or fedcloud_script_cesnet.path }}"
+    dest: "{{ item }}/occi"
+    state: link
+  with_items:
+    # Given {root,fedcloud} * {centos,ubuntu}, neither one of the following is
+    # guaranteed to appear in PATH, so we'll add occi to both
+    - /usr/local/bin
+    - /usr/local/sbin
