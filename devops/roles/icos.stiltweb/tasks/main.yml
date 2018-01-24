@@ -8,7 +8,7 @@
     servicename     : "{{ stiltweb_servicename }}"
     servicetemplate : "{{ stiltweb_template }}"
     nginxconfig     : "{{ stiltweb_nginxconfig }}"
-    appconfig       : "{{ stiltweb_appconfig }}"
+    apptemplate     : "{{ stiltweb_apptemplate }}"
 
 - name: Spoof stiltweb in /etc/hosts
   lineinfile:

@@ -7,6 +7,6 @@ stiltweb_servicename: stiltweb
 # https://github.com/ansible/ansible/issues/15439
 stiltweb_template: roles/icos.stiltweb/templates/stiltweb.service.j2
 stiltweb_nginxconfig:  roles/icos.stiltweb/files/stiltweb.conf
-stiltweb_appconfig: roles/icos.stiltweb/files/local.conf
+stiltweb_apptemplate: roles/icos.stiltweb/templates/local.conf.j2
 # This is where stiltweb keeps it's archive of of stilt files
 stiltweb_statedir: /local/stiltdata/stiltweb/
