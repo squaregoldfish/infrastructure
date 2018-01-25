@@ -3,9 +3,16 @@
 echo "Starting backup of Sites Station Form"
 
 T="$(date +%s%N)"
+backup_path="./sitesStationForm"
+backup_folder="$backup_path/sitesStationFormBackup-$(date -I)"
 
-tar -czf ./sitesStationForm/files_backup.tar.gz /disk/data/station-form/app/files/
-docker exec stationform_mysql_1 sh -c 'mysqldump -u root --password=$MYSQL_ROOT_PASSWORD application_sites' > ./sitesStationForm/application_sites_dump.sql && echo "MySQL dump finished successfully"
+mkdir "$backup_folder"
+
+tar -czf $backup_folder/files_backup.tar.gz /disk/data/station-form/app/files/
+docker exec stationform_mysql_1 sh -c 'mysqldump -u root --password=$MYSQL_ROOT_PASSWORD application_sites' > $backup_folder/application_sites_dump.sql && echo "MySQL dump finished successfully"
+
+# Keep only the last 30 backups
+find $backup_path -maxdepth 1 -type d -name 'sitesStationFormBackup-*' | sort -r | tail -n +31 | xargs -r rm -r
 
 # Time interval in nanoseconds
 T="$(($(date +%s%N)-T))"
