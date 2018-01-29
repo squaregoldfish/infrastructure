@@ -1,6 +1,6 @@
 - name: Copy database dump
   copy:
-    src: application_sites.sql
+    src: "{{ backup_path }}/application_sites_dump.sql"
     dest: "{{ project_dir }}/db/"
 
 - name: Copy database conf file

@@ -49,6 +49,12 @@
 - name: Change code owner
   command: docker exec stationform_php_1 chown -R www-data:www-data /var/www/html /var/www/.ssh
 
+- name: Restore file archives
+  unarchive:
+    src: "{{ backup_path }}/files_backup.tar.gz"
+    dest: /
+  when: restore
+
 - name: Restore database
   import_tasks: database.yml
   when: restore
