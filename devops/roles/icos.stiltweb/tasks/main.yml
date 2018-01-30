@@ -20,7 +20,7 @@
 - name: Install tail-latest.sh
   template:
     src: tail-latest.sh.j2
-    dst: tail-latest.sh
+    dest: "/home/{{stiltweb_username}}/tail-latest.sh"
     mode: 0755
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
