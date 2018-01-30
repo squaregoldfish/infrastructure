@@ -27,18 +27,3 @@
       tags: sitesstations
     - role: icos.drupal
       tags: drupal
-
-      
-- hosts: icosprod2
-  become: true
-  vars_files:
-    - vault.yml
-    - vars.yml
-  roles:
-    # Service-level roles.
-    - role: icos.stiltrun
-      tags: stiltrun
-    - role: icos.stiltcluster
-      tags: stiltcluster
-
-      
