@@ -9,3 +9,5 @@
     nginxconfig     : "{{ doi_nginxconfig }}"
     servicename     : "{{ doi_servicename }}"
     servicetemplate : "{{ doi_template }}"
+  tags:
+    - doi_only

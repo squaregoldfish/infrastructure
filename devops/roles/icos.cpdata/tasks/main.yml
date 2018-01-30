@@ -8,3 +8,5 @@
     nginxconfig     : "{{ cpdata_nginxconfig }}"
     servicename     : "{{ cpdata_servicename }}"
     servicetemplate : "{{ cpdata_template }}"
+  tags:
+    - cpdata_only

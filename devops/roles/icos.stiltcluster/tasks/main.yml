@@ -1,17 +1,3 @@
-- name: Run the jarservice role
-  include_role:
-    name: icos.jarservice
-  vars:
-    username        : "{{ stiltcluster_username }}"
-    extra_groups    : docker
-    jarfile         : "{{ stiltcluster_jar_file }}"
-    servicename     : "{{ stiltcluster_servicename }}"
-    servicetemplate : "{{ stiltcluster_template }}"
-    appconfig       : "{{ stiltcluster_appconfig }}"
-
-- name: Spoof stiltweb in /etc/hosts
-  lineinfile:
-    dest: "/etc/hosts"
-    line: "{{ stilt_spoof_ip }} stilt.icos-cp.eu"
-    state: present
-  when: stilt_spoof_ip is defined
+- import_tasks: stiltcluster.yml
+  tags:
+    - stiltcluster_only

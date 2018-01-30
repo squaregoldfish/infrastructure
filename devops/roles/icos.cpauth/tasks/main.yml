@@ -9,3 +9,5 @@
     nginxconfig     : "{{ cpauth_nginxconfig }}"
     servicename     : "{{ cpauth_servicename }}"
     servicetemplate : "{{ cpauth_template }}"
+  tags:
+    - cpauth_only
