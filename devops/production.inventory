@@ -11,7 +11,7 @@ fsicos2.lunarc.lu.se
 get_ssl=false
 
 [stiltmaster]
-fsicos2.lunarc.lu.se stiltcluster_is_seed=1
+fsicos2.lunarc.lu.se
 
 [stiltcluster]
-fsicos2.lunarc.lu.se stiltcluster_is_seed=1
+fsicos2.lunarc.lu.se

@@ -1,4 +1,3 @@
-stiltcluster_is_seed: 0
 stilt_master_host: stilt.icos-cp.eu
 stiltcluster_username: stiltcluster
 stiltcluster_servicename: stiltcluster

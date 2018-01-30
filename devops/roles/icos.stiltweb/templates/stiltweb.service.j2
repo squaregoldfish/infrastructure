@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=simple
 User=stiltweb
-ExecStart=/usr/bin/java -jar -Dstiltcluster.ip={{ stilt_master_host }} "/home/stiltweb/stiltweb.jar"
+ExecStart=/usr/bin/java -jar {{ installed_jarfile.dest }}
 Restart=on-abort
 WorkingDirectory=/home/stiltweb
 
