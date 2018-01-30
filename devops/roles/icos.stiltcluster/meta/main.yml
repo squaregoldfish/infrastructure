@@ -1,4 +1,4 @@
 dependencies:
-  - {role: icos.linux}
-  - {role: icos.java}
-  - {role: icos.docker}
+ - {role: icos.linux,  tags: linux}
+ - {role: icos.java,   tags: java}
+ - {role: icos.docker, tags: docker}
