@@ -77,6 +77,11 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 
 				// Add an ansible tag, e.g '-tcpdata'
 				"-t" + target,
+				// Add an ansible tag, e.g '-tcpdata_only'. Each ansible role that we use
+				// is required to have a 'project_only' tag that will only to
+				// (re)deployment of the jarfile, i.e it'll skip its dependencies (linux,
+				// nginx, docker etc)
+				"-t" + target + "_only",
 
 				// Add an extra ansible variable specifying which jarfile to deploy.
 				"-e", s"""${target}_jar_file="$jarPath"""",
