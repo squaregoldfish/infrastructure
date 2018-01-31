@@ -72,11 +72,6 @@ object IcosCpSbtDeployPlugin extends AutoPlugin {
 				// only useful when running against the production inventory.
 				if (check && !test) "--check" else None,
 
-				// We only need to ask for sudo password in the production environment.
-				if (!test) "--ask-sudo" else None,
-
-				// Add an ansible tag, e.g '-tcpdata'
-				"-t" + target,
 				// Add an ansible tag, e.g '-tcpdata_only'. Each ansible role that we use
 				// is required to have a 'project_only' tag that will only to
 				// (re)deployment of the jarfile, i.e it'll skip its dependencies (linux,
