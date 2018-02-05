@@ -4,3 +4,5 @@ mysql_docker_port: 3331
 domain: nordspec.icos-cp.eu
 trusted_host: ^nordspec\.icos-cp\.eu$
 database_prefix: drupal_
+database_name: nordspecdb
+database_user: nordspecdb

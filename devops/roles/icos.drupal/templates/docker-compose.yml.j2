@@ -22,8 +22,8 @@ services:
       - "127.0.0.1:{{ mysql_docker_port }}:3306"
     environment:
       MYSQL_ROOT_PASSWORD: {{ vault_mysql_root_password }}
-      MYSQL_DATABASE: icos
-      MYSQL_USER: icos
+      MYSQL_DATABASE: {{ database_name | default("icos") }}
+      MYSQL_USER: {{ database_user | default("icos") }}
       MYSQL_PASSWORD: {{ vault_mysql_icos_password }}
     volumes:
       - ../db:/var/lib/mysql/:rw

@@ -20,9 +20,9 @@
   shell:
     >
     docker exec -i {{ project_name }}_mariadb_1 sh -c
-    'mysql -e "DROP DATABASE IF EXISTS icos"
-    && mysql -e "CREATE DATABASE icos"
-    && mysql icos < /var/lib/mysql/{{ project_name }}_db_dump.sql'
+    'mysql -e "DROP DATABASE IF EXISTS {{ database_name | default("icos") }}"
+    && mysql -e "CREATE DATABASE {{ database_name | default("icos") }}"
+    && mysql {{ database_name | default("icos") }} < /var/lib/mysql/{{ project_name }}_db_dump.sql'
   # mysql is not always ready to accept connections the first time
   register: result
   until: result.stderr == ""
