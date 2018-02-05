@@ -3,12 +3,19 @@
 echo "Starting backup of {{ domain }}"
 
 T="$(date +%s%N)"
+backup_path="./{{ project_name }}Drupal"
+backup_folder="$backup_path/{{ project_name }}DrupalBackup-$(date -I)"
 
-tar -czf ./{{ project_name }}Drupal/files/files_backup.tar.gz /disk/data/drupal/{{ project_name }}/drupal/files/
-tar -czf ./{{ project_name }}Drupal/files/modules_backup.tar.gz /disk/data/drupal/{{ project_name }}/drupal/modules/
-tar -czf ./{{ project_name }}Drupal/files/themes_backup.tar.gz /disk/data/drupal/{{ project_name }}/drupal/themes/
+mkdir -p "$backup_folder/files" "$backup_folder/db"
 
-docker exec {{ project_name }}_mariadb_1 sh -c 'mysqldump -u root --password=$MYSQL_ROOT_PASSWORD icos' > ./{{ project_name }}Drupal/db/{{ project_name }}_db_dump.sql && echo "MySQL dump finished successfully"
+tar -czf $backup_folder/files/files_backup.tar.gz /disk/data/drupal/{{ project_name }}/drupal/files/
+tar -czf $backup_folder/files/modules_backup.tar.gz /disk/data/drupal/{{ project_name }}/drupal/modules/
+tar -czf $backup_folder/files/themes_backup.tar.gz /disk/data/drupal/{{ project_name }}/drupal/themes/
+
+docker exec {{ project_name }}_mariadb_1 sh -c 'mysqldump -u root --password=$MYSQL_ROOT_PASSWORD icos' > $backup_folder/db/{{ project_name }}_db_dump.sql && echo "MySQL dump finished successfully"
+
+# Keep only the last 30 backups
+find $backup_path -maxdepth 1 -type d -name '{{ project_name }}DrupalBackup-*' | sort -r | tail -n +31 | xargs -r rm -r
 
 # Time interval in nanoseconds
 T="$(($(date +%s%N)-T))"
