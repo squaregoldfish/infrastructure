@@ -64,10 +64,12 @@
   
 - name: Copy {{ servicename }} nginx config file
   copy:
-    src: "{{ nginxconfig }}"
+    src: "{{ item }}"
     dest: /etc/nginx/conf.d/
     owner: "{{ username }}"
     group: "{{ username }}"
+  with_fileglob:
+    - "{{nginxconfig}}*"
   when: nginxconfig is defined
   notify: reload nginx config
   
