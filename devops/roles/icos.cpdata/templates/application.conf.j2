@@ -1,0 +1,14 @@
+
+cpdata{
+
+	upload{
+		folder = "{{ cpdata_filestorage_target }}"
+		irods.password = "{{ cpdata_irods_pass }}"
+	}
+
+	etcFacade{
+		folder = "{{ cpdata_filestorage_target }}/etcFacadeStaging"
+		secret = "{{ cpdata_etcfacade_secret }}"
+	}
+}
+
