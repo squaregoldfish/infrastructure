@@ -1,0 +1,26 @@
+- name: Run the jarservice role
+  include_role:
+    name: icos.jarservice
+  vars:
+    username        : "{{ cpdata_username }}"
+    jarfile         : "{{ cpdata_jar_file }}"
+    # https://github.com/ansible/ansible/issues/20597
+    apptemplate     : roles/icos.cpdata/templates/application.conf.j2
+    nginxconfig     : "{{ cpdata_nginxconfig }}"
+    servicename     : "{{ cpdata_servicename }}"
+    servicetemplate : "{{ cpdata_template }}"
+
+- name: Install SSL certificate
+  command: >
+    certbot
+    --authenticator webroot
+    --installer nginx
+    --non-interactive
+    --webroot-path /usr/share/nginx/html/
+    --domain data.fieldsites.se
+    --email carbon.admin@nateko.lu.se
+    --agree-tos
+  notify: reload nginx config
+
+- meta: flush_handlers
+
