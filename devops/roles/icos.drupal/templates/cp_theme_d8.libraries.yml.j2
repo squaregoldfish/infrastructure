@@ -1,10 +1,9 @@
-global-css:
+global:
   css:
     theme:
       css/{{ cp_theme_d8 | default("cp_theme_d8") }}.css: {}
       css/bootstrap.3.3.5.min.css: {}
 
-global-js:
   js:
     js/cookie-notice.js: {}
     js/{{ cp_theme_d8 | default("cp_theme_d8") }}.js: {}
@@ -15,3 +14,22 @@ global-js:
     - core/drupalSettings
     - core/jquery
     - core/jquery.once
+
+menu-hover:
+  css:
+    theme:
+      css/menu-hover.css: {}
+
+menu-click:
+  css:
+    theme:
+      css/menu-click.css: {}
+
+  js:
+    js/menu-click.js: {}
+
+    dependencies:
+      - core/drupal
+      - core/drupalSettings
+      - core/jquery
+      - core/jquery.once
