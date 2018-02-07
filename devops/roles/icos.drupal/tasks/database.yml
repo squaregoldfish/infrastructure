@@ -1,6 +1,3 @@
-- name: Wait for 10 seconds before restoring the database
-  wait_for: timeout=10
-
 - name: Copy database dump
   copy:
     src: "{{ backup_path }}/{{ project_name }}Drupal/db/"
@@ -11,6 +8,9 @@
     src: drupal-mysql.conf.j2
     dest: "{{ project_dir }}/db/drupal-mysql.conf"
   register: database_conf
+
+- name: Wait 10 seconds for the database daemon to start
+  wait_for: timeout=10
 
 - name: Move database conf file
   command: 'docker exec {{ project_name }}_mariadb_1 cp /var/lib/mysql/drupal-mysql.conf ~/.my.cnf'

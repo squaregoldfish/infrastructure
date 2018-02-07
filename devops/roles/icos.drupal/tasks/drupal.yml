@@ -41,7 +41,7 @@
     - files_backup
     - modules_backup
     - themes_backup
-  when: restore
+  when: restore and project_name != "demo"
 
 - name: Ensure {{ project_dir }}/files/default/ directory exists
   file: path={{ project_dir }}/files/default/ state=directory recurse=yes
@@ -98,3 +98,4 @@
 
 - name: Setup backup script
   import_tasks: backup.yml
+  when: project_name != "demo"
