@@ -20,7 +20,7 @@
 
 - name: Get SSL certificate
   import_tasks: ssl-certificate.yml
-  when: get_ssl and project_name != "ns"
+  when: get_ssl|bool and project_name != "ns"
 
 - name: Create project directory
   file:

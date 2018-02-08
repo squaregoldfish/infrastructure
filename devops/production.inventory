@@ -2,13 +2,13 @@
 fsicos.lunarc.lu.se
 
 [icosprod:vars]
-get_ssl=true
+get_ssl=True
 
 [icosprod2]
 fsicos2.lunarc.lu.se
 
 [icosprod2:vars]
-get_ssl=false
+get_ssl=False
 
 [stiltmaster]
 fsicos2.lunarc.lu.se
