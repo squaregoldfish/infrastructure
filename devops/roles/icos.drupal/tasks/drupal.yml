@@ -20,7 +20,7 @@
 
 - name: Get SSL certificate
   import_tasks: ssl-certificate.yml
-  when: get_ssl|bool and project_name != "ns" and project_name != "cp" 
+  when: get_ssl|bool and project_name != "ns" and project_name != "cp"
 
 - name: Create project directory
   file:
@@ -36,7 +36,7 @@
 - name: Restore file archives
   unarchive:
     src: "{{ backup_path }}/{{ project_name }}Drupal/files/{{ item }}.tar.gz"
-    dest: /
+    dest: "{{ project_dir }}/"
   with_items:
     - files_backup
     - modules_backup

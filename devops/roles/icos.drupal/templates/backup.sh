@@ -8,9 +8,9 @@ backup_folder="$backup_path/{{ project_name }}DrupalBackup-$(date -I)"
 
 mkdir -p "$backup_folder/files" "$backup_folder/db"
 
-tar -czf $backup_folder/files/files_backup.tar.gz /disk/data/drupal/{{ project_name }}/drupal/files/
-tar -czf $backup_folder/files/modules_backup.tar.gz /disk/data/drupal/{{ project_name }}/drupal/modules/
-tar -czf $backup_folder/files/themes_backup.tar.gz /disk/data/drupal/{{ project_name }}/drupal/themes/
+tar -czf $backup_folder/files/files_backup.tar.gz -C /disk/data/drupal/{{ project_name }}/drupal/ files/
+tar -czf $backup_folder/files/modules_backup.tar.gz -C /disk/data/drupal/{{ project_name }}/drupal/ modules/
+tar -czf $backup_folder/files/themes_backup.tar.gz -C /disk/data/drupal/{{ project_name }}/drupal/ themes/
 
 docker exec {{ project_name }}_mariadb_1 sh -c 'mysqldump -u root --password=$MYSQL_ROOT_PASSWORD {{ database_name | default("icos") }}' > $backup_folder/db/{{ project_name }}_db_dump.sql && echo "MySQL dump finished successfully"
 

@@ -8,7 +8,7 @@ backup_folder="$backup_path/sitesStationFormBackup-$(date -I)"
 
 mkdir "$backup_folder"
 
-tar -czf $backup_folder/files_backup.tar.gz /disk/data/station-form/app/files/
+tar -czf $backup_folder/files_backup.tar.gz -C /disk/data/station-form/app/ files/
 docker exec stationform_mysql_1 sh -c 'mysqldump -u root --password=$MYSQL_ROOT_PASSWORD application_sites' > $backup_folder/application_sites_dump.sql && echo "MySQL dump finished successfully"
 
 # Keep only the last 30 backups
