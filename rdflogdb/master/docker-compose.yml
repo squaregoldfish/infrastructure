@@ -1,6 +1,9 @@
 version: '2'
+
 services:
   rdflogdb:
+    restart: unless-stopped
+    network_mode: "host"
     build:
       context: ./build
       dockerfile: Dockerfile
@@ -8,11 +11,9 @@ services:
     container_name: "rdflogdb-v${PG_VERSION}"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    ports:
-      - "127.0.0.1:${HOST_PORT}:5432"
     volumes:
       - /disk/data/volumes/rdflogdb-${PG_VERSION}:${PGDATA}
       - /etc/localtime:/etc/localtime:ro
-    restart: unless-stopped
+
 volumes:
   rdflogdb:
