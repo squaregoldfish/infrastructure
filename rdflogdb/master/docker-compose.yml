@@ -1,6 +1,8 @@
 version: '2'
+
 services:
   rdflogdb:
+    restart: unless-stopped
     build:
       context: ./build
       dockerfile: Dockerfile
@@ -13,6 +15,6 @@ services:
     volumes:
       - /disk/data/volumes/rdflogdb-${PG_VERSION}:${PGDATA}
       - /etc/localtime:/etc/localtime:ro
-    restart: unless-stopped
+
 volumes:
   rdflogdb:

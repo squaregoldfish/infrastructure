@@ -1,6 +1,8 @@
 version: '2'
+
 services:
   rdflogdb:
+    restart: unless-stopped
     network_mode: "host"
     build:
       context: ./build
@@ -11,8 +13,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - /disk/data/volumes/rdflogdb-${PG_VERSION}:${PGDATA}
-      - /disk/data/volumes/rdflogdb-tmp-${PG_VERSION}:/pg-tmp
+#      - /disk/data/volumes/rdflogdb-tmp-${PG_VERSION}:/pg-tmp
       - /etc/localtime:/etc/localtime:ro
-    restart: unless-stopped
+
 volumes:
   rdflogdb:
