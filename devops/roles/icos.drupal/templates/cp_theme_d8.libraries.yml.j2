@@ -2,12 +2,12 @@ global:
   css:
     theme:
       css/{{ cp_theme_d8 | default("cp_theme_d8") }}.css: {}
-      css/bootstrap.3.3.5.min.css: {}
+      //static.icos-cp.eu/constant/bootstrap/3.3.5/css/bootstrap.min.css: { type: external, minified: true }
 
   js:
     js/cookie-notice.js: {}
     js/{{ cp_theme_d8 | default("cp_theme_d8") }}.js: {}
-    js/bootstrap.3.3.5.min.js: {}
+    //static.icos-cp.eu/constant/bootstrap/3.3.5/js/bootstrap.min.js: { type: external, minified: true }
 
   dependencies:
     - core/drupal
