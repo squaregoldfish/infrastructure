@@ -1,5 +1,0 @@
-#!/bin/bash
-for STATION in CB4 HEI MHD PAL BI5 OX3 LU1 GIF HPB HU1 JFJ PUY SIL TR4
-do 
-nohup ./start.stilt.sh ${STATION} 20070101 20121231 > ${STATION}_2007_2012.log &
-done

@@ -44,7 +44,7 @@ mdy<-month.day.year
 getmdy<-function(fjday){#nice x axis
 MDY<-mdy(floor(fjday))
 #get date and time formatted; setting sec to 0.1 avoids skipping the time for midnight
-return(ISOdate(MDY$year, MDY$month, MDY$day, hour = (fjday-floor(fjday))*24, 
+return(ISOdate(MDY$year, MDY$month, MDY$day, hour = round((fjday-floor(fjday))*24), 
        min = 0, sec = 0.0, tz = "GMT"))
 }
 

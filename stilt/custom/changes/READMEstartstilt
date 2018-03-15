@@ -1,0 +1,27 @@
+Examples to start STILT runs
+
+./start.stilt.sh <station-id> <latitude> <longitude> <altitude> <startdate> <enddate> <run-id> <parts> <cprun>
+
+e.g.
+./start.stilt.sh HEI 49.42 8.67 30 20140601 20140601 UHEI 1 1
+
+all parameters need to be specified, no default
+
+station-id: ususally letter code (3-6 letters)
+
+latitude: decimal degree, positive values for north and negative values for south 
+
+longitude: decimal degree, positive values for east and negative values for west 
+
+startdate: year month day in format YYYYMMDD
+
+enddate: year month day in format YYYYMMDD
+
+run-id: letter code to separate users
+
+cprun: select type of stilt run 
+  0: only prepare list of time slots
+  1: use only existing particle location files for calculation on icos-cp.eu to prepare files for footprint tool
+  2: allow full STILT run
+
+
