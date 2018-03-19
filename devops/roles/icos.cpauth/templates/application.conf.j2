@@ -10,6 +10,7 @@ cpauth{
 		password = "{{ cpauth_mailing_pass }}"
 	}
 
+	auth.masterAdminPass = "{{ cpauth_masteradmin_pass }}"
+
 	{{ cpauth_oauth_conf | indent}}
 }
-
