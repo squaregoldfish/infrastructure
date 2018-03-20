@@ -63,3 +63,16 @@
       fi
   when:  _ss_bin.failed == false
   
+- block:
+    - name: Allowing inbound SSH
+      ufw: rule=allow port=ssh
+    - name: Enabling UFW with default deny policy
+      ufw: state=enabled policy=deny direction=incoming
+  when: ansible_distribution == "Ubuntu"
+
+- block:
+    - name: Enabling firewalld
+      service: name=firewalld state=started enabled=yes
+    - name: Allowing inbound SSH
+      firewalld: service=ssh permanent=true state=enabled immediate=true
+  when: ansible_distribution == "CentOS"
