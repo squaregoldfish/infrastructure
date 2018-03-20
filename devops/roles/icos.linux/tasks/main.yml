@@ -40,3 +40,26 @@
     src: retrieve-original.sh
     dest: /usr/local/sbin/retrieve-original
     mode: 0755
+
+- name: Find built-in ss(1)
+  shell: which -a ss | grep -v /usr/local/sbin/ss
+  register: _ss_bin
+  changed_when: false
+
+- name: Install ss(1) wrapper
+  copy:
+    mode: 0755
+    dest: /usr/local/sbin/ss
+    content: |
+      #!/bin/sh
+      # ss(1) is frivolous with whitespace which makes output hard to read. This
+      # script will compress the column-separating whitespace when printing to a
+      # terminal.
+
+      if [ -t 1 ]; then
+          exec {{ _ss_bin.stdout_lines[0] }} "$@" | column -t
+      else
+          exec {{ _ss_bin.stdout_lines[0] }} "$@"
+      fi
+  when:  _ss_bin.failed == false
+  
