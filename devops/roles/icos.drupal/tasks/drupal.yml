@@ -14,13 +14,13 @@
     dest: /etc/nginx/conf.d/{{ name }}.conf
     mode: 0700
   notify: reload nginx config
-  when: project_name != "cp" and project_name != "ns"
+  when: project_name != "cp" and project_name != "ns" and project_name != "demo"
 
 - meta: flush_handlers
 
 - name: Get SSL certificate
   import_tasks: ssl-certificate.yml
-  when: get_ssl|bool and project_name != "ns" and project_name != "cp"
+  when: get_ssl|bool and project_name != "ns" and project_name != "cp" and project_name != "demo"
 
 - name: Create project directory
   file:
