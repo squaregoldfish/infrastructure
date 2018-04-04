@@ -1,0 +1,31 @@
+# <2017-01-16 mån> Installing 'docker-engine' instead of the default
+# 'docker'. The reason is that 'docker' didn't work properly out of the box -
+# the client couldn't reach the daemon due to (I think) a socket mishap.
+- name: Add the official docker repository
+  yum_repository:
+    name: docker
+    description: Offical Docker RPM repository
+    enabled: yes
+    baseurl: https://yum.dockerproject.org/repo/main/centos/7/
+    gpgcheck: yes
+    gpgkey: https://yum.dockerproject.org/gpg
+
+# Contains the python2-pip package
+- name: Add the EPEL repo
+  yum: name=epel-release state=present
+    
+- name: Install docker
+  package:
+    name={{ item }} state=present
+  with_items:
+    - docker-engine
+    - python2-pip
+    # Do _not_ install docker-python. It will then conflict mysteriously with
+    # docker-compose since both 'docker' and 'docker-py' will be installed by
+    # pip. Sigh.
+
+# This will install not only the docker-compose command but also the python
+# libraries used directly by ansible as part of its docker_service module.  
+- name: Install docker-compose
+  pip: name=docker_compose
+    
