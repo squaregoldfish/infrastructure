@@ -4,6 +4,9 @@
     groups: docker
     append: yes
 
+- name: Make sure git is installed
+  package: name=git state=installed
+  
 - name: Clone infrastructure
   become: True
   become_user: restheart
