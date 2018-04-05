@@ -5,7 +5,7 @@
     append: yes
 
 - name: Make sure git is installed
-  package: name=git state=installed
+  package: name=git state=present
   
 - name: Clone infrastructure
   become: True
