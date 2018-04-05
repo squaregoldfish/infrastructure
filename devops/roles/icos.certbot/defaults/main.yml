@@ -1,0 +1,2 @@
+# It's nice to be able to turn it of during testing.
+certbot_install_certificate: True

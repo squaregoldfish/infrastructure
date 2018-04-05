@@ -10,17 +10,8 @@
     servicename     : "{{ cpdata_servicename }}"
     servicetemplate : "{{ cpdata_template }}"
 
-- name: Install SSL certificate
-  command: >
-    certbot
-    --authenticator webroot
-    --installer nginx
-    --non-interactive
-    --webroot-path /usr/share/nginx/html/
-    --domain data.fieldsites.se
-    --email carbon.admin@nateko.lu.se
-    --agree-tos
-  notify: reload nginx config
+- include_role: name=icos.certbot
+  vars:
+    - certbot_domain: data.fieldsites.se
 
-- meta: flush_handlers
 

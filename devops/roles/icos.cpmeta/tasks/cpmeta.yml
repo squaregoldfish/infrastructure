@@ -28,18 +28,7 @@
     src: "{{ cpmeta_filestorage_target }}"
     state: link
 
-- meta: flush_handlers
-
-- name: Install SSL certificate
-  command: >
-    certbot
-    --authenticator webroot
-    --installer nginx
-    --non-interactive
-    --webroot-path /usr/share/nginx/html/
-    --domain meta.fieldsites.se
-    --email carbon.admin@nateko.lu.se
-    --agree-tos
-  notify: reload nginx config
-
-- meta: flush_handlers
+- include_role:
+    name: icos.certbot
+  vars:
+    - certbot_domain: meta.fieldsites.se

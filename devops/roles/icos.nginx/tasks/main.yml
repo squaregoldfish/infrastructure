@@ -55,8 +55,6 @@
     group="{{nginx_user}}" owner="{{nginx_user}}"
   notify: reload nginx config
 
-- import_tasks: certbot.yml
-  
 - name: Allowing inbound HTTP/HTTPS (CentOS)
   firewalld: service={{ item }} permanent=true state=enabled immediate=true
   with_items: [http, https]
