@@ -1,7 +1,7 @@
 - name: Add restheart user
   user:
     name: restheart
-    groups: "{{ docker_group }}"
+    groups: docker
     append: yes
 
 - name: Clone infrastructure
