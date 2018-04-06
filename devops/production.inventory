@@ -3,9 +3,11 @@ fsicos.lunarc.lu.se
 
 [icosprod:vars]
 get_ssl=True
+cpmeta_filestorage_target=/disk/data/metaAppStorage
 
 [icosprod2]
 fsicos2.lunarc.lu.se
+cpmeta_filestorage_target=/disk/data/metaAppStorage
 
 [icosprod2:vars]
 get_ssl=False

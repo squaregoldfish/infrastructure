@@ -27,6 +27,7 @@
     dest: "{{ cpmeta_home.stdout }}/fileStorage"
     src: "{{ cpmeta_filestorage_target }}"
     state: link
+  when: cpmeta_filestorage_target is defined
 
 - include_role:
     name: icos.certbot
