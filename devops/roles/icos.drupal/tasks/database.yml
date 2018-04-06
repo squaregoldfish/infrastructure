@@ -12,7 +12,7 @@
 - name: Wait 10 seconds for the database daemon to start
   wait_for: timeout=10
 
-- name: Move database conf file
+- name: Copy database conf file
   command: 'docker exec {{ project_name }}_mariadb_1 cp /var/lib/mysql/drupal-mysql.conf ~/.my.cnf'
   when: database_conf.changed
 

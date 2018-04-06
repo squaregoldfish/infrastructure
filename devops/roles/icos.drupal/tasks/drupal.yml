@@ -43,7 +43,13 @@
     - themes_backup
   when: restore and project_name != "demo"
 
-- name: Ensure {{ project_dir }}/files/default/ directory exists
+- name: Create {{ project_dir }}/files/private/ directory
+  file: path={{ project_dir }}/files/private/ state=directory recurse=yes
+
+- name: Change private directory owner
+  command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/private/
+
+- name: Create {{ project_dir }}/files/default/ directory
   file: path={{ project_dir }}/files/default/ state=directory recurse=yes
 
 - name: Copy settings.php
@@ -90,6 +96,7 @@
   docker_service:
     project_src: "{{ project_dir }}/docker"
     state: present
+    pull: yes
   notify: reload nginx config
 
 - name: Restore database
