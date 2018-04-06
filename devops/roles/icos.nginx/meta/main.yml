@@ -1,0 +1,4 @@
+dependencies:
+  # We rely on icos.linux to enable the firewall so that we can add exceptions
+  # for ports 80 and 443.
+  - {role: icos.linux, tags: linux}

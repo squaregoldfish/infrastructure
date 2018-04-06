@@ -56,26 +56,13 @@
   notify: reload nginx config
 
 - import_tasks: certbot.yml
-
-- block:
-    # If the host is not running a firewall then trying to add rules to it will
-    # make the ansible firewalld module very sad.
-    - name: See if firewalld is active
-      command: systemctl -q is-active firewalld
-      register: firewalld_running
-      failed_when: false
-      changed_when: false
-      
-    - name: Open up ports 80 and 443 in the firewall  
-      firewalld:
-        service: "{{ item }}"
-        permanent: true
-        state: enabled
-        immediate: yes
-      with_items:
-        - http
-        - https
-      when: firewalld_running.rc == 0
-  # Firewalld is only used on CentOS
-  when: ansible_distribution == 'CentOS'
   
+- name: Allowing inbound HTTP/HTTPS (CentOS)
+  firewalld: service={{ item }} permanent=true state=enabled immediate=true
+  with_items: [http, https]
+  when: ansible_distribution == "CentOS"
+  
+- name: Allowing inbound HTTP/HTTPS (Ubuntu)
+  ufw: rule=allow port={{ item }}
+  with_items: [http, https]
+  when: ansible_distribution == "Ubuntu"
