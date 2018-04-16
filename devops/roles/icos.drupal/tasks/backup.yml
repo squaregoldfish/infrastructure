@@ -19,7 +19,7 @@
       dest: "{{ backup_path }}/{{ project_name }}Drupal/{{ project_name }}DrupalBackupScript.sh"
       mode: u+x
 
-  - name: Call backup script from backup_server.sh
+  - name: Add backup script call in backup_server.sh
     blockinfile:
       path: "{{ backup_path }}/backup_server.sh"
       block: |

@@ -43,11 +43,16 @@
     - themes_backup
   when: restore and project_name != "demo"
 
+- name: Create {{ project_dir }}/config/ directory
+  file: path={{ project_dir }}/config/ state=directory recurse=yes
+
+- name: Copy uploads config
+  copy:
+    src: uploads.ini
+    dest: "{{ project_dir }}/config/uploads.ini"
+
 - name: Create {{ project_dir }}/files/private/ directory
   file: path={{ project_dir }}/files/private/ state=directory recurse=yes
-
-- name: Change private directory owner
-  command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/private/
 
 - name: Create {{ project_dir }}/files/default/ directory
   file: path={{ project_dir }}/files/default/ state=directory recurse=yes
@@ -98,6 +103,9 @@
     state: present
     pull: yes
   notify: reload nginx config
+
+- name: Change private directory owner
+  command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/private/
 
 - name: Restore database
   import_tasks: database.yml
