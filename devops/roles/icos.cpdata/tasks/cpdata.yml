@@ -1,5 +1,5 @@
 - name: Run the jarservice role
-  include_role:
+  import_role:
     name: icos.jarservice
   vars:
     username        : "{{ cpdata_username }}"
@@ -10,7 +10,7 @@
     servicename     : "{{ cpdata_servicename }}"
     servicetemplate : "{{ cpdata_template }}"
 
-- include_role: name=icos.certbot
+- import_role: name=icos.certbot
   vars:
     - certbot_domain: data.fieldsites.se
 

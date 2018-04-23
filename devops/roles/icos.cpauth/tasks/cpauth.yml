@@ -1,5 +1,5 @@
 - name: Run the jarservice role
-  include_role:
+  import_role:
     name: icos.jarservice
   vars:
     username        : "{{ cpauth_username }}"
@@ -17,6 +17,6 @@
     owner: "{{ cpauth_username }}"
     group: "{{ cpauth_username }}"
 
-- include_role: name=icos.certbot
+- import_role: name=icos.certbot
   vars:
     - certbot_domains: [auth.fieldsites.se, cpauth.icos-cp.eu]

@@ -4,7 +4,7 @@
     dest: /etc/nginx/conf.d/
 
 - name: Run the jarservice role
-  include_role:
+  import_role:
     name: icos.jarservice
   vars:
     username        : "{{ cpmeta_username }}"
@@ -30,7 +30,7 @@
     state: link
   when: cpmeta_filestorage_target is defined
 
-- include_role:
+- import_role:
     name: icos.certbot
   vars:
     - certbot_domain: meta.fieldsites.se
