@@ -4,6 +4,7 @@
 [icosprod]
 ubuntu
 centos
+bionic
 
 [icosprod:vars]
 linux_timezone_path=/usr/share/zoneinfo/Europe/Stockholm

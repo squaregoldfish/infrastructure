@@ -1,3 +1,4 @@
 postgresql_centos_repo_url: "https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm"
-postgresql_ubuntu_repo_str: "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
+# ansible_distribution_release will be 'xenial', 'bionic' etc
+postgresql_ubuntu_repo_str: "deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main"
 
