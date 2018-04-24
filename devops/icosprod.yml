@@ -9,8 +9,6 @@
     - vars.yml
   roles:
     # Higher level service-level roles.
-    - role: icos.nginx
-      tags: nginx
     - role: icos.restheart
       tags: restheart
     - role: icos.cpauth
