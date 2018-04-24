@@ -1,2 +1,2 @@
 dependencies:
-  - {role: icos.java}
+  - {role: icos.java, tags: java}

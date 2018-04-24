@@ -1,5 +1,5 @@
 dependencies:
-  - { role: icos.docker }
-  - { role: icos.nginx }
+  - { role: icos.docker, tags: docker }
+  - { role: icos.nginx, tags: nginx }
 
 

@@ -1,4 +1,4 @@
 dependencies:
-  - {role: icos.docker}
+  - {role: icos.docker, tags: docker}
 
 
