@@ -33,4 +33,4 @@
 - import_role:
     name: icos.certbot
   vars:
-    - certbot_domains: meta.fieldsites.se
+    - certbot_domains: [meta.fieldsites.se]
