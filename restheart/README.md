@@ -25,4 +25,17 @@ Specify aggregations for a collection:
 
 Users that specified ORCID ID in their user profile:
 
-`curl -G --data-urlencode 'keys={"_id":1, "profile.orcid":1}' --data-urlencode 'filter={"profile.orcid":{"$regex": ".+"}}' http://127.0.0.1:8088/db/users`
+`curl -G --data-urlencode 'keys={"_id":1, "profile.orcid":1}' --data-urlencode 'filter={"profile.orcid":{"$regex": ".+"}}' http://127.0.0.1:8088/db/users?count=true`
+
+Get download counts per IP address:
+
+`curl -o page1.json 'https://restheart.icos-cp.eu/db/dobjdls/_aggrs/perIp?pagesize=1000&page=1'`
+
+Transform download counts json from the previous command to tsv (requires jq installed):
+
+`cat page1.json | jq -r '._embedded[] | [.count, .ip, .megabytes] | @tsv' > page1.tsv`
+
+Sort the results by download count descending:
+
+`cat page1.tsv page2.tsv | sort -nr > icos_dl_stats_2018-03-27.tsv`
+
