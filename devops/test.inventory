@@ -12,12 +12,8 @@ linux_add_ssh_root=
 get_ssl=False
 certbot_install_certificate=False
 
-
 [stiltmaster]
-ubuntu stilt_spoof_ip="192.168.99.20"
-
-[stiltcluster:vars]
-stilt_spoof_ip="192.168.99.20"
+ubuntu
 
 [stiltcluster]
 ubuntu
