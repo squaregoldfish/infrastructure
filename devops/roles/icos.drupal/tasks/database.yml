@@ -3,26 +3,15 @@
     src: "{{ backup_path }}/{{ project_name }}Drupal/db/"
     dest: "{{ project_dir }}/db/"
 
-- name: Copy database conf file
-  template:
-    src: drupal-mysql.conf.j2
-    dest: "{{ project_dir }}/db/drupal-mysql.conf"
-  register: database_conf
-
 - name: Wait 10 seconds for the database daemon to start
   wait_for: timeout=10
-
-- name: Copy database conf file
-  command: 'docker exec {{ project_name }}_mariadb_1 cp /var/lib/mysql/drupal-mysql.conf ~/.my.cnf'
-  when: database_conf.changed
 
 - name: Restore database
   shell:
     >
     docker exec -i {{ project_name }}_mariadb_1 sh -c
-    'mysql -e "DROP DATABASE IF EXISTS {{ database_name | default("icos") }}"
-    && mysql -e "CREATE DATABASE {{ database_name | default("icos") }}"
-    && mysql {{ database_name | default("icos") }} < /var/lib/mysql/{{ project_name }}_db_dump.sql'
+    'mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS {{ database_name | default("icos") }}; CREATE DATABASE {{ database_name | default("icos") }}"
+    && mysql -u root -p"$MYSQL_ROOT_PASSWORD" {{ database_name | default("icos") }} < /var/lib/mysql/{{ project_name }}_db_dump.sql'
   # mysql is not always ready to accept connections the first time
   register: result
   until: result.stderr == ""
