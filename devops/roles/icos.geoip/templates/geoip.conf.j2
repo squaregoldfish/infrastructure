@@ -1,0 +1,18 @@
+server {
+    listen       443 ssl;
+    server_name  geoip.icos-cp.eu;
+
+    # Keep the geoip logs separate to better get an idea of its usage.
+    access_log   /var/log/nginx/geoip.log;
+
+    location / {
+        # Our wildcard DNS points to fsicos but we want to deploy to fsicos2. A
+        # reverse-proxy is set up on fsicos, but we still want the access
+        # restrictions to work.
+        set_real_ip_from 194.47.223.133; # fsicos
+
+        {{ geoip_nginx_allow_deny | indent(8) }}
+        proxy_pass http://127.0.0.1:{{ geoip_host_port }};
+        proxy_set_header Host $host;
+    }
+}

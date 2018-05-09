@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  geoip:
+    build: build
+    ports:
+      - "127.0.0.1:{{ geoip_host_port }}:5000"
+    volumes:
+      - ./volumes/db:/geoip/DB
+    restart: unless-stopped

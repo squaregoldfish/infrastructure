@@ -31,3 +31,12 @@
       tags: mattermost
     - role: icos.sitesaquanetform
       tags: sitesaquanetform
+
+- hosts: icosprod2
+  become: true
+  vars_files:
+    - vault.yml
+    - vars.yml
+  roles:
+    - role: icos.geoip
+      tags: geoip
