@@ -3,7 +3,6 @@
 set -e
 set -u
 
-H=/home/{{ stiltweb_username }}
-A={{ stiltweb_statedir }}
+A="{{ stiltweb_statedir }}"
 
-tail -f $H/slotproducer.log $A/slots/trace.log $A/jobs/trace.log "$(ls -dtr1 $A/jobs/job* | tail -1)/trace.log"
+tail -f "$A/slotproducer.log" "$A/slots/trace.log" "$A/jobs/trace.log" "$(ls -dtr1 $A/jobs/job* | tail -1)/trace.log"
