@@ -7,4 +7,4 @@
     jarfile         : "{{ stiltcluster_jar_file }}"
     servicename     : "{{ stiltcluster_servicename }}"
     servicetemplate : "{{ stiltcluster_template }}"
-    appconfig       : "{{ stiltcluster_appconfig }}"
+    apptemplate     : "{{ stiltcluster_apptemplate }}"
