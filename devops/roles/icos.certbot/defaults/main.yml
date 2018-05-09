@@ -1,2 +1,2 @@
-# It's nice to be able to turn it of during testing.
+# It's nice to be able to turn it off during testing.
 certbot_install_certificate: True

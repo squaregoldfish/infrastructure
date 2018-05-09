@@ -1,0 +1,28 @@
+---
+- name: Check if backup script exists
+  stat:
+    path: "{{ backup_path }}/backup_server.sh"
+  register: backup_exists
+
+- block:
+  - name: Create backup directory
+    file:
+      path: "{{ backup_path }}/mattermost"
+      state: directory
+
+  - name: Install backup script
+    template:
+      src: backup.sh
+      dest: "{{ backup_path }}/mattermost/backupScript.sh"
+      mode: u+x
+
+  - name: Add backup script call in backup_server.sh
+    blockinfile:
+      path: "{{ backup_path }}/backup_server.sh"
+      block: |
+        printf "\n####################################\n\n"
+
+        ./mattermost/backupScript.sh
+      marker: "# {mark} ANSIBLE MANAGED BLOCK FOR MATTERMOST"
+      insertbefore: ./copy_offsite.sh
+  when: backup_exists.stat.exists

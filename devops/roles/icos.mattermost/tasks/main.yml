@@ -1,0 +1,59 @@
+---
+- name: Include vars
+  include_vars: vars.yml
+
+- name: Include vault
+  include_vars: vault.yml
+
+- name: Copy nginx conf
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/conf.d/mattermost.conf
+    mode: 0700
+  notify: reload nginx config
+
+- import_role: name=icos.certbot
+  vars:
+    - certbot_domains: [chat.fieldsites.se]
+
+- name: Pull source from git
+  git:
+    repo: https://github.com/mattermost/mattermost-docker.git
+    dest: "{{ project_dir }}"
+    force: yes
+
+- name: Create volumes
+  file:
+    path: "{{ project_dir }}/volumes/app/mattermost/{{ item }}"
+    owner: 2000
+    group: 2000
+    recurse: yes
+  loop:
+    - data
+    - logs
+    - config
+
+- name: Restore file archives
+  unarchive:
+    src: "{{ backup_path }}/mattermost/files_backup.tar.gz"
+    dest: "{{ project_dir }}/volumes/app/mattermost/"
+  when: restore
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ project_dir }}/docker-compose.override.yml"
+
+- name: Run docker-compose
+  docker_service:
+    project_src: "{{ project_dir }}"
+    files: docker-compose.override.yml
+    state: present
+  notify: reload nginx config
+
+- name: Restore database
+  import_tasks: database.yml
+  when: restore
+
+- name: Setup backup script
+  import_tasks: backup.yml

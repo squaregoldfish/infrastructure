@@ -1,7 +1,7 @@
 # This ansible playbook will provision our production servers.
 
 - import_playbook: setup.yml
-  
+
 - hosts: icosprod
   become: true
   vars_files:
@@ -27,3 +27,5 @@
       tags: sitesstations
     - role: icos.drupal
       tags: drupal
+    - role: icos.mattermost
+      tags: mattermost
