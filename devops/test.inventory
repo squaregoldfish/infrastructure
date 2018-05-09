@@ -16,5 +16,6 @@ certbot_install_certificate=False
 ubuntu
 
 [stiltcluster]
-ubuntu
-centos
+ubuntu stiltcluster_port=2561
+centos stiltcluster_port=2562
+bionic stiltcluster_port=2563
