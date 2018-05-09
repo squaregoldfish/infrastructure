@@ -1,3 +1,10 @@
+- name: Make sure that the stiltweb state directory exists
+  file:
+    path: "{{ stiltweb_statedir }}"
+    state: directory
+    owner: "{{ stiltweb_username }}"
+    group: "{{ stiltweb_username }}"
+
 - name: Run the jarservice role
   import_role:
     name: icos.jarservice
