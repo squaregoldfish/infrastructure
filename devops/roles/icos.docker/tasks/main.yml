@@ -4,3 +4,14 @@
 - name: Start docker
   service: name=docker state=started enabled=yes
   tags: docker_only
+
+- name: Create docker-compose based projects home
+  file:
+    path: "{{ docker_compose_src_parent }}/docker-compose-projects"
+    state: directory
+
+- name: Create {{ docker_compose_dst_parent }}
+  file:
+    dest: "{{ docker_compose_dst_parent }}"
+    src: "{{ docker_compose_src_parent }}/docker-compose-projects"
+    state: link
