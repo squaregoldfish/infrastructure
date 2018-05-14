@@ -112,6 +112,9 @@
 - name: Change private directory owner
   command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/private/
 
+- name: Change files directory owner
+  command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files
+
 - name: Restore database
   import_tasks: database.yml
   when: restore
