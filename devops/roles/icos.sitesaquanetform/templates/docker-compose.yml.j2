@@ -1,0 +1,7 @@
+version: '2'
+services:
+  node:
+    build: ./repo
+    ports:
+      - "127.0.0.1:8116:5001"
+    restart: unless-stopped

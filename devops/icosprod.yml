@@ -29,3 +29,5 @@
       tags: drupal
     - role: icos.mattermost
       tags: mattermost
+    - role: icos.sitesaquanetform
+      tags: sitesaquanetform
