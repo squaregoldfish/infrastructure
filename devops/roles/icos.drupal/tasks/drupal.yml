@@ -14,13 +14,13 @@
     dest: /etc/nginx/conf.d/{{ nginx_conf_name }}.conf
     mode: 0700
   notify: reload nginx config
-  when: project_name != "cp" and project_name != "ns" and project_name != "demo"
+  when: project_name != "cp" and project_name != "ns"
 
 - meta: flush_handlers
 
 - name: Get SSL certificate
   import_tasks: ssl-certificate.yml
-  when: get_ssl|bool and project_name != "ns" and project_name != "cp" and project_name != "demo"
+  when: get_ssl|bool and project_name != "ns" and project_name != "cp"
 
 - name: Create project directory
   file:
@@ -54,8 +54,8 @@
 - name: Create {{ project_dir }}/files/private/ directory
   file: path={{ project_dir }}/files/private/ state=directory recurse=yes
 
-- name: Create {{ project_dir }}/files/default/ directory
-  file: path={{ project_dir }}/files/default/ state=directory recurse=yes
+- name: Create {{ project_dir }}/files/default/files/ directory
+  file: path={{ project_dir }}/files/default/files/ state=directory recurse=yes
 
 - name: Copy settings.php
   template:

@@ -17,6 +17,10 @@ server {
     root /usr/share/nginx/html;
   }
 
+  location /cp_login {
+    return 403;
+  }
+
   location / {
     if ($arg_q ~* "^user"){
       return 403;
