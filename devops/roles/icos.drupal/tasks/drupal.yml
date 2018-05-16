@@ -8,10 +8,10 @@
 - name: Include vars
   include_vars: drupal.yml
 
-- name: Copy nginx {{ name }}.conf
+- name: Copy nginx {{ nginx_conf_name }}.conf
   template:
     src: nginx.conf.j2
-    dest: /etc/nginx/conf.d/{{ name }}.conf
+    dest: /etc/nginx/conf.d/{{ nginx_conf_name }}.conf
     mode: 0700
   notify: reload nginx config
   when: project_name != "cp" and project_name != "ns" and project_name != "demo"

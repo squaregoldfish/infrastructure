@@ -1,4 +1,4 @@
-name: demo
+nginx_conf_name: icosdemo
 drupal_docker_port: 8110
 mysql_docker_port: 3337
 domain: demo.icos-cp.eu

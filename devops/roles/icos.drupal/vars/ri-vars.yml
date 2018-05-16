@@ -1,4 +1,4 @@
-name: icosri
+nginx_conf_name: icosri
 drupal_docker_port: 8102
 mysql_docker_port: 3333
 domain: www.icos-ri.eu

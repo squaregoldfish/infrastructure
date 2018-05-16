@@ -1,4 +1,4 @@
-name: icosse
+nginx_conf_name: icosse
 drupal_docker_port: 8119
 mysql_docker_port: 3341
 domain: sweden.icos-cp.eu

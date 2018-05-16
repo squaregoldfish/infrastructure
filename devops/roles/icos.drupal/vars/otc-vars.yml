@@ -1,4 +1,4 @@
-name: icosotc
+nginx_conf_name: icosotc
 drupal_docker_port: 8109
 mysql_docker_port: 3336
 domain: otc.icos-cp.eu

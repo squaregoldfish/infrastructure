@@ -1,4 +1,4 @@
-name: actris
+nginx_conf_name: actris
 drupal_docker_port: 8111
 mysql_docker_port: 3340
 domain: ac.icos-cp.eu
