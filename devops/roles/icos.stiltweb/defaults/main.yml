@@ -8,4 +8,4 @@ stiltweb_template: roles/icos.stiltweb/templates/stiltweb.service.j2
 stiltweb_nginxconfig:  roles/icos.stiltweb/files/stiltweb.conf
 stiltweb_apptemplate: roles/icos.stiltweb/templates/local.conf.j2
 # This is where stiltweb keeps it's archive of of stilt files
-stiltweb_statedir: /local/stiltdata/stiltweb/
+stiltweb_statedir: /disk/data/stiltweb/
