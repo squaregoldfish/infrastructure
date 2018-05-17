@@ -1,0 +1,19 @@
+# These tasks will build a data structure like this:
+# [ {'host': 'host1', 'port': 2551}, {'host': 'host2', 'port': 2552} ]
+
+# Build a list of dictionaries in two step. First use 'set_fact' + 'with_list' +
+# 'register'.
+- set_fact:
+    _fml_:
+      host: "{{ item }}"
+      port: "{{ hostvars[item].stiltcluster_port }}"
+      ip: "{{ hostvars[item].stiltcluster_ip }}"
+      host_key: "{{ hostvars[item].ansible_ssh_host_key_ecdsa_public }}"
+  register: _tmp_
+  with_list: "{{ groups.stiltcluster | select('!=', inventory_hostname) | list }}"
+
+# Then extract the stuff we actually want from the results. The stiltweb host
+# might also have the stiltcluster role, in which case we'll filter out that
+# host.
+- set_fact:
+    stiltweb_remote_hosts: "{{ _tmp_.results | map(attribute='ansible_facts._fml_') | list }}"

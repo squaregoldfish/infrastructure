@@ -9,3 +9,6 @@ stiltweb_nginxconfig:  roles/icos.stiltweb/files/stiltweb.conf
 stiltweb_apptemplate: roles/icos.stiltweb/templates/local.conf.j2
 # This is where stiltweb keeps it's archive of of stilt files
 stiltweb_statedir: /disk/data/stiltweb/
+# The port that netty/akka/rpc port on the stiltweb host. Incoming stiltcluster
+# connections will be redirected here.
+stiltweb_port: 2550

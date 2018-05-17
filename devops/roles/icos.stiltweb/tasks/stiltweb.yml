@@ -2,6 +2,7 @@
   user:
     name: "{{ stiltweb_username }}"
     state: present
+  register: _user
 
 - name: Make sure that the stiltweb state directory exists
   file:
@@ -22,6 +23,12 @@
     nginxconfig     : "{{ stiltweb_nginxconfig }}"
     apptemplate     : "{{ stiltweb_apptemplate }}"
 
+
+- import_tasks: stiltweb_build_hosts.yml
+
+- import_tasks: stiltweb_ssh_config.yml
+  become: yes
+  become_user: "{{ stiltweb_username }}"
 - name: Install tail-latest.sh
   template:
     src: tail-latest.sh.j2
