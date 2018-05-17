@@ -24,7 +24,7 @@
     - name: Enable NTP
       command: timedatectl set-ntp yes
       # timedatctl always returns 0 and doesn't print anything
-      changed_when: false 
+      changed_when: false
   when: ansible_distribution == 'CentOS'
 
 - name: Install utilities
@@ -34,6 +34,7 @@
     - mg   # microemacs
     - htop # a better top(1)
     - jq   # like sed for json
+    - make
 
 - name: Copy utilities
   copy:
@@ -62,7 +63,7 @@
           exec {{ _ss_bin.stdout_lines[0] }} "$@"
       fi
   when:  _ss_bin.failed == false
-  
+
 - block:
     - name: Allowing inbound SSH
       ufw: rule=allow port=ssh
