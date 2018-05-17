@@ -1,3 +1,8 @@
+- name: Create stiltweb user
+  user:
+    name: "{{ stiltweb_username }}"
+    state: present
+
 - name: Make sure that the stiltweb state directory exists
   file:
     path: "{{ stiltweb_statedir }}"
