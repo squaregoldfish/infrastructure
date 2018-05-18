@@ -12,5 +12,7 @@ cpauth{
 
 	auth.masterAdminPass = "{{ cpauth_masteradmin_pass }}"
 
+    restheart.ipsToIgnore = ["130.235.98.79", "130.235.98.177", "130.235.98.81", "130.235.98.184", "130.235.99.156"]
+
 	{{ cpauth_oauth_conf | indent}}
 }
