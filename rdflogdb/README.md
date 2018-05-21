@@ -18,3 +18,9 @@ Deploying an RDF log Postgres instance
 - Create system account on slave machine for ssh tunnel coming from master
 - Setup service for ssh tunnel from master based on `rdflogdb/master/example.postgrestunnel.service`
 - Edit and run `rdflogdb/slave/init.sh` to start container as slave. Note that `rdflogdb/slave/init.sh` should only be run once when you setup postgres container to act as slave.
+
+Useful commands
+----------------------------
+Restore from backup:
+
+`cat dump.sqlc | sudo docker exec -i rdflogdb_rdflogdb_1 bash -c 'pg_restore -U postgres -d postgres --clean --create --format=c'`
