@@ -13,7 +13,7 @@ get_ssl=False
 certbot_install_certificate=False
 
 [stiltmaster]
-ubuntu
+bionic
 
 [stiltcluster]
 ubuntu stiltcluster_port=2561
