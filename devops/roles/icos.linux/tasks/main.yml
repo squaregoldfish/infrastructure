@@ -1,3 +1,6 @@
+- include_vars:
+    file: vars/{{ ansible_distribution | lower }}.yml
+
 - name: Change linux timezone
   # <2017-01-09 mån> My version of ansible doesn't have the 'timezone' module so
   # I'll just do the linking myself.
@@ -34,7 +37,15 @@
     - mg   # microemacs
     - htop # a better top(1)
     - jq   # like sed for json
-    - make
+    - make # party like it's 1976
+    - "{{ linux_netcat_package }}"
+
+- name: Install bash aliases
+  lineinfile:
+    path: /root/.bash_profile
+    line: "alias sc='systemctl'"
+    state: present
+    create: yes
 
 - name: Copy utilities
   copy:
