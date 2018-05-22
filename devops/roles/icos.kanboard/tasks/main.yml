@@ -2,6 +2,7 @@
   user:
     name: kanboard
     append: yes
+    shell: /bin/bash
 
 - name: Copy kanboards nginx conf to nginx/conf.d
   copy:

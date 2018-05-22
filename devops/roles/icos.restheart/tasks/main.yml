@@ -3,6 +3,7 @@
     name: restheart
     groups: docker
     append: yes
+    shell: /bin/bash
 
 - name: Make sure git is installed
   package: name=git state=present

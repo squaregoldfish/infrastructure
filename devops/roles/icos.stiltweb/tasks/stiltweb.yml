@@ -2,6 +2,7 @@
   user:
     name: "{{ stiltweb_username }}"
     state: present
+    shell: /bin/bash
   register: _user
 
 - name: Make sure that the stiltweb state directory exists
