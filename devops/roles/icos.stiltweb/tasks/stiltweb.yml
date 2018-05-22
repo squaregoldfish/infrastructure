@@ -24,12 +24,26 @@
     nginxconfig     : "{{ stiltweb_nginxconfig }}"
     apptemplate     : "{{ stiltweb_apptemplate }}"
 
+- name: Add systemd service files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src:  stiltweb_tunnel@.service.j2,
+        dest: /etc/systemd/system/stiltweb_tunnel@.service }
+    - { src: stiltweb_tunnels.target.j2,
+        dest: /etc/systemd/system/stiltweb_tunnels.target }
+  notify:
+    - reload systemd config
 
 - import_tasks: stiltweb_build_hosts.yml
 
 - import_tasks: stiltweb_ssh_config.yml
   become: yes
   become_user: "{{ stiltweb_username }}"
+
+- import_tasks: stiltweb_restart_tunnels.yml
+
 - name: Install tail-latest.sh
   template:
     src: tail-latest.sh.j2

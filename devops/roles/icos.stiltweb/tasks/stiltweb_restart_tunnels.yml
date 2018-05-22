@@ -1,0 +1,21 @@
+- name: List running stiltweb tunnels
+  shell: >
+    systemctl show --state=active '*tunnel@*' --property=Names |
+    awk 'match($0, /Names=stiltweb_tunnel@([^\.]+).service/, a) {print a[1]}'
+  register: _active_tunnels
+  changed_when: no
+
+- name: Stop stiltweb tunnels to hosts not currently in the 'stiltcluster' group
+  systemd:
+    name: "stiltweb_tunnel@{{ item }}.service"
+    state: stopped
+    enabled: no
+  loop: "{{ _active_tunnels.stdout_lines }}"
+  when: item not in groups.stiltcluster
+
+- name: Start stiltweb tunnels
+  systemd:
+    name: "stiltweb_tunnel@{{ item.host }}.service"
+    state: started
+    enabled: yes
+  loop: "{{ stiltweb_remote_hosts }}"
