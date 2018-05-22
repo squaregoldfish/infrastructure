@@ -6,10 +6,21 @@
   pre_tasks:
     # Use fail since assert is to verbose.
     # https://github.com/ansible/ansible/issues/27124
-     - name: Fail if ansible is too old 
+     - name: Fail if ansible is too old
        fail:
         msg: "This playbook uses features that requires ansible >= 2.4"
        when: "ansible_version.full is version_compare('2.4', '<=')"
+
+# Include local_vars.yml if it exist but don't fail if it doesn't.
+# That file is meant for local variables (not checked into git).
+- hosts: all
+  tags: always
+  gather_facts: no
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_first_found:
+        - local_vars.yml
+        - /dev/null
 
 # The system that is being provisioned needs to have python installed. Of the
 # two systems we currently support, CentOS 7 and Ubuntu 16.04, only CentOS have
@@ -27,4 +38,3 @@
       raw: "test -e /usr/bin/python || apt install -y python-minimal"
       register: raw_python
       changed_when: '"Setting up python" in raw_python.stdout'
-      

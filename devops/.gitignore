@@ -1,2 +1,3 @@
 .vagrant/
 *.pyc
+local_vars.yml
