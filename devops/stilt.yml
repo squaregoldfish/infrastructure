@@ -2,12 +2,19 @@
 
 ---
 - import_playbook: setup.yml
-  
+
+# This play just serves to establish an ssh connection to each of the cluster
+# hosts, this collecting the host's ssh key, which we then need in the
+# stiltmaster play in order to set up known_hosts.
+- hosts: stiltcluster
+  tasks:
+    - debug: msg="Collecting host key from {{ inventory_hostname }}"
+
 - hosts: stiltmaster
   become: true
   vars_files:
     - vault.yml
-    - vars.yml 
+    - vars.yml
   roles:
     - role: icos.stiltweb
       tags: stiltweb
