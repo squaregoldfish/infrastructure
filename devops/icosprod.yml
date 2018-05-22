@@ -23,8 +23,6 @@
       tags: filedrop
     - role: icos.kanboard
       tags: kanboard
-    - role: icos.sitesstations
-      tags: sitesstations
     - role: icos.drupal
       tags: drupal
     - role: icos.mattermost
