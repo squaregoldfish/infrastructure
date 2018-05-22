@@ -32,10 +32,10 @@
     project_src: /disk/data/alfresco/docker/alfresco/
     state: present
 
-# To restore from backup you must set the variable restore in devops/vars.yml to true. 
-# WARNING: The backup for alfresco is currently 80G large. 
+# To restore from backup you must set the variable restore in devops/vars.yml to true.
+# WARNING: The backup for alfresco is currently 80G large.
 - name: Copy backed up data for alfresco
-  synchronize: 
+  synchronize:
     src: "{{ backup_path }}alfresco/rsyncBackup/alfresco-5.0.d/"
     dest: /disk/data/alfresco/
   when: restore

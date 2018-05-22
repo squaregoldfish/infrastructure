@@ -19,7 +19,7 @@
 # distinguish their file names by appending their checksum.
 - name: Get checksum of local jar file.
   # Stop ansible from running local_action as root (toplevel "become: true")
-  become: false 
+  become: false
   local_action: stat path="{{jarfile}}" checksum_algorithm=sha256
   register: jarfilestat
 
@@ -29,11 +29,11 @@
   fail:
     msg: "{{ jarfile }} doesn't exist!"
   when: not jarfilestat.stat.exists
-    
+
 # Compute the destination filename, we'll be using it more than once.
 - set_fact:
     destjarfile: "{{jardir.path}}/{{jarfile|basename}}-{{jarfilestat.stat.checksum}}"
-     
+
 - name: Copy {{ servicename }} jar file
   copy:
     src: "{{ jarfile }}"
@@ -61,7 +61,7 @@
     group: "{{ username }}"
   when: apptemplate is defined
   notify: restart {{ servicename }}
-  
+
 - name: Copy {{ servicename }} nginx config file
   copy:
     src: "{{ item }}"
@@ -72,7 +72,7 @@
     - "{{nginxconfig}}*"
   when: nginxconfig is defined
   notify: reload nginx config
-  
+
 # The systemd unit file references the symbolic link in the service users' home
 # directory. This operation makes that link point to the jar files we've just
 # copied.
@@ -85,13 +85,13 @@
     state: link
   register: installed_jarfile
   notify: restart {{ servicename }}
-  
+
 - name: Add systemd {{ servicename }} servicefile
   template: src={{ servicetemplate }} dest=/etc/systemd/system/{{ servicename }}.service
   notify:
     - reload systemd config
     - restart {{ servicename }}
-  
+
 - name: Enable systemd {{ servicename }}
   service: name={{ servicename }} enabled=yes state=started
 
@@ -101,7 +101,7 @@
   shell: ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null | sed '1,{{jarservice_keep_n_old}}d'
   register: oldjarfiles
   changed_when: False
-  
+
 - name: Remove old jarfiles
   file: path={{ item }} state=absent
   with_items:
