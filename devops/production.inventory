@@ -15,7 +15,7 @@ get_ssl=False
 docker_compose_src_parent=/disk/data
 
 [stiltmaster]
-fsicos2.lunarc.lu.se
+fsicos2.lunarc.lu.se stiltcluster_port=2561
 
 [stiltcluster]
-fsicos2.lunarc.lu.se
+
