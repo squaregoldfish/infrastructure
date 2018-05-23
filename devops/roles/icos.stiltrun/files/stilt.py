@@ -40,7 +40,7 @@ import json
 
 # GLOBALS
 
-METFILES_DIR = "/mnt/additional_disk/WORKER/Input/Metdata/Europe2"
+METFILES_DIR = "/disk/data/stilt/Input/Metdata/Europe2"
 STILT_IMAGE = 'stiltute'
 RUN_DIRECTORY = os.path.join(os.environ['HOME'], '.stiltruns')
 DEBUG_FILES = []
@@ -325,6 +325,8 @@ class STILTContainer:
 # METEOROLOGY FILES
 
 def list_metfiles(path=METFILES_DIR):
+    if not os.path.isdir(path):
+        die("%s is not a directory" % path)
     return sorted(glob.glob("%s/ECmetF.*.arl" % path))
 
 

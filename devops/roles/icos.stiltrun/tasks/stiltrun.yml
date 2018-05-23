@@ -38,3 +38,7 @@
   assert:
     that: stilt_output.stdout == "2012010100\n2012010103\n2012010106"
   changed_when: no
+
+- name: Test stiltrun by running listmetfiles
+  command: /usr/local/bin/stilt listmetfiles
+  changed_when: no
