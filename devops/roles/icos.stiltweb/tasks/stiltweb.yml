@@ -22,7 +22,6 @@
     servicename     : "{{ stiltweb_servicename }}"
     servicetemplate : "{{ stiltweb_template }}"
     nginxconfig     : "{{ stiltweb_nginxconfig }}"
-    apptemplate     : "{{ stiltweb_apptemplate }}"
 
 - name: Add systemd service files
   template:
