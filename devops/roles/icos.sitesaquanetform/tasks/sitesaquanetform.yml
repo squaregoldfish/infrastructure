@@ -8,7 +8,7 @@
 - import_role: name=icos.certbot
   vars:
     - certbot_domains: [apply.fieldsites.se]
-    - nginx_conf_name: sites-aquanet-form.conf
+    - nginx_conf_name: sites-aquanet-form
 
 - name: Copy nginx conf
   copy:

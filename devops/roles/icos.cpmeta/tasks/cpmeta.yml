@@ -2,13 +2,13 @@
     name: icos.certbot
   vars:
     - certbot_domains: [meta.icos-cp.eu]
-    - nginx_conf_name: meta.conf
+    - nginx_conf_name: meta
 
 - import_role:
     name: icos.certbot
   vars:
     - certbot_domains: [meta.fieldsites.se]
-    - nginx_conf_name: meta.conf
+    - nginx_conf_name: meta
 
 - name: Run the jarservice role
   import_role:

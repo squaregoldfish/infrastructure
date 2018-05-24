@@ -1,12 +1,12 @@
 - import_role: name=icos.certbot
   vars:
     - certbot_domains: [data.icos-cp.eu]
-    - nginx_conf_name: data.conf
+    - nginx_conf_name: data
 
 - import_role: name=icos.certbot
   vars:
     - certbot_domains: [data.fieldsites.se]
-    - nginx_conf_name: data.conf
+    - nginx_conf_name: data
 
 - name: Run the jarservice role
   import_role:

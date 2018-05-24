@@ -8,7 +8,7 @@
 - import_role: name=icos.certbot
   vars:
     - certbot_domains: [chat.fieldsites.se]
-    - nginx_conf_name: mattermost.conf
+    - nginx_conf_name: mattermost
 
 - name: Copy nginx conf
   template:
