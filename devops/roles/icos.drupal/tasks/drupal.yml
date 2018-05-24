@@ -8,6 +8,11 @@
 - name: Include vars
   include_vars: drupal.yml
 
+- import_role: name=icos.certbot
+  vars:
+    - certbot_domains: "{{ certbot_domains }}"
+  when: project_name != "ns" and project_name != "cp"
+
 - name: Copy nginx {{ nginx_conf_name }}.conf
   template:
     src: nginx.conf.j2
@@ -15,12 +20,6 @@
     mode: 0700
   notify: reload nginx config
   when: project_name != "cp" and project_name != "ns"
-
-- meta: flush_handlers
-
-- name: Get SSL certificate
-  import_tasks: ssl-certificate.yml
-  when: get_ssl|bool and project_name != "ns" and project_name != "cp"
 
 - name: Create project directory
   file:
@@ -122,4 +121,4 @@
 
 - name: Setup backup script
   import_tasks: backup.yml
-  when: project_name != "demo"
+  when: bash_path is defined and project_name != "demo"

@@ -3,4 +3,3 @@ drupal_docker_port: 8119
 mysql_docker_port: 3341
 domain: sweden.icos-cp.eu
 trusted_host: ^sweden\.icos-cp\.eu$
-ssl_domains: sweden.icos-cp.eu

@@ -2,10 +2,12 @@ server {
   listen       443 ssl;
   server_name  {{ domain }};
 
-{% if project_name == "ri" %}
-  ssl_certificate_key /etc/nginx/ssl/ri/icos-ri.eu.key;
-  ssl_certificate /etc/nginx/ssl/ri/icos-ri.eu.bundle.crt;
+{% if certbot_install_certificate | default(true) %}
+  ssl_certificate /etc/letsencrypt/live/{{ certbot_domains | first }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ certbot_domains | first }}/privkey.pem;
+{% endif %}
 
+{% if project_name == "ri" %}
   location =/science-conference {
     return 301 https://conference.icos-ri.eu/;
   }
@@ -37,41 +39,28 @@ server {
   }
 }
 
+{% if project_name == "ac" %}
+server {
+  listen       80;
+  server_name  www.actris.se {{ domain }};
+  return 301   https://{{ domain }}$request_uri;
+}
+{% elif project_name == "ri" or project_name == "fi" %}
+server {
+  listen       80;
+  server_name  {{ domain | replace("www.","") }} {{ domain }};
+  return 301   https://{{ domain }}$request_uri;
+}
+
+server {
+  listen       443 ssl;
+  server_name  {{ domain | replace("www.","") }};
+  return 301   https://{{ domain }}$request_uri;
+}
+{% else %}
 server {
   listen       80;
   server_name  {{ domain }};
   return 301   https://{{ domain }}$request_uri;
-}
-
-{% if project_name == "ac" %}
-server {
-  listen       80;
-  server_name  www.actris.se;
-  return 301   https://{{ domain }}$request_uri;
-}
-{% elif project_name == "ri" %}
-server {
-  listen       80;
-  server_name  icos-ri.eu icos-infrastructure.eu www.icos-infrastructure.eu;
-  return 301   https://www.icos-ri.eu$request_uri;
-}
-
-server {
-  listen       443 ssl;
-  server_name  icos-ri.eu;
-  ssl_certificate_key /etc/nginx/ssl/ri/icos-ri.eu.key;
-  ssl_certificate /etc/nginx/ssl/ri/icos-ri.eu.bundle.crt;
-  return 301   https://www.icos-ri.eu$request_uri;
-}
-{% elif project_name == "fi" %}
-server {
-  listen       80;
-  server_name  icos-finland.fi;
-  return 301   https://www.icos-finland.fi$request_uri;
-}
-server {
-  listen       443 ssl;
-  server_name  icos-finland.fi;
-  return 301   https://www.icos-finland.fi$request_uri;
 }
 {% endif %}
