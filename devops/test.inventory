@@ -1,16 +1,22 @@
 # This is an ansible inventory file used for testing. It uses the hostnames
-# 'ubuntu' and 'centos', which are VMs created by Vagrant (look in Vagrantfile).
+# 'ubuntu', 'centos' and 'bionic' which are VMs created by Vagrant (look in
+# Vagrantfile).
+
+[all:vars]
+linux_timezone_path=/usr/share/zoneinfo/Europe/Stockholm
+linux_add_ssh_root=
+get_ssl=False
+certbot_install_certificate=False
 
 [icosprod]
 ubuntu
 centos
 bionic
 
-[icosprod:vars]
-linux_timezone_path=/usr/share/zoneinfo/Europe/Stockholm
-linux_add_ssh_root=
-get_ssl=False
-certbot_install_certificate=False
+[icosprod2]
+bionic
+ubuntu
+centos
 
 [stiltmaster]
 bionic
