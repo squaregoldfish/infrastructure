@@ -1,3 +1,3 @@
 project_dir: /disk/data/drupal/{{ project_name }}/drupal
 backup_path: /home/backup/Backup
-certbot_domains: ["{{ ssl_domains | default(domain) }}"]
+certbot_domains: "{{ ssl_domains | default([domain]) }}"

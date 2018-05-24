@@ -11,6 +11,18 @@ server {
   location =/science-conference {
     return 301 https://conference.icos-ri.eu/;
   }
+{% elif project_name == "cp" %}
+  location = /license {
+    return 301 https://data.icos-cp.eu/licence;
+  }
+
+  location = /site {
+    return 301 https://www.icos-cp.eu;
+  }
+
+  location = /site/ {
+    return 301 https://www.icos-cp.eu;
+  }
 {% endif %}
 
   client_max_body_size 100M;
@@ -45,7 +57,7 @@ server {
   server_name  www.actris.se {{ domain }};
   return 301   https://{{ domain }}$request_uri;
 }
-{% elif project_name == "ri" or project_name == "fi" %}
+{% elif project_name == "ri" or project_name == "cp" or project_name == "fi" %}
 server {
   listen       80;
   server_name  {{ domain | replace("www.","") }} {{ domain }};
