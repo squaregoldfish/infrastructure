@@ -1,0 +1,36 @@
+- name: Check if {{ nginx_conf_name }}.conf exists
+  stat:
+    path: "/etc/nginx/conf.d/{{ nginx_conf_name }}.conf"
+  register: nginx_conf
+
+- name: Create an initial nginx {{ nginx_conf_name }}.conf for the certbot certification
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/conf.d/{{ nginx_conf_name }}.conf
+    mode: 0700
+  when: not nginx_conf.stat.exists
+  register: nginx_temp
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+  when: nginx_temp.changed
+
+- name: Install SSL certificate
+  command: >
+    certbot certonly
+    --authenticator webroot
+    --non-interactive
+    --webroot-path /usr/share/nginx/html/
+    {% for domain in certbot_domains %}
+    --domain {{ domain }}
+    {% endfor %}
+    --email carbon.admin@nateko.lu.se
+    --agree-tos
+
+- name: Add job to renew certificates
+  cron:
+    name: Certbot renewal
+    job: "certbot renew --post-hook 'service nginx reload'"
+    special_time: daily

@@ -18,29 +18,10 @@
       package: name=python-certbot-nginx state=present
   when: ansible_distribution == 'Ubuntu'
 
-- name: Add job to renew certificates
-  cron:
-    name: Certbot renewal
-    job: "certbot renew --post-hook 'service nginx reload'"
-    special_time: daily
+- name: Check if certificate already exists.
+  stat:
+    path: /etc/letsencrypt/live/{{ certbot_domains | first }}/cert.pem
+  register: letsencrypt_cert
 
-- block:
-    # Reload nginx to make sure the domain is reachable by Let's Encrypt
-    # validation server
-    - meta: flush_handlers
-
-    - name: Install SSL certificate
-      command: >
-        certbot
-        --authenticator webroot
-        --installer nginx
-        --non-interactive
-        --webroot-path /usr/share/nginx/html/
-        {% for domain in certbot_domains %}
-        --domain {{ domain }}
-        {% endfor %}
-        --email carbon.admin@nateko.lu.se
-        --agree-tos
-      notify: reload nginx config
-
-  when: certbot_install_certificate
+- import_tasks: certbot_install_certificate.yml
+  when: certbot_install_certificate and not letsencrypt_cert.stat.exists
