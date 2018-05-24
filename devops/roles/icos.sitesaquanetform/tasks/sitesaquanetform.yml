@@ -11,7 +11,7 @@
     - nginx_conf_name: sites-aquanet-form
 
 - name: Copy nginx conf
-  copy:
+  template:
     src: sites-aquanet-form.conf
     dest: /etc/nginx/conf.d/
     mode: 0700
