@@ -2,7 +2,6 @@
 fsicos.lunarc.lu.se
 
 [icosprod:vars]
-get_ssl=True
 cpmeta_filestorage_target=/disk/data/metaAppStorage
 docker_compose_src_parent=/disk/data
 
@@ -11,11 +10,9 @@ fsicos2.lunarc.lu.se
 
 [icosprod2:vars]
 cpmeta_filestorage_target=/disk/data/metaAppStorage
-get_ssl=False
 docker_compose_src_parent=/disk/data
 
 [stiltmaster]
 fsicos2.lunarc.lu.se stiltcluster_port=2561
 
 [stiltcluster]
-

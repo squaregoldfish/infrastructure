@@ -5,7 +5,6 @@
 [all:vars]
 linux_timezone_path=/usr/share/zoneinfo/Europe/Stockholm
 linux_add_ssh_root=
-get_ssl=False
 certbot_install_certificate=False
 
 [icosprod]

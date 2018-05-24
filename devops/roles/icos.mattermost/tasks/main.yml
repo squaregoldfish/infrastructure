@@ -5,16 +5,17 @@
 - name: Include vault
   include_vars: vault.yml
 
+- import_role: name=icos.certbot
+  vars:
+    - certbot_domains: [chat.fieldsites.se]
+    - nginx_conf_name: mattermost.conf
+
 - name: Copy nginx conf
-  copy:
+  template:
     src: nginx.conf
     dest: /etc/nginx/conf.d/mattermost.conf
     mode: 0700
   notify: reload nginx config
-
-- import_role: name=icos.certbot
-  vars:
-    - certbot_domains: [chat.fieldsites.se]
 
 - name: Pull source from git
   git:

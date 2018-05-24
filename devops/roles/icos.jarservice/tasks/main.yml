@@ -64,7 +64,7 @@
   notify: restart {{ servicename }}
 
 - name: Copy {{ servicename }} nginx config file
-  copy:
+  template:
     src: "{{ item }}"
     dest: /etc/nginx/conf.d/
     owner: "{{ username }}"
