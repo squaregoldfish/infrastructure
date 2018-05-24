@@ -1,4 +1,4 @@
-#!{{ bash_path }}
+#!/bin/bash
 
 echo "Starting backup of mattermost"
 

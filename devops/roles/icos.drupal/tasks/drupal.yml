@@ -121,4 +121,4 @@
 
 - name: Setup backup script
   import_tasks: backup.yml
-  when: bash_path is defined and project_name != "demo"
+  when: project_name != "demo"
