@@ -1,3 +1,13 @@
+- import_role: name=icos.certbot
+  vars:
+    - certbot_domains: [data.icos-cp.eu]
+    - nginx_conf_name: data.conf
+
+- import_role: name=icos.certbot
+  vars:
+    - certbot_domains: [data.fieldsites.se]
+    - nginx_conf_name: data.conf
+
 - name: Run the jarservice role
   import_role:
     name: icos.jarservice
@@ -9,7 +19,3 @@
     nginxconfig     : "{{ cpdata_nginxconfig }}"
     servicename     : "{{ cpdata_servicename }}"
     servicetemplate : "{{ cpdata_template }}"
-
-- import_role: name=icos.certbot
-  vars:
-    - certbot_domains: [data.fieldsites.se]
