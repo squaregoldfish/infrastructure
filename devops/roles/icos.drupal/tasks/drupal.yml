@@ -30,6 +30,7 @@
 - name: Pull source code from git
   git:
     repo: https://github.com/ICOS-Carbon-Portal/drupal
+    version: master
     dest: "{{ project_dir }}"
     force: yes
 

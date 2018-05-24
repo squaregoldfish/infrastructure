@@ -19,6 +19,7 @@
 - name: Pull source from git
   git:
     repo: https://github.com/mattermost/mattermost-docker.git
+    version: master
     dest: "{{ project_dir }}"
     force: yes
 

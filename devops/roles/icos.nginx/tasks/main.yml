@@ -1,7 +1,7 @@
 ---
 - include_vars:
     file: vars/{{ ansible_distribution }}.yml
-    
+
 # By default, selinux on centos/7 will disallow the httpd to connect to
 # cpauth (localhost:8080) You can see it in /var/log/nginx/error.log as
 # '... [crit] 16897#0: *10 connect() to 127.0.0.1:8080 failed (13:
@@ -16,10 +16,12 @@
 
 - name: Add mitigation for systemd/nginx race-condition
   block:
-    - file:
+    - name: Create systemd override directory for nginx
+      file:
         path: /etc/systemd/system/nginx.service.d
         state: directory
-    - copy:
+    - name: Add nginx override file
+      copy:
         content: |
           # https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1581864
           [Service]
@@ -59,7 +61,7 @@
   firewalld: service={{ item }} permanent=true state=enabled immediate=true
   with_items: [http, https]
   when: ansible_distribution == "CentOS"
-  
+
 - name: Allowing inbound HTTP/HTTPS (Ubuntu)
   ufw: rule=allow port={{ item }}
   with_items: [http, https]

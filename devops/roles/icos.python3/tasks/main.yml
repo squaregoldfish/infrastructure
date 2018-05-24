@@ -31,4 +31,4 @@
 
 - name: Check that python3 version is >= 3.5
   shell: "python3 --version 2>&1 | grep -q '^Python 3.[56789]'"
-  changed_when: false  
+  changed_when: false

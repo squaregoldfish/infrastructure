@@ -16,6 +16,7 @@
 - name: Pull source
   git:
     repo: "{{ geoip_repo_url }}"
+    version: master
     dest: "{{ geoip_repo_dir }}"
     force: yes
   register: _git

@@ -16,7 +16,6 @@
 
 # https://github.com/ansible/ansible/issues/15901
 - name: Get home directory of {{ cpmeta_username }}
-  become_user: "{{ cpmeta_username }}"
   shell: "getent passwd {{ cpmeta_username }} | cut -d: -f6"
   register: cpmeta_home
   changed_when: false

@@ -1,5 +1,5 @@
 - name: Getent of {{ fedcloud_user }}
-  shell: "getent passwd {{ fedcloud_user }}"
+  command: "getent passwd {{ fedcloud_user }}"
   register: fedcloud_ent
   changed_when: false
 
@@ -10,7 +10,7 @@
     fedcloud_gid: "{{ fedcloud_ent.stdout.split(':')[3] }}"
     fedcloud_home_dir: "{{ fedcloud_ent.stdout.split(':')[5] }}"
     fedcloud_mount_dir: "{{ fedcloud_ent.stdout.split(':')[5] }}/mounts"
-    
+
 - name: Create docker mounts
   file:
     dest: "{{ item }}"
@@ -21,14 +21,16 @@
     - "{{ fedcloud_mount_dir }}/certificates"
     - "{{ fedcloud_mount_dir }}/data"
     - "{{ fedcloud_mount_dir }}/tmp"
-    
+
 - name: Create ssh
   file:
     dest: "{{ fedcloud_home_dir }}/.ssh"
     state: directory
     mode: 0700
   register: fedcloud_ssh_dir
-- copy:
+
+- name: Copy ssh keys
+  copy:
     src: "{{ item }}"
     dest: "{{ fedcloud_ssh_dir.path }}"
     mode: 0600
@@ -42,7 +44,10 @@
     state: directory
     mode: 0700
   register: fedcloud_globus_dir
-- copy:
+
+
+- name: Copy globus keys
+  copy:
     src: "{{ item }}"
     dest: "{{ fedcloud_globus_dir.path }}"
     mode: 0600
@@ -58,18 +63,18 @@
   register: fedcloud_bin_dir
 
 - name: Install cesnet script
-  template: 
+  template:
     src: occi_cesnet.j2
     dest: "{{ fedcloud_bin_dir.path }}/occi_cesnet"
     mode: 0700
   register: fedcloud_script_cesnet
 
 - name: Install fedcloud script
-  template: 
+  template:
     src: fedcloud.j2
     dest: "{{ fedcloud_bin_dir.path }}/fedcloud"
     mode: 0700
-  
+
 - name: Create docker build dir
   file:
     dest: "{{ fedcloud_home_dir }}/build"
@@ -81,7 +86,7 @@
     src: Dockerfile.j2
     dest: "{{ fedcloud_build_dir.path }}/Dockerfile"
   register: fedcloud_dockerfile
-    
+
 - name: Build fedcloud image
   docker_image:
     path: "{{ fedcloud_build_dir.path }}"
@@ -92,5 +97,3 @@
   template:
     src: egi-eudat-integration-icos.yml.j2
     dest: "{{ fedcloud_integration_yml}}"
-
-    
