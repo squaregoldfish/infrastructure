@@ -1,3 +1,11 @@
+- import_role:
+    name: icos.certbot
+  vars:
+    - certbot_domains: [filedrop.icos-cp.eu]
+    - nginx_conf_name: filedrop
+  tags:
+    - filedrop_only
+
 - name: Run the jarservice role
   import_role:
     name: icos.jarservice
