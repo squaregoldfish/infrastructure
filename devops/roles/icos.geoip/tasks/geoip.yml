@@ -51,6 +51,12 @@
     project_src: "{{ geoip_home }}"
     build: yes
 
+- import_role:
+    name: icos.certbot
+  vars:
+    - certbot_domains: [geoip.icos-cp.eu]
+    - nginx_conf_name: geoip
+
 - name: Install nginx config file
   template:
     src: geoip.conf.j2
