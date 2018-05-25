@@ -2,7 +2,16 @@ server {
 	listen       443 ssl;
 	server_name docs.icos-cp.eu;
 
+{% if certbot_install_certificate | default(true) %}
+	ssl_certificate /etc/letsencrypt/live/docs.icos-cp.eu/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/docs.icos-cp.eu/privkey.pem;
+{% endif %}
+
 	client_max_body_size 1G;
+
+	location ~ /.well-known {
+		root /usr/share/nginx/html;
+	}
 
 	location = / {
 		rewrite ^/$ /share;

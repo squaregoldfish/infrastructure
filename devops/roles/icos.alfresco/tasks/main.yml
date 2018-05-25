@@ -4,9 +4,14 @@
     append: yes
     shell: /bin/bash
 
+- import_role: name=icos.certbot
+  vars:
+    - certbot_domains: [docs.icos-cp.eu]
+    - nginx_conf_name: alfresco
+
 - name: Copy alfresco nginx conf to nginx/conf.d
-  copy:
-    src: alfresco.conf
+  template:
+    src: alfresco.conf.j2
     dest: /etc/nginx/conf.d/alfresco.conf
     owner: root
     group: root
