@@ -12,6 +12,12 @@
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
 
+- import_role:
+    name: icos.certbot
+  vars:
+    - certbot_domains: [stilt.icos-cp.eu]
+    - nginx_conf_name: stilt
+
 - name: Run the jarservice role
   import_role:
     name: icos.jarservice
