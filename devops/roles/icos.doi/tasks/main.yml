@@ -1,3 +1,11 @@
+- import_role:
+    name: icos.certbot
+  vars:
+    - certbot_domains: [doi.icos-cp.eu]
+    - nginx_conf_name: doi
+  tags:
+    - doi_only
+
 - name: Run the jarservice role
   import_role:
     name: icos.jarservice
