@@ -546,16 +546,36 @@ def read_merge_args_from_jobdir(d):
     return (DEFAULT_SITE_NAME, j['lat'], j['lon'], j['alt'], start, stop)
 
 
-def create_merge_directory(rundir, sitename=DEFAULT_SITE_NAME):
-    mergedir = os.path.join(rundir, 'merge')
+def create_merge_directory(jobdir, sitename=DEFAULT_SITE_NAME):
+    """Create a jobdir subdirectory 'merge' and populate it.
+
+    Go through /stiltweb/jobs/jobid/slots/FootPrints/XXX and look for the
+    symlinks. There be a bunch looking like:
+      foot2006x01x20x00x57.05Nx008.88Ex00200_aggreg.nc ->
+      /stiltweb/slots/57.05Nx008.88Ex00200/2006/1/2006x01x20x00/foot
+
+    These are created by stiltweb and points from the jobdir to the
+    stiltweb cache of slots. However, the stilt merge phase runs in docker
+    and symlinks cannot point outside the docker volume. So we go through
+    all the symlinks and recreate them as hardlinks in the
+    merge/output/Footprints/XXX directory.
+    """
+    mergedir = os.path.join(jobdir, 'merge')
     os.makedirs(os.path.join(mergedir, 'logs'), exist_ok=True)
     for typ in ('Footprints', 'RData'):
-        dst = os.path.join(rundir, 'merge', 'output', typ, sitename)
+        # e.g /stiltweb/jobs/jobid/merge/output/Footprints/XXX
+        dst = os.path.join(jobdir, 'merge', 'output', typ, sitename)
         os.makedirs(dst, exist_ok=True)
-        for e in os.scandir(os.path.join(rundir, 'slots', typ, sitename)):
+        for e in os.scandir(os.path.join(jobdir, 'slots', typ, sitename)):
             if not e.is_symlink():
                 continue
+            # e.path symlinks to l - example:
+            #   /stiltweb/jobs/jobid/slots/FootPrints/XXX/foot2006 symlinks to
+            #   /stiltweb/slots/57.05Nx008.88Ex00200/2006/1/2006x01x20x00/foot
             l = os.readlink(e.path)
+            # We create a new hard link from
+            #  /stiltweb/jobs/jobid/merge/output/Footprints/XXX/foot.. to
+            #  /stiltweb/slots/57.05Nx008.88Ex00200/2006/1/2006x01x20x00/foot
             d = os.path.join(dst, e.name)
             if not os.path.exists(d):
                 os.link(l, d)
@@ -565,7 +585,7 @@ def create_merge_directory(rundir, sitename=DEFAULT_SITE_NAME):
 def cmd_merge(jobdir):
     """Merge a previous stilt simulation.
 
-    e.g - "stilt merge /run/dir HTM 56.10 13.42 150 2012061500 2012061500"
+    e.g - "stilt merge /some/where/stiltweb/jobs/jobid"
 
     Start a final merging run of the files outputted by earlier stilt runs.
 
