@@ -41,10 +41,26 @@
     group: "{{ nginx_user }}"
   notify: reload nginx config
 
+- include_role:
+    name: icos.certbot
+  vars:
+    - certbot_domains: "{{item.certbot_domains}}"
+    - nginx_conf_name: "{{item.nginx_conf_name}}"
+  loop:
+    - { certbot_domains: [eurocom.icos-cp.eu], nginx_conf_name: eurocom }
+    - { certbot_domains: [jupyter.icos-cp.eu], nginx_conf_name: jupyter }
+    - { certbot_domains: [repo.icos-cp.eu], nginx_conf_name: nexus }
+    - { certbot_domains: [lists.icos-cp.eu], nginx_conf_name: phplist }
+    - { certbot_domains: [restheart.icos-cp.eu], nginx_conf_name: restheart }
+    - { certbot_domains: [sc.icos-ri.eu], nginx_conf_name: scicosri }
+    - { certbot_domains: [static.icos-cp.eu], nginx_conf_name: static }
+    - { certbot_domains: [thredds.icos-cp.eu], nginx_conf_name: thredds }
+
 # This operation is slow because the copy module is slow, not because some files
 # are encrypted using Vault.
 - name: Copy nginx config files (this operation is slow)
-  copy: src=files/conf.d/ dest=/etc/nginx/conf.d/ owner=root group=root mode=0700
+  template: src="{{item}}" dest=/etc/nginx/conf.d/ owner=root group=root mode=0700
+  with_fileglob: files/conf.d/*
   notify: reload nginx config
 
 - name: Copy nginx SSL files (this operation is slow)
