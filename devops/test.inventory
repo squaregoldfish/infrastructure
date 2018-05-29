@@ -24,4 +24,3 @@ bionic
 [stiltcluster]
 ubuntu stiltcluster_port=2561 stiltcluster_ip=192.168.99.20
 centos stiltcluster_port=2562 stiltcluster_ip=192.168.99.10
-bionic stiltcluster_port=2563 stiltcluster_ip=192.168.99.30
