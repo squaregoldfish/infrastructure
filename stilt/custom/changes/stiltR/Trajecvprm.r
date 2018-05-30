@@ -503,7 +503,7 @@ for (speci in tracers) { # all fossil fuel emissions, do the ones with netCDF fo
         if(tolower(speci)=="ch4")emiss<-emiss*10E9/16
         if(tolower(speci)=="n2o")emiss<-emiss*10E9/44
       }
-      if (speci=="rn"|speci=="rn_era"){
+      if (speci=="rn"|speci=="rn_era"|speci=="rn_noah"){
         EMCO <- emiss*part[, "foot"]*exp(-part[, "btime"]/(3.82535*24))/0.0224/1000 #rn decay with 3.8 days lifetime, convert to Bq/m3
       } else {
         EMCO <- emiss*part[, "foot"]
@@ -987,14 +987,20 @@ if ("rn"%in%tracers & inikind["rn"] == "TM3") {
                   result=result, result.sel=selend, tracer=c("rn"))
    if(ftype=="nc")result[selend,"rnini"] <- result[selend,"rnini"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
 } 
-#if ("rn_era"%in%tracers & inikind["rn_era"] == "TM3") {
-#   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn.\n")
-#   ftype<-substring(inifile["rn_era"],nchar(inifile["rn_era"])-1,nchar(inifile["rn_era"]))
-#   if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn_era"],
-#                  result=result, result.sel=selend, tracer=c("rn_era"))
-#   if(ftype=="nc")result[selend,"rnini_era"] <- result[selend,"rnini_era"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to l\
-#ateral boundary condition, conv. to Bq/m3
-#}
+if ("rn_era"%in%tracers & inikind["rn_era"] == "TM3") {
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn.\n")
+   ftype<-substring(inifile["rn_era"],nchar(inifile["rn_era"])-1,nchar(inifile["rn_era"]))
+   if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn_era"],
+                  result=result, result.sel=selend, tracer=c("rn_era"))
+   if(ftype=="nc")result[selend,"rnini_era"] <- result[selend,"rnini_era"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
+}
+if ("rn_noah"%in%tracers & inikind["rn_noah"] == "TM3") {
+   cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecvprm: using TM3 initial values for Rn.\n")
+   ftype<-substring(inifile["rn_noah"],nchar(inifile["rn_noah"])-1,nchar(inifile["rn_noah"]))
+   if(ftype=="nc")result <- get.TM3.netcdf(yr4=yr4, mon=mon, day=day, hr=hr, tracersinifile=inifile["rn_noah"],
+                  result=result, result.sel=selend, tracer=c("rn_noah"))
+   if(ftype=="nc")result[selend,"rnini_noah"] <- result[selend,"rnini_noah"]*exp(-result[selend, "btime"]/(3.82538*24))*5.6*1E13 #apply Rn decay to lateral boundary condition, conv. to Bq/m3
+}
 
 dimnames(result) <- list(NULL, dimnames(result)[[2]])
 

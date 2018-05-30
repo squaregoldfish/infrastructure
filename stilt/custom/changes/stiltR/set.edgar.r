@@ -170,7 +170,7 @@ tr.edg<-c(paste("co2",get(paste("ipcc","co2",sep=".")),get(paste("fuelnames","co
 ############################################################################################################
 #which of the four species do you want to simulate based on EDGAR Categories/fueltypes? (this results in about 60 tracers per species in STILT output from Trajecvprm.r)
 #spec.want.catfuel<-c("co2","co","ch4","n2o") ######MODIFY HERE, any combination of "co2","co","ch4", or "n2o"
-spec.want.catfuel<-c("co2") ######MODIFY HERE, any combination of "co2","co","ch4", or "n2o"
+spec.want.catfuel<-c("co2","co") ######MODIFY HERE, any combination of "co2","co","ch4", or "n2o"
 ############################################################################################################
 cat(format(Sys.time(), "%FT%T"),"INFO set.edgar(): EDGAR categories/fuel types for tracer(s): ",spec.want.catfuel,"\n")
 
@@ -184,7 +184,7 @@ tr.edg<-tr.edg.tmp
                               tr.edg[grepl("co.",tr.edg,fixed=TRUE)],"co",
                               tr.edg[grepl("ch4.",tr.edg,fixed=TRUE)],"ch4",
                               tr.edg[grepl("n2o.",tr.edg,fixed=TRUE)],"n2o",
-                              "h2","cofire","rn","rn_era","ch4nat"))	
+                              "h2","cofire","rn","rn_noah","rn_era","ch4nat"))	
   l.traddco2<-length(tr.edg[grepl("co2.",tr.edg,fixed=TRUE)])
   l.traddco <-length(tr.edg[grepl("co.",tr.edg,fixed=TRUE)])
   l.traddch4<-length(tr.edg[grepl("ch4.",tr.edg,fixed=TRUE)])
@@ -196,25 +196,25 @@ tr.edg<-tr.edg.tmp
 tracer.info<-rbind(
 #################################################
 #### edit following part for each tracer ########
-#    "co2",    "co",  "ch4",   "n2o",   "h2",   "cofire",   "rn" , "rn_era", "ch4nat"
+#    "co2",    "co",  "ch4",   "n2o",   "h2",   "cofire",   "rn" , "rn_noah", "rn_era", "ch4nat"
 c(rep(T,l.traddco2),
       T,        							#want CO2 as tracer (using VPRM and other inventory and LBC specified below)? Select T or F
             rep(T,l.traddco),
-                F,     							#want CO as tracer (using other inventory specified below)? Select T or F
+                T,     							#want CO as tracer (using other inventory specified below)? Select T or F
                     rep(T,l.traddch4),
                         F,						#want CH4 as tracer (using other inventory specified below)? Select T or F
                             rep(T,l.traddn2o),
                                 F,					#want N2O as tracer (using other inventory specified below)? Select T or F
-                                         F,        F,        T,       F,       F), #want tracer? H2 is not ready at the moment, needs proper implementation in Trajecvprm()
+                                         F,        F,        T,       T,      T,      F), #want tracer? H2 is not ready at the moment, needs proper implementation in Trajecvprm()
 c(rep(T,l.traddco2),
       F,        							# CO2 fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
             rep(T,l.traddco),
-                T,        							# CO fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
+                F,        							# CO fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
                     rep(T,l.traddch4),
                         T,        							# CH4 fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
                             rep(T,l.traddn2o),
                                 F,        							# N2O fluxes from other inventory (not Edgar cat. fuel) as netCDF? Select T or F
-                                         F,        F,      T,      T,      T), #surface fluxes in netCDF format (T) or as R objects (F)? (In case of CO2: same format for fossil fluxes
+                                         F,        F,      T,      T,      T,    T), #surface fluxes in netCDF format (T) or as R objects (F)? (In case of CO2: same format for fossil fluxes
                                           	 #and biospheric fields (veg cover, modis indices)
 c(paste(edgar.path,get(paste("edfs","co2",sep=".")),sep="")[0:l.traddco2],                               #not modify
 #      "/Net/Groups/BSY/people/ukarst/STILT_prepro/EDGAR/EDGAR4.1_BP2012/data/ncdf_stilt_eu2/EDGAR_4.1_0.1x0.1.CO2.2011.nc",                 #full name for emission file (CO2)
@@ -231,10 +231,11 @@ c(paste(edgar.path,get(paste("edfs","co2",sep=".")),sep="")[0:l.traddco2],      
                                         "/Net/Groups/BSY/tools/STILT/fluxes_input/IER_Stuttgart/Europe/N2O.2000.nc",  #full name for H2 emissions NOT READY YET
                                                     "/Net/Groups/BSY/tools/people/cgerbig/RData/ROAM/Fluxes/BARCAfires/ncdf/CO.barcafire2009.nc", #full name for emission file (cofire)
 #								"./Input/Radon/InGOS_Rn_map_STILT_EU2_XXXX_v1.0.nc", #full name for Radon emissions
+								"./Input/Radon/InGOS_Radon_fluxmap_climatology_STILT_EU2_v2.0.nc", #full name for Radon emissions based on GLDAS NOAH soil moisture
 								"./Input/Radon/InGOS_Rn_flux_noah_mq60_STILT_EU2_v2.0_XXXX.nc", #full name for Radon emissions based on GLDAS NOAH soil moisture
 								"./Input/Radon/InGOS_Rn_flux_eraland_mq60_STILT_EU2_v2.0_XXXX.nc", #full name for Radon emissions based on ERA-Interim/land soil moisture
 									"/Net/Groups/BSY/people/svardag/STILT_modelling/CH4_other_emissions/CH4_OTHERS.0.125x0.0.083.nc"),#full name for natural CH4 emissions
-#    "co2",    "co",    "ch4",   "n2o",   "h2",   "cofire",  "rn" , "rn_era", "ch4nat"
+#    "co2",    "co",    "ch4",   "n2o",   "h2",   "cofire",  "rn" , "rn_noa", "rn_era", "ch4nat"
 c(   rep("",l.traddco2), 
      "TM3", 
      rep("",l.traddco),
@@ -243,7 +244,7 @@ c(   rep("",l.traddco2),
                       "TM3",   
      rep("",l.traddn2o),
 #                                 "",       "",       "",    "TM3" ,  "TM3",    ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
-                                 "",       "",       "",    "" ,  "TM3",    ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
+                                 "",       "",       "",    "" ,  "",    "",   ""),                                                    #inikind, possible values: "climat" (Gerbig et al. (2003)),
                                                                                                         #"CT" (CarbonTracker), "TM3", "LMDZ", "" (zero boundary)
 c(rep("",l.traddco2),   #not modify		  	              #full names for initial & boundary cond. files; select "" for climatological LBC ("climat")
 #       "/User/homes/croeden/public_html/download-CO2-3D/INVERSION/OUTPUT/s96_v3.6_mix_2013.nc",		#full name for initial & boundary cond. file (CO2); functions accessing files automatically get correct year
@@ -259,6 +260,7 @@ c(rep("",l.traddco2),   #not modify		  	              #full names for initial & 
                                          "",                                                          	#full name for initial & boundary cond. file (H2)
                                                    "",							#full name for initial & boundary cond. file (COfire)
 #							     "/Net/Groups/BSY/tools/STILT/fluxes_input/TM3/Radon/mix_2011.nc",#full name for initial & boundary cond. file (Rn)
+							     "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
 							     "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
 							     "./Input/INI_BDY/TM3/Rn/mix_YYYY.nc",#full name for initial & boundary cond. file (Rn)
 								     "")) 				#full name for initial & boundary cond. file (ch4nat)
