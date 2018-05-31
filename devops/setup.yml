@@ -23,7 +23,7 @@
 
     - name: Fail if infrastructure is outdated
       fail:
-        msg: "Pull the latest infrastructure!"
+        msg: "Your local infrastructure is outdated! Pull the new commits from origin/master."
       when: check_infrastructure_version|default(true) and git_result.stdout|int > 0
 
 # Include local_vars.yml if it exist but don't fail if it doesn't.
