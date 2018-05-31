@@ -5,7 +5,8 @@
     # urllib3 requirement and yum will say something like "Complete! Failure!"
     - name: Install Certbot for CentOS
       package: name=certbot-nginx state=present
-  when: ansible_distribution == 'CentOS'
+  # ansible_distribution is wrong when using delegate_to
+  when: hostvars[ansible_host].ansible_distribution == 'CentOS'
 
 - block:
     - name: Install software-properties-common for Ubuntu
@@ -16,7 +17,7 @@
 
     - name: Install Certbot for Ubuntu
       package: name=python-certbot-nginx state=present
-  when: ansible_distribution == 'Ubuntu'
+  when: hostvars[ansible_host].ansible_distribution == 'Ubuntu'
 
 - name: Check if certificate already exists.
   stat:

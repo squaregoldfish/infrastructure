@@ -2,9 +2,9 @@ server {
     listen       443 ssl;
     server_name  geoip.icos-cp.eu;
 
-  {% if certbot_install_certificate | default(true) %}
-    ssl_certificate /etc/letsencrypt/live/geoip.icos-cp.eu;/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/geoip.icos-cp.eu;/privkey.pem;
+  {% if certbot_delegate is undefined and certbot_install_certificate | default(true) %}
+    ssl_certificate /etc/letsencrypt/live/geoip.icos-cp.eu/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/geoip.icos-cp.eu/privkey.pem;
   {% endif %}
 
     location ~ /.well-known {
