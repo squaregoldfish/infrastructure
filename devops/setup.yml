@@ -11,6 +11,21 @@
         msg: "This playbook uses features that requires ansible >= 2.4"
        when: "ansible_version.full is version_compare('2.4', '<=')"
 
+- hosts: all
+  tags: always
+  gather_facts: no
+  pre_tasks:
+    - name: Ensure infrastructure repo is up to date
+      local_action: shell git fetch && git rev-list HEAD...origin/master --count
+      register: git_result
+      changed_when: false
+      when: check_infrastructure_version|default(true)
+
+    - name: Fail if infrastructure is outdated
+      fail:
+        msg: "Pull the latest infrastructure!"
+      when: check_infrastructure_version|default(true) and git_result.stdout|int > 0
+
 # Include local_vars.yml if it exist but don't fail if it doesn't.
 # That file is meant for local variables (not checked into git).
 - hosts: all
