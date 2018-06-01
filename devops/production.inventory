@@ -14,6 +14,6 @@ docker_compose_src_parent=/disk/data
 certbot_delegate=fsicos.lunarc.lu.se
 
 [stiltmaster]
-fsicos2.lunarc.lu.se stiltcluster_port=2561
+fsicos2.lunarc.lu.se stiltcluster_port=2561 stiltcluster_maxcores=40
 
 [stiltcluster]
