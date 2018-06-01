@@ -1,0 +1,149 @@
+#!/usr/bin/python3
+# Split the large csv files output by stilt into small ones for use by stiltweb
+#
+# The csv files produced by stilt are of two types:
+#   1. Those ending in _\d+.csv - contains the slots.
+#   2. Those ending in \d+.csv - used to build a dateid => slotdir dict.
+#
+# We start in CSVROOT and go through each station subdirectory. For each
+# station directory we parse the csv files of type 2 (one for each year) and
+# build a dict of dateid => slotdir entries.
+#
+# Once we have that dict we go through the csv files of type 1. For each line
+# we output a new csvfile containing the line in question preceded by a header
+# line. To find the destination of this new csvfile we use the dateid =>
+# slotdir dict.
+#
+# Note that dateid is a float enumerating the days and hours since sometime in
+# the 1960s. This means that the dateid could be calculated instead of looked
+# up. The reason why I don't is because it's one more stringly typed thing that
+# could go wrong.
+
+import csv
+import os
+import re
+import sys
+import tempfile
+
+
+# Write files here.
+STILTWEB_SLOTS = '{{ stiltweb_statedir }}/slots'
+# The number of times a rename may fail before we abort.
+MAX_OS_ERROR = 10
+
+
+def build_date_dict(path):
+    # Will be a string like "62.91Nx027.66Ex00176"
+    coords = None
+    datedict = {}
+    for f in os.scandir(path):
+        # stiltresult2007x62.91Nx027.66Ex00176.csv but not
+        # stiltresult2007x62.91Nx027.66Ex00176_14.csv
+        m = re.match(r'stiltresult(\d{4})x(.*x\d+).csv', f.name)
+        if not m:
+            continue
+        year, _coords = m.groups()
+        if coords is None:
+            coords = _coords
+        else:
+            assert coords == _coords, (coords, _coords)
+        with open(os.path.join(path, f.name)) as csvfile:
+            # header looks like :
+            #  date isodate year month day hour ident ...
+            # data looks like
+            #  2007/01/01#00:00 1167609600 2007 1 1 0 17167 ...
+            csvreader = csv.reader(csvfile, delimiter=' ')
+            for n, row in enumerate(csvreader):
+                if n == 0:
+                    continue
+                # 2007/12/31#21:00
+                m = re.match(r'(\d{4})/(\d{2})/(\d{2})#(\d{2}):00', row[0])
+                assert m, row[0]
+                year2, month, day, slot = m.groups()
+                assert slot in ("00", "03", "06", "09",
+                                "12", "15", "18", "21"), slot
+                assert year == year2, (year, year2)
+                slotname = "%sx%02dx%02dx%s" % (year, int(month),
+                                                int(day), slot)
+                # /disk/data/stiltweb/slots/55.35Nx017.22Ex00028/2007/12/2007x12x31x00
+                slotpath = os.path.join(STILTWEB_SLOTS, coords, year,
+                                        "%02d" % int(month), slotname)
+                # 17167 => slotpath
+                datedict[row[6]] = slotpath
+    return datedict
+
+
+def extract_csv_for_station(stationdir, datedict):
+    # matches 'stiltresult2007x62.91Nx027.66Ex00176.csv'
+    # but not 'stiltresult2007x62.91Nx027.66Ex00176_2.csv'
+    csvre = re.compile(r'stiltresult(\d{4})x(.*x\d+)_(\d+).csv')
+    matching = 0
+    for f in sorted(os.scandir(stationdir), key=lambda k: k.name):
+        m = csvre.match(f.name)
+        if not m:
+            continue
+        matching += 1
+        year, _, suffix = m.groups()
+        nmissing = 0
+        nwritten = 0
+        nalready = 0
+        nnoexist = 0
+        noserror = 0
+        with open(os.path.join(stationdir, f.name)) as csvfile:
+            # header looks like:
+            #  "ident" "latstart" "lonstart" "aglstart"
+            # data looks like
+            #  17349.25 69.28 16.01 5
+            csvreader = csv.reader(csvfile, delimiter=' ')
+            header = None
+            for n, row in enumerate(csvreader):
+                if n == 0:
+                    header = row
+                    continue
+                # Turn '17349.25' into /disk/data/stiltweb/slots/...
+                slotdir = datedict.get(row[0])
+                if not slotdir:
+                    nmissing += 1
+                    continue
+                if not os.path.exists(slotdir):
+                    nnoexist += 1
+                    continue
+                destcsv = os.path.join(slotdir, 'csv')
+                if os.path.exists(destcsv):
+                    nalready += 1
+                    continue
+                tmp = tempfile.mkstemp(dir=slotdir, prefix='.tmp-extract-csv')
+                with open(tmp, 'w') as f:
+                    writer = csv.writer(f, delimiter=' ')
+                    writer.writerow(header)
+                    writer.writerow(row)
+                    nwritten += 1
+                try:
+                    os.rename(tmp, destcsv)
+                except os.error:
+                    # We might be stepping on stiltweb's toes.
+                    noserror += 1
+                if noserror > MAX_OS_ERROR:
+                    print("Aborting due to too many rename errors (%d), "
+                          "last one was %s => %s" % (noserror, tmp, destcsv))
+                    sys.exit(1)
+        print(('%s %-2d. nwritten = %-3d. nmissing = %-3d. nalready = %-3d.'
+               'nnoexist %-3d.') % (year, int(suffix), nwritten,
+                                    nmissing, nalready, nnoexist))
+    if matching == 0:
+        print("Are you sure that \"%s\" is the correct path?" %
+              os.path.dirname(stationdir))
+        print("Because there were no files matching '%s'" % csvre.pattern)
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("usage: bulk-create-csv-files CSVROOT")
+    for station in os.scandir(sys.argv[1]):
+        if not station.is_dir():
+            continue
+        print('---', station.name)
+        stationdir = os.path.join(sys.argv[1], station)
+        datedict = build_date_dict(stationdir)
+        extract_csv_for_station(stationdir, datedict)

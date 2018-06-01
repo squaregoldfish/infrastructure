@@ -1,0 +1,357 @@
+#!/usr/bin/python3
+# Keeps two different STILT directory structures synced using hard links.
+#
+# Old-style directory tree (output by the original STILT software)
+#   /old_root/Footprints/ARR/foot2007x07x02x09x69.28Nx016.01Ex00005_aggreg.nc
+#   /old_root/Footprints/ARR/.RDatafoot2007x07x02x09x69.28Nx016.01Ex00005
+#   /old_root/RDATA/ARR/.RData2007x07x02x09x69.28Nx016.01Ex00005
+#
+# New-style directory tree (used by stiltweb)
+#   /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21/foot
+#   /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21/rdatafoot
+#   /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21/rdata
+#
+# Each set of three files is called a slot and these individual files are
+# hardlinked between the old and new directory tree.
+#
+# Currently, the new-style tree contains 2.5 million files and 1TB of data.
+# This script will first sync old-to-new and then back again. That way, files
+# created by regular simulation will be made available to stiltweb users and the
+# other way around.
+
+import collections
+import contextlib
+import doctest
+import itertools
+import os
+import pwd
+import re
+import sys
+
+
+NEW_ROOT = "/disk/data/stiltweb/slots"
+OLD_ROOT = "/disk/data/stilt"
+DEBUG = True
+
+
+def die(msg):
+    print(msg, file=sys.stderr)
+    sys.exit(1)
+
+
+def debug(msg):
+    if DEBUG:
+        print(msg)
+
+
+def same_fs(path1, path2):
+    """Returns True if both paths are on the same file system.
+
+>>> same_fs('/', '/proc')
+False
+>>> same_fs('/usr', '/etc')
+True
+    """
+    path1 = os.path.realpath(os.path.normpath(path1))
+    path2 = os.path.realpath(os.path.normpath(path2))
+    def get_mount(path):
+        if os.path.ismount(path):
+            return path
+        return get_mount(os.path.dirname(path))
+
+    return (os.path.exists(path1) and
+            os.path.exists(path2) and
+            get_mount(path1) == get_mount(path2))
+
+
+# Match an old-style foot print filename. Example:
+#  foot2012x12x01x00x56.10Nx013.42Ex00150_aggreg.nc
+FOOT_RE = re.compile(r"""
+^foot        # prefix
+(            # group 1 - whole date-position
+(            # group 2 - whole date
+(\d{4})x     # group 3 - year
+(\d\d)x      # group 4 - month
+(\d\d)x      # group 5 - day
+(\d\d)       # group 6 - 3 hour interval
+)            # end group 2 (whole date)
+x            # separator between date and position
+(            # group 7 - the position
+(\d+\.\d+)   # group 8 - latitude
+([NS])       # group 9 - north-south
+x            # separator before longitude
+(\d+\.\d+)   # group 10 - longitude
+([EW])       # group 11 - east-west
+x            # separator before height
+(\d+)        # group 12 - height
+)            # end group 7 (position)
+)            # end of group 1 (whole date-position)
+_aggreg\.nc$ # suffix
+""", re.VERBOSE)
+
+
+Footprint = collections.namedtuple(
+    'Footprint', ['filename', 'datepos', 'date', 'year', 'month', 'day', 'hour',
+                  'pos', 'latitude', 'northsouth', 'longitude', 'eastwest', 'height'])
+
+
+def parse_footprint(foot):
+    """Parse a old-style footprint filename.
+
+>>> f = 'foot2012x12x01x00x56.10Nx013.42Ex00150_aggreg.nc'
+>>> parse_footprint(f)
+Footprint(filename='foot2012x12x01x00x56.10Nx013.42Ex00150_aggreg.nc', datepos='2012x12x01x00x56.10Nx013.42Ex00150', date='2012x12x01x00', year='2012', month='12', day='01', hour='00', pos='56.10Nx013.42Ex00150', latitude='56.10', northsouth='N', longitude='013.42', eastwest='E', height='00150')
+>>> parse_footprint('hello?')
+'hello?' did not parse as a footprint file name
+>>>
+    """
+    m = FOOT_RE.match(foot)
+    if not m:
+        debug("'%s' did not parse as a footprint file name" % foot)
+        return None
+    return Footprint(foot, *m.groups())
+
+
+OldSlot = collections.namedtuple(
+    'OldSlot', ['root', 'station', 'foot', 'f_foot', 'f_rdata', 'f_rdatafoot'])
+
+
+def old_list_slots(root, station):
+    """Yield OldSlots() for the given station.
+
+>>> old_list_slots(OLD_ROOT, 'HEI') # doctest: +ELLIPSIS
+<generator object old_list_slots at ...>
+    """
+    fp_dir   = os.path.join('Footprints', station)
+    fp_files = {e.name: e for e in os.scandir(os.path.join(root, fp_dir))}
+
+    rd_dir   = os.path.join('RData', station)
+    rd_files = {e.name: e for e in os.scandir(os.path.join(root, rd_dir))}
+
+    def pop_file(fname, files, dname):
+        """Run some sanity checks on the file and pop it from the dict.
+        """
+        e = files.pop(fname, None)
+        if e is None:
+            debug('Not found - %s' % fname)
+        elif not e.is_file():
+            debug('Not a file - %s' % fname)
+        elif e.stat(follow_symlinks=False).st_size == 0:
+            debug('Is empty - %s' % fname)
+        else:
+            return os.path.join(root, dname, fname)
+
+    # There'll be two kinds of files in the Footprints/STATION dirs:
+    #   .RDatafoot2007x12x29x12x69.28Nx016.01Ex00005
+    #   foot2007x12x31x21x69.28Nx016.01Ex00005_aggreg.nc
+    # Then there'll be a third file in the RData/Station dir:
+    #   .RData2007x12x31x21x69.28Nx016.01Ex00005
+    # Iterate over all the names in the Footprints directory.
+    for f_name in list(fp_files.keys()):
+        # Each slot consists of three files, we only build slots starting with
+        # the ones starting with "foot"
+        if not f_name.startswith('foot'):
+            continue
+        # Parse the filename into a Footprint object. We then use the
+        # date/position string part to find the other two files in the slot.
+        foot = parse_footprint(f_name)
+        if not foot:
+            continue
+        f_foot = pop_file(f_name, fp_files, fp_dir)
+        f_rdata = pop_file('.RData%s' % foot.datepos, rd_files, rd_dir)
+        f_rdatafoot = pop_file('.RDatafoot%s' % foot.datepos, fp_files, fp_dir)
+        if not (f_rdata and f_rdatafoot):
+            continue
+        yield OldSlot(root, station, foot, f_foot, f_rdata, f_rdatafoot)
+
+    n = sum(1 for n in fp_files if n.startswith('foot'))
+    if n:
+        debug("There are %s foot files in %s with no corresponding"
+              " .RData or .RDatafoot files" % (n, fp_dir))
+    if rd_files:
+        debug("There are %s .RData files in %s with no corresponding"
+              " foot or .RDatafoot files" % (len(rd_files), rd_dir))
+
+
+def sync_old_slots_to_new_root(old_slots, new_root):
+    assert(os.path.exists(new_root))
+
+    def makedirs_below_new_root(d, **kw):
+        """Run os.makedirs() while making sure we're in the right spot.
+        """
+        d = os.path.realpath(os.path.normpath(d))
+        assert d.startswith(NEW_ROOT), (d, NEW_ROOT)
+        os.makedirs(d, **kw)
+
+    month_dirs = {}
+    def should_store_in_which_month_dir(foot):
+        """Return new parent directory for foot or None if it already exists.
+        """
+        # new_root/52.29Nx017.05Ex00100/2012/12
+        mdir = os.path.join(new_root, foot.pos, foot.year, foot.month)
+        try:
+            mslots = month_dirs[mdir]
+        except KeyError:
+            if not os.path.exists(mdir):
+               makedirs_below_new_root(mdir)
+            mslots = {e.name: e for e in os.scandir(mdir)}
+            month_dirs[mdir] = mslots
+        # Is there already a directory named '2012x12x01x18'? That means that
+        # the slot already exists, this will be the common case.
+        if foot.date not in mslots:
+            return mdir
+
+    @contextlib.contextmanager
+    def make_new_slot_dir_atomically(mdir, date):
+        """Returns a temp slot dir and rename it afterwards.
+        """
+        # new_root/52.29Nx017.05Ex00100/2012/12/2012x12x01x18
+        slot_dir = os.path.join(mdir, date)
+        slot_tmp = slot_dir + '.tmp'
+        makedirs_below_new_root(slot_tmp, exist_ok=True)
+        yield slot_tmp
+        os.rename(slot_tmp, slot_dir)
+        month_dirs[mdir][slot_dir] = True
+
+    def paranoid_hard_link(old_path, slot_dir, new_name):
+        new_path = os.path.join(slot_dir, new_name)
+        assert(old_path.startswith(OLD_ROOT))
+        assert(new_path.startswith(NEW_ROOT))
+        os.link(old_path, new_path)
+
+    cnt = 0
+    for slot in old_slots:
+        mdir = should_store_in_which_month_dir(slot.foot)
+        if mdir is None:
+            continue
+
+        with make_new_slot_dir_atomically(mdir, slot.foot.date) as slot_dir:
+            for old_path, new_name in ((slot.f_foot, 'foot'),
+                                       (slot.f_rdata, 'rdata'),
+                                       (slot.f_rdatafoot, 'rdatafoot')):
+                paranoid_hard_link(old_path, slot_dir, new_name)
+        cnt += 1
+    return cnt
+
+
+def old_list_stations(root):
+    """List all the old-style station names
+
+>>> stations = old_list_stations(OLD_ROOT)
+>>> sorted(stations)[:3]
+['ARR', 'BAL', 'BGU']
+    """
+    fpdir = {e.name: e for e in
+             os.scandir(os.path.join(root, 'Footprints'))}
+    rddir = {e.name: e for e in
+             os.scandir(os.path.join(root, 'RData'))}
+    for name, e in fpdir.items():
+        if not e.is_dir():
+            continue
+        if not re.match(r'^[A-Z]+$', e.name):
+            continue
+        if not name in rddir:
+            continue
+        yield name
+
+
+def old_get_coordinates(old_root, station):
+    """Returns the coordinate string for an old-style station name.
+
+>>> old_get_coordinates(OLD_ROOT, 'HEI')
+'49.42Nx008.67Ex00030'
+    """
+    for e in os.scandir(os.path.join(old_root, 'Footprints', station)):
+        if not e.name.startswith('foot'):
+            continue
+        foot = parse_footprint(e.name)
+        return foot.pos
+    # The Footprints directory exist but contained no matching files.
+    assert 0
+
+
+def new_list_stations(new_root, old_root):
+    """List new-style stations for which there exist an old-style counterpart.
+
+>>> ss = new_list_stations(NEW_ROOT, OLD_ROOT)
+>>> sorted(ss)[:2]
+[('35.34Nx025.67Ex00150', 'FIK'), ('35.52Nx012.63Ex00010', 'LMP')]
+    """
+    # The new-style directory structure contains only GPS-coordinates. Thus
+    # we'll have to start of with the old-style and then map the GPS-coordinates
+    # to station names.
+    old_dirs = {old_get_coordinates(old_root, station): station
+                for station in old_list_stations(old_root)}
+    for e in os.scandir(new_root):
+        if not e.is_dir():
+            continue
+        try:
+            # e.name looks like '47.96Nx002.11Ex00050'
+            yield (e.name, old_dirs[e.name])
+        except KeyError:
+            continue
+
+
+def new_list_slots(new_root, station):
+    """List new-style slot directories
+
+    The new-style directory tree looks like:
+      /new_root/stationcoordinates/year/month/slot
+    Example:
+      /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21
+      ├── foot
+      ├── rdata
+      └── rdatafoot
+
+    This function will yield successive (month dir path, slot name):
+      [('/new_root/55.37Nx007.34Wx00003/2007/01', '2007x01x27x21'), ...
+    """
+    # The new-style directory tree looks like
+
+    station_path = os.path.join(new_root, station)
+    for year in os.scandir(station_path):
+        if not (year.is_dir() and re.match('[0-9]+', year.name)):
+            continue
+        year_path = os.path.join(station_path, year.name)
+        for month in os.scandir(year_path):
+            if not (month.is_dir() and re.match('[0-9]+', month.name)):
+                continue
+            month_path = os.path.join(year_path, month.name)
+            for slot in os.scandir(month_path):
+                if not (slot.is_dir() and re.match('[0-9x]+', slot.name)):
+                    continue
+                yield (month_path, slot.name)
+
+
+def sync_old_to_new(old_root, new_root):
+    for station_name in old_list_stations(old_root):
+        old_slots = old_list_slots(old_root, station_name)
+        n_slots = sync_old_slots_to_new_root(old_slots, new_root)
+        debug('Synced %d slots for station %s' % (n_slots, station_name))
+
+
+def sync_new_to_old(new_root, old_root):
+    for new_name, old_name in new_list_stations(new_root, old_root):
+        fp_dir = os.path.join(old_root, 'Footprints', old_name)
+        fp_files = {e.name: e for e in os.scandir(fp_dir)}
+
+        rd_dir = os.path.join(old_root, 'RData', old_name)
+        fp_files = {e.name: e for e in os.scandir(rd_dir)}
+
+        for month_dir, slot_name in new_list_slots(new_root, new_name):
+            # e.g '2007x12x29x12x69.28Nx016.01Ex00005'
+            datepos = '%sx%s' % (slot_name, new_name)
+            foot = 'foot%s_aggreg.nc' % datepos
+            if foot in fp_files:
+                continue
+            print("%s => %s/%s" % (foot, old_name, fp_dir))
+            break
+
+
+if __name__ == '__main__':
+    if not same_fs(NEW_ROOT, OLD_ROOT):
+        die("%s and %s needs to be on the same filesystem" % (
+            NEW_ROOT, OLD_ROOT))
+    doctest.testmod()
+    # sync_old_to_new(OLD_ROOT, NEW_ROOT)
+    sync_new_to_old(NEW_ROOT, OLD_ROOT)
