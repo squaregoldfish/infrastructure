@@ -1,5 +1,6 @@
 dependencies:
- - {role: icos.linux,  tags: linux}
- - {role: icos.nginx,  tags: nginx}
- - {role: icos.java,   tags: java}
- - {role: icos.docker, tags: docker}
+ - {role: icos.linux,   tags: linux}
+ - {role: icos.nginx,   tags: nginx}
+ - {role: icos.java,    tags: java}
+ - {role: icos.docker,  tags: docker}
+ - {role: icos.python3, tags: python3}

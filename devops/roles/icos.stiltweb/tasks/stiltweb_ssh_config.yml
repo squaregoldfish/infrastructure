@@ -1,6 +1,6 @@
 - name: Create .ssh dir
   file:
-    path: "{{ _user.home }}/.ssh"
+    path: "{{ _stiltweb.home }}/.ssh"
     mode: 0700
     state: directory
 
@@ -10,13 +10,13 @@
     dest: "{{ item.dest }}"
     mode: 0600
   with_items:
-    - {src: stiltweb.rsa, dest: "{{ _user.home }}/.ssh/id_rsa"}
-    - {src: stiltweb.pub, dest: "{{ _user.home }}/.ssh/id_rsa.pub"}
+    - {src: stiltweb.rsa, dest: "{{ _stiltweb.home }}/.ssh/id_rsa"}
+    - {src: stiltweb.pub, dest: "{{ _stiltweb.home }}/.ssh/id_rsa.pub"}
 
 - name: Create .ssh/config
   template:
     src: ssh-config.j2
-    dest: "{{ _user.home }}/.ssh/config"
+    dest: "{{ _stiltweb.home }}/.ssh/config"
     mode: 0600
 
 - name: Add all stiltcluster hosts to our known_hosts file

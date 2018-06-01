@@ -40,8 +40,18 @@ import json
 
 # GLOBALS
 
-METFILES_DIR = "/disk/data/stilt/Input/Metdata/Europe2"
-STILT_IMAGE = 'stiltute'
+# A directory of symlinks like 'HEL -> ../slots/54.18Nx007.90Ex00015'
+# FIXME - use host-specific paths via ansible
+STATION_DIR = "/disk/data/stiltweb/stations"
+
+# Classic stilt data
+# FIXME - use host-specific paths via ansible
+STILT_DATA_DIR = "/disk/data/stilt"
+STILT_INPUT_DIR = os.path.join(STILT_DATA_DIR, 'Input')
+
+METFILES_DIR = os.path.join(STILT_DATA_DIR, "Input/Metdata/Europe2")
+# FIXME - configure this during deployment
+STILT_IMAGE = 'stiltcustom'
 RUN_DIRECTORY = os.path.join(os.environ['HOME'], '.stiltruns')
 DEBUG_FILES = []
 DEFAULT_SITE_NAME = 'XXX'
@@ -314,12 +324,8 @@ class STILTContainer:
     def _ensure_input_output_volumes(self):
         if not any(True for v in self._volumes
                    if v.cont_dir.startswith('/opt/STILT_modelling/Input')):
-            self.add_volume('/mnt/additional_disk/WORKER/Input',
+            self.add_volume(STILT_INPUT_DIR,
                             '/opt/STILT_modelling/Input', readonly=True)
-        if not any(True for v in self._volumes
-                   if v.cont_dir.startswith('/opt/STILT_modelling/Output')):
-            self.add_volume('/mnt/additional_disk/WORKER/Output',
-                            '/opt/STILT_modelling/Output', readonly=False)
 
 
 # METEOROLOGY FILES

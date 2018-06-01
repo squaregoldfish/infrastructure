@@ -3,14 +3,17 @@
     name: "{{ stiltweb_username }}"
     state: present
     shell: /bin/bash
-  register: _user
+  register: _stiltweb
 
-- name: Make sure that the stiltweb state directory exists
+- name: Create directories
   file:
-    path: "{{ stiltweb_statedir }}"
+    path: "{{ item }}"
     state: directory
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
+  with_items:
+    - "{{ stiltweb_statedir }}"
+    - "{{ stiltweb_bin_dir }}"
 
 - import_role:
     name: icos.certbot
@@ -28,6 +31,8 @@
     servicename     : "{{ stiltweb_servicename }}"
     servicetemplate : "{{ stiltweb_template }}"
     nginxconfig     : "{{ stiltweb_nginxconfig }}"
+  when:
+    - stiltweb_no_jarservice is not defined
 
 - name: Add systemd service files
   template:
@@ -41,18 +46,30 @@
   notify:
     - reload systemd config
 
-- import_tasks: stiltweb_build_hosts.yml
-
-- import_tasks: stiltweb_ssh_config.yml
-  become: yes
-  become_user: "{{ stiltweb_username }}"
-
-- import_tasks: stiltweb_restart_tunnels.yml
-
-- name: Install tail-latest.sh
+- name: Install utilities
   template:
-    src: tail-latest.sh.j2
-    dest: "/home/{{stiltweb_username}}/tail-latest.sh"
-    mode: 0755
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode | default('0644') }}"
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
+  with_items:
+    - {src: tail-latest.sh.j2,
+       dest: "{{ stiltweb_bin_dir }}/tail-latest.sh", mode: "0755" }
+    - {src: sync-station-names.sh.j2,
+       dest: "{{ stiltweb_bin_dir }}/sync-station-names.sh", mode: "0755" }
+    - {src: sync-stilt-data.sh.j2,
+       dest: "{{ stiltweb_bin_dir }}/sync-stilt-data.sh", mode: "0755" }
+    - {src: Makefile.j2,
+       dest: "{{ stiltweb_home_dir }}/Makefile" }
+
+- block:
+  - import_tasks: stiltweb_build_hosts.yml
+
+  - import_tasks: stiltweb_ssh_config.yml
+    become: yes
+    become_user: "{{ stiltweb_username }}"
+
+  - import_tasks: stiltweb_restart_tunnels.yml
+  when:
+    - stiltweb_no_tunnels is not defined

@@ -1,13 +1,23 @@
 stiltweb_username: stiltweb
 stiltweb_servicename: stiltweb
+
+# delegate to the result of ansible's user creation
+stiltweb_home_dir: "{{ _stiltweb.home }}"
+stiltweb_bin_dir: "{{ stiltweb_home_dir }}/bin"
+
 # Sadly, we cannot use our {{role_path}} to define this path, since that
 # variable wont be resolved until in the role_included jarservice, by which
 # point it'll point to jarservice.
 # https://github.com/ansible/ansible/issues/15439
 stiltweb_template: roles/icos.stiltweb/templates/stiltweb.service.j2
 stiltweb_nginxconfig:  roles/icos.stiltweb/files/stiltweb.conf
+
 # This is where stiltweb keeps it's archive of of stilt files
-stiltweb_statedir: /disk/data/stiltweb/
+stiltweb_statedir: /disk/data/stiltweb
+
+# The root of the classic stilt data directory (Footprints, RData, etc)
+stiltweb_stiltdir: /disk/data/stilt
+
 # The port that netty/akka/rpc port on the stiltweb host. Incoming stiltcluster
 # connections will be redirected here.
 stiltweb_port: 2550
