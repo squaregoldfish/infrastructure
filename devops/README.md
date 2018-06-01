@@ -59,3 +59,11 @@ A production deployment of stilt would use the production inventory:
 Finally, a production deployment to all our servers would look like:
 
 `ansible-playbook -i production.inventory main.yml`
+
+## Deploying Drupal websites
+
+For example, for installing just the `ac` Drupal project:
+
+`ansible-playbook -i production.inventory -t drupal_only -e '{"websites":["ac"]}' icosprod.yml`
+
+(Use `-t drupal` for a from-scratch run!)

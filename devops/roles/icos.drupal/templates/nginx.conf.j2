@@ -54,7 +54,12 @@ server {
 {% if project_name == "ac" %}
 server {
   listen       80;
-  server_name  www.actris.se {{ domain }};
+  server_name  ac.icos-cp.eu {{ domain }};
+  return 301   https://{{ domain }}$request_uri;
+}
+server {
+  listen       443 ssl;
+  server_name  ac.icos-cp.eu;
   return 301   https://{{ domain }}$request_uri;
 }
 {% elif project_name == "ri" or project_name == "cp" or project_name == "fi" %}
