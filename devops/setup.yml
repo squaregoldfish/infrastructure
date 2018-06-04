@@ -21,12 +21,13 @@
       local_action: shell git fetch && git rev-list HEAD...origin/master --count
       register: git_result
       changed_when: false
-      when: check_infrastructure_version|default(true)
+      # The extra '|bool' is to allow the setting to be passed with '-echeck...'
+      when: check_infrastructure_version|default(true)|bool
 
     - name: Fail if infrastructure is outdated
       fail:
         msg: "Your infrastructure repo is not in sync with origin. Pull/push origin/master."
-      when: check_infrastructure_version|default(true) and git_result.stdout|int > 0
+      when: check_infrastructure_version|default(true)|bool and git_result.stdout|int > 0
 
 # Include local_vars.yml if it exist but don't fail if it doesn't.
 # That file is meant for local variables (not checked into git).
