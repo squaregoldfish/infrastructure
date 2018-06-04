@@ -41,12 +41,10 @@
     group: "{{ nginx_user }}"
   notify: reload nginx config
 
-# This operation is slow because the copy module is slow, not because some files
-# are encrypted using Vault.
-- name: Copy nginx config files (this operation is slow)
-  template: src="{{item}}" dest=/etc/nginx/conf.d/ owner=root group=root mode=0700
-  with_fileglob: files/conf.d/*
-  notify: reload nginx config
+- include_tasks: conf.yml
+  loop: "{{ extra_configs }}"
+  loop_control:
+    loop_var: nginx_conf_name
 
 - name: Copy nginx SSL files (this operation is slow)
   copy: src=files/ssl/ dest=/etc/nginx/ssl/ owner=root group=root mode=0700

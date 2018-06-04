@@ -29,24 +29,6 @@
       tags: mattermost
     - role: icos.sitesaquanetform
       tags: sitesaquanetform
-  tasks:
-    - include_role:
-        name: icos.certbot
-      vars:
-        - certbot_domains: "{{item.certbot_domains}}"
-        - nginx_conf_name: "{{item.nginx_conf_name}}"
-      loop:
-        - { certbot_domains: [eurocom.icos-cp.eu], nginx_conf_name: eurocom }
-        - { certbot_domains: [jupyter.icos-cp.eu], nginx_conf_name: jupyter }
-        - { certbot_domains: [repo.icos-cp.eu], nginx_conf_name: nexus }
-        - { certbot_domains: [lists.icos-cp.eu], nginx_conf_name: phplist }
-        - { certbot_domains: [restheart.icos-cp.eu], nginx_conf_name: restheart }
-        - { certbot_domains: [sc.icos-ri.eu], nginx_conf_name: scicosri }
-        - { certbot_domains: [static.icos-cp.eu], nginx_conf_name: static }
-        - { certbot_domains: [thredds.icos-cp.eu], nginx_conf_name: thredds }
-
-
-
 
 - hosts: icosprod2
   become: true

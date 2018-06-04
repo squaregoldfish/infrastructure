@@ -1,0 +1,12 @@
+- include_vars:
+    file: domains.yml
+
+- include_role:
+    name: icos.certbot
+  vars:
+    - certbot_domains: "{{conf_to_domains[nginx_conf_name]}}"
+  when: conf_to_domains[nginx_conf_name] is defined
+
+- name: Copy {{nginx_conf_name}} nginx config file
+  template: src="files/conf.d/{{nginx_conf_name}}.conf" dest=/etc/nginx/conf.d/ owner=root group=root mode=0700
+  notify: reload nginx config
