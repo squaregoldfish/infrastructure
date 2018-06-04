@@ -32,7 +32,7 @@
     servicetemplate : "{{ stiltweb_template }}"
     nginxconfig     : "{{ stiltweb_nginxconfig }}"
   when:
-    - stiltweb_no_jarservice is not defined
+    - stiltweb_jar_file is defined
 
 - name: Add systemd service files
   template:
