@@ -50,22 +50,21 @@
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    mode: "{{ item.mode | default('0644') }}"
+    mode: "{{ item.mode | default('0755') }}"
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
   with_items:
     - {src: tail-latest.sh.j2,
-       dest: "{{ stiltweb_bin_dir }}/tail-latest.sh", mode: "0755" }
+       dest: "{{ stiltweb_bin_dir }}/tail-latest.sh" }
     - {src: sync-station-names.sh.j2,
-       dest: "{{ stiltweb_bin_dir }}/sync-station-names.sh", mode: "0755" }
+       dest: "{{ stiltweb_bin_dir }}/sync-station-names.sh" }
     - {src: sync-fsicos1-to-fsicos2.sh.j2,
-       dest: "{{ stiltweb_bin_dir }}/sync-fsicos1-to-fsicos2.sh", mode: "0755" }
+       dest: "{{ stiltweb_bin_dir }}/sync-fsicos1-to-fsicos2.sh" }
     - {src: sync-stilt-to-stiltweb.py.j2,
-       dest: "{{ stiltweb_bin_dir }}/sync-stilt-to-stiltweb.py", mode: "0755" }
+       dest: "{{ stiltweb_bin_dir }}/sync-stilt-to-stiltweb.py" }
     - {src: sync-csv-files.py.j2,
-       dest: "{{ stiltweb_bin_dir }}/sync-csv-files.py", mode: "0755" }
-    - {src: Makefile.j2,
-       dest: "{{ stiltweb_home_dir }}/Makefile" }
+       dest: "{{ stiltweb_bin_dir }}/sync-csv-files.py" }
+    - {src: Makefile.j2, dest: "{{ stiltweb_home_dir }}/Makefile", mode: "0644" }
 
 - block:
   - import_tasks: stiltweb_build_hosts.yml
