@@ -58,8 +58,8 @@
        dest: "{{ stiltweb_bin_dir }}/tail-latest.sh", mode: "0755" }
     - {src: sync-station-names.sh.j2,
        dest: "{{ stiltweb_bin_dir }}/sync-station-names.sh", mode: "0755" }
-    - {src: sync-stilt-data.sh.j2,
-       dest: "{{ stiltweb_bin_dir }}/sync-stilt-data.sh", mode: "0755" }
+    - {src: sync-fsicos1-to-fsicos2.sh.j2,
+       dest: "{{ stiltweb_bin_dir }}/sync-fsicos1-to-fsicos2.sh", mode: "0755" }
     - {src: Makefile.j2,
        dest: "{{ stiltweb_home_dir }}/Makefile" }
 
