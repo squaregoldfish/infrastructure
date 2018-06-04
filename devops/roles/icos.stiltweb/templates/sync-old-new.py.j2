@@ -16,8 +16,8 @@
 #
 # Currently, the new-style tree contains 2.5 million files and 1TB of data.
 # This script will first sync old-to-new and then back again. That way, files
-# created by regular simulation will be made available to stiltweb users and the
-# other way around.
+# created by regular simulation will be made available to stiltweb users and
+# the other way around.
 
 import collections
 import contextlib
@@ -54,6 +54,7 @@ True
     """
     path1 = os.path.realpath(os.path.normpath(path1))
     path2 = os.path.realpath(os.path.normpath(path2))
+
     def get_mount(path):
         if os.path.ismount(path):
             return path
@@ -91,8 +92,9 @@ _aggreg\.nc$ # suffix
 
 
 Footprint = collections.namedtuple(
-    'Footprint', ['filename', 'datepos', 'date', 'year', 'month', 'day', 'hour',
-                  'pos', 'latitude', 'northsouth', 'longitude', 'eastwest', 'height'])
+    'Footprint', ['filename', 'datepos', 'date', 'year', 'month', 'day',
+                  'hour', 'pos', 'latitude', 'northsouth', 'longitude',
+                  'eastwest', 'height'])
 
 
 def parse_footprint(foot):
@@ -184,6 +186,7 @@ def sync_old_slots_to_new_root(old_slots, new_root):
         os.makedirs(d, **kw)
 
     month_dirs = {}
+
     def should_store_in_which_month_dir(foot):
         """Return new parent directory for foot or None if it already exists.
         """
@@ -193,7 +196,7 @@ def sync_old_slots_to_new_root(old_slots, new_root):
             mslots = month_dirs[mdir]
         except KeyError:
             if not os.path.exists(mdir):
-               makedirs_below_new_root(mdir)
+                makedirs_below_new_root(mdir)
             mslots = {e.name: e for e in os.scandir(mdir)}
             month_dirs[mdir] = mslots
         # Is there already a directory named '2012x12x01x18'? That means that
@@ -250,7 +253,7 @@ def old_list_stations(root):
             continue
         if not re.match(r'^[A-Z]+$', e.name):
             continue
-        if not name in rddir:
+        if name not in rddir:
             continue
         yield name
 
@@ -278,8 +281,8 @@ def new_list_stations(new_root, old_root):
 [('35.34Nx025.67Ex00150', 'FIK'), ('35.52Nx012.63Ex00010', 'LMP')]
     """
     # The new-style directory structure contains only GPS-coordinates. Thus
-    # we'll have to start of with the old-style and then map the GPS-coordinates
-    # to station names.
+    # we'll have to start of with the old-style and then map the
+    # GPS-coordinates to station names.
     old_dirs = {old_get_coordinates(old_root, station): station
                 for station in old_list_stations(old_root)}
     for e in os.scandir(new_root):
@@ -353,5 +356,5 @@ if __name__ == '__main__':
         die("%s and %s needs to be on the same filesystem" % (
             NEW_ROOT, OLD_ROOT))
     doctest.testmod()
-    # sync_old_to_new(OLD_ROOT, NEW_ROOT)
+    sync_old_to_new(OLD_ROOT, NEW_ROOT)
     sync_new_to_old(NEW_ROOT, OLD_ROOT)
