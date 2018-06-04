@@ -76,3 +76,4 @@
   - import_tasks: stiltweb_restart_tunnels.yml
   when:
     - stiltweb_no_tunnels is not defined
+    - groups.stiltcluster
