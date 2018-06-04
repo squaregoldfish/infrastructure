@@ -7,14 +7,17 @@ status:
 watch:
 	{{ stiltweb_bin_dir }}/tail-latest.sh
 
-syncnames:
-	{{ stiltweb_bin_dir }}/sync-station-names.sh
+sync: sync-fsicos1-to-fsicos2 sync-stilt-to-stiltweb sync-station-names sync-csv-files
 
 sync-fsicos1-to-fsicos2:
 	{{ stiltweb_bin_dir }}/sync-fsicos1-to-fsicos2.sh
 
-bulk-create-csv-files:
-	echo please run	{{ stiltweb_bin_dir }}/bulk-create-csv-files.py
-
 sync-stilt-to-stiltweb:
-	echo please run {{ stiltweb_bin_dir }}/sync-stilt-to-stiltweb.py
+	{{ stiltweb_bin_dir }}/sync-stilt-to-stiltweb.py
+
+sync-station-names:
+	{{ stiltweb_bin_dir }}/sync-station-names.sh
+
+sync-csv-files:
+	{{ stiltweb_bin_dir }}/sync-csv-files.py
+
