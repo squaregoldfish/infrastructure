@@ -16,6 +16,8 @@
   gather_facts: no
   pre_tasks:
     - name: Ensure infrastructure repo is up to date
+      # --count will return the number of commits that would have been
+      # listed. Either local unpushed commits or remote unmerged commits.
       local_action: shell git fetch && git rev-list HEAD...origin/master --count
       register: git_result
       changed_when: false
@@ -23,7 +25,7 @@
 
     - name: Fail if infrastructure is outdated
       fail:
-        msg: "Your local infrastructure is outdated! Pull the new commits from origin/master."
+        msg: "Your infrastructure repo is not in sync with origin. Pull/push origin/master."
       when: check_infrastructure_version|default(true) and git_result.stdout|int > 0
 
 # Include local_vars.yml if it exist but don't fail if it doesn't.
