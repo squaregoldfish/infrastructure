@@ -62,6 +62,8 @@
        dest: "{{ stiltweb_bin_dir }}/sync-fsicos1-to-fsicos2.sh", mode: "0755" }
     - {src: sync-stilt-to-stiltweb.py.j2,
        dest: "{{ stiltweb_bin_dir }}/sync-stilt-to-stiltweb.py", mode: "0755" }
+    - {src: sync-csv-files.py.j2,
+       dest: "{{ stiltweb_bin_dir }}/sync-csv-files.py", mode: "0755" }
     - {src: Makefile.j2,
        dest: "{{ stiltweb_home_dir }}/Makefile" }
 
