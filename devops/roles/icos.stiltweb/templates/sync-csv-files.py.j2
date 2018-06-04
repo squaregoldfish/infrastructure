@@ -23,13 +23,10 @@ import csv
 import os
 import re
 import sys
-import tempfile
 
 
 # Write files here.
 STILTWEB_SLOTS = '{{ stiltweb_statedir }}/slots'
-# The number of times a rename may fail before we abort.
-MAX_OS_ERROR = 10
 
 
 def build_date_dict(path):
@@ -77,18 +74,15 @@ def extract_csv_for_station(stationdir, datedict):
     # matches 'stiltresult2007x62.91Nx027.66Ex00176.csv'
     # but not 'stiltresult2007x62.91Nx027.66Ex00176_2.csv'
     csvre = re.compile(r'stiltresult(\d{4})x(.*x\d+)_(\d+).csv')
-    matching = 0
     for f in sorted(os.scandir(stationdir), key=lambda k: k.name):
         m = csvre.match(f.name)
         if not m:
             continue
-        matching += 1
         year, _, suffix = m.groups()
         nmissing = 0
         nwritten = 0
         nalready = 0
         nnoexist = 0
-        noserror = 0
         with open(os.path.join(stationdir, f.name)) as csvfile:
             # header looks like:
             #  "ident" "latstart" "lonstart" "aglstart"
@@ -112,29 +106,15 @@ def extract_csv_for_station(stationdir, datedict):
                 if os.path.exists(destcsv):
                     nalready += 1
                     continue
-                tmp = tempfile.mkstemp(dir=slotdir, prefix='.tmp-extract-csv')
-                with open(tmp, 'w') as f:
+                with open(destcsv, 'w') as f:
                     writer = csv.writer(f, delimiter=' ')
                     writer.writerow(header)
                     writer.writerow(row)
                     nwritten += 1
-                try:
-                    os.rename(tmp, destcsv)
-                except os.error:
-                    # We might be stepping on stiltweb's toes.
-                    noserror += 1
-                if noserror > MAX_OS_ERROR:
-                    print("Aborting due to too many rename errors (%d), "
-                          "last one was %s => %s" % (noserror, tmp, destcsv))
-                    sys.exit(1)
-        print(('%s %-2d. nwritten = %-3d. nmissing = %-3d. nalready = %-3d.'
-               'nnoexist %-3d.') % (year, int(suffix), nwritten,
-                                    nmissing, nalready, nnoexist))
-    if matching == 0:
-        print("Are you sure that \"%s\" is the correct path?" %
-              os.path.dirname(stationdir))
-        print("Because there were no files matching '%s'" % csvre.pattern)
-        sys.exit(1)
+            print(('%s %-2d. nwritten = %-3d. nmissing = %-3d. '
+                   'nalready = %-3d. nnoexist %-3d.') % (
+                       year, int(suffix), nwritten,
+                       nmissing, nalready, nnoexist))
 
 
 if __name__ == '__main__':
