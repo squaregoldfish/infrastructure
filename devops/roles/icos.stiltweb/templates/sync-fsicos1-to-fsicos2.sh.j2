@@ -29,7 +29,7 @@ function sync_input_data_from_fsicos1 {
 }
 
 
-function sync_footprints_and_rdata_from_fsicos1 {
+function sync_output_data_from_fsicos1 {
 	cd "{{ stiltweb_stiltdir }}"
 
 	rsync_opts=(
@@ -38,7 +38,7 @@ function sync_footprints_and_rdata_from_fsicos1 {
 		# skip about 2 million symbolink links
 		--exclude='/RData/*/RData*'
 		# source as a glob pattern for two directories
-		'fsicos.lunarc.lu.se:/disk/data/STILT/{Footprints,RData}'
+		'fsicos.lunarc.lu.se:/disk/data/STILT/{Footprints,RData,Results}'
 		# destination, that's a dot, not a dirty screen.
 		.
 	)
@@ -47,4 +47,4 @@ function sync_footprints_and_rdata_from_fsicos1 {
 
 
 sync_input_data_from_fsicos1
-sync_footprints_and_rdata_from_fsicos1
+sync_output_data_from_fsicos1
