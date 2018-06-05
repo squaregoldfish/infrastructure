@@ -19,12 +19,11 @@
 # created by regular simulation will be made available to stiltweb users and
 # the other way around.
 
+from concurrent import futures
 import collections
 import contextlib
 import doctest
-import itertools
 import os
-import pwd
 import re
 import sys
 
@@ -124,10 +123,10 @@ def old_list_slots(root, station):
 >>> old_list_slots(OLD_ROOT, 'HEI') # doctest: +ELLIPSIS
 <generator object old_list_slots at ...>
     """
-    fp_dir   = os.path.join('Footprints', station)
+    fp_dir = os.path.join('Footprints', station)
     fp_files = {e.name: e for e in os.scandir(os.path.join(root, fp_dir))}
 
-    rd_dir   = os.path.join('RData', station)
+    rd_dir = os.path.join('RData', station)
     rd_files = {e.name: e for e in os.scandir(os.path.join(root, rd_dir))}
 
     def pop_file(fname, files, dname):
@@ -237,7 +236,7 @@ def sync_old_slots_to_new_root(old_slots, new_root):
     return cnt
 
 
-def old_list_stations(root):
+def old_list_stations(root, blacklist=['HEI_Sam', 'OP3']):
     """List all the old-style station names
 
 >>> stations = old_list_stations(OLD_ROOT)
@@ -251,9 +250,11 @@ def old_list_stations(root):
     for name, e in fpdir.items():
         if not e.is_dir():
             continue
-        if not re.match(r'^[A-Z]+$', e.name):
+        if not re.match(r'^[A-Z_\d]+$', e.name):
             continue
         if name not in rddir:
+            continue
+        if name in blacklist:
             continue
         yield name
 
@@ -326,11 +327,27 @@ def new_list_slots(new_root, station):
                 yield (month_path, slot.name)
 
 
+def sync_old_to_new_single(old_root, station_name, new_root):
+    old_slots = old_list_slots(old_root, station_name)
+    n_slots = sync_old_slots_to_new_root(old_slots, new_root)
+    return n_slots
+
+
 def sync_old_to_new(old_root, new_root):
-    for station_name in old_list_stations(old_root):
-        old_slots = old_list_slots(old_root, station_name)
-        n_slots = sync_old_slots_to_new_root(old_slots, new_root)
-        debug('Synced %d slots for station %s' % (n_slots, station_name))
+
+    with futures.ProcessPoolExecutor() as executor:
+        todos = {}
+        for station_name in old_list_stations(old_root):
+            future = executor.submit(sync_old_to_new_single,
+                                     old_root, station_name, new_root)
+            todos[future] = station_name
+        for future in futures.as_completed(todos):
+            item = todos[future]
+            try:
+                n_slots = future.result()
+                print(item, 'succeeded, synced', n_slots)
+            except Exception as e:
+                print(item, "failed with", e)
 
 
 def sync_new_to_old(new_root, old_root):
@@ -341,20 +358,25 @@ def sync_new_to_old(new_root, old_root):
         rd_dir = os.path.join(old_root, 'RData', old_name)
         fp_files = {e.name: e for e in os.scandir(rd_dir)}
 
+        new2old = (('foot%s_aggreg.nc', fp_dir, fp_files, 'foot'),
+                   ('.RDatafoot%s', fp_dir, fp_files, 'rdatafoot'),
+                   ('.RData%s', rd_dir, fp_files, 'rdata'))
+
         for month_dir, slot_name in new_list_slots(new_root, new_name):
             # e.g '2007x12x29x12x69.28Nx016.01Ex00005'
             datepos = '%sx%s' % (slot_name, new_name)
-            foot = 'foot%s_aggreg.nc' % datepos
-            if foot in fp_files:
-                continue
-            print("%s => %s/%s" % (foot, old_name, fp_dir))
-            break
+            for old_name, old, old_files, new_name in new2old:
+                old_path = os.path.join(old_dir, old_name % datepos)
+                if old_path in old_files:
+                    continue
+                new_path = os.path.join(month_dir, slot_name, new_name)
+                print("%s => %s" % (old_name, new_name))
+                return
 
 
 if __name__ == '__main__':
     if not same_fs(NEW_ROOT, OLD_ROOT):
         die("%s and %s needs to be on the same filesystem" % (
             NEW_ROOT, OLD_ROOT))
-    doctest.testmod()
     sync_old_to_new(OLD_ROOT, NEW_ROOT)
-    sync_new_to_old(NEW_ROOT, OLD_ROOT)
+    #sync_new_to_old(NEW_ROOT, OLD_ROOT)
