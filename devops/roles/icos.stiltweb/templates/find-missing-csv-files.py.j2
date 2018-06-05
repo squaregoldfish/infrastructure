@@ -1,0 +1,75 @@
+#!/usr/bin/python3
+# Find slots where the 'csv' file is missing.
+#
+# Syncing of old stilt data to the new stiltweb directory layout is a long and
+# winding process. Sometimes it goes wrong and ends up creating slot directories
+# which are missing the 'csv' file. That will cause no end up upset. This script
+# will recurse down the {{ stiltweb_statedir }}/slots directory and look for
+# these directories.
+
+
+import concurrent.futures
+import collections
+import os
+
+STATIONS_ROOT = "{{ stiltweb_statedir }}/slots"
+CORRECT_PARTS = set(('csv', 'rdata', 'rdatafoot', 'foot'))
+STATION_NAMES = {}
+
+Result = collections.namedtuple(
+    'Result', ['station', 'name', 'year', 'npresent', 'nmissing'])
+
+
+def station_name(coordinates):
+    if not STATION_NAMES:
+        # elt ~ '/disk/data/stiltweb/slots/62.91Nx027.66Ex00176'
+        for elt in os.scandir("{{ stiltweb_statedir }}/stations"):
+            if elt.is_dir() and elt.is_symlink():
+                target = os.readlink(elt)
+                # 62.91Nx027.66Ex00176 => PUI
+                STATION_NAMES[os.path.basename(target)] = elt.name
+    return STATION_NAMES.get(coordinates, None)
+
+
+def do_station_year(station, year):
+    npresent = 0
+    nmissing = 0
+    for month in os.scandir(os.path.join(STATIONS_ROOT, station, year)):
+        for slot in os.scandir(month.path):
+            if not slot.name.startswith(year) and slot.is_dir():
+                continue
+            parts = set(e.name for e in os.scandir(slot.path))
+            lacks = CORRECT_PARTS - parts
+            if len(lacks) == 0:
+                npresent += 1
+            elif lacks == {'csv'}:
+                nmissing += 1
+            else:
+                raise AssertionError(lacks, parts)
+    return Result(station, station_name(station), year, npresent, nmissing)
+
+
+with concurrent.futures.ProcessPoolExecutor() as executor:
+    todos = []
+    for station in os.scandir(STATIONS_ROOT):
+        if not station.is_dir():
+            continue
+        for year in os.scandir(station.path):
+            if not year.is_dir():
+                continue
+            future = executor.submit(do_station_year, station.name, year.name)
+            todos.append(future)
+    stations = {}
+    for future in concurrent.futures.as_completed(todos):
+        result = future.result()
+        if result.name is None:
+            continue
+        years = stations.setdefault(result.name, {})
+        assert result.year not in years
+        years[result.year] = result
+    for station, years in sorted(stations.items()):
+        for n, (year, result) in enumerate(sorted(years.items())):
+            if n > 0:
+                station = ''
+            print("%-6s %s\tpresent = %-4d. missing = %-4d" % (
+                station, year, result.npresent, result.nmissing))

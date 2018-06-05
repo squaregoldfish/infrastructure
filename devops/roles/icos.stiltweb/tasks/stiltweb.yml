@@ -64,6 +64,8 @@
        dest: "{{ stiltweb_bin_dir }}/sync-stilt-to-stiltweb.py" }
     - {src: sync-csv-files.py.j2,
        dest: "{{ stiltweb_bin_dir }}/sync-csv-files.py" }
+    - {src: find-missing-csv-files.py.j2,
+       dest: "{{ stiltweb_bin_dir }}/find-missing-csv-files.py" }
     - {src: Makefile.j2, dest: "{{ stiltweb_home_dir }}/Makefile", mode: "0644" }
 
 - block:
