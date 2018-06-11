@@ -1,5 +1,8 @@
 stiltcluster_username: stiltcluster
 stiltcluster_servicename: stiltcluster
+stiltcluster_home_dir: "{{ _stiltcluster.home }}"
+stiltcluster_bin_dir: "{{ stiltcluster_home_dir }}/bin"
+
 # Sadly, we cannot use our {{role_path}} to define this path, since that
 # variable wont be resolved until in the role_included jarservice, by which
 # point it'll point to jarservice.

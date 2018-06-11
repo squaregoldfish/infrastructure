@@ -1,0 +1,15 @@
+#!/bin/bash
+# Remove old directories from $HOME/.stiltrun
+#
+# These are created automatically by stilt.py when running stilt simulations. In
+# the normal case they're then removed by the stiltweb backend. This script -
+# run from cron - is an extra safety to keep $HOME to slowly fill up.
+
+set -u
+set -e
+
+cd "$HOME/.stiltruns"
+
+# maxdepth keep it from recursing into directories it's just deleted
+# -mtime is the number of days old the directories may be
+find . -maxdepth 1 -name 'stilt-run-*' -type d -mtime "+10" -exec rm -rf -- '{}' \;
