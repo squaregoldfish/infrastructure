@@ -35,8 +35,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import json
-
 
 # GLOBALS
 
@@ -217,7 +215,6 @@ class STILTContainer:
     #   + calcslots - remove once we've extracted the slot list
     #   + shell - always remove
     #   + run   - never remove, the user will remove
-    #   + merge - never remove, the user will remove
     #
     # We do _not_ remove the directory if we're re-using a previous directory
     # or if the user specified --keep-rundir.
@@ -540,80 +537,6 @@ def cmd_run(*args):
     post_stilt_run_cleanup(sc._run_dir, verbose=False)
 
 
-def read_merge_args_from_jobdir(d):
-    f = "job.json"
-    p = os.path.join(d, f)
-    if not os.path.exists(p):
-        die("Expected to find %s in %d" % (f, d))
-    j = json.load(open(p))
-    # Convert "2012-12-25" to "2012122500"
-    start = ''.join(str(j['start']).split('-') + ['00'])
-    stop = ''.join(str(j['stop']).split('-') + ['00'])
-    return (DEFAULT_SITE_NAME, j['lat'], j['lon'], j['alt'], start, stop)
-
-
-def create_merge_directory(jobdir, sitename=DEFAULT_SITE_NAME):
-    """Create a jobdir subdirectory 'merge' and populate it.
-
-    Go through /stiltweb/jobs/jobid/slots/FootPrints/XXX and look for the
-    symlinks. There be a bunch looking like:
-      foot2006x01x20x00x57.05Nx008.88Ex00200_aggreg.nc ->
-      /stiltweb/slots/57.05Nx008.88Ex00200/2006/1/2006x01x20x00/foot
-
-    These are created by stiltweb and points from the jobdir to the
-    stiltweb cache of slots. However, the stilt merge phase runs in docker
-    and symlinks cannot point outside the docker volume. So we go through
-    all the symlinks and recreate them as hardlinks in the
-    merge/output/Footprints/XXX directory.
-    """
-    mergedir = os.path.join(jobdir, 'merge')
-    os.makedirs(os.path.join(mergedir, 'logs'), exist_ok=True)
-    for typ in ('Footprints', 'RData'):
-        # e.g /stiltweb/jobs/jobid/merge/output/Footprints/XXX
-        dst = os.path.join(jobdir, 'merge', 'output', typ, sitename)
-        os.makedirs(dst, exist_ok=True)
-        for e in os.scandir(os.path.join(jobdir, 'slots', typ, sitename)):
-            if not e.is_symlink():
-                continue
-            # e.path symlinks to l - example:
-            #   /stiltweb/jobs/jobid/slots/FootPrints/XXX/foot2006 symlinks to
-            #   /stiltweb/slots/57.05Nx008.88Ex00200/2006/1/2006x01x20x00/foot
-            l = os.readlink(e.path)
-            # We create a new hard link from
-            #  /stiltweb/jobs/jobid/merge/output/Footprints/XXX/foot.. to
-            #  /stiltweb/slots/57.05Nx008.88Ex00200/2006/1/2006x01x20x00/foot
-            d = os.path.join(dst, e.name)
-            if not os.path.exists(d):
-                os.link(l, d)
-    return mergedir
-
-
-def cmd_merge(jobdir):
-    """Merge a previous stilt simulation.
-
-    e.g - "stilt merge /some/where/stiltweb/jobs/jobid"
-
-    Start a final merging run of the files outputted by earlier stilt runs.
-
-    """
-
-    jobdir = os.path.abspath(jobdir)
-    args = read_merge_args_from_jobdir(jobdir)
-    mergedir = create_merge_directory(jobdir)
-
-    STILTContainer.rundir = mergedir
-    STILTContainer.name = '%s_merge' % os.path.basename(jobdir)
-    sc = STILTContainer()
-    sc.add_run_dir_volume('logs', '/opt/STILT_modelling/%s' % sc.name)
-    sc.add_run_dir_volume('output', '/opt/STILT_modelling/Output/%s' % sc.name)
-    cmd = ('cd /opt/STILT_modelling && '
-           './start.stilt.sh %s %s 1 1 >& %s/start.stilt.log' % (
-               ' '.join(map(str, args)), sc.name, sc.name))
-    print(sc._run_dir)
-    sc.run(cmd, background=False)
-    post_stilt_run_cleanup(sc._run_dir, verbose=False)
-
-
 def cmd_shell():
     """Starts a shell in the STILT container.
 
@@ -700,7 +623,6 @@ if __name__ == '__main__':
             "metinfo": cmd_metinfo,
             "info": cmd_info,
             "run": cmd_run,
-            "merge": cmd_merge,
             "shell": cmd_shell,
             "calcslots": cmd_calcslots,
             "cleanup": cmd_cleanup}
