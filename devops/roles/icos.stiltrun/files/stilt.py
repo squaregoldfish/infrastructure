@@ -249,7 +249,7 @@ class STILTContainer:
         for v in self._volumes:
             args += ['-v', '%s:%s%s' % (v.host_dir, v.cont_dir,
                                         ':ro' if v.readonly else '')]
-        args += [self.image, '/bin/bash', '-c', cmd]
+        args += [self.image, 'nice', '/bin/bash', '-c', cmd]
         return args
 
     def _create_container(self, cmd):
