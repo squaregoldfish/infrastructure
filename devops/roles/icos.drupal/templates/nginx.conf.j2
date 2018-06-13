@@ -54,12 +54,18 @@ server {
 {% if project_name == "ac" %}
 server {
   listen       80;
-  server_name  ac.icos-cp.eu {{ domain }};
+  server_name  ac.icos-cp.eu {{ domain | replace("www.","") }} {{ domain }};
   return 301   https://{{ domain }}$request_uri;
 }
 server {
   listen       443 ssl;
-  server_name  ac.icos-cp.eu;
+  server_name  ac.icos-cp.eu {{ domain | replace("www.","") }};
+
+{% if certbot_install_certificate | default(true) %}
+  ssl_certificate /etc/letsencrypt/live/{{ certbot_domains | first }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ certbot_domains | first }}/privkey.pem;
+{% endif %}
+
   return 301   https://{{ domain }}$request_uri;
 }
 {% elif project_name == "ri" or project_name == "cp" or project_name == "fi" %}
@@ -72,6 +78,12 @@ server {
 server {
   listen       443 ssl;
   server_name  {{ domain | replace("www.","") }};
+
+{% if certbot_install_certificate | default(true) %}
+  ssl_certificate /etc/letsencrypt/live/{{ certbot_domains | first }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ certbot_domains | first }}/privkey.pem;
+{% endif %}
+
   return 301   https://{{ domain }}$request_uri;
 }
 {% else %}
