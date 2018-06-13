@@ -34,3 +34,49 @@
       tags: stiltrun
     - role: icos.stiltcluster
       tags: stiltcluster
+
+
+# EXPORT STILTWEB DATA FROM FSICOS1 TO FSICOS2
+
+- hosts: icosprod2
+  become: true
+  tasks:
+    - block:
+        - name: Install nfs server
+          package:
+            name: nfs-kernel-server
+            state: present
+
+        - name: Modify exports file
+          lineinfile:
+            path: /etc/exports
+            line: "{{ stiltweb_export_path }}		{{ stiltweb_export_addr }}(ro)"
+          register: _exports
+
+        - name: Reload NFS server
+          service: name=nfs-server state=reloaded enabled=yes
+          when: _exports.changed
+
+        - name: Completely open firewall
+          ufw:
+            rule: allow
+            src: "{{ stiltweb_export_addr }}"
+      tags:
+        - stiltweb_export_slots
+
+
+- hosts: icosprod
+  become: true
+  tasks:
+    - name: Create stiltweb mountpoint
+      file: path="{{ stiltweb_mount_path }}" state=directory
+
+    - name: Mount stiltweb slots from {{ stiltweb_mount_host }}
+      mount:
+        path: "{{ stiltweb_mount_path }}"
+        src: "{{ stiltweb_mount_host }}:{{ stiltweb_mount_path }}"
+        fstype: nfs
+        opts: ro
+        state: mounted
+      tags:
+        - stiltweb_export_slots
