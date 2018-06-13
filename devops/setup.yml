@@ -1,4 +1,15 @@
 ---
+# Include local_vars.yml if it exist but don't fail if it doesn't.
+# That file is meant for local variables (not checked into git).
+- hosts: all
+  tags: always
+  gather_facts: no
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_first_found:
+        - local_vars.yml
+        - /dev/null
+
 # Version check play.
 - hosts: all
   tags: setup
@@ -28,17 +39,6 @@
       fail:
         msg: "Your infrastructure repo is not in sync with origin. Pull/push origin/master."
       when: check_infrastructure_version|default(true)|bool and git_result.stdout|int > 0
-
-# Include local_vars.yml if it exist but don't fail if it doesn't.
-# That file is meant for local variables (not checked into git).
-- hosts: all
-  tags: always
-  gather_facts: no
-  pre_tasks:
-    - include_vars: "{{ item }}"
-      with_first_found:
-        - local_vars.yml
-        - /dev/null
 
 # The system that is being provisioned needs to have python installed. Of the
 # two systems we currently support, CentOS 7 and Ubuntu 16.04, only CentOS have
