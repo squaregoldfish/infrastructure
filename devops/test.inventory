@@ -1,26 +1,39 @@
 # This is an ansible inventory file used for testing. It uses the hostnames
-# 'ubuntu', 'centos' and 'bionic' which are VMs created by Vagrant (look in
-# Vagrantfile).
+# 'centos' and 'bionic' which are VMs created by Vagrant (look in Vagrantfile).
 
 [all:vars]
 linux_timezone_path=/usr/share/zoneinfo/Europe/Stockholm
 linux_add_ssh_root=
 certbot_install_certificate=False
 check_infrastructure_version=False
+cpmeta_filestorage_target=/disk/data/metaAppStorage
+docker_compose_src_parent=/disk/data
+
 
 [icosprod]
-ubuntu
 centos
-bionic
+
+[icosprod:vars]
+stiltweb_mount_path=/disk/data/stiltweb
+stiltweb_mount_host=192.168.99.30
+
 
 [icosprod2]
 bionic
-ubuntu
-centos
+
+[icosprod2:vars]
+
 
 [stiltmaster]
 bionic
 
+[stiltmaster:vars]
+stiltcluster_port=2561
+stiltcluster_maxcores=0
+stiltweb_export_path=/disk/data/stiltweb
+stiltweb_export_addr=192.168.99.10
+
+
 [stiltcluster]
-ubuntu stiltcluster_port=2561 stiltcluster_ip=192.168.99.20
-centos stiltcluster_port=2562 stiltcluster_ip=192.168.99.10
+centos stiltcluster_ip=192.168.99.10 stiltcluster_port=2562
+
