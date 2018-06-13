@@ -20,10 +20,9 @@
       tags: stiltweb
     - role: icos.stiltrun
       tags: stiltrun
-    - role: icos.fedcloud
-      tags: fedcloud
     - role: icos.stiltcluster
       tags: stiltcluster
+
 
 - hosts: stiltcluster
   become: true
