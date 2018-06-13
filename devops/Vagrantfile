@@ -22,22 +22,6 @@ Vagrant.configure("2") do |config|
     inventory.vm.provision "shell", inline: "ifup eth1"
   end
   
-  # UBUNTU 16.04
-  config.vm.define "ubuntu" do |inventory|
-    inventory.ssh.insert_key = true
-    inventory.vm.box = "ubuntu/xenial64"
-
-    # If we set hostname to anything but "ubuntu-xenial" we'll run into problems
-    # since that hostname is hardcoded into /etc/hosts. So if hostname is set to
-    # plain "ubuntu" then sudo(1) will take about 10 seconds to execute since
-    # it's trying to resolve "ubuntu" while only "ubuntu-xenial" is available in
-    # /etc/hosts. That timeout will be enough for ansible to hang up.
-    inventory.vm.hostname = "ubuntu-xenial"
-    inventory.vm.network "private_network", ip: "192.168.99.20"
-    inventory.vm.synced_folder ".", "/vagrant", disabled: true
-  end
-
-
   # UBUNTU 18.04
   config.vm.define "bionic" do |inventory|
     inventory.ssh.insert_key = true
