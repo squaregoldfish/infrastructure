@@ -12,6 +12,9 @@ sync: sync-fsicos1-to-fsicos2 sync-stilt-to-stiltweb sync-station-names sync-csv
 sync-fsicos1-to-fsicos2:
 	{{ stiltweb_bin_dir }}/sync-fsicos1-to-fsicos2.sh
 
+sync-stiltweb-to-stilt:
+	{{ stiltweb_bin_dir }}/sync-stiltweb-to-stilt.py
+
 sync-stilt-to-stiltweb:
 	{{ stiltweb_bin_dir }}/sync-stilt-to-stiltweb.py
 
