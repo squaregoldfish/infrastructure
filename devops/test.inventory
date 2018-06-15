@@ -14,9 +14,6 @@ docker_compose_src_parent=/disk/data
 centos
 
 [icosprod:vars]
-stiltweb_mount_path=/disk/data/stiltweb
-stiltweb_mount_host=192.168.99.30
-
 
 [icosprod2]
 bionic
@@ -30,9 +27,6 @@ bionic
 [stiltmaster:vars]
 stiltcluster_port=2561
 stiltcluster_maxcores=0
-stiltweb_export_path=/disk/data/stiltweb
-stiltweb_export_addr=192.168.99.10
-
 
 [stiltcluster]
 centos stiltcluster_ip=192.168.99.10 stiltcluster_port=2562

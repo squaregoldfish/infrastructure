@@ -5,7 +5,6 @@ fsicos.lunarc.lu.se
 cpmeta_filestorage_target=/disk/data/metaAppStorage
 docker_compose_src_parent=/disk/data
 
-
 [icosprod2]
 fsicos2.lunarc.lu.se
 
@@ -21,8 +20,6 @@ fsicos2.lunarc.lu.se
 [stiltmaster:vars]
 stiltcluster_port=2561
 stiltcluster_maxcores=40
-stiltweb_mount_path=/disk/data/stiltweb
-stiltweb_mount_host=fsicos2.lunarc.lu.se
 
 
 [stiltcluster]

@@ -37,6 +37,7 @@
 
 
 # EXPORT STILTWEB DATA FROM FSICOS1 TO FSICOS2
+# FIXME: Make this run with test.inventory.
 
 - hosts: icosprod2
   become: true
@@ -48,9 +49,11 @@
             state: present
 
         - name: Modify exports file
-          lineinfile:
-            path: /etc/exports
-            line: "{{ stiltweb_export_path }}		{{ stiltweb_export_addr }}(ro)"
+          copy:
+            dest: /etc/exports
+            content: |
+              /disk/data/stiltweb	194.47.223.133(ro)
+              /disk/data/stilt      194.47.223.133(ro)
           register: _exports
 
         - name: Reload NFS server
@@ -60,23 +63,35 @@
         - name: Completely open firewall
           ufw:
             rule: allow
-            src: "{{ stiltweb_export_addr }}"
+            src: "194.47.223.133"
       tags:
-        - stiltweb_export_slots
-
+        - stilt_export
 
 - hosts: icosprod
   become: true
   tasks:
     - name: Create stiltweb mountpoint
-      file: path="{{ stiltweb_mount_path }}" state=directory
+      file: path="/disk/data/STILT/fsicos2/stiltweb" state=directory
 
-    - name: Mount stiltweb slots from {{ stiltweb_mount_host }}
+    - name: Mount stiltweb data from fsicos2
       mount:
-        path: "{{ stiltweb_mount_path }}"
-        src: "{{ stiltweb_mount_host }}:{{ stiltweb_mount_path }}"
+        path: "/disk/data/STILT/fsicos2/stiltweb"
+        src: "fsicos2.lunarc.lu.se:/disk/data/stiltweb"
         fstype: nfs
         opts: ro
         state: mounted
       tags:
-        - stiltweb_export_slots
+        - stilt_export
+
+    - name: Create stilt mountpoint
+      file: path="/disk/data/STILT/fsicos2/stilt" state=directory
+
+    - name: Mount stilt data from fsicos2
+      mount:
+        path: "/disk/data/STILT/fsicos2/stilt"
+        src: "fsicos2.lunarc.lu.se:/disk/data/stilt"
+        fstype: nfs
+        opts: ro
+        state: mounted
+      tags:
+        - stilt_export
