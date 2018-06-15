@@ -8,6 +8,7 @@
   tags:
     - stiltweb_only
     - stiltweb_utils
+    - stiltweb_sync
 
 - import_tasks: stiltweb.yml
   tags:
@@ -17,3 +18,8 @@
   tags:
     - stiltweb_only
     - stiltweb_utils
+
+- import_tasks: stiltweb_sync.yml
+  tags:
+    - stiltweb_only
+    - stiltweb_sync

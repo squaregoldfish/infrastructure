@@ -19,7 +19,6 @@
     - tail-latest.sh
     - sync-station-names.sh
     - sync-fsicos1-to-fsicos2.sh
-    - sync-stiltweb-to-stilt.py
     - sync-stilt-to-stiltweb.py
     - sync-csv-files.py
     - find-missing-csv-files.py

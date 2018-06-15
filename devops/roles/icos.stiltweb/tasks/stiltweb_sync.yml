@@ -1,0 +1,58 @@
+- name: Enable user systemd linger for {{ stiltweb_username }}
+  command: loginctl enable-linger {{ stiltweb_username }}
+  args:
+    creates: /var/lib/systemd/linger/{{ stiltweb_username }}
+
+
+- name: Create the sync directory
+  file:
+    path: "{{ stiltweb_home_dir }}/sync"
+    state: directory
+    owner: "{{ stiltweb_username }}"
+    group: "{{ stiltweb_username }}"
+  register: _sync
+
+
+- name: Install stiltweb->stilt sync script
+  template:
+    src: sync-stiltweb-to-stilt.py.j2
+    dest: "{{ stiltweb_bin_dir }}/sync-stiltweb-to-stilt.py"
+    mode: 0755
+    owner: "{{ stiltweb_username }}"
+    group: "{{ stiltweb_username }}"
+
+
+- name: Install stiltweb->stilt sync service
+  copy:
+    dest: /etc/systemd/system/sync-stiltweb-to-stilt.service
+    content: |
+        [Service]
+        User={{ stiltweb_username }}
+        WorkingDirectory={{ stiltweb_home_dir }}
+        ExecStart={{ stiltweb_bin_dir }}/sync-stiltweb-to-stilt.py --sync
+        Nice=10
+
+        [Unit]
+        Description=Sync slots from stiltweb to classic stilt
+        StartLimitBurst=1
+        StartLimitIntervalSec=10
+  notify: reload systemd config
+
+
+- name: Install stiltweb->stilt path trigger
+  copy:
+    dest: /etc/systemd/system/sync-stiltweb-to-stilt.path
+    content: |
+        [Path]
+        PathChanged={{ stiltweb_statedir }}/slots
+
+        [Unit]
+        Description=Detect when stiltweb slots changes and sync them
+
+        [Install]
+        WantedBy=multi-user.target
+  notify: reload systemd config
+
+
+- name: Enable sync service
+  service: name=sync-stiltweb-to-stilt enabled=true
