@@ -1,35 +1,41 @@
 #!/usr/bin/python3
-# Keeps two different STILT directory structures synced using hard links.
+# Sync from old-style stilt to new-style stiltweb.
+#
+# Each new-style stiltweb slot consists of four files. Three of these are
+# hardlinked from the old-style directory tree, only the csv file is created.
 #
 # Old-style directory tree (output by the original STILT software)
 #   /old_root/Footprints/ARR/foot2007x07x02x09x69.28Nx016.01Ex00005_aggreg.nc
 #   /old_root/Footprints/ARR/.RDatafoot2007x07x02x09x69.28Nx016.01Ex00005
 #   /old_root/RDATA/ARR/.RData2007x07x02x09x69.28Nx016.01Ex00005
+#   /old_root/Results/ARR/stiltresult2007x69.28Nx016.01Ex00005_x.csv
 #
 # New-style directory tree (used by stiltweb)
 #   /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21/foot
 #   /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21/rdatafoot
 #   /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21/rdata
+#   /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21/csv
 #
-# Each set of three files is called a slot and these individual files are
-# hardlinked between the old and new directory tree.
-#
-# Currently, the new-style tree contains 2.5 million files and 1TB of data.
-# This script will first sync old-to-new and then back again. That way, files
-# created by regular simulation will be made available to stiltweb users and
-# the other way around.
 
 from concurrent import futures
 import collections
 import contextlib
+import csv
+import datetime
 import doctest
 import os
 import re
 import sys
 
 
-NEW_ROOT = "{{ stiltweb_statedir }}/slots"
-OLD_ROOT = "{{ stiltweb_stiltdir }}"
+NEW_ROOT = "/disk/data/stiltweb/slots"
+OLD_ROOT = "/disk/data/stilt"
+
+# The date id column used by stilt start at this date.
+ORIGIN = datetime.date(1960, 1, 1)
+STILT_DATE_ID_SLOTS = {"0": "00", "125": "03", "25": "06", "375": "09",
+                       "5": "12", "625": "15", "75": "18", "875": "21"}
+
 DEBUG = True
 
 
@@ -62,6 +68,63 @@ True
     return (os.path.exists(path1) and
             os.path.exists(path2) and
             get_mount(path1) == get_mount(path2))
+
+
+def parse_date_id(s):
+    """Parse a csv stilt date/slot string into python objects
+
+
+    >>> parse_date_id('17167.5')
+    (datetime.date(2007, 1, 1), '12')
+    >>> parse_date_id('20820.125')
+    (datetime.date(2017, 1, 1), '03')
+    """
+    # '17167' => '17167.0'
+    if '.' not in s:
+        s += '.0'
+    ndays, nslot = s.split('.')
+    date = ORIGIN + datetime.timedelta(days=int(ndays))
+    slot = STILT_DATE_ID_SLOTS[nslot]
+    return date, slot
+
+
+def slotdir_to_dateid(slot):
+    # '2014x07x14x21'
+    year, month, day, hour = slot.split('x')
+    date = datetime.date(year=int(year), month=int(month), day=int(day))
+    diff = date - ORIGIN
+    return str(diff.days + (int(hour) / 24))
+
+
+# CSV PARSING
+
+def extract_csv_for_station(stationdir):
+    # matches 'stiltresult2007x62.91Nx027.66Ex00176_2.csv'
+    # but not 'stiltresult2007x62.91Nx027.66Ex00176.csv'
+    csvre = re.compile(r'stiltresult(\d{4})x(.*x\d+)_(\d+).csv')
+    slots = {}
+    for f in sorted(os.scandir(stationdir), key=lambda k: k.name):
+        m = csvre.match(f.name)
+        if not m:
+            continue
+        year, coords, suffix = m.groups()
+        with open(os.path.join(stationdir, f.name)) as csvfile:
+            # header looks like:
+            #  "ident" "latstart" "lonstart" "aglstart"
+            # data looks like
+            #  17349.25 69.28 16.01 5
+            csvreader = csv.reader(csvfile, delimiter=' ')
+            header = None
+            for n, row in enumerate(csvreader):
+                if n == 0:
+                    header = row
+                    continue
+                date, slot = parse_date_id(row[0])
+                # 2007x12x31x00
+                slotname = "%sx%02dx%02dx%s" % (date.year, date.month,
+                                                date.day, slot)
+                slots[slotname] = (header, row)
+    return slots
 
 
 # Match an old-style foot print filename. Example:
@@ -117,17 +180,19 @@ OldSlot = collections.namedtuple(
     'OldSlot', ['root', 'station', 'foot', 'f_foot', 'f_rdata', 'f_rdatafoot'])
 
 
-def old_list_slots(root, station):
+def list_slots(station, root=OLD_ROOT):
     """Yield OldSlots() for the given station.
 
->>> old_list_slots(OLD_ROOT, 'HEI') # doctest: +ELLIPSIS
-<generator object old_list_slots at ...>
+>>> list_slots('HEI') # doctest: +ELLIPSIS
+<generator object list_slots at ...>
     """
     fp_dir = os.path.join('Footprints', station)
     fp_files = {e.name: e for e in os.scandir(os.path.join(root, fp_dir))}
 
     rd_dir = os.path.join('RData', station)
     rd_files = {e.name: e for e in os.scandir(os.path.join(root, rd_dir))}
+
+    valid_hours = set(STILT_DATE_ID_SLOTS.values())
 
     def pop_file(fname, files, dname):
         """Run some sanity checks on the file and pop it from the dict.
@@ -158,6 +223,8 @@ def old_list_slots(root, station):
         foot = parse_footprint(f_name)
         if not foot:
             continue
+        if foot.hour not in valid_hours:
+            continue
         f_foot = pop_file(f_name, fp_files, fp_dir)
         f_rdata = pop_file('.RData%s' % foot.datepos, rd_files, rd_dir)
         f_rdatafoot = pop_file('.RDatafoot%s' % foot.datepos, fp_files, fp_dir)
@@ -174,14 +241,15 @@ def old_list_slots(root, station):
               " foot or .RDatafoot files" % (len(rd_files), rd_dir))
 
 
-def sync_old_slots_to_new_root(old_slots, new_root):
+def sync_single_station(station, old_root=OLD_ROOT, new_root=NEW_ROOT):
     assert(os.path.exists(new_root))
+    assert(os.path.exists(old_root))
 
     def makedirs_below_new_root(d, **kw):
         """Run os.makedirs() while making sure we're in the right spot.
         """
         d = os.path.realpath(os.path.normpath(d))
-        assert d.startswith(NEW_ROOT), (d, NEW_ROOT)
+        assert d.startswith(new_root), (d, new_root)
         os.makedirs(d, **kw)
 
     month_dirs = {}
@@ -189,6 +257,19 @@ def sync_old_slots_to_new_root(old_slots, new_root):
     def should_store_in_which_month_dir(foot):
         """Return new parent directory for foot or None if it already exists.
         """
+        assert 0, "These lines were the result of a one-off-hack"
+        assert station in ["BG3", "GAR030", "GAR344", "HPB131", "KIT100"]
+        if station == "BG3" and foot.year != "2014":
+            return None
+        if station == "GAR030" and foot.year != "2012":
+            return None
+        if station == "GAR344" and foot.year != "2012":
+            return None
+        if station == "HPB131" and foot.year != "2017":
+            return None
+        if station == "KIT100" and foot.year != "2007":
+            return None
+
         # new_root/52.29Nx017.05Ex00100/2012/12
         mdir = os.path.join(new_root, foot.pos, foot.year, foot.month)
         try:
@@ -217,129 +298,48 @@ def sync_old_slots_to_new_root(old_slots, new_root):
 
     def paranoid_hard_link(old_path, slot_dir, new_name):
         new_path = os.path.join(slot_dir, new_name)
-        assert(old_path.startswith(OLD_ROOT))
-        assert(new_path.startswith(NEW_ROOT))
+        assert(old_path.startswith(old_root))
+        assert(new_path.startswith(new_root))
         os.link(old_path, new_path)
 
+    csv_dir = os.path.join(old_root, 'Results_1A4', station)
+    if not os.path.exists(csv_dir):
+        debug("Expected csv dir %s to exist" % csv_dir)
+        return
+
+    all_csv = extract_csv_for_station(csv_dir)
+    if not all_csv:
+        debug("%s existed but no csv data was found" % csv_dir)
+
     cnt = 0
-    for slot in old_slots:
+    for slot in list_slots(station, old_root):
         mdir = should_store_in_which_month_dir(slot.foot)
         if mdir is None:
             continue
-
+        try:
+            header, row = all_csv[slot.foot.date]
+        except KeyError:
+            debug("No csv for station %s and slot '%s'" % (
+                station, slot.foot.date))
+            continue
         with make_new_slot_dir_atomically(mdir, slot.foot.date) as slot_dir:
             for old_path, new_name in ((slot.f_foot, 'foot'),
                                        (slot.f_rdata, 'rdata'),
                                        (slot.f_rdatafoot, 'rdatafoot')):
                 paranoid_hard_link(old_path, slot_dir, new_name)
+            with open(os.path.join(slot_dir, 'csv'), 'w') as f:
+                writer = csv.writer(f, delimiter=' ')
+                writer.writerow(header)
+                writer.writerow(row)
         cnt += 1
     return cnt
 
 
-def old_list_stations(root, blacklist=['HEI_Sam', 'OP3']):
-    """List all the old-style station names
-
->>> stations = old_list_stations(OLD_ROOT)
->>> sorted(stations)[:3]
-['ARR', 'BAL', 'BGU']
-    """
-    fpdir = {e.name: e for e in
-             os.scandir(os.path.join(root, 'Footprints'))}
-    rddir = {e.name: e for e in
-             os.scandir(os.path.join(root, 'RData'))}
-    for name, e in fpdir.items():
-        if not e.is_dir():
-            continue
-        if not re.match(r'^[A-Z_\d]+$', e.name):
-            continue
-        if name not in rddir:
-            continue
-        if name in blacklist:
-            continue
-        yield name
-
-
-def old_get_coordinates(old_root, station):
-    """Returns the coordinate string for an old-style station name.
-
->>> old_get_coordinates(OLD_ROOT, 'HEI')
-'49.42Nx008.67Ex00030'
-    """
-    for e in os.scandir(os.path.join(old_root, 'Footprints', station)):
-        if not e.name.startswith('foot'):
-            continue
-        foot = parse_footprint(e.name)
-        return foot.pos
-    # The Footprints directory exist but contained no matching files.
-    assert 0
-
-
-def new_list_stations(new_root, old_root):
-    """List new-style stations for which there exist an old-style counterpart.
-
->>> ss = new_list_stations(NEW_ROOT, OLD_ROOT)
->>> sorted(ss)[:2]
-[('35.34Nx025.67Ex00150', 'FIK'), ('35.52Nx012.63Ex00010', 'LMP')]
-    """
-    # The new-style directory structure contains only GPS-coordinates. Thus
-    # we'll have to start of with the old-style and then map the
-    # GPS-coordinates to station names.
-    old_dirs = {old_get_coordinates(old_root, station): station
-                for station in old_list_stations(old_root)}
-    for e in os.scandir(new_root):
-        if not e.is_dir():
-            continue
-        try:
-            # e.name looks like '47.96Nx002.11Ex00050'
-            yield (e.name, old_dirs[e.name])
-        except KeyError:
-            continue
-
-
-def new_list_slots(new_root, station):
-    """List new-style slot directories
-
-    The new-style directory tree looks like:
-      /new_root/stationcoordinates/year/month/slot
-    Example:
-      /new_root/55.37Nx007.34Wx00003/2007/01/2007x01x27x21
-      ├── foot
-      ├── rdata
-      └── rdatafoot
-
-    This function will yield successive (month dir path, slot name):
-      [('/new_root/55.37Nx007.34Wx00003/2007/01', '2007x01x27x21'), ...
-    """
-    # The new-style directory tree looks like
-
-    station_path = os.path.join(new_root, station)
-    for year in os.scandir(station_path):
-        if not (year.is_dir() and re.match('[0-9]+', year.name)):
-            continue
-        year_path = os.path.join(station_path, year.name)
-        for month in os.scandir(year_path):
-            if not (month.is_dir() and re.match('[0-9]+', month.name)):
-                continue
-            month_path = os.path.join(year_path, month.name)
-            for slot in os.scandir(month_path):
-                if not (slot.is_dir() and re.match('[0-9x]+', slot.name)):
-                    continue
-                yield (month_path, slot.name)
-
-
-def sync_old_to_new_single(old_root, station_name, new_root):
-    old_slots = old_list_slots(old_root, station_name)
-    n_slots = sync_old_slots_to_new_root(old_slots, new_root)
-    return n_slots
-
-
-def sync_old_to_new(old_root, new_root):
-
+def sync_all_stations(stations):
     with futures.ProcessPoolExecutor() as executor:
         todos = {}
-        for station_name in old_list_stations(old_root):
-            future = executor.submit(sync_old_to_new_single,
-                                     old_root, station_name, new_root)
+        for station_name in stations:
+            future = executor.submit(sync_single_station, station_name)
             todos[future] = station_name
         for future in futures.as_completed(todos):
             item = todos[future]
@@ -350,33 +350,10 @@ def sync_old_to_new(old_root, new_root):
                 print(item, "failed with", e)
 
 
-def sync_new_to_old(new_root, old_root):
-    for new_name, old_name in new_list_stations(new_root, old_root):
-        fp_dir = os.path.join(old_root, 'Footprints', old_name)
-        fp_files = {e.name: e for e in os.scandir(fp_dir)}
-
-        rd_dir = os.path.join(old_root, 'RData', old_name)
-        fp_files = {e.name: e for e in os.scandir(rd_dir)}
-
-        new2old = (('foot%s_aggreg.nc', fp_dir, fp_files, 'foot'),
-                   ('.RDatafoot%s', fp_dir, fp_files, 'rdatafoot'),
-                   ('.RData%s', rd_dir, fp_files, 'rdata'))
-
-        for month_dir, slot_name in new_list_slots(new_root, new_name):
-            # e.g '2007x12x29x12x69.28Nx016.01Ex00005'
-            datepos = '%sx%s' % (slot_name, new_name)
-            for old_name, old, old_files, new_name in new2old:
-                old_path = os.path.join(old_dir, old_name % datepos)
-                if old_path in old_files:
-                    continue
-                new_path = os.path.join(month_dir, slot_name, new_name)
-                print("%s => %s" % (old_name, new_name))
-                return
-
-
 if __name__ == '__main__':
+    assert 0, "This script serves as a starting point for one-off-hacks"
+    doctest.testmod()
     if not same_fs(NEW_ROOT, OLD_ROOT):
         die("%s and %s needs to be on the same filesystem" % (
             NEW_ROOT, OLD_ROOT))
-    sync_old_to_new(OLD_ROOT, NEW_ROOT)
-    #sync_new_to_old(NEW_ROOT, OLD_ROOT)
+    sync_all_stations(['BG3', 'GAR030', 'GAR344', 'HPB131', 'KIT100'])

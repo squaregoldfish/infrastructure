@@ -1,7 +1,18 @@
-#!/usr/bin/nice python3
+#!/usr/bin/python3
 #
-# Sync stilt data from new-style directory layout - as used by stiltweb - to
-# the classic stilt layout.
+# Sync (by hardlinking!) stilt data from new-style slot-based directory layout
+# - as used by stiltweb - to the classic stilt layout.
+#
+# Each new-style slot directory contain four files, but only three of those
+# are synced by this script. Those three file - foot, rdata and rdatafoot -
+# have a one-to-one mapping between new-style and old-style and can this
+# easily be hardlinked. The csv file however exists as one-line-per-file in
+# the new-style structure and many-lines-per-file in the old-style and are not
+# synced.
+#
+# This script will spawn one processes per station. By default it only shows
+# what would be synced, use '--help' for usage info.
+
 
 import argparse
 from concurrent import futures
@@ -40,8 +51,8 @@ def same_fs(path1, path2):
 
 # CREATE STATION OBJECTS
 
-NewStation = collections.namedtuple(
-    'NewStation', ['name', 'path', 'pos'])
+Station = collections.namedtuple(
+    'Station', ['name', 'path', 'pos'])
 
 
 def station_from_name(name, sdir=STATION_DIR):
@@ -53,7 +64,7 @@ def station_from_name(name, sdir=STATION_DIR):
     real = os.path.realpath(path)
     # 62.91Nx027.66Ex00176
     pos = os.path.basename(real)
-    return NewStation(name, real, pos)
+    return Station(name, real, pos)
 
 
 def list_stations(sdir=STATION_DIR):
@@ -67,7 +78,7 @@ def list_stations(sdir=STATION_DIR):
             path = os.path.realpath(elt)
             # 62.91Nx027.66Ex00176
             pos = os.path.basename(path)
-            yield NewStation(elt.name, path, pos)
+            yield Station(elt.name, path, pos)
 
 
 # LIST SLOTS
@@ -87,8 +98,8 @@ def list_slots(station):
 
 # SYNC A STATION
 
-NewSync = collections.namedtuple(
-    'NewSync', ['station', 'nslots', 'nsyncd', 'slotnames'])
+SyncResult = collections.namedtuple(
+    'SyncResult', ['station', 'nslots', 'nsyncd', 'slotnames'])
 
 
 def sync_station(station, dryrun=True, old_root=OLD_ROOT):
@@ -132,7 +143,7 @@ def sync_station(station, dryrun=True, old_root=OLD_ROOT):
         else:
             nsyncd += 1
             slotnames.append(slot.name)
-    return NewSync(station, nslots, nsyncd, slotnames)
+    return SyncResult(station, nslots, nsyncd, slotnames)
 
 
 def sync_all_stations(stations, dryrun=True, verbose=True):
