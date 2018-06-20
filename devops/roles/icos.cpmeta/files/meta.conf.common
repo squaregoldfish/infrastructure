@@ -32,4 +32,6 @@ location =/sparql {
 	proxy_cache_valid 60m;
 	proxy_cache_key "$http_accept|$arg_query|$request_body";
 	proxy_buffer_size 8k;
+	proxy_read_timeout 300s;
 }
+
