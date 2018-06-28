@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
 
   mongodb:
-    image: mongo:3.4
+    image: mongo:3.6
     volumes:
      - "./storage:/data/db"
      - "/etc/localtime:/etc/localtime:ro"
