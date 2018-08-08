@@ -1,17 +1,3 @@
-- name: Enable user systemd linger for {{ stiltweb_username }}
-  command: loginctl enable-linger {{ stiltweb_username }}
-  args:
-    creates: /var/lib/systemd/linger/{{ stiltweb_username }}
-
-
-- name: Create the sync directory
-  file:
-    path: "{{ stiltweb_home_dir }}/sync"
-    state: directory
-    owner: "{{ stiltweb_username }}"
-    group: "{{ stiltweb_username }}"
-  register: _sync
-
 
 - name: Install stiltweb->stilt sync script
   template:
