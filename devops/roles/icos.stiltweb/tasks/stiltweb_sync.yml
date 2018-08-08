@@ -1,3 +1,5 @@
+# This file installs the script/service/trigger needed to keep the new-style and
+# old-style stilt directory structures in sync (by hardlinking them).
 
 - name: Install stiltweb->stilt sync script
   template:
@@ -16,10 +18,14 @@
         User={{ stiltweb_username }}
         WorkingDirectory={{ stiltweb_home_dir }}
         ExecStart={{ stiltweb_bin_dir }}/sync-stiltweb-to-stilt.py --sync
+        # Since this service might run often and since it spawn a lot of
+        # parallel processes we use niceness to avoid disrupting other services.
         Nice=10
 
         [Unit]
         Description=Sync slots from stiltweb to classic stilt
+        # These makes sure that we only run once every 10 seconds. Otherwise we
+        # might trigger very often and svamp the system.
         StartLimitBurst=1
         StartLimitIntervalSec=10
   notify: reload systemd config
