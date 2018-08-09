@@ -29,7 +29,7 @@
 - name: Pull source code from git
   git:
     repo: https://github.com/ICOS-Carbon-Portal/drupal
-    version: master
+    version: "{{ git_version | default('master') }}"
     dest: "{{ project_dir }}"
     force: yes
 
@@ -41,7 +41,7 @@
     - files_backup
     - modules_backup
     - themes_backup
-  when: restore and project_name != "demo"
+  when: restore
 
 - name: Create {{ project_dir }}/config/ directory
   file: path={{ project_dir }}/config/ state=directory recurse=yes

@@ -1,5 +1,9 @@
 server {
+{% if certbot_install_certificate | default(true) %}
   listen       443 ssl;
+{% else %}
+  listen       80;
+{% endif %}
   server_name  {{ domain }};
 
 {% if certbot_install_certificate | default(true) %}
@@ -51,6 +55,7 @@ server {
   }
 }
 
+{% if certbot_install_certificate | default(true) %}
 {% if project_name == "ac" %}
 server {
   listen       80;
@@ -92,4 +97,5 @@ server {
   server_name  {{ domain }};
   return 301   https://{{ domain }}$request_uri;
 }
+{% endif %}
 {% endif %}

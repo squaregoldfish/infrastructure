@@ -4,3 +4,4 @@ mysql_docker_port: 3337
 domain: demo.icos-cp.eu
 trusted_host: ^demo\.icos-cp\.eu$
 cp_theme_d8: cp_theme_d8-cp
+git_version: redesign
