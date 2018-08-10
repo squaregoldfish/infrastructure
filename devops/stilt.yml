@@ -35,18 +35,12 @@
       tags: stiltcluster
 
 
-
 # EXPORT STILTWEB DATA FROM FSICOS2 TO FSICOS1
-# FIXME: Make this run with test.inventory.
 
 - hosts: icosprod2
   become: true
-  vars:
-    stilt_nfs_exports: |
-      /disk/data/stiltweb	{{ stilt_nfs_icosprod1_ip }}(ro)
-      /disk/data/stilt      {{ stilt_nfs_icosprod1_ip }}(ro)
   tasks:
-    - name: Export stilt data to icosprod1
+    - name: Export stiltdata to icosprod1
       tags: stilt_export
       block:
         - name: Install nfs server
@@ -63,26 +57,19 @@
         - name: Completely open firewall to {{ stilt_nfs_icosprod1_ip }}
           ufw: rule=allow src="{{ stilt_nfs_icosprod1_ip }}"
 
-
 - hosts: icosprod
   become: true
   vars:
-    stilt_nfs_icosprod2_hostname: fsicos2.lunarc.lu.se
-    stilt_nfs_exports:
-      - path: "/disk/data/STILT/fsicos2/stiltweb"
-        src: "{{ stilt_nfs_icosprod2_hostname }}:/disk/data/stiltweb"
-      - path: "/disk/data/STILT/fsicos2/stilt"
-        src: "{{ stilt_nfs_icosprod2_hostname }}:/disk/data/stilt"
   tasks:
     - name: Mount stiltdata from icosprod2
       tags: stilt_export
       block:
         - name: Create mountpoint {{ item.path }}
           file: path="{{ item.path }}" state=directory
-          loop: "{{ stilt_nfs_exports }}"
+          loop: "{{ stilt_nfs_mounts }}"
 
         - name: Mount "{{ item.path }}" from icosprod2
-          loop: "{{ stilt_nfs_exports }}"
+          loop: "{{ stilt_nfs_mounts }}"
           mount:
             path: "{{ item.path }}"
             src: "{{ item.src }}"
