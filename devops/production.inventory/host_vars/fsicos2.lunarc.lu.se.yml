@@ -1,0 +1,11 @@
+stilt_nfs_icosprod1_ip: 194.47.223.133
+stilt_nfs_exports: |
+      /disk/data/stiltweb	{{ stilt_nfs_icosprod1_ip }}(ro)
+      /disk/data/stilt      {{ stilt_nfs_icosprod1_ip }}(ro)
+
+stiltcluster_port: 2561
+stiltcluster_maxcores: 40
+
+cpmeta_filestorage_target: /disk/data/metaAppStorage
+docker_compose_src_parent: /disk/data
+certbot_delegate: fsicos.lunarc.lu.se

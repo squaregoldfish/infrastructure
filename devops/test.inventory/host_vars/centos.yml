@@ -1,0 +1,7 @@
+stiltcluster_ip: 192.168.99.10
+stiltcluster_port: 2562
+
+stilt_nfs_icosprod2_host: 192.168.99.30
+stilt_nfs_mounts:
+  - path: "/mnt/bionic-tmp"
+    src: "{{ stilt_nfs_icosprod2_host }}:/tmp"

@@ -1,0 +1,6 @@
+stilt_nfs_icosprod1_ip: 192.168.99.10
+stilt_nfs_exports: |
+  /tmp		{{ stilt_nfs_icosprod1_ip }}(ro)
+
+stiltcluster_port: 2561
+stiltcluster_maxcores: 0
