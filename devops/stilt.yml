@@ -4,7 +4,7 @@
 - import_playbook: setup.yml
 
 # This play just serves to establish an ssh connection to each of the cluster
-# hosts, this collecting the host's ssh key, which we then need in the
+# hosts, thus collecting the host's ssh key, which we then need in the
 # stiltmaster play in order to set up known_hosts.
 - hosts: stiltcluster
   tasks:
@@ -23,7 +23,6 @@
     - role: icos.stiltcluster
       tags: stiltcluster
 
-
 - hosts: stiltcluster
   become: true
   vars_files:
@@ -36,62 +35,57 @@
       tags: stiltcluster
 
 
-# EXPORT STILTWEB DATA FROM FSICOS1 TO FSICOS2
+
+# EXPORT STILTWEB DATA FROM FSICOS2 TO FSICOS1
 # FIXME: Make this run with test.inventory.
 
 - hosts: icosprod2
   become: true
+  vars:
+    stilt_nfs_exports: |
+      /disk/data/stiltweb	{{ stilt_nfs_icosprod1_ip }}(ro)
+      /disk/data/stilt      {{ stilt_nfs_icosprod1_ip }}(ro)
   tasks:
-    - block:
+    - name: Export stilt data to icosprod1
+      tags: stilt_export
+      block:
         - name: Install nfs server
-          package:
-            name: nfs-kernel-server
-            state: present
+          package:  name=nfs-kernel-server  state=present
 
         - name: Modify exports file
-          copy:
-            dest: /etc/exports
-            content: |
-              /disk/data/stiltweb	194.47.223.133(ro)
-              /disk/data/stilt      194.47.223.133(ro)
+          copy: dest=/etc/exports  content="{{ stilt_nfs_exports }}"
           register: _exports
 
         - name: Reload NFS server
           service: name=nfs-server state=reloaded enabled=yes
           when: _exports.changed
 
-        - name: Completely open firewall
-          ufw:
-            rule: allow
-            src: "194.47.223.133"
-      tags:
-        - stilt_export
+        - name: Completely open firewall to {{ stilt_nfs_icosprod1_ip }}
+          ufw: rule=allow src="{{ stilt_nfs_icosprod1_ip }}"
+
 
 - hosts: icosprod
   become: true
+  vars:
+    stilt_nfs_icosprod2_hostname: fsicos2.lunarc.lu.se
+    stilt_nfs_exports:
+      - path: "/disk/data/STILT/fsicos2/stiltweb"
+        src: "{{ stilt_nfs_icosprod2_hostname }}:/disk/data/stiltweb"
+      - path: "/disk/data/STILT/fsicos2/stilt"
+        src: "{{ stilt_nfs_icosprod2_hostname }}:/disk/data/stilt"
   tasks:
-    - name: Create stiltweb mountpoint
-      file: path="/disk/data/STILT/fsicos2/stiltweb" state=directory
+    - name: Mount stiltdata from icosprod2
+      tags: stilt_export
+      block:
+        - name: Create mountpoint {{ item.path }}
+          file: path="{{ item.path }}" state=directory
+          loop: "{{ stilt_nfs_exports }}"
 
-    - name: Mount stiltweb data from fsicos2
-      mount:
-        path: "/disk/data/STILT/fsicos2/stiltweb"
-        src: "fsicos2.lunarc.lu.se:/disk/data/stiltweb"
-        fstype: nfs
-        opts: ro
-        state: mounted
-      tags:
-        - stilt_export
-
-    - name: Create stilt mountpoint
-      file: path="/disk/data/STILT/fsicos2/stilt" state=directory
-
-    - name: Mount stilt data from fsicos2
-      mount:
-        path: "/disk/data/STILT/fsicos2/stilt"
-        src: "fsicos2.lunarc.lu.se:/disk/data/stilt"
-        fstype: nfs
-        opts: ro
-        state: mounted
-      tags:
-        - stilt_export
+        - name: Mount "{{ item.path }}" from icosprod2
+          loop: "{{ stilt_nfs_exports }}"
+          mount:
+            path: "{{ item.path }}"
+            src: "{{ item.src }}"
+            fstype: nfs
+            opts: ro
+            state: mounted
