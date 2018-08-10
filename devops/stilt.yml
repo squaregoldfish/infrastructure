@@ -1,16 +1,14 @@
-# This ansible playbook will provision the STILT servers.
-
----
 - import_playbook: setup.yml
 
-# This play just serves to establish an ssh connection to each of the cluster
-# hosts, thus collecting the host's ssh key, which we then need in the
-# stiltmaster play in order to set up known_hosts.
+
 - hosts: stiltcluster
+  name: Connect to cluster hosts to collect ssh keys
   tasks:
     - debug: msg="Collecting host key from {{ inventory_hostname }}"
 
+
 - hosts: stiltmaster
+  name: Install stilt along with its web frontend and cluster control
   become: true
   vars_files:
     - vault.yml
@@ -23,7 +21,9 @@
     - role: icos.stiltcluster
       tags: stiltcluster
 
+
 - hosts: stiltcluster
+  name: Install stilt on all the backend nodes
   become: true
   vars_files:
     - vault.yml
@@ -35,9 +35,8 @@
       tags: stiltcluster
 
 
-# EXPORT STILTWEB DATA FROM FSICOS2 TO FSICOS1
-
 - hosts: icosprod2
+  name: Export stiltdata to icosprod1
   become: true
   tasks:
     - name: Export stiltdata to icosprod1
@@ -58,6 +57,7 @@
           ufw: rule=allow src="{{ stilt_nfs_icosprod1_ip }}"
 
 - hosts: icosprod
+  name: Mount stiltdata from icosprod2
   become: true
   vars:
   tasks:
