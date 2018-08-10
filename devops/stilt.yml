@@ -38,41 +38,37 @@
 - hosts: icosprod2
   name: Export stiltdata to icosprod1
   become: true
+  tags: stilt_export
   tasks:
-    - name: Export stiltdata to icosprod1
-      tags: stilt_export
-      block:
-        - name: Install nfs server
-          package:  name=nfs-kernel-server  state=present
+    - name: Install nfs server
+      package:  name=nfs-kernel-server  state=present
 
-        - name: Modify exports file
-          copy: dest=/etc/exports  content="{{ stilt_nfs_exports }}"
-          register: _exports
+    - name: Modify exports file
+      copy: dest=/etc/exports  content="{{ stilt_nfs_exports }}"
+      register: _exports
 
-        - name: Reload NFS server
-          service: name=nfs-server state=reloaded enabled=yes
-          when: _exports.changed
+    - name: Reload NFS server
+      service: name=nfs-server state=reloaded enabled=yes
+      when: _exports.changed
 
-        - name: Completely open firewall to {{ stilt_nfs_icosprod1_ip }}
-          ufw: rule=allow src="{{ stilt_nfs_icosprod1_ip }}"
+    - name: Completely open firewall to {{ stilt_nfs_icosprod1_ip }}
+      ufw: rule=allow src="{{ stilt_nfs_icosprod1_ip }}"
+
 
 - hosts: icosprod
   name: Mount stiltdata from icosprod2
   become: true
-  vars:
+  tags: stilt_export
   tasks:
-    - name: Mount stiltdata from icosprod2
-      tags: stilt_export
-      block:
-        - name: Create mountpoint {{ item.path }}
-          file: path="{{ item.path }}" state=directory
-          loop: "{{ stilt_nfs_mounts }}"
+    - name: Create mountpoint {{ item.path }}
+      file: path="{{ item.path }}" state=directory
+      loop: "{{ stilt_nfs_mounts }}"
 
-        - name: Mount "{{ item.path }}" from icosprod2
-          loop: "{{ stilt_nfs_mounts }}"
-          mount:
-            path: "{{ item.path }}"
-            src: "{{ item.src }}"
-            fstype: nfs
-            opts: ro
-            state: mounted
+    - name: Mount "{{ item.path }}" from icosprod2
+      loop: "{{ stilt_nfs_mounts }}"
+      mount:
+        path: "{{ item.path }}"
+        src: "{{ item.src }}"
+        fstype: nfs
+        opts: ro
+        state: mounted
