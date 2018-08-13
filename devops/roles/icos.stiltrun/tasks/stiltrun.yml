@@ -21,8 +21,8 @@
   when: stiltrun_image_id not in docker_images.stdout
 
 - name: Install the stilt python wrapper
-  copy:
-    src: stilt.py
+  template:
+    src: stilt.py.j2
     # /usr/local/bin is per default in the PATH of systemd services, which is
     # important since stiltweb runs as a systemd service (and stiltweb is the
     # main user of the stilt python wrapper).
