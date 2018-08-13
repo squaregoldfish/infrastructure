@@ -16,6 +16,11 @@
     state: present
     key: "{{ lookup('file', 'roles/icos.stiltweb/files/stiltweb.pub') }}"
 
+- name: Create bin directory
+  file:
+    path: "{{ stiltcluster_bin_dir }}"
+    state: directory
+
 - name: Install scripts
   template:
     src:   "{{ item }}.j2"
