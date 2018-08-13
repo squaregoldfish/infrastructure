@@ -39,6 +39,9 @@
     that: stilt_output.stdout == "2012010100\n2012010103\n2012010106"
   changed_when: no
 
+# If this task fails, it's most probably because the stilt input data directory
+# does not exists. {{ stiltrun_stiltdir }}/Input/... needs to exist.  In a test
+# environment, just run 'mkdir -p /disk/data/stilt/Input/Metdata/Europe2'
 - name: Test stiltrun by running listmetfiles
   command: /usr/local/bin/stilt listmetfiles
   changed_when: no
