@@ -39,17 +39,14 @@ import tempfile
 # GLOBALS
 
 # A directory of symlinks like 'HEL -> ../slots/54.18Nx007.90Ex00015'
-# FIXME - use host-specific paths via ansible
-STATION_DIR = "/disk/data/stiltweb/stations"
+STATION_DIR = "{{ stiltrun_stiltweb }}/stations"
 
 # Classic stilt data
-# FIXME - use host-specific paths via ansible
-STILT_DATA_DIR = "/disk/data/stilt"
+STILT_DATA_DIR = "{{ stiltrun_stiltdir }}"
 STILT_INPUT_DIR = os.path.join(STILT_DATA_DIR, 'Input')
 
 METFILES_DIR = os.path.join(STILT_DATA_DIR, "Input/Metdata/Europe2")
-# FIXME - configure this during deployment
-STILT_IMAGE = 'stiltcustom'
+STILT_IMAGE = "{{ stiltrun_image_name }}"
 RUN_DIRECTORY = os.path.join(os.environ['HOME'], '.stiltruns')
 DEBUG_FILES = []
 DEFAULT_SITE_NAME = 'XXX'
