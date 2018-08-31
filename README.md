@@ -58,5 +58,8 @@ To get a list of top 10 processes by memory usage:
 To get process' command:
 `ps -fp <pid>`
 
+To see all parents and direct children of a process:
+`pstree -p -s <pid>`
+
 Working dir of a process by id:
 `pwdx <pid>`
