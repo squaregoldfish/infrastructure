@@ -1,0 +1,9 @@
+flexpart_user: flexpart
+flexpart_image: flexpart
+
+# The max number of docker instances of the flexpart images allowed. The
+# containers uses 100% CPU and allocates approx 50GB of memory.
+flexpart_max_parallel: 1
+flexpart_output_directory: /disk/data/flexpart/output
+flexpart_container_prefix: flexpart-run
+flexpart_export_output_to:

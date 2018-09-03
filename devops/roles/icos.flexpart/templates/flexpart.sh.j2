@@ -1,0 +1,40 @@
+#!/bin/bash
+# This is the flexpart cli frontend. It implements various simple subcommands,
+# the main being "run" which will call out to another script in order to run the
+# docker image.
+
+set -e
+set -u
+
+PREFIX="{{ flexpart_container_prefix }}"
+
+case "${1:-}" in
+	"ps")
+		docker ps -f "name=$PREFIX" -f 'status=running'
+		;;
+	"run")
+		shift
+		# The way to (hopefully) correctly implement correct counting of
+		# max-parallel number of flexpart containers is to use a lockfile; which
+		# in turns leads us to using a separate script for the "run" subcommand.
+		if flock -E 42 -n "/var/lock/flexpart" flexpart_run "$@"; then :
+		# This if-expression looks kind of funky. That's because we can't use
+		# the negation operator ("!") because it changes $? (which we need to
+		# test).
+		else
+			if [ $? -eq 42 ]; then
+				echo "Could not acquire lockfile, another flexpart is starting up."
+			fi
+			exit 1
+		fi
+		;;
+	"-h" | "--help" | "help" | "")
+		echo "usage: flexpart cmd [args]"
+		echo "  ps  - show running simulations"
+		echo "  run - start a new simulation"
+		;;
+	*)
+		echo 'Unknown command (try "help")'
+		exit 1
+		;;
+esac

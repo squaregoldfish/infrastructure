@@ -5,3 +5,7 @@ stilt_nfs_icosprod2_host: 192.168.99.30
 stilt_nfs_mounts:
   - path: "/mnt/bionic-tmp"
     src: "{{ stilt_nfs_icosprod2_host }}:/tmp"
+
+flexpart_ssh_users: ['vagrant']
+flexpart_ssh_remote_host: "bionic"
+flexpart_ssh_remote_ip: "192.168.99.30"

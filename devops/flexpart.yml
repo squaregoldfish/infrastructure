@@ -1,0 +1,11 @@
+- hosts: icosprod2
+  become: true
+  roles:
+    - role: icos.flexpart
+      tags: flexpart
+
+- hosts: icosprod
+  become: true
+  roles:
+    - role: icos.flexpart
+      tags: flexpart

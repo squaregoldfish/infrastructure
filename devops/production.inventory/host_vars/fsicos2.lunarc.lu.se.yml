@@ -9,3 +9,7 @@ stiltcluster_maxcores: 40
 cpmeta_filestorage_target: /disk/data/metaAppStorage
 docker_compose_src_parent: /disk/data
 certbot_delegate: fsicos.lunarc.lu.se
+
+flexpart_install_run: true
+flexpart_max_parallel: 12
+flexpart_export_output_to: "194.47.223.133(ro)"

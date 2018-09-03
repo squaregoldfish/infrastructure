@@ -7,3 +7,7 @@ stilt_nfs_mounts:
     src: "{{ stilt_nfs_icosprod2_host }}:/disk/data/stiltweb"
   - path: "/disk/data/STILT/fsicos2/stilt"
     src: "{{ stilt_nfs_icosprod2_host }}:/disk/data/stilt"
+
+flexpart_ssh_users: ['andre', 'atverm']
+flexpart_ssh_remote_host: "fsicos2.lunarc.lu.se"
+flexpart_ssh_remote_ip: "194.47.223.139"

@@ -4,3 +4,6 @@ stilt_nfs_exports: |
 
 stiltcluster_port: 2561
 stiltcluster_maxcores: 0
+
+flexpart_install_run: true
+flexpart_export_output_to: "192.168.99.10(ro)"
