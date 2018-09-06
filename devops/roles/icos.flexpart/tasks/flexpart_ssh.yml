@@ -6,6 +6,12 @@
       #/usr/bin/bash
       exec ssh -q flexpart "$@"
 
+- name: Install local start-all-flexpart script
+  copy:
+    dest: /usr/local/bin/flexpart
+    src: start-all-flexpart.sh
+    mode: 0755
+
 - include_tasks: flexpart_ssh_user.yml
   loop: "{{ flexpart_ssh_users }}"
   loop_control:
