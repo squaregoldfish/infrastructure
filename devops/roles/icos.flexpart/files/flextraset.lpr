@@ -299,6 +299,7 @@ begin
   end
   else
     EndDate:=EncodeDate(2012,3,31);
+  EndDate:=EndDate+1;
   if HasOption('n') then
   begin
     NrParticles:=StrtoInt(GetOptionValue('n'));
