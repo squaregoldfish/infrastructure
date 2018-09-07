@@ -23,7 +23,7 @@ else
 fi
 
 touch "$OUTPUT/start"
-if flexpart 2>&1 | tee "$OUTPUT/flexpart.log"; then
+if nice flexpart 2>&1 | tee "$OUTPUT/flexpart.log"; then
 	cd "$OUTPUT"
 	touch success
 	rm -f -- ./partposit*
