@@ -9,3 +9,16 @@ stilt_nfs_mounts:
 flexpart_ssh_users: ['vagrant']
 flexpart_ssh_remote_host: "bionic"
 flexpart_ssh_remote_ip: "192.168.99.30"
+
+pgrep_instances:
+  - suffix: rdflog
+    peer_host: 192.168.99.40
+    peer_port: 2345
+    # This is actually defined in the rdflogdb role as {{ rdflogdb_rep_user }}
+    # but that variable might not be in scope so we'll hardcode it.
+    peer_user: "pgrepuser"
+    # The password however, since it's defined in the vault, can be accessed
+    # even though the rdflogdb role has not been loaded.
+    peer_pass: "{{ vault_rdflogdb_rep_pass }}"
+    peer_cert: roles/icos.rdflogdb/files/server.crt
+    peer_slot: centos
