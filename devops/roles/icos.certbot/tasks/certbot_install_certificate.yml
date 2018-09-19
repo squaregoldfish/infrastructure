@@ -19,7 +19,7 @@
 
 - name: Install SSL certificate
   command: >
-    certbot certonly
+    /opt/certbot/bin/certbot certonly
     --authenticator webroot
     --non-interactive
     --webroot-path /usr/share/nginx/html/
@@ -32,5 +32,5 @@
 - name: Add job to renew certificates
   cron:
     name: Certbot renewal
-    job: "certbot renew --post-hook 'service nginx reload'"
+    job: "/opt/certbot/bin/certbot renew --post-hook 'service nginx reload'"
     special_time: daily
