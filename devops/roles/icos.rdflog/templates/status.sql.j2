@@ -1,0 +1,18 @@
+\pset footer
+\pset title
+\connect rdflog
+
+select
+  case
+    when s is null then 'No slots are currently replicating'
+    else format('The following slots are currently replicating => %s', s) 
+  end as slot_report
+from (select string_agg(c, ', ') s from
+	   (select slot_name FROM pg_replication_slots
+	   		             JOIN pg_stat_replication ON pid = active_pid) _(c)) _ \gset
+
+\echo :slot_report
+\echo
+
+\echo The latest timestamp in each table are:
+select * from _latest_timestamps() order by tstamp desc;

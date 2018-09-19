@@ -1,0 +1,93 @@
+- name: Create rdflog user
+  user:
+    name: "{{ rdflog_user }}"
+    state: present
+    create_home: no
+    home: "{{ rdflog_dir }}"
+  register: _user
+
+- name: Create docker home for rdflog
+  file:
+    path: "{{ rdflog_dir }}/build"
+    state: directory
+  register: _build
+
+- name: Create rdflog data volume
+  file:
+    path: "{{ rdflog_dir }}/volumes/data"
+    state: directory
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+  register: _data
+
+- name: Create ssl key/certificate home
+  file:
+    path: "{{ rdflog_dir }}/volumes/ssl"
+    state: directory
+  register: _ssl
+
+- name: Install postgres ssl key/certificate
+  copy:
+    dest: "{{ _ssl.path }}/"
+    src: "{{ item }}"
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+    mode: 0600
+  loop:
+    - server.crt
+    - server.key
+
+- name: Install docker-compose.yml
+  template:
+    dest: "{{ rdflog_dir }}/.docker-compose.yml"
+    src: docker-compose.yml.j2
+    mode: 0600
+  register: _dc
+
+- name: Syntax check the docker-compose file
+  command: "docker-compose -f {{ _dc.dest }} config"
+  changed_when: false
+
+- name: Install docker build requirements
+  template:
+    dest: "{{ _build.path }}/{{ item }}"
+    src: "{{ item }}.j2"
+  loop:
+    - Dockerfile
+    - init.sql
+    - init.sh
+
+- name: Build rdflog image
+  docker_service:
+    project_name: rdflog
+    project_src: "{{ rdflog_dir }}"
+    files: ['.docker-compose.yml']
+    state: present
+    # Contrary to the documentation, the image doesn't always get rebuilt when
+    # its build directory contents change. Thus we always force a build - since
+    # the results are cached it will be very quick if nothing changed.
+    build: true
+
+- name: Install psql script specialized for rdflog
+  template:
+    dest: "{{ rdflog_dir }}/psql"
+    src: psql.sh.j2
+    mode: 0755
+
+- name: Install rdflog control script
+  template:
+    src: ctl.sh.j2
+    dest: "{{ rdflog_dir }}/ctl"
+    mode: 0755
+  register: _ctl
+
+- name: Install sql status file
+  template:
+    src: status.sql.j2
+    dest: "{{ rdflog_dir }}/.status.sql"
+    mode: 0755
+
+- name: Test connection to rdflog database using the status file
+  command: "{{ _ctl.dest }} status"
+  register: r
+  changed_when: false

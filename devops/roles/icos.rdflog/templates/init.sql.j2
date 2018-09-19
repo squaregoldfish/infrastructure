@@ -1,0 +1,34 @@
+alter system set ssl = on;
+create role {{ rdflog_rep_user }} replication login password '{{ rdflog_rep_pass }}';
+create role {{ rdflog_db_user }} login password '{{ rdflog_db_pass }}';
+create database rdflog owner {{ rdflog_db_name }};
+
+\connect {{ rdflog_db_name }};
+
+-- RDFLog contains about 20 identical tables, only differing in name. Each table
+-- has a timestamp field. This function will go through each table and find the
+-- latest timestamp for each table. It will then return a list of (name of
+-- table, latest timestamp in table).
+create or replace function _latest_timestamps(
+  out tname text,
+  out tstamp timestamp with time zone
+  )
+  returns setof record
+  language plpgsql as
+$$
+DECLARE
+	all_rdflog_tables CURSOR FOR
+		   select pg_tables.tablename from pg_tables
+		   where schemaname = 'public'
+		   order by tablename;
+begin
+	create temporary table max_timestamps (
+	   tname text, tstamp timestamp with time zone) on commit drop;
+	for t in all_rdflog_tables loop
+	  execute format($f$insert into max_timestamps select '%s', tstamp
+	                    from %s order by tstamp desc limit 1
+					 $f$, t.tablename, t.tablename);
+	end loop;
+	return query select * from max_timestamps;
+end
+$$;

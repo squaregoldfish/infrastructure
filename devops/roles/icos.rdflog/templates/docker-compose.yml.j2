@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  db:
+    restart: unless-stopped
+    build: build
+    environment:
+      - POSTGRES_PASSWORD={{ rdflog_root_pass }}
+    ports:
+      - {{ rdflog_db_port }}:5432
+    volumes:
+      - ./volumes/data:/var/lib/postgresql/data:rw
+      - ./volumes/ssl:/ssl:ro
+      - /etc/localtime:/etc/localtime:ro
