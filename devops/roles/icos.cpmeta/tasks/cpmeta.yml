@@ -18,7 +18,7 @@
   vars:
     username        : "{{ cpmeta_username }}"
     jarfile         : "{{ cpmeta_jar_file }}"
-    appconfig       : "{{ cpmeta_appconfig }}"
+    apptemplate     : "{{ cpmeta_apptemplate }}"
     nginxconfig     : "{{ cpmeta_nginxconfig }}"
     servicename     : "{{ cpmeta_servicename }}"
     servicetemplate : "{{ cpmeta_template }}"

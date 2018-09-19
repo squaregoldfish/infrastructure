@@ -15,12 +15,8 @@ flexpart_ssh_remote_ip: "194.47.223.139"
 pgrep_instances:
   - suffix: rdflog
     peer_host: fsicos2.lunarc.lu.se
-    peer_port: 2345
-    # This is actually defined in the rdflogdb role as {{ rdflogdb_rep_user }}
-    # but that variable might not be in scope so we'll hardcode it.
-    peer_user: "pgrepuser"
-    # The password however, since it's defined in the vault, can be accessed
-    # even though the rdflogdb role has not been loaded.
-    peer_pass: "{{ vault_rdflogdb_rep_pass }}"
-    peer_cert: roles/icos.rdflogdb/files/server.crt
+    peer_port: "{{ rdflog_db_port }}"
+    peer_user: "{{ rdflog_rep_user }}"
+    peer_pass: "{{ rdflog_rep_pass }}"
+    peer_cert: roles/icos.rdflog/files/server.crt
     peer_slot: fsicos

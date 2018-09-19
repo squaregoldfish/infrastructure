@@ -1,11 +1,20 @@
+# The name of the linux user that runs the service.
 cpmeta_username: cpmeta
+
+# The name of the systemd service
 cpmeta_servicename: cpmeta
+
 # Sadly, we cannot use our {{role_path}} to define the following paths, since
 # that variable wont be resolved until in the role_included jarservice, by which
 # point it'll point to jarservice.
 # https://github.com/ansible/ansible/issues/15439
 cpmeta_template: roles/icos.cpmeta/templates/cpmeta.service.j2
-cpmeta_appconfig:  roles/icos.cpmeta/files/application.conf
+cpmeta_apptemplate:  roles/icos.cpmeta/templates/application.conf.j2
 cpmeta_nginxconfig:  roles/icos.cpmeta/files/meta.conf
-# cpmeta_filestorage_target: 
 
+# cpmeta_filestorage_target:
+
+cpmeta_db_name: "{{ rdflog_db_name }}"
+cpmeta_db_user: "{{ rdflog_db_user }}"
+cpmeta_db_port: "{{ rdflog_db_port }}"
+cpmeta_db_pass: "{{ rdflog_db_pass }}"

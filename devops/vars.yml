@@ -3,5 +3,14 @@ restore     : false
 # Base path for backup directory. Only used if backup is set to true, else ignore
 backup_path : /disk/ServerBackup/Backup/
 
+# The connection information for the rdflog database, we keep it here since it's
+# shared between several roles.
+rdflog_db_pass: "{{ vault_rdflog_db_pass }}"
+rdflog_db_user: rdflog
+rdflog_db_name: rdflog
+rdflog_db_port: 2345
 
-
+# The replication user/pass for the rdflog instance.
+rdflog_rep_user: pgrepuser
+rdflog_rep_pass: "{{ vault_rdflog_rep_pass }}"
+rdflog_root_pass: "{{ vault_rdflog_root_pass }}"

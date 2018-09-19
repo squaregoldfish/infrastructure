@@ -28,8 +28,6 @@
       tags: restheart
     - role: icos.cpauth
       tags: cpauth
-    - role: icos.cpmeta
-      tags: cpmeta
     - role: icos.cpdata
       tags: cpdata
     - role: icos.doi
@@ -44,6 +42,11 @@
       tags: mattermost
     - role: icos.sitesaquanetform
       tags: sitesaquanetform
+  tasks:
+    - include_role: name=icos.pgrep
+      vars:  { arg: "{{ item }}" }
+      loop: "{{ pgrep_instances }}"
+      tags: pgrep
 
 - hosts: icosprod2
   become: true
@@ -53,3 +56,7 @@
   roles:
     - role: icos.geoip
       tags: geoip
+    - role: icos.rdflog
+      tags: rdflog
+    - role: icos.cpmeta
+      tags: cpmeta
