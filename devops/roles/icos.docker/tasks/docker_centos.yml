@@ -19,3 +19,12 @@
   with_items:
     - docker-engine
     - docker-compose
+    - python-pip
+
+- name: Install docker-compose python module
+  pip:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - docker
+    - docker-compose
