@@ -9,13 +9,7 @@
     dest: /etc/nginx/conf.d/{{ nginx_conf_name }}.conf
     mode: 0700
   when: not nginx_conf.stat.exists
-  register: nginx_temp
-
-- name: reload nginx
-  service:
-    name: nginx
-    state: reloaded
-  when: nginx_temp.changed
+  notify: reload nginx config
 
 - name: Install SSL certificate
   command: >
