@@ -1,7 +1,0 @@
-dependencies:
-  - {role: icos.nginx, tags: nginx}
-  - {role: icos.java, tags: java}
-
-  # - {role: icos.linux, tags: linux}
-  # - {role: icos.nginx, tags: nginx}
-  # - {role: icos.java,  tags: java}

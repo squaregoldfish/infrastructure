@@ -6,6 +6,19 @@
   tasks:
     - debug: msg="Collecting host key from {{ inventory_hostname }}"
 
+- hosts: all
+  roles:
+    - role: icos.linux
+      tags: linux
+    - role: icos.docker
+      tags: docker
+    - role: icos.nginx
+      tags: nginx
+    - role: icos.java
+      tags: java
+    - role: icos.python3
+      tags: python3
+
 
 - hosts: stiltmaster
   name: Install stilt along with its web frontend and cluster control
