@@ -3,12 +3,14 @@
   vars:
     - certbot_domains: [meta.icos-cp.eu]
     - nginx_conf_name: meta
+  delegate_to: "{{ certbot_delegate|default(omit) }}"
 
 - import_role:
     name: icos.certbot
   vars:
     - certbot_domains: [meta.fieldsites.se]
     - nginx_conf_name: meta
+  delegate_to: "{{ certbot_delegate|default(omit) }}"
 
 - name: Run the jarservice role
   import_role:
