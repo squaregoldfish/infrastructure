@@ -45,7 +45,7 @@
         dest: "{{ _build.path }}"
       loop:
         - Dockerfile
-        # At this point the flexpart10.2.tar.gz is no longer availeble from the
+        # At this point the flexpart10.2.tar.gz is no longer available from the
         # flexpart project homepage, so we ship our own version.
         - flexpart10.2.tar.gz
         # The source code for a small utility program to be run before the
