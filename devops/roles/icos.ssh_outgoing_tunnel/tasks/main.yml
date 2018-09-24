@@ -1,0 +1,2 @@
+- import_tasks: ssh_outgoing_tunnel.yml
+  tags: [ssh_outgoing_tunnel_only]

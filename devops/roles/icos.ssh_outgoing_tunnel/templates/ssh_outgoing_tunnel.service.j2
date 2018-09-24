@@ -1,0 +1,12 @@
+[Unit]
+Description=SSH connection to {{ remote_host }}
+After=network.target
+
+[Service]
+User={{ local_user }}
+RestartSec=5
+Restart=always
+ExecStart=/usr/bin/ssh -v -NT {{ tunnel_args }} {{ remote_name }}
+
+[Install]
+WantedBy=multi-user.target
