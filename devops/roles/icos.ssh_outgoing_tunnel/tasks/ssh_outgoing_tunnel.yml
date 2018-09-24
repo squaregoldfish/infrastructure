@@ -28,7 +28,7 @@
         name: "{{ remote_host }}"
         key: >-
           {{ remote_host }},{{ remote_ip }} ecdsa-sha2-nistp256
-          {{ hostvars[remote_host].ansible_ssh_host_key_ecdsa_public }}
+          {{ remote_host_key }}
 
     - name: Add to the ssh user's config file
       blockinfile:

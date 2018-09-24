@@ -23,7 +23,6 @@
     - vault.yml
     - vars.yml
   roles:
-    # Higher level service-level roles.
     - role: icos.restheart
       tags: restheart
     - role: icos.cpauth
@@ -42,6 +41,13 @@
       tags: mattermost
     - role: icos.sitesaquanetform
       tags: sitesaquanetform
+    - role: icos.ssh_incoming_tunnel
+      tags: ssh_incoming_tunnel
+      vars:
+        user: tunnel_icosprod2_meta
+        remote_host: "{{ meta_tunnel_from_ip }}"
+        public_key: >-
+          "{{ lookup('file', 'roles/icos.ssh_outgoing_tunnel/files/ssh_tunnel.pub') }}"
   tasks:
     - include_role: name=icos.pgrep
       vars:  { arg: "{{ item }}" }
@@ -60,3 +66,13 @@
       tags: rdflog
     - role: icos.cpmeta
       tags: cpmeta
+    - role: icos.ssh_outgoing_tunnel
+      tags: ssh_outgoing_tunnel
+      vars:
+        remote_host: icosprod
+        remote_host_key: >-
+          "{{ hostvars[meta_tunnel_to_host].ansible_ssh_host_key_ecdsa_public }}"
+        remote_acct: tunnel_icosprod2_meta
+        remote_ip: "{{ meta_tunnel_to_ip }}"
+        remote_name: meta
+        tunnel_args: "-R localhost:{{ meta_port }}:localhost:{{ meta_port }}"

@@ -18,3 +18,6 @@ pgrep_instances:
     peer_pass: "{{ rdflog_rep_pass }}"
     peer_cert: roles/icos.rdflog/files/server.crt
     peer_slot: centos
+
+
+meta_tunnel_from_ip: 192.168.99.30

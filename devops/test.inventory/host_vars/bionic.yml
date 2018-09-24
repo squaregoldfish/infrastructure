@@ -7,3 +7,6 @@ stiltcluster_maxcores: 0
 
 flexpart_install_run: true
 flexpart_export_output_to: "192.168.99.10(ro,no_subtree_check)"
+
+meta_tunnel_to_ip: 192.168.99.10
+meta_tunnel_to_host: centos

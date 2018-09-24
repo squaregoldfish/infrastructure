@@ -14,3 +14,5 @@ rdflog_db_port: 2345
 rdflog_rep_user: pgrepuser
 rdflog_rep_pass: "{{ vault_rdflog_rep_pass }}"
 rdflog_root_pass: "{{ vault_rdflog_root_pass }}"
+
+meta_port: 9094

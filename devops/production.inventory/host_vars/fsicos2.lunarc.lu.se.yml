@@ -13,3 +13,6 @@ certbot_delegate: fsicos.lunarc.lu.se
 flexpart_install_run: true
 flexpart_max_parallel: 12
 flexpart_export_output_to: "194.47.223.133(ro,no_subtree_check)"
+
+meta_tunnel_to_ip: 194.47.223.133
+meta_tunnel_to_host: fsicos.lunarc.lu.se
