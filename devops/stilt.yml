@@ -6,7 +6,11 @@
   tasks:
     - debug: msg="Collecting host key from {{ inventory_hostname }}"
 
-- hosts: all
+- hosts: stiltmaster stiltcluster
+  become: true
+  vars_files:
+    - vault.yml
+    - vars.yml
   roles:
     - role: icos.linux
       tags: linux

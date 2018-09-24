@@ -3,6 +3,10 @@
 - import_playbook: setup.yml
 
 - hosts: icosprod icosprod2
+  become: true
+  vars_files:
+    - vault.yml
+    - vars.yml
   roles:
     - role: icos.linux
       tags: linux
