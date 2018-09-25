@@ -14,5 +14,9 @@ cpdata{
 		folder = "{{ cpdata_filestorage_target }}/etcFacadeStaging"
 		secret = "{{ cpdata_etcfacade_secret }}"
 	}
+
+	meta {
+		baseUrl = "http://{{ cpdata_meta_addr }}:{{ cpdata_meta_port }}/"
+	}
 }
 
