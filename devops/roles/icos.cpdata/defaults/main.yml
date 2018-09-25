@@ -1,5 +1,12 @@
 cpdata_username: cpdata
 cpdata_servicename: cpdata
+
+cpdata_meta_port: 9094
+cpdata_meta_addr: 127.0.0.1
+
+cpdata_bind_port: 9010
+cpdata_bind_addr: 127.0.0.1
+
 # Sadly, we cannot use our {{role_path}} to define the following paths, since
 # that variable wont be resolved until in the role_included jarservice, by which
 # point it'll point to jarservice.
