@@ -30,6 +30,14 @@
     links:
       - mongodb
     ports:
-      - "127.0.0.1:8088:8080"
+      - "{{ restheart_host_addr }}:{{ restheart_host_port }}:8080"
     volumes:
       - /home/restheart/infrastructure/restheart/security.yml:/opt/restheart/etc/security.yml:ro
+
+- name: Test restheart
+  get_url:
+    url: "http://{{ restheart_host_addr }}:{{ restheart_host_port }}/"
+    dest: /dev/null
+  register: r
+  failed_when: r.status_code != 200
+  changed_when: false
