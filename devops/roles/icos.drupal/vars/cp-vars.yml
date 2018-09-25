@@ -5,3 +5,4 @@ trusted_host: ^www\.icos-cp\.eu$
 cp_theme_d8: cp_theme_d8-cp
 domain: www.icos-cp.eu
 ssl_domains: [icos-cp.eu,www.icos-cp.eu]
+redirect_to_www: true
