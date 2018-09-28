@@ -10,7 +10,8 @@ services:
       - /disk/data/common/netcdf/gcp_models:/opt/data
       - /disk/data/STILT:/opt/stiltdata
       - /disk/data/eurocom:/opt/eurocom
+      - /disk/data/flexpart:/opt/flexpart
       - ./storage:/home
       - ./users:/opt/users
-      - /disk/data/dataAppStorage/netcdf:/opt/icisnetcdf
+      - /disk/data/dataAppStorage/netcdf:/opt/icisnetcdf:ro
     restart: unless-stopped
