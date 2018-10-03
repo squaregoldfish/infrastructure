@@ -1,0 +1,20 @@
+# the linux host account
+eddyetc_user: eddyetc
+
+# the docker image
+eddyetc_image: eddyetc
+
+# the path of the host wrapper script
+eddyetc_bin_path: /usr/local/bin/eddyetc
+
+# the containers are named with this prefix to make them easier to count
+eddyetc_container_prefix: eddy_etc_run-
+
+# path to the zip file inside the docker container where the R script expects to
+# find it
+eddyetc_input_file: /workdir/data.zip
+
+# which git version of eddy pro will we switch to before compiling
+eddyetc_eddy_pro_git_tag: v6.1.0
+
+eddyetc_r_name: EC_Processing_CP_v0.R

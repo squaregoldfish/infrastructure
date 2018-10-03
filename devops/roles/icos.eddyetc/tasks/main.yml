@@ -1,0 +1,3 @@
+- import_tasks: eddyetc.yml
+  tags:
+    - eddyetc_only
