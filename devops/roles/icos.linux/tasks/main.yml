@@ -39,6 +39,7 @@
     - jq   # like sed for json
     - make # party like it's 1976
     - "{{ linux_netcat_package }}"
+    - tree
 
 - name: Install bash aliases
   lineinfile:
