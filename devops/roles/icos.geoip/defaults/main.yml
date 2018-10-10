@@ -1,4 +1,4 @@
-geoip_home: "{{ docker_compose_dir }}/geoip"
+geoip_home: "{{ docker_compose_dir | default('/docker') }}/geoip"
 geoip_build_dir: "{{ geoip_home }}/build"
 geoip_repo_dir: "{{ geoip_build_dir }}/repo"
 geoip_config_src: "{{ geoip_repo_dir }}/src/main/python/geoip/py/config.py"
