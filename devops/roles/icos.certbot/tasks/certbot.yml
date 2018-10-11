@@ -1,0 +1,9 @@
+- import_tasks: certbot_live.yml
+  when: not certbot_fake_certificate
+
+- import_tasks: certbot_fake.yml
+  when: certbot_fake_certificate
+
+# The certbot_nginx_conf variable is set by either the live or fake path.
+- name: Export certbot nginx config variable with prefix name
+  set_fact: '{{ certbot_conf_name }}_certbot_nginx_conf="{{certbot_nginx_conf}}"'
