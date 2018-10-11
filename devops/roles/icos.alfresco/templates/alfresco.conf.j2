@@ -1,3 +1,5 @@
+proxy_cache_path /var/cache/nginx keys_zone=alfresco-cache:512m inactive=1d;
+
 server {
 	listen       443 ssl;
 	server_name docs.icos-cp.eu;
