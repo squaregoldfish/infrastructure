@@ -35,9 +35,11 @@ for ((i=1; i<=59; i++)); do
 			case $msg in
 				"Simulation started"*)
 					echo "$(date -Iminutes) - $args - started"
+					break
 					;;
 				"Output directory"*"already exists"*)
 					echo "$(date -Iminutes) - $args - already existed"
+					break
 					;;
 				"The maximum number of parallel"*)
 					if [ $log_retry = "yes" ]; then
@@ -45,14 +47,12 @@ for ((i=1; i<=59; i++)); do
 							 "will retry every $SLEEP seconds"
 						log_retry="no";
 					fi
-					sleep $SLEEP;
-					continue
 					;;
 				*)
 					echo "$(date -Iminutes) - $args - couldn't parse |$msg|"
 					;;
 			esac
-			break
+			sleep $SLEEP;
 		done
 	done
 done
