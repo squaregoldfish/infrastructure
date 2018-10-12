@@ -18,3 +18,7 @@ cpmeta_db_name: "{{ rdflog_db_name }}"
 cpmeta_db_user: "{{ rdflog_db_user }}"
 cpmeta_db_port: "{{ rdflog_db_port }}"
 cpmeta_db_pass: "{{ rdflog_db_pass }}"
+
+
+certbot_domains: [meta.icos-cp.eu, meta.fieldsites.se]
+certbot_conf_name: cpmeta
