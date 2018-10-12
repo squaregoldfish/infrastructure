@@ -4,17 +4,15 @@
     groups: "{{ extra_groups }}"
     append: yes
     shell: /bin/bash
-  register: _jarservice_user
+  register: _user
 
 # We set up a directory where we keep not only the current jar file but also
 # older copies. This makes it easier to roll back to earlier versions of the
 # service - simply change the symbolic link and restart.
 - name: Create directory for jar files
   file:
-    path: /home/{{ username }}/jarfiles
+    path: "{{ _user.home }}/jarfiles"
     state: directory
-    owner: "{{ username }}"
-    group: "{{ username }}"
   register: jardir
 
 # Since we keep multiple versions of the jar files around, we need to
@@ -23,73 +21,50 @@
   # Stop ansible from running local_action as root (toplevel "become: true")
   become: false
   local_action: stat path="{{jarfile}}" checksum_algorithm=sha256
-  register: jarfilestat
+  register: _stat
 
-# If the jar file doesn't exist, this rule will make it obvious - later on it
-# might not be.
-- name: Ensure that local jar file exists
+- name: To aid debugging, explicitly check that the local jar file exist.
   fail:
     msg: "{{ jarfile }} doesn't exist!"
-  when: not jarfilestat.stat.exists
+  when: not _stat.stat.exists
 
-# Compute the destination filename, we'll be using it more than once.
-- set_fact:
-    destjarfile: "{{jardir.path}}/{{jarfile|basename}}-{{jarfilestat.stat.checksum}}"
+- name: Compute the destination filename, we'll be using it more than once.
+  set_fact:
+    destjarfile: "{{jardir.path}}/{{jarfile|basename}}-{{_stat.stat.checksum}}"
 
 - name: Copy {{ servicename }} jar file
   copy:
     src: "{{ jarfile }}"
     dest: "{{ destjarfile }}"
-    owner: "{{ username }}"
-    group: "{{ username }}"
 
-# We support installing an application.conf file, both by copying and (next
-# task) by templating.
-- name: Copy {{ servicename }} application config file
-  copy:
-    src: "{{ appconfig }}"
-    dest: "/home/{{ username }}/{{ appconfig | basename}}"
-    owner: "{{ username }}"
-    group: "{{ username }}"
-  when: appconfig is defined
-  notify: restart {{ servicename }}
-
-- name: Install {{ servicename }} application config file
+- name: Copy {{ servicename }} config file
   template:
-    src: "{{ apptemplate }}"
-    # Assumes that {{apptemplate}} ends in .j2 (jinja2 template)
-    dest: "/home/{{ username }}/{{ apptemplate | basename | splitext | first }}"
-    owner: "{{ username }}"
-    group: "{{ username }}"
-  when: apptemplate is defined
+    src: "{{ configfile }}"
+    dest: "{{ _user.home}}/"
+  when: configfile is defined
   notify: restart {{ servicename }}
 
 - name: Copy {{ servicename }} nginx config file
   template:
     src: "{{ item }}"
     dest: /etc/nginx/conf.d/
-    owner: "{{ username }}"
-    group: "{{ username }}"
   with_fileglob:
     - "{{nginxconfig}}*"
   when: nginxconfig is defined
   notify: reload nginx config
 
-# The systemd unit file references the symbolic link in the service users' home
-# directory. This operation makes that link point to the jar files we've just
-# copied.
-- name: Create {{ servicename}} jar symlink
+- name: Create the {{ servicename}} jar symlink used by systemd
   file:
     src: "{{ destjarfile }}"
-    dest: "/home/{{ username }}/{{ servicename }}.jar"
-    owner: "{{ username }}"
-    group: "{{ username }}"
+    dest: "{{ _user.home}}/{{ servicename }}.jar"
     state: link
   register: installed_jarfile
   notify: restart {{ servicename }}
 
 - name: Add systemd {{ servicename }} servicefile
-  template: src={{ servicetemplate }} dest=/etc/systemd/system/{{ servicename }}.service
+  template:
+    src: "{{ servicetemplate }}"
+    dest: "/etc/systemd/system/{{ servicename }}.service"
   notify:
     - reload systemd config
     - restart {{ servicename }}
@@ -97,10 +72,10 @@
 - name: Enable systemd {{ servicename }}
   service: name={{ servicename }} enabled=yes state=started
 
-# This is a garbage collection thing to keep the jarfiles directory from filling
-# up with old files.
-- name: Enumerate old jarfiles
-  shell: ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null | sed '1,{{jarservice_keep_n_old}}d'
+- name: Keep the jarfiles directory from filling up
+  shell: >-
+    ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null |
+    sed '1,{{jarservice_keep_n_old}}d'
   register: oldjarfiles
   changed_when: False
 
