@@ -8,11 +8,7 @@
     - "{{ stiltweb_statedir }}"
     - "{{ stiltweb_bin_dir }}"
 
-- import_role:
-    name: icos.certbot
-  vars:
-    - certbot_domains: [stilt.icos-cp.eu]
-    - nginx_conf_name: stilt
+- import_role: name=icos.certbot
 
 - name: Run the jarservice role
   import_role:

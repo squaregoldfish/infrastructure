@@ -21,3 +21,6 @@ stiltweb_stiltdir: /disk/data/stilt
 # The port that netty/akka/rpc port on the stiltweb host. Incoming stiltcluster
 # connections will be redirected here.
 stiltweb_port: 2550
+
+certbot_domains: [stilt.icos-cp.eu]
+certbot_conf_name: stilt
