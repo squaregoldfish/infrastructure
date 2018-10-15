@@ -21,4 +21,4 @@ cpmeta_db_pass: "{{ rdflog_db_pass }}"
 
 
 certbot_domains: [meta.icos-cp.eu, meta.fieldsites.se]
-certbot_conf_name: cpmeta
+certbot_conf_name: meta
