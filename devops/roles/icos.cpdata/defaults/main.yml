@@ -20,3 +20,6 @@ cpdata_b2stage_pass: "{{ vault_cpdata_b2stage_pass }}"
 cpdata_dlreporter_pass: "{{ vault_cpdata_dlreporter_pass }}"
 
 cpdata_etcfacade_secret: "{{ vault_cpdata_etcfacade_secret }}"
+
+certbot_domains: [data.icos-cp.eu, data.fieldsites.se]
+certbot_conf_name: data
