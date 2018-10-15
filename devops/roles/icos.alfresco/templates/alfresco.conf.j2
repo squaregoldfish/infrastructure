@@ -2,12 +2,9 @@ proxy_cache_path /var/cache/nginx keys_zone=alfresco-cache:512m inactive=1d;
 
 server {
 	listen       443 ssl;
-	server_name docs.icos-cp.eu;
+    server_name  {{ certbot_domains | join(" ") }};
 
-{% if certbot_install_certificate | default(true) %}
-	ssl_certificate /etc/letsencrypt/live/docs.icos-cp.eu/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/docs.icos-cp.eu/privkey.pem;
-{% endif %}
+	{{ alfresco_certbot_nginx_conf | indent(4) }}
 
 	client_max_body_size 1G;
 
@@ -29,7 +26,8 @@ server {
 }
 
 server {
-	listen    80;
-	server_name  docs.icos-cp.eu;
-	return 301 https://$server_name$request_uri;
+    listen 80;
+    server_name  {{ certbot_domains | join(" ") }};
+
+    return 301 https://$server_name$request_uri;
 }
