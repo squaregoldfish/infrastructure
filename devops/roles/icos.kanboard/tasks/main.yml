@@ -4,11 +4,7 @@
     append: yes
     shell: /bin/bash
 
-- import_role:
-    name: icos.certbot
-  vars:
-    - certbot_domains: [kanboard.icos-cp.eu]
-    - nginx_conf_name: kanban
+- import_role: name=icos.certbot
 
 - name: Copy kanboards nginx conf to nginx/conf.d
   template:
