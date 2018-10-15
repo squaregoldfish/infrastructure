@@ -59,12 +59,7 @@
     project_src: "{{ geoip_home }}"
     build: yes
 
-- import_role:
-    name: icos.certbot
-  vars:
-    - certbot_domains: [geoip.icos-cp.eu]
-    - nginx_conf_name: geoip
-  delegate_to: "{{ certbot_delegate|default(omit) }}"
+- import_role: name=icos.certbot
 
 - name: Install nginx config file
   template:
