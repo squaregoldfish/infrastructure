@@ -55,7 +55,6 @@
 
 - name: Build pgrep docker image
   docker_service:
-    project_name: "{{ pgrep_name }}"
     project_src: "{{ pgrep_home }}"
     files: ['.docker-compose.yml']
     state: present

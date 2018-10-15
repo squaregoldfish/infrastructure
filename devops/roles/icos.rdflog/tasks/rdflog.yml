@@ -59,7 +59,6 @@
 
 - name: Build rdflog image
   docker_service:
-    project_name: rdflog
     project_src: "{{ rdflog_dir }}"
     files: ['.docker-compose.yml']
     state: present
