@@ -36,6 +36,8 @@
     --email {{ certbot_email }}
     --agree-tos
     --expand
+  register: o
+  changed_when: '"Certificate not yet due for renewal; no action taken." not in o.stdout'
 
 - name: Add job to renew certificates
   cron:
