@@ -1,12 +1,6 @@
-- name: Check if certificate already exists.
-  stat:
-    path: "{{ certbot_live_crt }}"
-  register: _live_path
-
 - block:
     - import_tasks: certbot_install_software.yml
     - import_tasks: certbot_generate_live.yml
-  when: not _live_path.stat.exists
 
 - name: Set nginx config variable
   set_fact:
