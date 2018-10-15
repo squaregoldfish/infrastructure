@@ -1,12 +1,4 @@
 - import_role: name=icos.certbot
-  vars:
-    - certbot_domains: [cpauth.icos-cp.eu]
-    - nginx_conf_name: cpauth
-
-- import_role: name=icos.certbot
-  vars:
-    - certbot_domains: [auth.fieldsites.se]
-    - nginx_conf_name: cpauth
 
 - name: Run the jarservice role
   import_role:
