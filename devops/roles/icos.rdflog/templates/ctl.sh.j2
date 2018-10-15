@@ -37,13 +37,16 @@ case "${1:-}" in
 		[ ! -f "$2" ] || abort "refusing to overwrite existing output file '$2'"
 		[ -f volumes/data/PG_VERSION ] || abort "no database present to backup"
 		is_running || abort "rdflog needs to be started first ('./ctl up')";
-		dexec pg_dump -v --format=c "{{ rdflog_db_name }}" > "$2"
+		dexec pg_dump --schema public -v --format=c "{{ rdflog_db_name }}" > "$2"
 		;;
 	"restore")
 		[ "$#" -eq 2 ] || abort "usage: rdflog restore input.sqlc"
 		read -r -p "overwrite current database (y/n) ?" ans
 		[ "$ans" == "y" ] || exit 0
-		dexec pg_restore --no-owner --clean --verbose \
+		dexec pg_restore --verbose \
+			  --clean --if-exists \
+			  --no-owner --schema public \
+			  --username="{{ rdflog_db_user }}" \
 			  --dbname="{{ rdflog_db_name}}" < "$2"
 		;;
 	*)
