@@ -6,10 +6,7 @@ server {
 {% endif %}
   server_name  {{ domain }};
 
-{% if certbot_install_certificate | default(true) %}
-  ssl_certificate /etc/letsencrypt/live/{{ certbot_domains | first }}/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/{{ certbot_domains | first }}/privkey.pem;
-{% endif %}
+  {{ certbot_nginx_conf | indent(2) }}
 
 {% if project_name == "ri" %}
   location =/science-conference {
