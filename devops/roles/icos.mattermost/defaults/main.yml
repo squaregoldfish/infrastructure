@@ -1,0 +1,2 @@
+certbot_domains: [chat.fieldsites.se]
+certbot_conf_name: mattermost
