@@ -35,6 +35,7 @@
     {% endfor %}
     --email {{ certbot_email }}
     --agree-tos
+    --expand
 
 - name: Add job to renew certificates
   cron:
