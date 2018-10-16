@@ -80,11 +80,14 @@
     mode: 0755
   register: _ctl
 
-- name: Install sql status file
+- name: Install sql status files
   template:
-    src: status.sql.j2
-    dest: "{{ rdflog_dir }}/.status.sql"
+    src: "{{ item }}"
+    dest: "{{ rdflog_dir }}/.{{ item }}"
     mode: 0755
+  loop:
+    - status.sql
+    - status-rdflog.sql
 
 - name: Test connection to rdflog database using the status file
   command: "{{ _ctl.dest }} status"

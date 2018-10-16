@@ -1,8 +1,3 @@
-\pset footer
-\pset title
-
-\connect {{ rdflog_db_name }};
-
 -- RDFLog contains about 20 identical tables, only differing in name. Each table
 -- has a timestamp field. This function will build a query that goes through
 -- each table and find the name and the latest timestamp for each table.
@@ -39,14 +34,6 @@ begin
 end
 $$;
 
-select
-  case
-    when s is null then 'No slots are currently replicating'
-    else format('The following slots are currently replicating => %s', s) 
-  end as slot_report
-from (select string_agg(c, ', ') s from
-	   (select slot_name FROM pg_replication_slots
-	   		             JOIN pg_stat_replication ON pid = active_pid) _(c)) _ \gset
 
 \echo :slot_report
 \echo
