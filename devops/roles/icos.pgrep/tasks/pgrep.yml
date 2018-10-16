@@ -78,3 +78,10 @@
     src: status.sql.j2
     dest: "{{ pgrep_home }}/.status.sql"
     mode: 0755
+
+- name: Install extra status file
+  copy:
+    content: "{{ pgrep_extra_status_file }}"
+    dest: "{{ pgrep_home }}/.{{ .status-extra.sql }}"
+    mode: 0755
+  when: pgrep_extra_status_file is defined
