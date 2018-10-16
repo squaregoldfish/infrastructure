@@ -10,14 +10,14 @@ flexpart_ssh_users: ['vagrant']
 flexpart_ssh_remote_host: "bionic"
 flexpart_ssh_remote_ip: "192.168.99.30"
 
-pgrep_instances:
-  - suffix: rdflog
-    peer_host: 192.168.99.40
-    peer_port: "{{ rdflog_db_port }}"
-    peer_user: "{{ rdflog_rep_user }}"
-    peer_pass: "{{ rdflog_rep_pass }}"
-    peer_cert: roles/icos.rdflog/files/server.crt
-    peer_slot: centos
+pgrep_rdflog_instance:
+  suffix: rdflog
+  peer_host: 192.168.99.40
+  peer_port: "{{ rdflog_db_port }}"
+  peer_user: "{{ rdflog_rep_user }}"
+  peer_pass: "{{ rdflog_rep_pass }}"
+  peer_cert: roles/icos.rdflog/files/server.crt
+  peer_slot: centos
 
 
 meta_tunnel_from_ip: 192.168.99.30
