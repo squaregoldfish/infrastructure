@@ -1,0 +1,11 @@
+- name: Finds rrsync script on Ubuntu
+  shell: >-
+    gunzip -c /usr/share/doc/rsync/scripts/rrsync.gz
+    > {{ remotebackup_remote_script }}
+  args:
+    creates: "{{ remotebackup_remote_script }}"
+
+- set_fact:
+    # The rrsync script in Ubuntu _requires_ the '-wo' option, but the version
+    # in CentOS doesn't have the option at all.
+    _rrsync_opts: -wo

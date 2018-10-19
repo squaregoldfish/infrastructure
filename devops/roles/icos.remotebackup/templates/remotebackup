@@ -1,0 +1,17 @@
+#!/bin/bash
+if [ $# -lt 2 ]; then
+	echo "usage: remotebackup [rsyncopts] src... name-of-app"
+	echo ""
+	echo "Example:"
+	echo "  remotebackup -a /home/cpmeta/fileStorage meta"
+exit 1
+fi
+
+ARGS=( "$@" )
+NAME="${ARGS[-1]}"
+unset "ARGS[-1]"
+
+OPTS=(-e 'ssh -i "{{ _local_user.ssh_key_file }}" -F "{{ remotebackup_local_config }}"')
+awk '/^Host/ { print $2 }' < "{{ remotebackup_local_config }}"  | while read -r host; do
+	rsync "${OPTS[@]}" "${ARGS[@]}" "$host:$NAME/"
+done
