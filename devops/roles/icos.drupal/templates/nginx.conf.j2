@@ -1,9 +1,5 @@
 server {
-{% if certbot_install_certificate | default(true) %}
   listen       443 ssl;
-{% else %}
-  listen       80;
-{% endif %}
   server_name  {{ domain }};
 
   {{ certbot_nginx_conf | indent(2) }}
@@ -52,7 +48,6 @@ server {
   }
 }
 
-{% if certbot_install_certificate | default(true) %}
 {% if project_name == "ac" %}
 server {
   listen       80;
@@ -63,10 +58,7 @@ server {
   listen       443 ssl;
   server_name  ac.icos-cp.eu {{ domain | replace("www.","") }};
 
-{% if certbot_install_certificate | default(true) %}
-  ssl_certificate /etc/letsencrypt/live/{{ certbot_domains | first }}/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/{{ certbot_domains | first }}/privkey.pem;
-{% endif %}
+  {{ certbot_nginx_conf | indent(2) }}
 
   return 301   https://{{ domain }}$request_uri;
 }
@@ -81,10 +73,7 @@ server {
   listen       443 ssl;
   server_name  {{ domain | replace("www.","") }};
 
-{% if certbot_install_certificate | default(true) %}
-  ssl_certificate /etc/letsencrypt/live/{{ certbot_domains | first }}/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/{{ certbot_domains | first }}/privkey.pem;
-{% endif %}
+  {{ certbot_nginx_conf | indent(2) }}
 
   return 301   https://{{ domain }}$request_uri;
 }
@@ -94,5 +83,4 @@ server {
   server_name  {{ domain }};
   return 301   https://{{ domain }}$request_uri;
 }
-{% endif %}
 {% endif %}

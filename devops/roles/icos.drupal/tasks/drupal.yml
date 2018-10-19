@@ -11,6 +11,7 @@
 - import_role: name=icos.certbot
   vars:
     - certbot_domains: "{{ certbot_domains }}"
+    - certbot_conf_name: "{{ nginx_conf_name }}"
   when: project_name != "ns"
 
 - name: Copy nginx {{ nginx_conf_name }}.conf
