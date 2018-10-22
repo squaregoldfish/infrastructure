@@ -23,3 +23,17 @@
         src: "{{ cpmeta_filestorage_target }}"
         state: link
   when: cpmeta_filestorage_target is defined
+
+- block:
+    - name: Ensure that the remotebackup script is present
+      file:
+        path: "{{ cpmeta_remotebackup_bin }}"
+        mode: +x
+
+    - name: Install cronjob to backup cpmetas fileStorage
+      cron:
+        name: Backup cpmeta fileStorage
+        job: >-
+          {{ cpmeta_remotebackup_bin }} -La {{ cpmeta_filestorage_home }} meta
+        special_time: hourly
+  when: cpmeta_enable_remotebackup

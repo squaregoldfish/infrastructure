@@ -22,3 +22,6 @@ certbot_conf_name: meta
 
 # cpmeta_filestorage_target:
 cpmeta_filestorage_home: "{{ _jarservice_user.home }}/fileStorage"
+cpmeta_enable_remotebackup: yes
+
+cpmeta_remotebackup_bin: /usr/local/sbin/remotebackup
