@@ -4,6 +4,7 @@
     groups: "{{ extra_groups }}"
     append: yes
     shell: /bin/bash
+  register: _jarservice_user
 
 # We set up a directory where we keep not only the current jar file but also
 # older copies. This makes it easier to roll back to earlier versions of the

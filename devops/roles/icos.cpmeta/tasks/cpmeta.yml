@@ -11,12 +11,6 @@
     servicename     : "{{ cpmeta_servicename }}"
     servicetemplate : "{{ cpmeta_template }}"
 
-# https://github.com/ansible/ansible/issues/15901
-- name: Get home directory of {{ cpmeta_username }}
-  shell: "getent passwd {{ cpmeta_username }} | cut -d: -f6"
-  register: cpmeta_home
-  changed_when: false
-
 - block:
     - name: Create metaAppStorage
       file:
@@ -24,10 +18,8 @@
         state: directory
 
     - name: Link link to file storage
-      become: yes
-      become_user: "{{ cpmeta_username }}"
       file:
-        dest: "{{ cpmeta_home.stdout }}/fileStorage"
+        dest: "{{ cpmeta_filestorage_home }}"
         src: "{{ cpmeta_filestorage_target }}"
         state: link
   when: cpmeta_filestorage_target is defined
