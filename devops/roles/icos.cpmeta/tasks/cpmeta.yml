@@ -11,6 +11,13 @@
     servicename     : "{{ cpmeta_servicename }}"
     servicetemplate : "{{ cpmeta_template }}"
 
+- name: Copy SSL certs and private key for Handle.net client
+  copy:
+    src: ssl
+    dest: /home/{{ cpmeta_username }}/
+    owner: "{{ cpmeta_username }}"
+    group: "{{ cpmeta_username }}"
+
 - block:
     - name: Create metaAppStorage
       file:
