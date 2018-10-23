@@ -12,6 +12,25 @@ case "${1:-}" in
 	"ps")
 		docker ps -f "name=$PREFIX" -f 'status=running'
 		;;
+	"broken")
+		# The docker entrypoint script will create a 'failure' file when
+		# flextraset or flexpart fails.
+		find "{{ flexpart_output_directory }}" -name failure | while read -r fpath; do
+			dpath=${fpath%/*}
+			dname=${dpath##*/}
+			# Another way to spot a failed simulations is that there is no .nc file.
+			if compgen -G "$dpath/*.nc" > /dev/null; then
+				echo "$dname has a 'failure' file _and_ a .nc file - confused!"
+				continue
+			fi
+			if [ "${2:-}" = "--rm" ]; then
+				echo "Removing $dname"
+				cd "{{ flexpart_output_directory }}" && rm -rf -- "./$dname"
+			else
+				echo "$dname"
+			fi
+		done
+		;;
 	"run")
 		shift
 		# The way to (hopefully) correctly implement correct counting of
@@ -30,8 +49,9 @@ case "${1:-}" in
 		;;
 	"-h" | "--help" | "help" | "")
 		echo "usage: flexpart cmd [args]"
-		echo "  ps  - show running simulations"
-		echo "  run - start a new simulation"
+		echo "  ps            - show running simulations"
+		echo "  broken [--rm] - display/remove broken simulations"
+		echo "  run           - start a new simulation"
 		;;
 	*)
 		echo 'Unknown command (try "help")'
