@@ -23,4 +23,4 @@ stiltweb_stiltdir: /disk/data/stilt
 stiltweb_port: 2550
 
 certbot_domains: [stilt.icos-cp.eu]
-certbot_conf_name: stilt
+certbot_conf_name: stiltweb
