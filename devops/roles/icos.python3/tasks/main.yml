@@ -3,14 +3,14 @@
 # (introduced in 3.5)
 
 - block:
-    # For Ubuntu 16.04 and up, python 3.5 is in the standard repo.
-    - name: Install python3
-      apt: name=python3 state=present
-
-    # On CentOS, you get a working venv module out of the box when installing
-    # python3.5. Not so on Ubuntu.
-    - name: Install python3-venv
-      apt: name=python3-venv state=present
+    - name: Install python packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3
+        - python3-pip
+        - python3-venv
   when:
     - ansible_distribution == 'Ubuntu'
   become: true
