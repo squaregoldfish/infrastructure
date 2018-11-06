@@ -53,7 +53,11 @@
     line: "access_key = '{{ geoip_secret }}'"
     state: present
 
-# In this task the modified config.py is referenced by our Dockerfile.
+- name: Create the sqlite tables
+  command: sqlite3 {{ geoip_db_file }} -init {{ geoip_db_schema }}
+  args:
+    creates: "{{ geoip_db_file }}"
+
 - name: Build and start
   docker_service:
     project_src: "{{ geoip_home }}"
@@ -66,8 +70,3 @@
     src: geoip.conf.j2
     dest: /etc/nginx/conf.d/geoip.conf
   notify: reload nginx config
-
-- name: Create the sqlite tables
-  command: sqlite3 {{ geoip_db_file }} -init {{ geoip_db_schema }}
-  args:
-    creates: "{{ geoip_db_file }}"
