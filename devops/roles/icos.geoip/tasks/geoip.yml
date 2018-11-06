@@ -44,13 +44,13 @@
 - name: Remove old access_key
   lineinfile:
     path: "{{ geoip_config_bld }}"
-    regexp: "^access_key = '(?!{{ vault_geoip_secret }})"
+    regexp: "^access_key = '(?!{{ geoip_secret }})"
     state: absent
 
 - name: Add new access_key
   lineinfile:
     path: "{{ geoip_config_bld }}"
-    line: "access_key = '{{ vault_geoip_secret }}'"
+    line: "access_key = '{{ geoip_secret }}'"
     state: present
 
 # In this task the modified config.py is referenced by our Dockerfile.
