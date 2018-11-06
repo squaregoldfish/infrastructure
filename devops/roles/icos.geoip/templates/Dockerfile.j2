@@ -1,11 +1,10 @@
 FROM python:{{ geoip_python_version }}
 
+RUN pip install pipenv
+
 COPY repo/src/main/python/geoip /geoip
-
-WORKDIR /geoip
-
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY config.py /geoip/py/config.py
 
-CMD  ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi"]
+WORKDIR /geoip
+RUN pipenv install --deploy
+CMD  ["pipenv", "run", "gunicorn", "--bind", "0.0.0.0:5000", "wsgi"]
