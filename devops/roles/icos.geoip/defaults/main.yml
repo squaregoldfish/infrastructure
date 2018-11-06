@@ -9,6 +9,6 @@ geoip_db_schema: "{{ geoip_repo_dir }}/src/main/python/geoip/DB/schema.sql"
 geoip_repo_url: https://github.com/ICOS-Carbon-Portal/data
 geoip_host_port: 8447
 geoip_nginx_allow_deny: "{{ vault_geoip_nginx_allow_deny }}"
-geoip_python_version: 3.6.5
+geoip_python_version: 3.6.7
 certbot_domains: [geoip.icos-cp.eu]
 certbot_conf_name: geoip
