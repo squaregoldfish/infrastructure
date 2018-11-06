@@ -23,8 +23,8 @@
 
 - name: Pull source
   git:
-    repo: "{{ geoip_repo_url }}"
-    version: master
+    repo: "{{ geoip_git_repo }}"
+    version: "{{ geoip_git_version }}"
     dest: "{{ geoip_repo_dir }}"
     force: yes
   register: _git
