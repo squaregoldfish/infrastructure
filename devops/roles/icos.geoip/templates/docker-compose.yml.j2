@@ -6,5 +6,5 @@ services:
     ports:
       - "127.0.0.1:{{ geoip_host_port }}:5000"
     volumes:
-      - ./volumes/db:/geoip/DB
+      - {{ geoip_db_dir }}:/geoip/DB
     restart: unless-stopped

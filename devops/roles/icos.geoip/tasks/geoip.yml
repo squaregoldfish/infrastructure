@@ -1,15 +1,30 @@
 - include_vars:
     file: vars/{{ ansible_distribution | lower }}.yml
 
+- name: Create geoip user
+  user:
+    name: "{{ geoip_user }}"
+    state: present
+    create_home: no
+    home: "{{ geoip_home }}"
+  register: _user
+
 - name: Install sqlite
   package:
     name: "{{ sqlite_package_name }}"
     state: present
 
-- name: Create directories
+- name: Create build directory
   file:
     path: "{{ geoip_home }}/build"
     state: directory
+
+- name: Create database volume directory
+  file:
+    path: "{{ geoip_db_dir }}"
+    state: directory
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
 
 - name: Install files
   template:
@@ -57,6 +72,12 @@
   command: sqlite3 {{ geoip_db_file }} -init {{ geoip_db_schema }}
   args:
     creates: "{{ geoip_db_file }}"
+
+- name: Change owner of the database file to geoip
+  file:
+    path: "{{ geoip_db_file }}"
+    owner: "{{ _user.name }}"
+    group: "{{ _user.group }}"
 
 - name: Build and start
   docker_service:
