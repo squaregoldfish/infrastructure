@@ -34,9 +34,13 @@ begin
 end
 $$;
 
-
-\echo :slot_report
+\echo -- The latest updates for each rdf table --
 \echo
 
-\echo The latest timestamp in each table are:
-select * from _latest_timestamps() order by tstamp desc;
+select _latest_timestamps_query() != '' as have_tables \gset
+\if :have_tables
+  \echo The latest timestamp in each table are:
+  select * from _latest_timestamps() order by tstamp desc;
+\else
+  \echo 'No rdflog tables present! (maybe restore a backup?)'
+\endif

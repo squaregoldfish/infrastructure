@@ -12,6 +12,5 @@ from (select string_agg(c, ', ') s from
 	   (select slot_name FROM pg_replication_slots
 	   		             JOIN pg_stat_replication ON pid = active_pid) _(c)) _ \gset
 
-{# We keep this file separate since it might be used by one of our replicas as
-   well #}
-\ir .status-rdflog.sql
+{# Keep this file separate since it might be used by one of our replicas #}
+{{ lookup('file', 'status-rdflog.sql') }}
