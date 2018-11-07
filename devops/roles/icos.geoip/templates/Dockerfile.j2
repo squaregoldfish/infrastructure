@@ -5,7 +5,7 @@ RUN groupadd --gid {{ _user.group }} {{ _user.name }} && \
   	        --home-dir /geoip --create-home
 
 RUN pip install pipenv
-USER geoip
+USER {{ _user.name }} {# geoip #}
 
 COPY repo/src/main/python/geoip /geoip
 COPY config.py /geoip/py/config.py

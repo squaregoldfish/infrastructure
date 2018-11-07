@@ -18,18 +18,12 @@
     owner: "{{ cpmeta_username }}"
     group: "{{ cpmeta_username }}"
 
-- block:
-    - name: Create metaAppStorage
-      file:
-        path: "{{ cpmeta_filestorage_target }}"
-        state: directory
-
-    - name: Link link to file storage
-      file:
-        dest: "{{ cpmeta_filestorage_home }}"
-        src: "{{ cpmeta_filestorage_target }}"
-        state: link
-  when: cpmeta_filestorage_target is defined
+- name: Create metaAppStorage directory (if not present), take ownership
+  file:
+    path: "{{ cpmeta_filestorage_target }}"
+    state: directory
+    owner: "{{ cpmeta_username }}"
+    group: "{{ cpmeta_username }}"
 
 - block:
     - name: Ensure that the remotebackup script is present
@@ -41,6 +35,6 @@
       cron:
         name: Backup cpmeta fileStorage
         job: >-
-          {{ cpmeta_remotebackup_bin }} -La {{ cpmeta_filestorage_home }} meta
+          {{ cpmeta_remotebackup_bin }} -La {{ cpmeta_filestorage_target }} meta
         special_time: hourly
   when: cpmeta_enable_remotebackup
