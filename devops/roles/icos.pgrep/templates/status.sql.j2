@@ -14,7 +14,5 @@ select case count(*) when 0 then
 
 select pg_last_xact_replay_timestamp() as "Last update from {{ pgrep_peer_host }}";
 
-{% if defined pgrep_extra_status_file %}
--- Run a status file specialized for the {{ pgrep_name }} database
-\ir {{ pgrep_extra_status_file }}
-{% endif %}
+
+{{ pgrep_extra_sql | default('') }}
