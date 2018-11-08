@@ -93,3 +93,7 @@
   command: "{{ _ctl.dest }} status"
   register: r
   changed_when: false
+  # The database might not have come up yet (if postgres needs to initialize)
+  retries: 2
+  delay: 5
+  until: r.rc == 0
