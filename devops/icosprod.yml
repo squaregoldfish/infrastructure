@@ -48,10 +48,9 @@
         remote_host: "{{ meta_tunnel_from_ip }}"
         public_key: >-
           "{{ lookup('file', 'roles/icos.ssh_outgoing_tunnel/files/ssh_tunnel.pub') }}"
-    - role: icos.pgrep
-      tags: pgrep
-      vars:
-        arg: "{{ pgrep_rdflog_instance }}"
+    - { role: icos.pgrep,
+        tags: pgrep,
+        arg: "{{ pgrep_rdflog_instance }}" }
 
 - hosts: icosprod2
   become: true
