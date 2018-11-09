@@ -72,6 +72,7 @@
     dest: "{{ rdflog_dir }}/psql"
     src: psql.sh.j2
     mode: 0755
+  register: _psql
 
 - name: Install rdflog control script
   template:
@@ -80,13 +81,17 @@
     mode: 0755
   register: _ctl
 
-- name: Install sql status file
+- name: Install sql status files
   template:
-    src: status.sql
-    dest: "{{ rdflog_dir }}/.status.sql"
+    src: "{{ item }}"
+    dest: "{{ rdflog_dir }}/.{{ item }}"
+  loop:
+    - status.sql
+    - ctl.sql
 
-- name: Test connection to rdflog database using the status file
-  command: "{{ _ctl.dest }} status"
+- name: Reload the ctl sql file while also testing database connection
+  shell: >-
+    {{ _psql.dest }} {{ rdflog_db_name }} < {{ rdflog_dir }}/.ctl.sql
   register: r
   changed_when: false
   # The database might not have come up yet (if postgres needs to initialize)
