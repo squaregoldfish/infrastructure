@@ -4,7 +4,7 @@ stilt_nfs_exports: |
       /disk/data/stilt      {{ stilt_nfs_icosprod1_ip }}(ro)
 
 stiltcluster_port: 2561
-stiltcluster_maxcores: 40
+stiltcluster_maxcores: 30
 
 cpmeta_filestorage_target: /disk/data/metaAppStorage
 docker_compose_src_parent: /disk/data
