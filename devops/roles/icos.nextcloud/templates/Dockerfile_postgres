@@ -1,0 +1,9 @@
+FROM postgres:{{ nextcloud_postgres_version }}
+
+# Change gid/uid of postgres user to match system uid/gid
+RUN groupmod --gid={{ _user.group }} postgres
+RUN usermod --uid={{ _user.uid }} --gid={{ _user.group }} postgres
+
+COPY init.sql /docker-entrypoint-initdb.d/ 
+
+USER postgres

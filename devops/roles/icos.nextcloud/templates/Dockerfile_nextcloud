@@ -1,0 +1,8 @@
+FROM nextcloud:{{ nextcloud_nextcloud_version }}-fpm
+
+# Update the container user www-data to match host system's nextcloud user.
+RUN groupmod --gid={{ _user.group }} www-data
+RUN usermod --uid={{ _user.uid }} --gid={{ _user.group }} www-data
+
+COPY run_more_php_processes.diff /
+RUN patch -p1 -d / < /run_more_php_processes.diff

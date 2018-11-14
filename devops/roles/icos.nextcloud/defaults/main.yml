@@ -1,0 +1,36 @@
+# https://hub.docker.com/_/nextcloud/
+nextcloud_nextcloud_version: 14.0.4
+
+# https://hub.docker.com/r/collabora/
+nextcloud_collabora_version: 3.4.1.1
+
+# https://hub.docker.com/_/postgres/
+nextcloud_postgres_version: 10.6
+
+nextcloud_ip: 172.200.199.2
+nextcloud_collabora_cont_ip: 172.200.199.3
+nextcloud_postgres_cont_ip: 172.200.199.4
+
+nextcloud_port: 9000
+nextcloud_collabora_port: 9980
+
+nextcloud_user: nextcloud
+nextcloud_home: /docker/nextcloud
+nextcloud_domain: fileshare.icos-cp.eu
+
+certbot_domains: ["{{ nextcloud_domain }}"]
+certbot_conf_name: nextcloud
+
+nextcloud_volume_nextcloud: "{{ nextcloud_home }}/volumes/nextcloud"
+nextcloud_volume_postgres: "{{ nextcloud_home }}/volumes/postgres"
+
+nextcloud_build_nextcloud: "{{ nextcloud_home }}/build/nextcloud"
+nextcloud_build_postgres: "{{ nextcloud_home }}/build/postgres"
+
+nextcloud_collabora_host_url: "https://{{ nextcloud_collabora_cont_ip }}:{{ nextcloud_collabora_port }}"
+
+nextcloud_db_name: nextcloud
+nextcloud_db_user: nextcloud
+nextcloud_db_host: db
+
+nextcloud_nginx_allow_deny:
