@@ -1,3 +1,0 @@
-docker_package_name: docker.io
-docker_python_package_name: python-docker
-docker_group: docker

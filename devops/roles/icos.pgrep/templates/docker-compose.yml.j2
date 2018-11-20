@@ -1,0 +1,9 @@
+version: '3.5'
+
+services:
+  db:
+    restart: unless-stopped
+    build: build
+    volumes:
+      - ./volumes/data:/var/lib/postgresql/data:rw
+      - /etc/localtime:/etc/localtime:ro

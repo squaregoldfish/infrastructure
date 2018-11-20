@@ -1,7 +1,7 @@
 ---
 - include_vars:
     file: vars/{{ ansible_distribution }}.yml
-    
+
 # By default, selinux on centos/7 will disallow the httpd to connect to
 # cpauth (localhost:8080) You can see it in /var/log/nginx/error.log as
 # '... [crit] 16897#0: *10 connect() to 127.0.0.1:8080 failed (13:
@@ -16,10 +16,12 @@
 
 - name: Add mitigation for systemd/nginx race-condition
   block:
-    - file:
+    - name: Create systemd override directory for nginx
+      file:
         path: /etc/systemd/system/nginx.service.d
         state: directory
-    - copy:
+    - name: Add nginx override file
+      copy:
         content: |
           # https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1581864
           [Service]
@@ -39,11 +41,10 @@
     group: "{{ nginx_user }}"
   notify: reload nginx config
 
-# This operation is slow because the copy module is slow, not because some files
-# are encrypted using Vault.
-- name: Copy nginx config files (this operation is slow)
-  copy: src=files/conf.d/ dest=/etc/nginx/conf.d/ owner=root group=root mode=0700
-  notify: reload nginx config
+- include_tasks: conf.yml
+  loop: "{{ extra_configs }}"
+  loop_control:
+    loop_var: nginx_conf_name
 
 - name: Copy nginx SSL files (this operation is slow)
   copy: src=files/ssl/ dest=/etc/nginx/ssl/ owner=root group=root mode=0700
@@ -55,27 +56,12 @@
     group="{{nginx_user}}" owner="{{nginx_user}}"
   notify: reload nginx config
 
-- import_tasks: certbot.yml
+- name: Allowing inbound HTTP/HTTPS (CentOS)
+  firewalld: service={{ item }} permanent=true state=enabled immediate=true
+  with_items: [http, https]
+  when: ansible_distribution == "CentOS"
 
-- block:
-    # If the host is not running a firewall then trying to add rules to it will
-    # make the ansible firewalld module very sad.
-    - name: See if firewalld is active
-      command: systemctl -q is-active firewalld
-      register: firewalld_running
-      failed_when: false
-      changed_when: false
-      
-    - name: Open up ports 80 and 443 in the firewall  
-      firewalld:
-        service: "{{ item }}"
-        permanent: true
-        state: enabled
-        immediate: yes
-      with_items:
-        - http
-        - https
-      when: firewalld_running.rc == 0
-  # Firewalld is only used on CentOS
-  when: ansible_distribution == 'CentOS'
-  
+- name: Allowing inbound HTTP/HTTPS (Ubuntu)
+  ufw: rule=allow port={{ item }}
+  with_items: [http, https]
+  when: ansible_distribution == "Ubuntu"

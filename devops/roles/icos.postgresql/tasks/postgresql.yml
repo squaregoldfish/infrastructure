@@ -1,0 +1,50 @@
+- block:
+    - name: Adding the postgresql yum repo
+      yum: name="{{ postgresql_centos_repo_url }}"
+    - name: Registering facts about postgresql
+      set_fact:
+        postgresql_package_name: postgresql10-server
+        postgresql_systemd_name: postgresql-10
+  when: ansible_distribution == "CentOS"
+
+- block:
+    - name: Adding the apt key for postgresql
+      apt_key: id=ACCC4CF8 url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
+    - name: Adding the postgresql repo
+      apt_repository: repo="{{ postgresql_ubuntu_repo_str }}"
+      register: r
+    - name: Updating apt to fetch list of postgresql packages
+      apt: update_cache=yes
+      when: r.changed
+    - name: Registering facts about postgresql
+      set_fact:
+        postgresql_package_name: postgresql-10
+        postgresql_systemd_name: postgresql@10-main.service
+  when: ansible_distribution == "Ubuntu"
+
+- name: Installing Postgresql 10
+  package:
+    name: "{{ postgresql_package_name }}"
+    state: installed
+
+# CentOS does not create the initial database while installing postgresql and as
+# such isn't useable before running this command.    
+- name: Initializing postgresql database
+  shell: /usr/pgsql-10/bin/postgresql-10-setup initdb
+  register: r
+  failed_when: r.rc != 0 and r.stdout_lines[0] != "Data directory is not empty!"
+  changed_when: r.rc == 0
+  when: ansible_distribution == "CentOS"
+      
+- name: Start Postgresql 10
+  service:
+    name: "{{ postgresql_systemd_name }}"
+    enabled: true
+    state: started
+
+- name: Check that Postgresql is running and at the expected version
+  become: true
+  become_user: postgres
+  shell: psql -Atc 'select version();'
+  register: r
+  failed_when: not r.stdout_lines[0].startswith('PostgreSQL 10.')

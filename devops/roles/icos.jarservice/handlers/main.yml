@@ -4,3 +4,7 @@
 
 - name: reload systemd config
   command: systemctl daemon-reload
+
+- name: reload nginx config
+  service: name=nginx state=reloaded
+  tags: always

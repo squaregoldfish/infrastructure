@@ -1,15 +1,17 @@
-version: '2'
+version: '2.2'
 services:
   jupyterhub:
     build: .
     image: jupyter_jupyterhub:2018.01.18
+    mem_limit: 35g
     ports:
       - "127.0.0.1:8888:8000"
     volumes:
       - /disk/data/common/netcdf/gcp_models:/opt/data
       - /disk/data/STILT:/opt/stiltdata
       - /disk/data/eurocom:/opt/eurocom
+      - /disk/data/flexpart:/opt/flexpart
       - ./storage:/home
       - ./users:/opt/users
-      - /disk/data/dataAppStorage/netcdf:/opt/icisnetcdf
-restart: unless-stopp
+      - /disk/data/dataAppStorage/netcdf:/opt/icisnetcdf:ro
+    restart: unless-stopped

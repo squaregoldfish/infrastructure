@@ -1,0 +1,9 @@
+conf_to_domains:
+  eurocom: [eurocom.icos-cp.eu]
+  jupyter: [jupyter.icos-cp.eu]
+  nexus: [repo.icos-cp.eu]
+  phplist: [lists.icos-cp.eu]
+  restheart: [restheart.icos-cp.eu]
+  scicosri: [sc.icos-ri.eu]
+  static: [static.icos-cp.eu]
+  thredds: [thredds.icos-cp.eu]

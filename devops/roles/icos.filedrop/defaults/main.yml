@@ -8,3 +8,5 @@ filedrop_template: roles/icos.filedrop/templates/filedrop.service.j2
 #filedrop_appconfig:  roles/icos.filedrop/files/application.conf
 filedrop_nginxconfig:  roles/icos.filedrop/files/filedrop.conf
 
+certbot_domains: [filedrop.icos-cp.eu]
+certbot_conf_name: filedrop

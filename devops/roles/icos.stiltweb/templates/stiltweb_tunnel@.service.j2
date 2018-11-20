@@ -1,0 +1,12 @@
+[Unit]
+Description=STILT web port forward for %i
+PartOf=stiltweb_tunnels.target
+
+[Service]
+User=stiltweb
+ExecStart=/usr/bin/ssh -NT -v %i
+Restart=always
+
+[Install]
+WantedBy=stiltweb_tunnels.target
+

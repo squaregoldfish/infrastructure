@@ -1,0 +1,34 @@
+version: "2"
+
+services:
+
+  db:
+    build: db
+    read_only: true
+    restart: unless-stopped
+    volumes:
+      - ./volumes/db/var/lib/postgresql/data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - POSTGRES_USER=mmuser
+      - POSTGRES_PASSWORD={{ mmuser_password }}
+      - POSTGRES_DB=mattermost
+
+  app:
+    build:
+      context: app
+      args:
+        - edition=team
+    ports:
+      - "127.0.0.1:8115:8000"
+    restart: unless-stopped
+    volumes:
+      - ./volumes/app/mattermost/config:/mattermost/config:rw
+      - ./volumes/app/mattermost/data:/mattermost/data:rw
+      - ./volumes/app/mattermost/logs:/mattermost/logs:rw
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - MM_USERNAME=mmuser
+      - MM_PASSWORD={{ mmuser_password }}
+      - MM_DBNAME=mattermost
+      - VIRTUAL_HOST=chat.fieldsites.se

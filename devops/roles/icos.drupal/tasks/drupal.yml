@@ -8,19 +8,19 @@
 - name: Include vars
   include_vars: drupal.yml
 
-- name: Copy nginx {{ name }}.conf
+- import_role: name=icos.certbot
+  vars:
+    - certbot_domains: "{{ certbot_domains }}"
+    - certbot_conf_name: "{{ nginx_conf_name }}"
+  when: project_name != "ns"
+
+- name: Copy nginx {{ nginx_conf_name }}.conf
   template:
     src: nginx.conf.j2
-    dest: /etc/nginx/conf.d/{{ name }}.conf
+    dest: /etc/nginx/conf.d/{{ nginx_conf_name }}.conf
     mode: 0700
   notify: reload nginx config
-  when: project_name != "cp" and project_name != "ns"
-
-- meta: flush_handlers
-
-- name: Get SSL certificate
-  import_tasks: ssl-certificate.yml
-  when: get_ssl|bool and project_name != "ns" and project_name != "cp"
+  when: project_name != "ns"
 
 - name: Create project directory
   file:
@@ -30,6 +30,7 @@
 - name: Pull source code from git
   git:
     repo: https://github.com/ICOS-Carbon-Portal/drupal
+    version: "{{ git_version | default('master') }}"
     dest: "{{ project_dir }}"
     force: yes
 
@@ -41,10 +42,21 @@
     - files_backup
     - modules_backup
     - themes_backup
-  when: restore and project_name != "demo"
+  when: restore
 
-- name: Ensure {{ project_dir }}/files/default/ directory exists
-  file: path={{ project_dir }}/files/default/ state=directory recurse=yes
+- name: Create {{ project_dir }}/config/ directory
+  file: path={{ project_dir }}/config/ state=directory recurse=yes
+
+- name: Copy uploads config
+  copy:
+    src: uploads.ini
+    dest: "{{ project_dir }}/config/uploads.ini"
+
+- name: Create {{ project_dir }}/files/private/ directory
+  file: path={{ project_dir }}/files/private/ state=directory recurse=yes
+
+- name: Create {{ project_dir }}/files/default/files/ directory
+  file: path={{ project_dir }}/files/default/files/ state=directory recurse=yes
 
 - name: Copy settings.php
   template:
@@ -68,6 +80,11 @@
     - cp_files
   notify: reload nginx config
 
+- name: Download cmis_repository_wrapper.php
+  get_url:
+    url: https://raw.githubusercontent.com/TIU11/Basic-CMIS/6ac8fe940b9ebfa2c9419124fa5552ef972020c8/lib/cmis_repository_wrapper.php
+    dest: "{{ project_dir }}/modules/cp_cmis/src/CMIS/cmis_repository_wrapper.php"
+
 - name: Copy theme library
   template:
     src: cp_theme_d8.libraries.yml.j2
@@ -90,7 +107,14 @@
   docker_service:
     project_src: "{{ project_dir }}/docker"
     state: present
+    pull: yes
   notify: reload nginx config
+
+- name: Change private directory owner
+  command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/private/
+
+- name: Change files directory owner
+  command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files
 
 - name: Restore database
   import_tasks: database.yml

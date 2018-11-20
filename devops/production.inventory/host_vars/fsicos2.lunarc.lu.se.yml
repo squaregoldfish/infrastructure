@@ -1,0 +1,30 @@
+stilt_nfs_icosprod1_ip: 194.47.223.133
+stilt_nfs_exports: |
+      /disk/data/stiltweb	{{ stilt_nfs_icosprod1_ip }}(ro)
+      /disk/data/stilt      {{ stilt_nfs_icosprod1_ip }}(ro)
+
+stiltcluster_port: 2561
+stiltcluster_maxcores: 30
+
+cpmeta_filestorage_target: /disk/data/metaAppStorage
+docker_compose_src_parent: /disk/data
+
+flexpart_install_run: true
+flexpart_max_parallel: 12
+flexpart_export_output_to: "194.47.223.133(ro,no_subtree_check)"
+
+meta_tunnel_to_ip: 194.47.223.133
+meta_tunnel_to_host: fsicos.lunarc.lu.se
+
+
+nginx_set_real_ip_from: |
+    # Our wildcard DNS points to fsicos but we want to deploy to fsicos2. A
+    # reverse-proxy is set up on fsicos, but we still want the access
+    # restrictions to work.
+    set_real_ip_from 194.47.223.133; # fsicos
+
+
+remotebackup_remote_hosts: [fsicos.lunarc.lu.se]
+remotebackup_remote_root: /disk/data/remotebackup
+
+ssh_connection_remote_ip: 194.47.223.139

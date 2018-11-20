@@ -1,27 +1,2 @@
-- name: Include OS-specific variables.
-  include_vars: "{{ ansible_os_family }}.yml"
-
-# <2017-01-16 mån> Installing 'docker-engine' instead of the default
-# 'docker'. The reason is that 'docker' didn't work properly out of the box -
-# the client couldn't reach the daemon due to (I think) a socket mishap.
-- name: Add the official docker repository
-  yum_repository:
-    name: docker
-    description: Offical Docker RPM repository
-    enabled: yes
-    baseurl: https://yum.dockerproject.org/repo/main/centos/7/
-    gpgcheck: yes
-    gpgkey: https://yum.dockerproject.org/gpg
-  when: ansible_distribution == 'CentOS'
-
-- name: Install docker
-  package:
-    name={{ item }} state=present
-  with_items:
-    - "{{ docker_package_name }}"
-    # Required to be present for ansible's docker module to work properly.    
-    - "{{ docker_python_package_name }}"
-    - docker-compose
-    
-- name: Start docker
-  service: name=docker state=started enabled=yes
+- import_tasks: docker.yml
+  tags: docker_only

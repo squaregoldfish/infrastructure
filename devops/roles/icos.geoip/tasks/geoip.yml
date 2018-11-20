@@ -1,0 +1,93 @@
+- include_vars:
+    file: vars/{{ ansible_distribution | lower }}.yml
+
+- name: Create geoip user
+  user:
+    name: "{{ geoip_user }}"
+    state: present
+    create_home: no
+    home: "{{ geoip_home }}"
+  register: _user
+
+- name: Install sqlite
+  package:
+    name: "{{ sqlite_package_name }}"
+    state: present
+
+- name: Create build directory
+  file:
+    path: "{{ geoip_home }}/build"
+    state: directory
+
+- name: Create database volume directory
+  file:
+    path: "{{ geoip_db_dir }}"
+    state: directory
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+
+- name: Install files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: README.md.j2, dest: "{{ geoip_home }}/README.md" }
+    - { src: Makefile.j2, dest: "{{ geoip_home }}/Makefile" }
+    - { src: Dockerfile.j2, dest: "{{ geoip_build_dir }}/Dockerfile" }
+    - { src: docker-compose.yml.j2, dest: "{{ geoip_home }}/docker-compose.yml" }
+
+- name: Pull source
+  git:
+    repo: "{{ geoip_git_repo }}"
+    version: "{{ geoip_git_version }}"
+    dest: "{{ geoip_repo_dir }}"
+    force: yes
+  register: _git
+
+# The config.py should contain our secret API access key. We modify config.py by
+# copying it out of the repo, removing the dummy key and finally inserting the
+# real key. When our docker image is built, the modified config.py is inserted.
+
+- name: Extract config.py
+  # Extract config.py, but only if it has changed or doesn't exist. Be verbose
+  # about it so that we can get a correct 'changed' status.
+  command: |
+    cp {{ _git.changed and "-f" or "-n"}} -v "{{ geoip_config_src }}" "{{ geoip_config_bld }}"
+  register: _cp
+  changed_when: _cp.stdout_lines
+
+- name: Remove old access_key
+  lineinfile:
+    path: "{{ geoip_config_bld }}"
+    regexp: "^access_key = '(?!{{ geoip_secret }})"
+    state: absent
+
+- name: Add new access_key
+  lineinfile:
+    path: "{{ geoip_config_bld }}"
+    line: "access_key = '{{ geoip_secret }}'"
+    state: present
+
+- name: Create the sqlite tables
+  command: sqlite3 {{ geoip_db_file }} -init {{ geoip_db_schema }}
+  args:
+    creates: "{{ geoip_db_file }}"
+
+- name: Change owner of the database file to geoip
+  file:
+    path: "{{ geoip_db_file }}"
+    owner: "{{ _user.name }}"
+    group: "{{ _user.group }}"
+
+- name: Build and start
+  docker_service:
+    project_src: "{{ geoip_home }}"
+    build: yes
+
+- import_role: name=icos.certbot
+
+- name: Install nginx config file
+  template:
+    src: geoip.conf.j2
+    dest: /etc/nginx/conf.d/geoip.conf
+  notify: reload nginx config

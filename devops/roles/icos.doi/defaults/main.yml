@@ -7,3 +7,7 @@ doi_servicename: doi
 doi_template: roles/icos.doi/templates/doi.service.j2
 doi_nginxconfig:  roles/icos.doi/files/doi.conf
 doi_password: "{{ vault_doi_password }}"
+
+
+certbot_domains: [doi.icos-cp.eu]
+certbot_conf_name: doi

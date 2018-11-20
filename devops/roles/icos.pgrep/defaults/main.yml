@@ -1,0 +1,35 @@
+# This role is parameterized and cannot be called without arguments.
+# It's meant to be used with include_role, like this:
+#
+# - include_role: name=icos.pgrep
+#   vars:  { arg: "{{ item }}" }
+#   loop: "{{ pgrep_instances }}"
+#
+# This section will "translate" the argument dict to role variables.
+
+pgrep_name: "pgrep_{{ arg.suffix }}"
+pgrep_peer_host: "{{ arg.peer_host }}"
+pgrep_peer_port: "{{ arg.peer_port }}"
+pgrep_peer_user: "{{ arg.peer_user }}"
+pgrep_peer_pass: "{{ arg.peer_pass }}"
+pgrep_peer_cert: "{{ arg.peer_cert }}"
+pgrep_peer_slot: "{{ arg.peer_slot }}"
+
+# The name of the host system user that will own the database files residing in
+# the 'data' host volume (the postgresql database files).
+pgrep_user: "{{ pgrep_name }}"
+
+# The home directory of this service. Here lives the docker-compose.yml file
+# along with volume and build directories.
+pgrep_home: "/docker/{{ pgrep_name }}"
+
+# This is a postgresql "conninfo" string, see psql(1) for details.
+pgrep_conninfo: >
+  host={{ pgrep_peer_host }}
+  port={{ pgrep_peer_port }}
+  dbname=postgres
+  user={{ pgrep_peer_user }}
+  sslmode=verify-ca
+
+# The name of the docker image we're building
+pgrep_image: "{{ pgrep_name}}_db"

@@ -1,0 +1,17 @@
+- name: Create user for incoming ssh tunnel
+  user:
+    name: "{{ user }}"
+    state: present
+    append: true
+  register: _user
+
+
+- become: true
+  become_user: "{{ _user.name }}"
+  block:
+    - name: Authorize the incoming user's key
+      authorized_key:
+        user: "{{ _user.name }}"
+        state: present
+        key: "{{ public_key }}"
+        key_options: 'command="/bin/true",from="{{remote_host}}",no-agent-forwarding,no-X11-forwarding'

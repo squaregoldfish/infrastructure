@@ -1,0 +1,17 @@
+geoip_user: geoip
+geoip_home: "{{ docker_compose_dir | default('/docker') }}/geoip"
+geoip_build_dir: "{{ geoip_home }}/build"
+geoip_repo_dir: "{{ geoip_build_dir }}/repo"
+geoip_config_src: "{{ geoip_repo_dir }}/src/main/python/geoip/py/config.py"
+geoip_config_bld: "{{ geoip_home }}/build/config.py"
+geoip_secret: "{{ vault_geoip_secret }}"
+geoip_db_dir: "{{ geoip_home }}/volumes/db"
+geoip_db_file: "{{ geoip_db_dir }}/ip.sqlite"
+geoip_db_schema: "{{ geoip_repo_dir }}/src/main/python/geoip/DB/schema.sql"
+geoip_git_repo: https://github.com/ICOS-Carbon-Portal/data
+geoip_git_version: master
+geoip_host_port: 8447
+geoip_nginx_allow_deny: "{{ vault_geoip_nginx_allow_deny }}"
+geoip_python_version: 3.6.7
+certbot_domains: [geoip.icos-cp.eu]
+certbot_conf_name: geoip

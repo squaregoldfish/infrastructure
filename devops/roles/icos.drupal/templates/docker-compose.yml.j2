@@ -1,7 +1,7 @@
 version: '2'
 services:
   drupal:
-    image: drupal:8.4
+    image: drupal:8.6
     links:
       - mariadb
     ports:
@@ -11,6 +11,8 @@ services:
       - ../modules:/var/www/html/modules
       - ../files/default:/var/www/html/sites/default/:rw
       - ../files/repo:/var/www/html/repo/:rw
+      - ../files/private:/var/www/private/
+      - ../config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
 {% if project_name == "cp" %}
     external_links:
       - restheart_restheart_1:restheart

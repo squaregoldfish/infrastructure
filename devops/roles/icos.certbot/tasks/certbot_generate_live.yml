@@ -1,0 +1,52 @@
+- name: Check if {{ certbot_conf_name }} exists
+  stat:
+    path: "{{ certbot_conf_path }}"
+  register: _conf_file
+
+- name: Create an initial nginx {{ certbot_conf_name }} for the certbot certification
+  copy:
+    dest: "{{ certbot_conf_path }}"
+    content: |
+      server {
+        listen 80;
+        server_name {% for domain in certbot_domains %} {{ domain }}{% endfor %};
+
+        location /.well-known {
+            root /usr/share/nginx/html;
+        }
+      }
+  register: _write_conf
+  when: not _conf_file.stat.exists
+
+- name: Reload nginx
+  service:
+    name: nginx
+    state: reloaded
+  when: _write_conf.changed
+
+- name: Install SSL certificate
+  command: >
+    {{ certbot_bin }} certonly
+    --authenticator webroot
+    --non-interactive
+    --webroot-path /usr/share/nginx/html/
+    {% for domain in certbot_domains %}
+    --domain {{ domain }}
+    {% endfor %}
+    --email {{ certbot_email }}
+    --agree-tos
+    --expand
+  register: o
+  changed_when: '"Certificate not yet due for renewal; no action taken." not in o.stdout'
+
+- name: Add job to renew certificates
+  cron:
+    name: Certbot renewal
+    job: "{{ certbot_bin }} renew --post-hook 'service nginx reload'"
+    special_time: daily
+
+- name: Set nginx config variable
+  set_fact:
+    certbot_nginx_conf: |
+      ssl_certificate {{ certbot_live_crt }};
+      ssl_certificate_key {{ certbot_live_key }};

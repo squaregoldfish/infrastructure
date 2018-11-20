@@ -1,5 +1,17 @@
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ stiltweb_username }}"
+    group: "{{ stiltweb_username }}"
+  with_items:
+    - "{{ stiltweb_statedir }}"
+    - "{{ stiltweb_bin_dir }}"
+
+- import_role: name=icos.certbot
+
 - name: Run the jarservice role
-  include_role:
+  import_role:
     name: icos.jarservice
   vars:
     username        : "{{ stiltweb_username }}"
@@ -8,19 +20,30 @@
     servicename     : "{{ stiltweb_servicename }}"
     servicetemplate : "{{ stiltweb_template }}"
     nginxconfig     : "{{ stiltweb_nginxconfig }}"
-    apptemplate     : "{{ stiltweb_apptemplate }}"
+    appconfig       : "{{ stiltweb_appconfig }}"
+  when:
+    - stiltweb_jar_file is defined
 
-- name: Spoof stiltweb in /etc/hosts
-  lineinfile:
-    dest: "/etc/hosts"
-    line: "{{ stilt_spoof_ip }} stilt.icos-cp.eu"
-    state: present
-  when: stilt_spoof_ip is defined
-
-- name: Install tail-latest.sh
+- name: Add systemd service files
   template:
-    src: tail-latest.sh.j2
-    dest: "/home/{{stiltweb_username}}/tail-latest.sh"
-    mode: 0755
-    owner: "{{ stiltweb_username }}"
-    group: "{{ stiltweb_username }}"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src:  stiltweb_tunnel@.service.j2,
+        dest: /etc/systemd/system/stiltweb_tunnel@.service }
+    - { src: stiltweb_tunnels.target.j2,
+        dest: /etc/systemd/system/stiltweb_tunnels.target }
+  notify:
+    - reload systemd config
+
+- block:
+  - import_tasks: stiltweb_build_hosts.yml
+
+  - import_tasks: stiltweb_ssh_config.yml
+    become: yes
+    become_user: "{{ stiltweb_username }}"
+
+  - import_tasks: stiltweb_restart_tunnels.yml
+  when:
+    - stiltweb_no_tunnels is not defined
+    - groups.stiltcluster

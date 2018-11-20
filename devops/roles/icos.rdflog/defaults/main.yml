@@ -1,0 +1,19 @@
+# This is where we'll be creating the 'build' directory and where we'll install
+# control scripts.
+rdflog_dir: /docker/rdflog
+
+# The host system user, which will own the postgresql files on disk. This will
+# also be the name of the admin user in the image (instead of 'postgres').
+rdflog_user: rdflog
+
+# The name of the docker image
+rdflog_image: rdflog_db
+
+rdflog_db_name: "{{ rdflog_db_name | default('rdflog') }}"
+rdflog_db_user: "{{ rdflog_db_user | default('rdflog') }}"
+rdflog_db_pass: "{{ rdflog_db_pass }}"
+rdflog_db_port: "{{ rdflog_db_port }}"
+
+# Name of the replication user
+rdflog_rep_user: "{{ rdflog_rep_user | default('pgrepuser') }}"
+rdflog_rep_pass: "{{ rdflog_rep_pass }}"

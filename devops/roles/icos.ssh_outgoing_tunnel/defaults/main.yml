@@ -1,0 +1,11 @@
+# Expected arguments
+# remote_host - hostname of the host we're connecting to, needs to be available
+#               in hostvars
+# remote_ip   - ip of the host we're connecting to
+# remote_name - the name of the remote host, for use in .ssh/config
+# remote_acct - the name of the user to connect as
+# tunnel_args - ex: -R 5433:localhost:5433
+
+local_user: ssh_outgoing_tunnel
+service_name: "tunnel_{{remote_name}}"
+remote_host: "{{ remote_ip }}"

@@ -1,0 +1,2 @@
+- import_tasks: geoip.yml
+  tags: [geoip_only]

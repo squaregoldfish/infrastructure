@@ -2,12 +2,23 @@ server {
   listen       443 ssl;
   server_name  {{ domain }};
 
-{% if project_name == "ri" %}
-  ssl_certificate_key /etc/nginx/ssl/ri/icos-ri.eu.key;
-  ssl_certificate /etc/nginx/ssl/ri/icos-ri.eu.bundle.crt;
+  {{ certbot_nginx_conf | indent(2) }}
 
+{% if project_name == "ri" %}
   location =/science-conference {
     return 301 https://conference.icos-ri.eu/;
+  }
+{% elif project_name == "cp" %}
+  location = /license {
+    return 301 https://data.icos-cp.eu/licence;
+  }
+
+  location = /site {
+    return 301 https://www.icos-cp.eu;
+  }
+
+  location = /site/ {
+    return 301 https://www.icos-cp.eu;
   }
 {% endif %}
 
@@ -15,6 +26,10 @@ server {
 
   location ~ /.well-known {
     root /usr/share/nginx/html;
+  }
+
+  location /cp_login {
+    return 403;
   }
 
   location / {
@@ -33,41 +48,39 @@ server {
   }
 }
 
+{% if project_name == "ac" %}
+server {
+  listen       80;
+  server_name  ac.icos-cp.eu {{ domain | replace("www.","") }} {{ domain }};
+  return 301   https://{{ domain }}$request_uri;
+}
+server {
+  listen       443 ssl;
+  server_name  ac.icos-cp.eu {{ domain | replace("www.","") }};
+
+  {{ certbot_nginx_conf | indent(2) }}
+
+  return 301   https://{{ domain }}$request_uri;
+}
+{% elif redirect_to_www | default(false) %}
+server {
+  listen       80;
+  server_name  {{ domain | replace("www.","") }} {{ domain }};
+  return 301   https://{{ domain }}$request_uri;
+}
+
+server {
+  listen       443 ssl;
+  server_name  {{ domain | replace("www.","") }};
+
+  {{ certbot_nginx_conf | indent(2) }}
+
+  return 301   https://{{ domain }}$request_uri;
+}
+{% else %}
 server {
   listen       80;
   server_name  {{ domain }};
   return 301   https://{{ domain }}$request_uri;
-}
-
-{% if project_name == "ac" %}
-server {
-  listen       80;
-  server_name  www.actris.se;
-  return 301   https://{{ domain }}$request_uri;
-}
-{% elif project_name == "ri" %}
-server {
-  listen       80;
-  server_name  icos-ri.eu icos-infrastructure.eu www.icos-infrastructure.eu;
-  return 301   https://www.icos-ri.eu$request_uri;
-}
-
-server {
-  listen       443 ssl;
-  server_name  icos-ri.eu;
-  ssl_certificate_key /etc/nginx/ssl/ri/icos-ri.eu.key;
-  ssl_certificate /etc/nginx/ssl/ri/icos-ri.eu.bundle.crt;
-  return 301   https://www.icos-ri.eu$request_uri;
-}
-{% elif project_name == "fi" %}
-server {
-  listen       80;
-  server_name  icos-finland.fi;
-  return 301   https://www.icos-finland.fi$request_uri;
-}
-server {
-  listen       443 ssl;
-  server_name  icos-finland.fi;
-  return 301   https://www.icos-finland.fi$request_uri;
 }
 {% endif %}

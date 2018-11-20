@@ -1,6 +1,7 @@
-name: actris
+nginx_conf_name: actris
 drupal_docker_port: 8111
 mysql_docker_port: 3340
-domain: ac.icos-cp.eu
-trusted_host: ^ac\.icos-cp\.eu$
+domain: www.actris.se
+trusted_host: ^www\.actris\.se$
+ssl_domains: [ac.icos-cp.eu,actris.se,www.actris.se]
 cp_theme_d8: cp_theme_d8-ac

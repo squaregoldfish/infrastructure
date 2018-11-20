@@ -61,3 +61,4 @@ devops/ubuntu-xenial-16.04-cloudimg-console.log
 .editorconfig
 application.conf
 .cache-main
+/devops/ubuntu-bionic-18.04-cloudimg-console.log

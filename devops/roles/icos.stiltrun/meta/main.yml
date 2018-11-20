@@ -1,4 +1,0 @@
-dependencies:
-  - {role: icos.linux, tags: linux}
-  - {role: icos.docker, tags: docker}
-  - {role: icos.python3,  tags: python3}

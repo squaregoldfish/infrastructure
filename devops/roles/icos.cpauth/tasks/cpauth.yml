@@ -1,0 +1,20 @@
+- import_role: name=icos.certbot
+
+- name: Run the jarservice role
+  import_role:
+    name: icos.jarservice
+  vars:
+    username        : "{{ cpauth_username }}"
+    jarfile         : "{{ cpauth_jar_file }}"
+    # https://github.com/ansible/ansible/issues/20597
+    apptemplate     : roles/icos.cpauth/templates/application.conf.j2
+    nginxconfig     : "{{ cpauth_nginxconfig }}"
+    servicename     : "{{ cpauth_servicename }}"
+    servicetemplate : "{{ cpauth_template }}"
+
+- name: Copy keys
+  copy:
+    src: privateKeys
+    dest: /home/{{ cpauth_username }}/
+    owner: "{{ cpauth_username }}"
+    group: "{{ cpauth_username }}"

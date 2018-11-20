@@ -34,7 +34,7 @@ cat(format(Sys.time(), "%FT%T"),"INFO new result filename: ",stiltresultname,"\n
 rnam<-stiltresultname
 dat<-NULL
 for(part in 1:tp){
-dat<-rbind(dat,getr(paste(rnam,"_",part,sep=""),pathFP))} #standard simulation
+dat<-rbind(dat,getr(paste(rnam,"_",part,sep=""),pathResults))} #standard simulation
 
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: part ",part,"\n")
 cat(format(Sys.time(), "%FT%T"),"DEBUG reform: dim(dat) ",dim(dat),"\n")
@@ -80,6 +80,8 @@ dat<-matrix(as.numeric(dat),ncol=length(dimnames(dat)[[2]]),dimnames=nms)
 tracer<-"rn"
 rn.stilt<-dat[,"rnini"]+dat[,"rn"]
 rn<-rn.stilt
+rn.noah<-dat[,"rn_noahini"]+dat[,"rn_noah"]
+rn.era<-dat[,"rn_eraini"]+dat[,"rn_era"]
 
 tracer<-"co2"
 
@@ -155,7 +157,62 @@ co2.background<-dat[,"co2ini"]
 
 co2.ini<-dat[,"co2ini"]
 
-dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.energy,co2.transport,co2.industry,co2.others,co2.background,rn)
+tracer<-"co"
+
+pars<-matrix(NA, ncol=3, nrow=lengths(dimnames(dat)[2]))
+colnames(pars)<-c("trac", "cats", "fuels")
+for(i in 1:lengths(dimnames(dat)[2])){
+  fls<-strsplit(dimnames(dat)[[2]][i], split=".", fixed=T) #fls[[1]][3] 
+  pars[i,]<-fls[[1]][1:3]
+}
+ucats<-unique(pars[,"cats"])  #length: 22
+ufs<-unique(pars[,"fuels"])   #length: 13
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ucats ",ucats,"\n")
+cat(format(Sys.time(), "%FT%T"),"DEBUG reform: ufs ",ufs,"\n")
+
+selco<-pars[(pars[,1]==tracer & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+co.cat.fuel.all<-rowSums (dat[,paste(selco[,1],selco[,2],selco[,3],sep="."),drop=F], na.rm = FALSE)
+
+selcobio<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="bio" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selcogas<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="gas" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selcocoal<-pars[(pars[,1]==tracer & substring(pars[,3],1,4)=="coal" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selcooil<-pars[(pars[,1]==tracer & substring(pars[,3],1,3)=="oil" & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+
+co.cat.fuel.all<-rowSums (dat[,paste(selco[,1],selco[,2],selco[,3],sep="."),drop=F], na.rm = FALSE)
+co.cat.fuel.bio<-rowSums (dat[,paste(selcobio[,1],selcobio[,2],selcobio[,3],sep="."),drop=F], na.rm = FALSE)
+co.cat.fuel.gas<-rowSums (dat[,paste(selcogas[,1],selcogas[,2],selcogas[,3],sep="."),drop=F], na.rm = FALSE)
+co.cat.fuel.coal<-rowSums (dat[,paste(selcocoal[,1],selcocoal[,2],selcocoal[,3],sep="."),drop=F], na.rm = FALSE)
+co.cat.fuel.oil<-rowSums (dat[,paste(selcooil[,1],selcooil[,2],selcooil[,3],sep="."),drop=F], na.rm = FALSE)
+
+selcoenergy<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a1a","1a1bcr")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selcotransport<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a3b","1a3ce","1a3a+1c1","1a3d+1c2")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selcoindustry<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1a2+6cd","2a","2befg+3","2c")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+selcoothers<-pars[(pars[,1]==tracer & (pars[,2] %in% c("1b2abc","7a","1a4","4f")) & substring(pars[,3],nchar(pars[,3])-2,nchar(pars[,3]))!="ffm" & !is.na(pars[,2])),]
+
+co.energy<-rowSums (dat[,paste(selcoenergy[,1],selcoenergy[,2],selcoenergy[,3],sep="."),drop=F], na.rm = FALSE)
+co.industry<-rowSums (dat[,paste(selcoindustry[,1],selcoindustry[,2],selcoindustry[,3],sep="."),drop=F], na.rm = FALSE)
+co.transport<-rowSums (dat[,paste(selcotransport[,1],selcotransport[,2],selcotransport[,3],sep="."),drop=F], na.rm = FALSE)
+co.others<-rowSums (dat[,paste(selcoothers[,1],selcoothers[,2],selcoothers[,3],sep="."),drop=F], na.rm = FALSE)
+
+dat<-cbind(dat,co.cat.fuel.all,co.cat.fuel.bio,co.cat.fuel.gas,co.cat.fuel.coal,co.cat.fuel.oil,co.energy,co.transport,co.industry,co.others)
+test.all<-c("co.cat.fuel.bio","co.cat.fuel.gas","co.cat.fuel.coal","co.cat.fuel.oil")
+test.plot<-rowSums (dat[,test.all,drop=F], na.rm = FALSE)
+dat<-cbind(dat,test.plot)
+
+co.stilt<-dat[,"coini"]+dat[,"co.cat.fuel.all"]
+
+co.total<-co.stilt
+
+co.fuel<-co.cat.fuel.all
+co.fuel.coal<-co.cat.fuel.coal
+co.fuel.gas<-co.cat.fuel.gas
+co.fuel.oil<-co.cat.fuel.oil
+co.fuel.bio<-co.cat.fuel.bio
+co.background<-dat[,"coini"]
+
+co.ini<-dat[,"coini"]
+
+dat2<-cbind(dat2,co2.stilt,co2.bio,co2.bio.gee,co2.bio.resp,co2.fuel,co2.fuel.oil,co2.fuel.coal,co2.fuel.gas,co2.fuel.bio,co2.energy,co2.transport,co2.industry,co2.others,co2.background,co.stilt,co.fuel,co.fuel.oil,co.fuel.coal,co.fuel.gas,co.fuel.bio,co.energy,co.transport,co.industry,co.others,co.background,rn,rn.noah,rn.era)
 
 # write results incl. wind information - if exists
 if ("ubar" %in% colnames(dat)) {

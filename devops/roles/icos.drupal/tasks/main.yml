@@ -1,4 +1,6 @@
-- include_tasks: drupal.yml
+- include_tasks: drupal_only.yml
   with_items: "{{ websites }}"
   loop_control:
     loop_var: project_name
+  tags:
+    - drupal_only

@@ -1,3 +1,21 @@
+{% if git_version is defined and git_version == "redesign" %}
+global:
+  css:
+    theme:
+      //static.icos-cp.eu/constant/bootstrap/3.3.5/css/bootstrap.min.css: { type: external, minified: true }
+      css/cp_theme_d8.css: {}
+{% if cp_theme_d8 | default(false) %}
+      css/{{ cp_theme_d8 }}.css: {}
+{% endif %}
+      css/menu.css: {}
+
+  js:
+    //static.icos-cp.eu/constant/bootstrap/3.3.5/js/bootstrap.min.js: { type: external, minified: true }
+    js/cookie-notice.js: {}
+{% if cp_theme_d8 | default(false) %}
+    js/{{ cp_theme_d8 }}.js: {}
+{% endif %}
+{% else %}
 global:
   css:
     theme:
@@ -8,6 +26,7 @@ global:
     js/cookie-notice.js: {}
     js/{{ cp_theme_d8 | default("cp_theme_d8") }}.js: {}
     //static.icos-cp.eu/constant/bootstrap/3.3.5/js/bootstrap.min.js: { type: external, minified: true }
+{% endif %}
 
   dependencies:
     - core/drupal
@@ -20,6 +39,9 @@ menu-hover:
     theme:
       css/menu-hover.css: {}
 
+  js:
+    js/menu-hover.js: {}
+
 menu-click:
   css:
     theme:
@@ -27,6 +49,16 @@ menu-click:
 
   js:
     js/menu-click.js: {}
+
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery
+    - core/jquery.once
+
+menu-login:
+  js:
+    js/menu-login.js: {}
 
   dependencies:
     - core/drupal

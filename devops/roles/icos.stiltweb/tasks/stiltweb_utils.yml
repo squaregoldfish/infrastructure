@@ -1,0 +1,24 @@
+- name: Install files
+  template:
+    src: "{{ item.name }}.j2"
+    dest: "{{ item.dest }}/{{ item.name }}"
+    owner: "{{ stiltweb_username }}"
+    group: "{{ stiltweb_username }}"
+  with_items:
+    - {name: Makefile, dest: "{{ stiltweb_home_dir }}" }
+
+
+- name: Install scripts
+  template:
+    src:   "{{ item }}.j2"
+    dest:  "{{ stiltweb_bin_dir }}/{{ item }}"
+    owner: "{{ stiltweb_username }}"
+    group: "{{ stiltweb_username }}"
+    mode:  0755
+  with_items:
+    - tail-latest.sh
+    - sync-station-names.sh
+    - sync-fsicos1-to-fsicos2.sh
+    - sync-stilt-to-stiltweb.py
+    - sync-csv-files.py
+    - find-missing-csv-files.py

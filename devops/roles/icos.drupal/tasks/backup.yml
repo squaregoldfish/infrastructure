@@ -5,13 +5,10 @@
   register: backup_exists
 
 - block:
-  - name: Create backup directories
+  - name: Create backup directory
     file:
-      path: "{{ backup_path }}/{{ project_name }}Drupal/{{ item }}"
+      path: "{{ backup_path }}/{{ project_name }}Drupal"
       state: directory
-    with_items:
-      - files
-      - db
 
   - name: Install backup script
     template:
@@ -19,7 +16,7 @@
       dest: "{{ backup_path }}/{{ project_name }}Drupal/{{ project_name }}DrupalBackupScript.sh"
       mode: u+x
 
-  - name: Call backup script from backup_server.sh
+  - name: Add backup script call in backup_server.sh
     blockinfile:
       path: "{{ backup_path }}/backup_server.sh"
       block: |

@@ -2,10 +2,13 @@
   user:
     name: kanboard
     append: yes
+    shell: /bin/bash
+
+- import_role: name=icos.certbot
 
 - name: Copy kanboards nginx conf to nginx/conf.d
-  copy:
-    src: kanban.conf
+  template:
+    src: kanban.conf.j2
     dest: /etc/nginx/conf.d/kanban.conf
     owner: root
     group: root
@@ -27,9 +30,9 @@
     project_src: /disk/data/kanboard/kanboard
     state: present
 
-#To restore from backup you must set the variable restore in devops/vars.yml to true 
+#To restore from backup you must set the variable restore in devops/vars.yml to true
 - name: Copy backed up data for kanboard
-  copy: 
+  copy:
     src: "{{ backup_path }}kanboard/rsyncBackup/db.sqlite"
     dest: /disk/data/kanboard/data
     owner: root

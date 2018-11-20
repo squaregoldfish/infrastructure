@@ -1,0 +1,7 @@
+- include_vars:
+    file: vars/{{ ansible_distribution | lower }}.yml
+
+- name: Install sqlite
+  package:
+    name: "{{ sqlite_package_name }}"
+    state: present

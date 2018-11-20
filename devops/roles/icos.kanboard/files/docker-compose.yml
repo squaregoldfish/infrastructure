@@ -1,7 +1,7 @@
 version: '2'
 services:
   kanboard:
-    image: kanboard/kanboard:stable
+    image: kanboard/kanboard:latest
     ports:
      - "127.0.0.1:8099:80"
     volumes:

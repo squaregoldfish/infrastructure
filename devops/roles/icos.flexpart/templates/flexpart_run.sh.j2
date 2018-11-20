@@ -1,0 +1,43 @@
+#!/bin/bash
+# Do sanity checks, set up volumes and invoke the flexpart docker image.
+
+set -u
+set -e
+
+# flexpart will create its output directories below this directory.
+OUTPUT_TOP="{{ flexpart_output_directory }}"
+
+# name the flexpart docker containers with this prefix
+PREFIX="{{ flexpart_container_prefix }}"
+
+# max number of parallel running flexpart docker containers
+MAX_RUNNING="{{ flexpart_max_parallel }}"
+
+
+if [ $# -ne 4 ]; then
+  echo "usage: flexpart_run start      end        n outputdirectory"
+  echo "       flexpart_run 2012-01-01 2012-03-31 1 station1_20120101"
+  echo "$@"
+  exit 1;
+fi
+
+
+OUTPUT_DIR="$OUTPUT_TOP/$4"
+if [ -d "$OUTPUT_DIR" ]; then
+   echo "Output directory $OUTPUT_DIR already exists. Please remove manually and restart."
+   exit 1
+fi
+
+
+N_RUNNING=$(docker ps -q -f "name=$PREFIX" -f 'status=running' | wc -l)
+if [ "$N_RUNNING" -ge "$MAX_RUNNING" ]; then
+	echo "The maximum number of parallel flexpart simulations"\
+		 " ($MAX_RUNNING) has been reached."
+	exit 1;
+fi
+
+docker run -d --rm --name="$PREFIX-$4"\
+	   -v "$OUTPUT_TOP:/flexpart/output:rw"\
+	   -v "/disk/data/flexpart/meteo/erai/2012/:/meteo"\
+	   flexpart "$@" > /dev/null # Eat the container id output by docker-run
+echo "Simulation started. Output in $4"

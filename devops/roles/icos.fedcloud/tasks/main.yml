@@ -3,7 +3,8 @@
     name: "{{ fedcloud_user }}"
     groups: docker
     append: true
-    
+    shell: /bin/bash
+
 - become: yes
   become_user: "{{ fedcloud_user }}"
   import_tasks: fedcloud.yml

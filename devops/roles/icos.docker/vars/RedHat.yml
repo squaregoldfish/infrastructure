@@ -1,3 +1,0 @@
-docker_package_name: docker-engine
-docker_python_package_name: docker-python
-docker_group: docker

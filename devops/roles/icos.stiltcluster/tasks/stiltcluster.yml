@@ -1,5 +1,5 @@
 - name: Run the jarservice role
-  include_role:
+  import_role:
     name: icos.jarservice
   vars:
     username        : "{{ stiltcluster_username }}"
@@ -7,11 +7,33 @@
     jarfile         : "{{ stiltcluster_jar_file }}"
     servicename     : "{{ stiltcluster_servicename }}"
     servicetemplate : "{{ stiltcluster_template }}"
-    appconfig       : "{{ stiltcluster_appconfig }}"
+    apptemplate     : "{{ stiltcluster_apptemplate }}"
+  when: stiltcluster_jar_file is defined
 
-- name: Spoof stiltweb in /etc/hosts
-  lineinfile:
-    dest: "/etc/hosts"
-    line: "{{ stilt_spoof_ip }} stilt.icos-cp.eu"
+- name: Add stiltweb key to authorized_keys
+  authorized_key:
+    user: "{{ stiltcluster_username }}"
     state: present
-  when: stilt_spoof_ip is defined
+    key: "{{ lookup('file', 'roles/icos.stiltweb/files/stiltweb.pub') }}"
+
+- name: Create bin directory
+  file:
+    path: "{{ stiltcluster_bin_dir }}"
+    state: directory
+
+- name: Install scripts
+  template:
+    src:   "{{ item }}.j2"
+    dest:  "{{ stiltcluster_bin_dir }}/{{ item }}"
+    owner: "{{ stiltcluster_username }}"
+    group: "{{ stiltcluster_username }}"
+    mode:  0755
+  with_items:
+    - remove-old-stiltruns.sh
+
+- name: Add the remove-old-stiltruns cron job
+  cron:
+    name: remove old stiltruns
+    job: "$HOME/bin/remove-old-stiltruns.sh"
+    minute: 22
+    user: "{{ stiltcluster_username }}"

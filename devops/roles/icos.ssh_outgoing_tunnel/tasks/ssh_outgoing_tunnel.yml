@@ -1,0 +1,56 @@
+- name: Create outgoing ssh tunnel user
+  user:
+    name: "{{ local_user }}"
+    state: present
+  register: _user
+
+- name: Run block as {{ _user.name }}
+  become: true
+  become_user: "{{ _user.name }}"
+  block:
+    - name: Make sure user .ssh directory is present
+      file:
+        path: "{{ _user.home }}/.ssh"
+        state: directory
+        mode: 0700
+      register: _ssh_dir
+
+    - name: Install the rsa private key
+      copy:
+        src: ssh_tunnel.rsa
+        dest: "{{ _ssh_dir.path }}/id_rsa"
+        mode: 0600
+      register: _rsa_file
+
+    - name: Add remote host to known_hosts file
+      known_hosts:
+        path: "{{ _ssh_dir.path }}/known_hosts"
+        name: "{{ remote_host }}"
+        key: >-
+          {{ remote_host }},{{ remote_ip }} ecdsa-sha2-nistp256
+          {{ remote_host_key }}
+
+    - name: Add to the ssh user's config file
+      blockinfile:
+        create: yes
+        path: "{{ _ssh_dir.path }}/config"
+        mode: 0600
+        marker: "# {mark} ansible config for {{ remote_name }}"
+        block: |
+          Host {{ remote_name }}
+            User {{ remote_acct }}
+            HostName {{ remote_ip }}
+            IdentityFile {{ _rsa_file.path }}
+            ExitOnForwardFailure yes
+            ServerAliveInterval 60
+
+- name: Install the systemd service file for tunnel
+  template:
+    src: ssh_outgoing_tunnel.service.j2
+    dest: /etc/systemd/system/{{ service_name }}.service
+  notify:
+    - reload systemd config
+    - restart {{ service_name }}
+
+- name: Enable systemd {{ service_name }}
+  service: name={{ service_name }} enabled=yes state=started

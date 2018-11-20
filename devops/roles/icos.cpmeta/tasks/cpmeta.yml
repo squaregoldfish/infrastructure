@@ -1,45 +1,40 @@
-- name: Copy extra nginx config file
-  copy:
-    src: meta.conf.common
-    dest: /etc/nginx/conf.d/
+- import_role: name=icos.certbot
 
 - name: Run the jarservice role
-  include_role:
+  import_role:
     name: icos.jarservice
   vars:
     username        : "{{ cpmeta_username }}"
     jarfile         : "{{ cpmeta_jar_file }}"
-    appconfig       : "{{ cpmeta_appconfig }}"
+    apptemplate     : "{{ cpmeta_apptemplate }}"
     nginxconfig     : "{{ cpmeta_nginxconfig }}"
     servicename     : "{{ cpmeta_servicename }}"
     servicetemplate : "{{ cpmeta_template }}"
 
-# https://github.com/ansible/ansible/issues/15901
-- name: Get home directory of {{ cpmeta_username }}
-  become_user: "{{ cpmeta_username }}"
-  shell: "getent passwd {{ cpmeta_username }} | cut -d: -f6"
-  register: cpmeta_home
+- name: Copy SSL certs and private key for Handle.net client
+  copy:
+    src: ssl
+    dest: /home/{{ cpmeta_username }}/
+    owner: "{{ cpmeta_username }}"
+    group: "{{ cpmeta_username }}"
 
-- name: Create link to file storage
-  become: yes
-  become_user: "{{ cpmeta_username }}"
+- name: Create metaAppStorage directory (if not present), take ownership
   file:
-    dest: "{{ cpmeta_home.stdout }}/fileStorage"
-    src: "{{ cpmeta_filestorage_target }}"
-    state: link
+    path: "{{ cpmeta_filestorage_target }}"
+    state: directory
+    owner: "{{ cpmeta_username }}"
+    group: "{{ cpmeta_username }}"
 
-- meta: flush_handlers
+- block:
+    - name: Ensure that the remotebackup script is present
+      file:
+        path: "{{ cpmeta_remotebackup_bin }}"
+        mode: +x
 
-- name: Install SSL certificate
-  command: >
-    certbot
-    --authenticator webroot
-    --installer nginx
-    --non-interactive
-    --webroot-path /usr/share/nginx/html/
-    --domain meta.fieldsites.se
-    --email carbon.admin@nateko.lu.se
-    --agree-tos
-  notify: reload nginx config
-
-- meta: flush_handlers
+    - name: Install cronjob to backup cpmetas fileStorage
+      cron:
+        name: Backup cpmeta fileStorage
+        job: >-
+          {{ cpmeta_remotebackup_bin }} -La {{ cpmeta_filestorage_target }} meta
+        special_time: hourly
+  when: cpmeta_enable_remotebackup

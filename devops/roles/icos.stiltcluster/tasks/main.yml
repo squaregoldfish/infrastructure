@@ -1,3 +1,14 @@
+# This task must always be run to ensure that the _stiltcluster variable is present.
+- name: Create stiltcluster user
+  user:
+    name: "{{ stiltcluster_username }}"
+    state: present
+    shell: /bin/bash
+  register: _stiltcluster
+  tags:
+    - stiltcluster_only
+    - stiltcluster
+
 - import_tasks: stiltcluster.yml
   tags:
     - stiltcluster_only

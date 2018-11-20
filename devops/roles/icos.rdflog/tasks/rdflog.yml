@@ -1,0 +1,100 @@
+- name: Create rdflog user
+  user:
+    name: "{{ rdflog_user }}"
+    state: present
+    create_home: no
+    home: "{{ rdflog_dir }}"
+  register: _user
+
+- name: Create docker home for rdflog
+  file:
+    path: "{{ rdflog_dir }}/build"
+    state: directory
+  register: _build
+
+- name: Create rdflog data volume
+  file:
+    path: "{{ rdflog_dir }}/volumes/data"
+    state: directory
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+  register: _data
+
+- name: Create ssl key/certificate home
+  file:
+    path: "{{ rdflog_dir }}/volumes/ssl"
+    state: directory
+  register: _ssl
+
+- name: Install postgres ssl key/certificate
+  copy:
+    dest: "{{ _ssl.path }}/"
+    src: "{{ item }}"
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+    mode: 0600
+  loop:
+    - server.crt
+    - server.key
+
+- name: Install docker-compose.yml
+  template:
+    dest: "{{ rdflog_dir }}/.docker-compose.yml"
+    src: docker-compose.yml.j2
+    mode: 0600
+  register: _dc
+
+- name: Syntax check the docker-compose file
+  command: "docker-compose -f {{ _dc.dest }} config"
+  changed_when: false
+
+- name: Install docker build requirements
+  template:
+    dest: "{{ _build.path }}/{{ item }}"
+    src: "{{ item }}.j2"
+  loop:
+    - Dockerfile
+    - init.sql
+    - init.sh
+
+- name: Build rdflog image
+  docker_service:
+    project_src: "{{ rdflog_dir }}"
+    files: ['.docker-compose.yml']
+    state: present
+    # Contrary to the documentation, the image doesn't always get rebuilt when
+    # its build directory contents change. Thus we always force a build - since
+    # the results are cached it will be very quick if nothing changed.
+    build: true
+
+- name: Install psql script specialized for rdflog
+  template:
+    dest: "{{ rdflog_dir }}/psql"
+    src: psql.sh.j2
+    mode: 0755
+  register: _psql
+
+- name: Install rdflog control script
+  template:
+    src: ctl.sh.j2
+    dest: "{{ rdflog_dir }}/ctl"
+    mode: 0755
+  register: _ctl
+
+- name: Install sql status files
+  template:
+    src: "{{ item }}"
+    dest: "{{ rdflog_dir }}/.{{ item }}"
+  loop:
+    - status.sql
+    - ctl.sql
+
+- name: Reload the ctl sql file while also testing database connection
+  shell: >-
+    {{ _psql.dest }} {{ rdflog_db_name }} < {{ rdflog_dir }}/.ctl.sql
+  register: r
+  changed_when: false
+  # The database might not have come up yet (if postgres needs to initialize)
+  retries: 2
+  delay: 5
+  until: r.rc == 0

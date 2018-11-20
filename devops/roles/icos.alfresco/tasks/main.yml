@@ -2,10 +2,13 @@
   user:
     name: alfresco
     append: yes
+    shell: /bin/bash
+
+- import_role: name=icos.certbot
 
 - name: Copy alfresco nginx conf to nginx/conf.d
-  copy:
-    src: alfresco.conf
+  template:
+    src: alfresco.conf.j2
     dest: /etc/nginx/conf.d/alfresco.conf
     owner: root
     group: root
@@ -32,10 +35,10 @@
     project_src: /disk/data/alfresco/docker/alfresco/
     state: present
 
-# To restore from backup you must set the variable restore in devops/vars.yml to true. 
-# WARNING: The backup for alfresco is currently 80G large. 
+# To restore from backup you must set the variable restore in devops/vars.yml to true.
+# WARNING: The backup for alfresco is currently 80G large.
 - name: Copy backed up data for alfresco
-  synchronize: 
+  synchronize:
     src: "{{ backup_path }}alfresco/rsyncBackup/alfresco-5.0.d/"
     dest: /disk/data/alfresco/
   when: restore

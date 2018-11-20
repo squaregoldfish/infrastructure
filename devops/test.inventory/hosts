@@ -1,0 +1,12 @@
+[icosprod]
+centos
+
+[icosprod2]
+bionic
+
+[stiltmaster]
+bionic
+
+[stiltcluster]
+centos
+

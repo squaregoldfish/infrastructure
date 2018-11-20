@@ -1,14 +1,22 @@
 
 cpdata{
-
+	interface = "{{ cpdata_bind_addr }}"
+	
 	upload{
 		folder = "{{ cpdata_filestorage_target }}"
 		irods.password = "{{ cpdata_irods_pass }}"
+		irods2.password = "{{ cpdata_swestore_pass }}"
+		b2stage.password = "{{ cpdata_b2stage_pass }}"
+		dlReporter.password = "{{ cpdata_dlreporter_pass }}"
 	}
 
 	etcFacade{
 		folder = "{{ cpdata_filestorage_target }}/etcFacadeStaging"
 		secret = "{{ cpdata_etcfacade_secret }}"
+	}
+
+	meta {
+		baseUrl = "http://{{ cpdata_meta_addr }}:{{ cpdata_meta_port }}/"
 	}
 }
 

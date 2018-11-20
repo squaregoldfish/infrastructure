@@ -1,4 +1,15 @@
 ---
+# Include local_vars.yml if it exist but don't fail if it doesn't.
+# That file is meant for local variables (not checked into git).
+- hosts: all
+  tags: always
+  gather_facts: no
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_first_found:
+        - local_vars.yml
+        - /dev/null
+
 # Version check play.
 - hosts: all
   tags: setup
@@ -6,10 +17,28 @@
   pre_tasks:
     # Use fail since assert is to verbose.
     # https://github.com/ansible/ansible/issues/27124
-     - name: Fail if ansible is too old 
+     - name: Fail if ansible is too old
        fail:
         msg: "This playbook uses features that requires ansible >= 2.4"
-       when: "ansible_version.full | version_compare('2.4', '<=')"
+       when: "ansible_version.full is version_compare('2.4', '<=')"
+
+- hosts: all
+  tags: always
+  gather_facts: no
+  pre_tasks:
+    - name: Ensure infrastructure repo is up to date
+      # --count will return the number of commits that would have been
+      # listed. Either local unpushed commits or remote unmerged commits.
+      local_action: shell git fetch && git rev-list HEAD...origin/master --count
+      register: git_result
+      changed_when: false
+      # The extra '|bool' is to allow the setting to be passed with '-echeck...'
+      when: check_infrastructure_version|default(true)|bool
+
+    - name: Fail if infrastructure is outdated
+      fail:
+        msg: "Your infrastructure repo is not in sync with origin. Pull/push origin/master."
+      when: check_infrastructure_version|default(true)|bool and git_result.stdout|int > 0
 
 # The system that is being provisioned needs to have python installed. Of the
 # two systems we currently support, CentOS 7 and Ubuntu 16.04, only CentOS have
@@ -27,4 +56,36 @@
       raw: "test -e /usr/bin/python || apt install -y python-minimal"
       register: raw_python
       changed_when: '"Setting up python" in raw_python.stdout'
-      
+
+# Set the remote IP of the ssh connection, something that's surprisingly hard to
+# get from ansible. Even though ansible can give you a list of all the
+# interfaces on the machine, it cannot tell you which one of them you connected
+# through.
+#
+# Even more confusing, ansible might not even know! If it's configured with only
+# hostnames, it'll just pass the hostnames along to ssh which in turns can find
+# the hostnames (either through DNS or through it's ~/.ssh/config file).
+#
+# When ssh logs in, it sets the SSH_CONNECTION environment variable to contain:
+#   LOCAL_IP LOCAL_PORT REMOTE_IP REMOTE_PORT
+#
+# What this play does is save the REMOTE_IP part of that environment
+# variable. This is useful for example when constructing ~/.ssh/config files on
+# remote machines that needs to connect to other remote machines - all of which
+# are reachable from the ansible controller.
+#
+# This might fail if ansible has executed any 'become' statement, which causes
+# ansible to use sudo(1) which in turns provide a clean environment for ansible,
+# thus loosing the SSH_CONNECTION variable.
+- hosts: all
+  tags: always
+  gather_facts: no
+  tasks:
+    # This is sort of 'gather_facts: only environment variables'.
+    - setup:
+        gather_subset: env
+
+    - name: Save the remote ip of the host
+      set_fact:
+        ssh_connection_remote_ip: "{{ ansible_env['SSH_CONNECTION'].split()[2] }}"
+      when: ssh_connection_remote_ip is not defined

@@ -1,22 +1,46 @@
-# This ansible playbook will provision the STILT servers.
-
----
 - import_playbook: setup.yml
-  
-- hosts: stiltmaster
+
+
+- hosts: stiltcluster
+  name: Connect to cluster hosts to collect ssh keys
+  tasks:
+    - debug: msg="Collecting host key from {{ inventory_hostname }}"
+
+- hosts: stiltmaster stiltcluster
   become: true
   vars_files:
     - vault.yml
-    - vars.yml 
+    - vars.yml
+  roles:
+    - role: icos.linux
+      tags: linux
+    - role: icos.docker
+      tags: docker
+    - role: icos.nginx
+      tags: nginx
+    - role: icos.java
+      tags: java
+    - role: icos.python3
+      tags: python3
+
+
+- hosts: stiltmaster
+  name: Install stilt along with its web frontend and cluster control
+  become: true
+  vars_files:
+    - vault.yml
+    - vars.yml
   roles:
     - role: icos.stiltweb
       tags: stiltweb
     - role: icos.stiltrun
       tags: stiltrun
-    - role: icos.fedcloud
-      tags: fedcloud
+    - role: icos.stiltcluster
+      tags: stiltcluster
+
 
 - hosts: stiltcluster
+  name: Install stilt on all the backend nodes
   become: true
   vars_files:
     - vault.yml
@@ -26,3 +50,42 @@
       tags: stiltrun
     - role: icos.stiltcluster
       tags: stiltcluster
+
+
+- hosts: icosprod2
+  name: Export stiltdata to icosprod1
+  become: true
+  tags: stilt_export
+  tasks:
+    - name: Install nfs server
+      package:  name=nfs-kernel-server  state=present
+
+    - name: Modify exports file
+      copy: dest=/etc/exports  content="{{ stilt_nfs_exports }}"
+      register: _exports
+
+    - name: Reload NFS server
+      service: name=nfs-server state=reloaded enabled=yes
+      when: _exports.changed
+
+    - name: Completely open firewall to {{ stilt_nfs_icosprod1_ip }}
+      ufw: rule=allow src="{{ stilt_nfs_icosprod1_ip }}"
+
+
+- hosts: icosprod
+  name: Mount stiltdata from icosprod2
+  become: true
+  tags: stilt_export
+  tasks:
+    - name: Create mountpoint {{ item.path }}
+      file: path="{{ item.path }}" state=directory
+      loop: "{{ stilt_nfs_mounts }}"
+
+    - name: Mount "{{ item.path }}" from icosprod2
+      loop: "{{ stilt_nfs_mounts }}"
+      mount:
+        path: "{{ item.path }}"
+        src: "{{ item.src }}"
+        fstype: nfs
+        opts: ro
+        state: mounted

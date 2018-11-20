@@ -116,11 +116,14 @@ identname <- pos2id(StartInfo[1,1], lat, lon, agl)
 stiltresultname <- paste("stiltresult",stilt_year,substr(identname,14,34),sep="")
 cat(format(Sys.time(), "%FT%T"),"INFO new result filename: ",stiltresultname,"\n")
 # OVERWRITE WARNING
-if(existsr(paste(stiltresultname,"_",part,sep=""),path=pathFP)) {
+#UK#if(existsr(paste(stiltresultname,"_",part,sep=""),path=pathFP)) {
+if(existsr(paste(stiltresultname,"_",part,sep=""),path=pathResults)) {
    if(l.remove.Resultfile){
       cat(format(Sys.time(), "%FT%T"),"DEBUG You are attempting to overwrite an existing stiltresult object\n")
-      unix(paste("rm -f ",paste(pathFP,".RData",stiltresultname,"_",part,sep=""),sep=""))
-      unix(paste("rm -f ",paste(pathFP,stiltresultname,"_",part,".csv",sep=""),sep=""))
+      #UK#unix(paste("rm -f ",paste(pathFP,".RData",stiltresultname,"_",part,sep=""),sep=""))
+      unix(paste("rm -f ",paste(pathResults,".RData",stiltresultname,"_",part,sep=""),sep=""))
+      #UK#unix(paste("rm -f ",paste(pathFP,stiltresultname,"_",part,".csv",sep=""),sep=""))
+      unix(paste("rm -f ",paste(pathResults,stiltresultname,"_",part,".csv",sep=""),sep=""))
       cat(format(Sys.time(), "%FT%T"),"DEBUG Notice: New stiltresult object will be written \n")
    }else{ 
       cat(format(Sys.time(), "%FT%T"),"DEBUG You are not computing new timeseries you are using an existing stiltresult object\n")
@@ -381,8 +384,10 @@ for (j in 1:nrows) {
      #=====================end trajwind.r 
 
      # 'traj' is a vector
-     if (existsr(paste(stiltresultname,"_", part, sep=""), path=pathFP)) {
-        result <- getr(paste(stiltresultname,"_", part, sep=""), path=pathFP)
+     #UK#if (existsr(paste(stiltresultname,"_", part, sep=""), path=pathFP)) {
+     if (existsr(paste(stiltresultname,"_", part, sep=""), path=pathResults)) {
+        #UK#result <- getr(paste(stiltresultname,"_", part, sep=""), path=pathFP)
+        result <- getr(paste(stiltresultname,"_", part, sep=""), path=pathResults)
         if (dim(result)[1] != nrows) {
            if (firstflux) cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): existing stiltresult has wrong dimension; creating new one.\n")
         } else {
@@ -399,7 +404,8 @@ for (j in 1:nrows) {
      dimnames(result) <- list(NULL, c(names(traj)))
      dimnames(result) <- list(NULL, dimnames(result)[[2]])
      # write the object into default database; object names are, e.g., "Crystal.1"
-     assignr(paste(stiltresultname,"_", part, sep=""), result, path=pathFP)
+     #UK#assignr(paste(stiltresultname,"_", part, sep=""), result, path=pathFP)
+     assignr(paste(stiltresultname,"_", part, sep=""), result, path=pathResults)
   }
   rownum <- rownum+1
 
@@ -569,9 +575,12 @@ if (biomassburnTF)
 if (fluxTF) {
    dimnames(result) <- list(NULL, dimnames(result)[[2]])
    # write the object into default database; object names are, e.g., "Crystal.1"
-   assignr(paste(stiltresultname,"_", part, sep=""), result, path=pathFP)
-     cat(format(Sys.time(), "%FT%T"),"DEBUG ",stiltresultname,"_", part, " assigned in ", pathFP, "\n")
-   write.table(result, file=paste(pathFP, stiltresultname,"_", part, ".csv", sep=""), na="", row.names=F)
+   #UK#assignr(paste(stiltresultname,"_", part, sep=""), result, path=pathFP)
+   assignr(paste(stiltresultname,"_", part, sep=""), result, path=pathResults)
+   #UK#cat(format(Sys.time(), "%FT%T"),"DEBUG ",stiltresultname,"_", part, " assigned in ", pathFP, "\n")
+     cat(format(Sys.time(), "%FT%T"),"DEBUG ",stiltresultname,"_", part, " assigned in ", pathResults, "\n")
+   #UK#write.table(result, file=paste(pathFP, stiltresultname,"_", part, ".csv", sep=""), na="", row.names=F)
+   write.table(result, file=paste(pathResults, stiltresultname,"_", part, ".csv", sep=""), na="", row.names=F)
 }
 
 # If evi and lswi maps from vprm calculations is saved to the global environment; it should be removed here

@@ -1,0 +1,27 @@
+cpmeta_filestorage_target: /disk/data/metaAppStorage
+docker_compose_src_parent: /disk/data
+
+stilt_nfs_icosprod2_host: fsicos2.lunarc.lu.se
+stilt_nfs_mounts:
+  - path: "/disk/data/STILT/fsicos2/stiltweb"
+    src: "{{ stilt_nfs_icosprod2_host }}:/disk/data/stiltweb"
+  - path: "/disk/data/STILT/fsicos2/stilt"
+    src: "{{ stilt_nfs_icosprod2_host }}:/disk/data/stilt"
+
+flexpart_ssh_users: ['andre', 'atverm']
+flexpart_ssh_remote_host: "fsicos2.lunarc.lu.se"
+flexpart_ssh_remote_ip: "194.47.223.139"
+
+pgrep_rdflog_instance:
+  suffix: rdflog
+  peer_host: fsicos2.lunarc.lu.se
+  peer_port: "{{ rdflog_db_port }}"
+  peer_user: "{{ rdflog_rep_user }}"
+  peer_pass: "{{ rdflog_rep_pass }}"
+  peer_cert: roles/icos.rdflog/files/server.crt
+  peer_slot: fsicos
+
+meta_tunnel_from_ip: 194.47.223.139
+certbot_bin: /opt/certbot/bin/certbot
+
+ssh_connection_remote_ip: 194.47.223.133

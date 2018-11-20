@@ -1,4 +1,4 @@
-name: icosno
+nginx_conf_name: icosno
 drupal_docker_port: 8108
 mysql_docker_port: 3335
 domain: no.icos-cp.eu
