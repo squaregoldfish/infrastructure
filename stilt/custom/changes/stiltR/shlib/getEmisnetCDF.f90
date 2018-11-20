@@ -48,9 +48,13 @@ CONTAINS
    !***********************************************************************
 
    SUBROUTINE nc_handle_err (stat)
+      USE date_sub, ONLY: get_now
       INTEGER, INTENT(IN) :: stat
+      CHARACTER(20)  :: now_iso
       IF (stat /= nf90_noerr) THEN
-         PRINT '(2a)', 'ERROR netCDF error: ', NF90_STRERROR(stat)
+         call get_now(now_iso)
+         PRINT *,' '
+         PRINT '(4a)', now_iso,'ERROR netCDF error: ', NF90_STRERROR(stat)
          STOP 'ERROR Stop.'
       ENDIF
    END SUBROUTINE nc_handle_err
@@ -97,7 +101,7 @@ SUBROUTINE fname2fi (fname, fi)
          IF (fnames(k) == ' ') EXIT
       END DO
       IF (k > maxfiles) THEN
-         STOP now_iso//'ERROR Subroutine fname2fi: all file entries allocated. Stop.'
+         STOP 'ERROR Subroutine fname2fi: all file entries allocated. Stop.'
       ELSE
          fi = k
          fnames(fi) = fname
@@ -139,7 +143,7 @@ SUBROUTINE IER_Open (fi,lon_dim,lat_dim,time_dim)
    IF (fi < 1 .OR. fi > maxfiles) THEN
       PRINT '(a,2(a,i0))', now_iso,'ERROR Subroutine IER_Open: argument fi must be >= 1 and <= ', maxfiles, &
          ' but is ', fi
-      STOP now_iso//'ERROR Stop.'
+      STOP 'ERROR Stop.'
    END IF
 
    WRITE (*,'(4a)', ADVANCE='NO') now_iso,'DEBUG Opening file ', TRIM(fnames(fi)), '... '

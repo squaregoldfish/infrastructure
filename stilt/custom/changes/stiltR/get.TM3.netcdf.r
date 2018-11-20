@@ -39,6 +39,10 @@ get.TM3.netcdf <- function(yr4=NULL, mon=NULL, day=NULL, hr=NULL, tracersinifile
          yeari<-max(years.avail)
       }
       tracersinifilem<-paste(substring(tracersinifile,1,nchar(tracersinifile)-7),yeari,".nc",sep="")
+      if(! file.exists(tracersinifilem)){
+        cat(format(Sys.time(), "%FT%T"),"ERROR get.TM3.netcdf() initial and boundary file ",tracersinifilem," not found\n")
+      } else {
+      cat(format(Sys.time(), "%FT%T"),"DEBUG get.TM3.netcdf() read initial and boundary data from ",tracersinifilem,"\n")}
       tm3file <- nc_open(tracersinifilem, write=F,readunlim=FALSE)
       centerlats <- ncvar_get(tm3file, varid="lat")           # Center
       centerlons <- ncvar_get(tm3file, varid="lon")           # Center
