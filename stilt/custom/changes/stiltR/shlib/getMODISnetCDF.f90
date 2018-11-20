@@ -73,7 +73,7 @@ CONTAINS
    SUBROUTINE nc_handle_err (stat)
       INTEGER, INTENT(IN) :: stat
       IF (stat /= nf90_noerr) THEN
-         PRINT '(2a)', 'DEBUG netCDF error: ', NF90_STRERROR(stat)
+         PRINT '(2a)', 'ERROR netCDF error: ', NF90_STRERROR(stat)
          PRINT '(a)' , 'DEBUG in subroutine getMODISnetCDF'
          STOP 'Stop.'
       ENDIF
@@ -282,7 +282,7 @@ SUBROUTINE getMODISnetCDF (dpath, n, date, i, j, ires, jres, subill, subjll, sub
    EXTERNAL           :: VPRM_init
    CHARACTER(20)      :: now_iso
 !---------------------------------------------------------------------------------------------------
-   IF (ANY(date(1,:) /= date(1,1))) STOP now_iso//'ERROR getMODISnetCDF: subroutine does not handle multiple years. Stop.'
+   IF (ANY(date(1,:) /= date(1,1))) STOP 'ERROR getMODISnetCDF: subroutine does not handle multiple years. Stop.'
 
    IF (.NOT. initialized) CALL VPRM_init (dpath, date(1,1))
 
@@ -309,7 +309,7 @@ SUBROUTINE getMODISnetCDF (dpath, n, date, i, j, ires, jres, subill, subjll, sub
          PRINT '(2a,i0)'      , now_iso, 'ERROR Subroutine getMODISnetCDF: Field index exceedance at input item ', k
          PRINT '(2a,5(1x,i0))', now_iso, 'ERROR i, j, ires, jres : ', i(k), j(k), ires(k), jres(k)
          PRINT '(2a,4(1x,i0))', now_iso, 'ERROR i1, i2, j1, j2   : ', i1(k), i2(k), j1(k), j2(k)
-         STOP !now_iso//'ERROR Stop.'
+         STOP 'ERROR Stop.'
       END IF
 
 

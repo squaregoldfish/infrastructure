@@ -263,6 +263,7 @@ cat(format(Sys.time(), "%FT%T"),"INFO Trajec(): metfile that will be used: ", me
 for(mm in metfile){  #loop over the number of meteorological files
 #  if(! my.file.exists(paste(metlib,mm,sep=""))){
    if(! is.element(mm,list.files(metlib))){
+    cat(format(Sys.time(), "%FT%T"),"ERROR Trajecmulti(): Trajec(): Metfile ",metlib,mm," not found\n")
     stop(paste("Trajec(): Metfile ",metlib,mm," not found",sep=""))
   }
 }

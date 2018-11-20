@@ -445,7 +445,7 @@ for (j in 1:nrows) {
     } # if (rerunfoot)
 
     if (is.null(foot)) { # uk check if foot is valid
-      cat(format(Sys.time(), "%FT%T"),"DEBUG Trajecmod(): No footprint file written!!!!|n")
+      cat(format(Sys.time(), "%FT%T"),"ERROR Trajecmod(): Trajecfoot returned empty footprint for ",identname, " No footprint file written!!!\n")
     } else {	    
     # write aggregated footprint to netcdf file
     # prepare for ncdf output 
