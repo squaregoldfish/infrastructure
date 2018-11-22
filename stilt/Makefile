@@ -1,3 +1,5 @@
+default: build update
+
 build:
 	./build.sh
 

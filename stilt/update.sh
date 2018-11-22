@@ -17,8 +17,11 @@ function get_version {
 }
 
 	
-function set_version {
-	sed -i -E "s/^(stiltrun_image_id.*): .*/\1: $1/" "$DEFAULTS"
+function update_defaults {
+	sed -i -E \
+		-e "s/^(stiltrun_image_id.*): .*/\1: $1/"\
+		-e "s/^(stiltrun_image_url.*custom).*tgz$/\1-$1.tgz/"\
+		"$DEFAULTS"
 }
 
 
@@ -32,12 +35,12 @@ fi
 NEW="${FILE:${#FILE}-16:12}"
 
 OLD=$(get_version)
-if [[ $VERSION == $OLD ]]; then
+if [[ "$NEW" == "$OLD" ]]; then
 	echo "Version hasn't changed"
 	exit 0
 else
-	set_version "$NEW"
+	update_defaults "$NEW"
 	echo "Updated $DEFAULTS from $OLD to $NEW"
-	#scp "$FILE" icosprod:/usr/share....
+	scp "$FILE" "icosprod:/usr/share/nginx/static/share/docker/stilt/stiltcustom-$NEW.tgz"
 fi
 
