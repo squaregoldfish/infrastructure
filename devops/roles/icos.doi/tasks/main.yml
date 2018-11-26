@@ -1,15 +1,3 @@
-- import_role: name=icos.certbot
-
-- name: Run the jarservice role
-  import_role:
-    name: icos.jarservice
-  vars:
-    username        : "{{ doi_username }}"
-    jarfile         : "{{ doi_jar_file }}"
-    # https://github.com/ansible/ansible/issues/20597
-    apptemplate     : roles/icos.doi/templates/application.conf.j2
-    nginxconfig     : "{{ doi_nginxconfig }}"
-    servicename     : "{{ doi_servicename }}"
-    servicetemplate : "{{ doi_template }}"
+- import_tasks: doi.yml
   tags:
     - doi_only
