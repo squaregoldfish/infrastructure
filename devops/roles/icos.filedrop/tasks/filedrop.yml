@@ -1,0 +1,12 @@
+- import_role: name=icos.certbot
+
+- name: Run the jarservice role
+  import_role:
+    name: icos.jarservice
+  vars:
+    username        : "{{ filedrop_username }}"
+    jarfile         : "{{ filedrop_jar_file }}"
+#    appconfig       : "{{ filedrop_appconfig }}"
+    nginxconfig     : "{{ filedrop_nginxconfig }}"
+    servicename     : "{{ filedrop_servicename }}"
+    servicetemplate : "{{ filedrop_template }}"
