@@ -3,4 +3,3 @@ drupal_docker_port: 8120
 mysql_docker_port: 3342
 domain: switzerland.icos-cp.eu
 trusted_host: ^switzerland\.icos-cp\.eu$
-git_version: redesign

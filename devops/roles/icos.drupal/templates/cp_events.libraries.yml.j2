@@ -1,14 +1,10 @@
 style:
   css:
     theme:
-{% if git_version is defined and git_version == "redesign" %}
       css/cp_events.css: {}
   {% if cp_events | default(false) %}
       css/{{ cp_events }}.css: {}
   {% endif %}
-{% else %}
-      css/{{ cp_events | default("cp_events") }}.css: {}
-{% endif %}
 
 script:
   js:
