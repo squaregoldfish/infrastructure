@@ -1,6 +1,6 @@
 name := "icoscp-sbt-deploy"
 organization := "se.lu.nateko.cp"
-version := "0.2.0-SNAPSHOT"
+version := "0.2.1-SNAPSHOT"
 
 sbtPlugin := true
 
