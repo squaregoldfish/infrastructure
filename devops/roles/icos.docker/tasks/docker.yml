@@ -13,3 +13,13 @@
     dest: "{{ docker_compose_dst_parent }}"
     src: "{{ docker_compose_src_parent }}/docker-compose-projects"
     state: link
+
+- name: Copy docker helper scripts
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/sbin/{{ item }}"
+    mode: +x
+  loop:
+    - docker-unpack-image
+    - docker-lineage
+    - docker-list-ips

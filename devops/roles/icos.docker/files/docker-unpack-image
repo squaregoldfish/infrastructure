@@ -1,0 +1,25 @@
+#!/bin/bash
+# Unpack a docker image to a tmp directory
+# 
+# Sometimes one wants to inspect a third-party image. Maybe to inspect the
+# entrypoint or to generate a diff to be when building upon the image.
+
+set -e
+set -u
+
+TAG=${1:-}
+
+if [ -z "$TAG" ]; then
+	echo "usage: docker-unpack-image image-and-dir"
+	exit 1;
+fi
+
+TMP=$(mktemp -d "/tmp/${TAG/:/_}.XXXXXX")
+cd "$TMP"
+
+NAME="${TMP##*/}"
+docker run --name "$NAME" --entrypoint=true "$1"
+trap 'docker rm "$NAME"' EXIT
+
+echo "unpacking $TAG in $TMP"
+docker export "$NAME" | tar xf -

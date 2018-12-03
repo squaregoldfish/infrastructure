@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+set -u
+
+IMAGE=${1:-}
+if [[ -z "$IMAGE" ]]; then
+	echo "usage: docker-lineage image"
+	exit 1
+fi
+
+docker history -q "$IMAGE" | grep -v '<missing>' | \
+	while read -r id
+	do
+		docker inspect --type=image "$id" \
+			| jq '.[0] | { RepoTag: .RepoTags[0], Parent }';
+	done

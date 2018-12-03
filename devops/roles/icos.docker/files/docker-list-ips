@@ -1,0 +1,7 @@
+#!/bin/bash
+# List all docker container IDs along with their ip addresses
+
+docker ps \
+	| awk 'NR > 1 {print $1 }' \
+	| xargs -rn 1 \
+			docker inspect -f '{{ .Name }} {{ range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'  
