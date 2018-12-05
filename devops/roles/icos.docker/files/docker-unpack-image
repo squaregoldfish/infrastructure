@@ -14,7 +14,9 @@ if [ -z "$TAG" ]; then
 	exit 1;
 fi
 
-TMP=$(mktemp -d "/tmp/${TAG/:/_}.XXXXXX")
+TAG=${TAG/:/_}
+TAG=${TAG/\//_}
+TMP=$(mktemp -d "/tmp/$TAG.XXXXXX")
 cd "$TMP"
 
 NAME="${TMP##*/}"
