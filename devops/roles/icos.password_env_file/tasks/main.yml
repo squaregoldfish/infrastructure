@@ -1,0 +1,30 @@
+# If the user has provided a (non-empty!) password (by setting the variable
+# named by set_fact), then we create the password file.
+- name: Create password file
+  copy:
+    dest: "{{ file }}"
+    content: "{{ file_var }}={{ lookup('vars', set_fact) }}"
+  when: lookup('vars', set_fact, default=False)
+
+# If the user has _not_ provided a password, then we generate a new password as
+# we create the password file.
+- name: Generate password file
+  shell: >-
+    umask 0077;
+    openssl rand -hex {{ length }}
+    | awk '{ print "{{ file_var }}=" $1 }'
+    > {{ file }}
+  args:
+    creates: "{{ file }}"
+
+# In both cases, we then extract the data from the password file.
+- name: Read password file
+  slurp:
+    src: "{{ file }}"
+  register: _slurp
+
+# In both cases, we then set the password variable to the password value.
+- name: Extract password
+  set_fact: >-
+    {{ set_fact }}="{{ _slurp.content | b64decode
+    | regex_replace('[^=]+=(\\S+)\s*', '\\1') }}"
