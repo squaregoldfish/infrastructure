@@ -29,3 +29,5 @@ remotebackup_remote_root: /disk/data/remotebackup
 
 ssh_connection_remote_ip: 194.47.223.139
 nextcloud_admin_password: "{{ vault_nextcloud_admin_password }}"
+
+onlyoffice_secret: "{{ vault_onlyoffice_secret }}"

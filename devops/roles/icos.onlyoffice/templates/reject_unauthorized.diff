@@ -1,0 +1,19 @@
+--- a/app/onlyoffice/run-document-server.sh
++++ b/app/onlyoffice/run-document-server.sh
+@@ -37,6 +37,7 @@ NGINX_WORKER_CONNECTIONS=${NGINX_WORKER_CONNECTIONS:-$(ulimit -n)}
+ JWT_ENABLED=${JWT_ENABLED:-false}
+ JWT_SECRET=${JWT_SECRET:-secret}
+ JWT_HEADER=${JWT_HEADER:-Authorization}
++JWT_REJECT_UNAUTHORIZED=${JWT_REJECT_UNAUTHORIZED:-true}
+ 
+ ONLYOFFICE_DEFAULT_CONFIG=${CONF_DIR}/local.json
+ ONLYOFFICE_LOG4JS_CONFIG=${CONF_DIR}/log4js/production.json
+@@ -150,6 +151,8 @@ update_redis_settings(){
+ }
+ 
+ update_jwt_settings(){
++  json -q -f ${CONF_DIR}/default.json -I -e "this.services.CoAuthoring.requestDefaults.rejectUnauthorized = ${JWT_REJECT_UNAUTHORIZED}"
++	
+   if [ "${JWT_ENABLED}" == "true" ]; then
+     ${JSON} -I -e "this.services.CoAuthoring.token.enable.browser = ${JWT_ENABLED}"
+     ${JSON} -I -e "this.services.CoAuthoring.token.enable.request.inbox = ${JWT_ENABLED}"

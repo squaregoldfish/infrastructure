@@ -1,0 +1,2 @@
+- import_tasks: onlyoffice.yml
+  tags: [onlyoffice_only]
