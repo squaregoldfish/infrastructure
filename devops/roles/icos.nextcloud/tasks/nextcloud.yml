@@ -77,7 +77,7 @@
   register: _build
   changed_when: '" ---> Running in " in _build.stdout'
 
-- import_role: name=icos.certbot
+- include_role: name=icos.certbot
 
 - name: Copy nextcloud nginx config files
   template:

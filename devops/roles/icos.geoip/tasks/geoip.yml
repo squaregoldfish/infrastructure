@@ -84,7 +84,7 @@
     project_src: "{{ geoip_home }}"
     build: yes
 
-- import_role: name=icos.certbot
+- include_role: name=icos.certbot
 
 - name: Install nginx config file
   template:

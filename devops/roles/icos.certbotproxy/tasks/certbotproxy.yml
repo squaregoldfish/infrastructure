@@ -1,4 +1,4 @@
-- import_role: name=icos.certbot
+- include_role: name=icos.certbot
 
 - name: Install certbotproxy config for {{ certbot_conf_name }}
   template:

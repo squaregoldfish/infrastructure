@@ -1,5 +1,5 @@
 - name: Run the jarservice role
-  import_role:
+  include_role:
     name: icos.jarservice
   vars:
     username        : "{{ stiltcluster_username }}"

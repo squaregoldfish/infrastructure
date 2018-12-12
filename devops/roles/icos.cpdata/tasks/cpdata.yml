@@ -1,7 +1,7 @@
-- import_role: name=icos.certbot
+- include_role: name=icos.certbot
 
 - name: Run the jarservice role
-  import_role:
+  include_role:
     name: icos.jarservice
   vars:
     username        : "{{ cpdata_username }}"

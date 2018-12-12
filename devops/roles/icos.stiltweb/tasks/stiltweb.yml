@@ -8,10 +8,10 @@
     - "{{ stiltweb_statedir }}"
     - "{{ stiltweb_bin_dir }}"
 
-- import_role: name=icos.certbot
+- include_role: name=icos.certbot
 
 - name: Run the jarservice role
-  import_role:
+  include_role:
     name: icos.jarservice
   vars:
     username        : "{{ stiltweb_username }}"

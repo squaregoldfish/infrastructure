@@ -5,7 +5,7 @@
 - name: Include vault
   include_vars: vault.yml
 
-- import_role: name=icos.certbot
+- include_role: name=icos.certbot
 
 - name: Copy nginx conf
   template:

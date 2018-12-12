@@ -8,7 +8,7 @@
 - name: Include vars
   include_vars: drupal.yml
 
-- import_role: name=icos.certbot
+- include_role: name=icos.certbot
   vars:
     - certbot_domains: "{{ certbot_domains }}"
     - certbot_conf_name: "{{ nginx_conf_name }}"

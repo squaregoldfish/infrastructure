@@ -4,7 +4,7 @@
     append: yes
     shell: /bin/bash
 
-- import_role: name=icos.certbot
+- include_role: name=icos.certbot
 
 - name: Copy alfresco nginx conf to nginx/conf.d
   template:
