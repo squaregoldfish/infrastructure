@@ -16,19 +16,6 @@ services:
       nextcloud:
         ipv4_address: {{ nextcloud_ip }}
 
-  doc:
-    image: collabora/code:{{ nextcloud_collabora_version }}
-    expose:
-      - {{ nextcloud_collabora_port }}
-    cap_add:
-      - MKNOD
-    restart: always
-    environment:
-      - domain={{ nextcloud_domain }}
-    networks:
-      nextcloud:
-        ipv4_address: {{ nextcloud_collabora_cont_ip }}
-
   {{ nextcloud_db_host }}:
     build: {{ nextcloud_build_postgres }}
     restart: always

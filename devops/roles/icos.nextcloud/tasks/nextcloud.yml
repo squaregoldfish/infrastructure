@@ -86,5 +86,4 @@
   loop:
     - nextcloud.conf
     - nextcloud-nextcloud.inc
-    - nextcloud-collabora.inc
   notify: reload nginx config
