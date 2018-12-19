@@ -12,7 +12,7 @@
 
 # Version check play.
 - hosts: all
-  tags: setup
+  tags: always
   gather_facts: no
   pre_tasks:
     # Use fail since assert is to verbose.
