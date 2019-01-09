@@ -1,1 +1,3 @@
 project_dir: /disk/data/sites-aquanet-form
+certbot_domains: [apply.fieldsites.se]
+nginx_conf_name: sites-aquanet-form

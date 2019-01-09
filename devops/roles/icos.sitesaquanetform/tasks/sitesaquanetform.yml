@@ -6,9 +6,6 @@
   include_vars: vault.yml
 
 - include_role: name=icos.certbot
-  vars:
-    - certbot_domains: [apply.fieldsites.se]
-    - nginx_conf_name: sites-aquanet-form
 
 - name: Copy nginx conf
   template:
