@@ -1,6 +1,6 @@
 - name: Install files
   template:
-    src: "{{ item.name }}.j2"
+    src: "{{ item.name }}"
     dest: "{{ item.dest }}/{{ item.name }}"
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"
@@ -10,7 +10,7 @@
 
 - name: Install scripts
   template:
-    src:   "{{ item }}.j2"
+    src:   "{{ item }}"
     dest:  "{{ stiltweb_bin_dir }}/{{ item }}"
     owner: "{{ stiltweb_username }}"
     group: "{{ stiltweb_username }}"

@@ -15,7 +15,7 @@
 
 - name: Create .ssh/config
   template:
-    src: ssh-config.j2
+    src: ssh-config
     dest: "{{ _stiltweb.home }}/.ssh/config"
     mode: 0600
 

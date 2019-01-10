@@ -29,9 +29,9 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
   with_items:
-    - { src:  stiltweb_tunnel@.service.j2,
+    - { src:  stiltweb_tunnel@.service,
         dest: /etc/systemd/system/stiltweb_tunnel@.service }
-    - { src: stiltweb_tunnels.target.j2,
+    - { src: stiltweb_tunnels.target,
         dest: /etc/systemd/system/stiltweb_tunnels.target }
   notify:
     - reload systemd config

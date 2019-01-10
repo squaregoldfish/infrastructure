@@ -3,7 +3,7 @@
 
 - name: Install stiltweb->stilt sync script
   template:
-    src: sync-stiltweb-to-stilt.py.j2
+    src: sync-stiltweb-to-stilt.py
     dest: "{{ stiltweb_bin_dir }}/sync-stiltweb-to-stilt.py"
     mode: 0755
     owner: "{{ stiltweb_username }}"
