@@ -68,6 +68,10 @@
       tags: cpmeta
     - role: icos.remotebackup
       tags: remotebackup
+    - role: icos.nextcloud
+      tags: nextcloud
+    - role: icos.onlyoffice
+      tags: onlyoffice
     - role: icos.ssh_outgoing_tunnel
       tags: ssh_outgoing_tunnel
       vars:

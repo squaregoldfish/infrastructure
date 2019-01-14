@@ -28,6 +28,9 @@ remotebackup_remote_hosts: [fsicos.lunarc.lu.se]
 remotebackup_remote_root: /disk/data/remotebackup
 
 ssh_connection_remote_ip: 194.47.223.139
+
 nextcloud_admin_password: "{{ vault_nextcloud_admin_password }}"
+nextcloud_domain: fileshare.icos-cp.eu
 
 onlyoffice_secret: "{{ vault_onlyoffice_secret }}"
+onlyoffice_domain: onlyoffice.icos-cp.eu
