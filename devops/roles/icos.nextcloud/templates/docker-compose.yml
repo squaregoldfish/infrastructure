@@ -37,4 +37,4 @@ networks:
        driver: default
        config:
        -
-         subnet: 172.200.199.0/24
+         subnet: {{ nextcloud_subnet }}
