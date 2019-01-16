@@ -1,0 +1,11 @@
+version: '2'
+services:
+  limesurvey:
+    image:
+      crramirez/limesurvey:latest
+    ports:
+      - "9872:80"
+    volumes:
+      - /disk/data/limesurvey/data:/var/lib/mysql
+      - /disk/data/limesurvey/data:/app/upload
+    restart: unless-stopped

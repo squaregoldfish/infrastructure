@@ -58,6 +58,8 @@
     - vault.yml
     - vars.yml
   roles:
+    - role: icos.limesurvey
+      tags: limesurvey
     - role: icos.geoip
       tags: geoip
     - role: icos.rdflog

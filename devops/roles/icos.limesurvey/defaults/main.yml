@@ -1,0 +1,16 @@
+limesurvey_user: limesurvey
+limesurvey_group: limesurvey
+limesurvey_home: /docker/limesurvey
+limesurvey_domain: survey.icos-cp.eu
+
+limesurvey_port: 9872
+
+certbot_domains: ["{{ limesurvey_domain }}"]
+certbot_conf_name: limesurvey
+
+limesurvey_volume_upload: "{{ limesurvey_home}}/volumes/limesurvey"
+limesurvey_volume_mysql: "{{ limesurvey_home}}/volumes/msql"
+
+limesurvey_db_name: limesurvey
+limesurvey_db_user: limesurvey
+limesurvey_db_host: db
