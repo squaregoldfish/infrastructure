@@ -1,3 +1,8 @@
+- name: Ensure group limesurvey exists
+  group:
+    name: "{{ limesurvey_group }}"
+    state: present
+
 - name: Create limesurvey user
   user:
     name: "{{ limesurvey_user }}"
