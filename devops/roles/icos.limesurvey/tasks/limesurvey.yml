@@ -1,45 +1,23 @@
-- name: Ensure group limesurvey exists
-  group:
-    name: "{{ limesurvey_group }}"
-    state: present
-
-- name: Create limesurvey user
-  user:
-    name: "{{ limesurvey_user }}"
-    group: "{{ limesurvey_group }}"
-    state: present
-    create_home: yes
-    home: "{{ limesurvey_home }}"
+- name: Create limesurvey directory
+  file:
+    path: "{{ limesurvey_home }}"
+    state: directory
+  register: _home
 
 - include_role: name=icos.certbot
-
-- name: Create limesurvey volumes
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ limesurvey_user }}"
-    group: "{{ limesurvey_group }}"
-  loop:
-    - "{{ limesurvey_volume_upload }}"
-    - "{{ limesurvey_volume_mysql }}"
 
 - name: Copy limesurvey nginx conf to nginx/conf.d
   template:
     src: limesurvey.conf
-    dest: /etc/nginx/conf.d/limesurvey.conf
-    owner: root
-    group: root
-    mode: 0700
+    dest: /etc/nginx/conf.d/
   notify: reload nginx config
 
 - name: Copy docker-compose.yml
-  copy:
+  template:
     src: docker-compose.yml
-    dest: "{{ limesurvey_home }}/docker-compose.yml"
-    owner: limesurvey
-    mode: g=rw
+    dest: "{{ _home.path }}"
 
 - name: Run limesurvey docker compose
   docker_service:
-    project_src: "{{ limesurvey_home }}"
+    project_src: "{{ _home.path }}"
     state: present

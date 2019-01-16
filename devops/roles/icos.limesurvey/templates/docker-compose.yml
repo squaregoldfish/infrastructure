@@ -1,0 +1,15 @@
+version: '2'
+services:
+  limesurvey:
+    image:
+      crramirez/limesurvey:{{ limesurvey_version }}
+    ports:
+      - "127.0.0.1:{{ limesurvey_port }}:80"
+    volumes:
+      - limesurvey_mysql:/var/lib/mysql
+      - limesurvey_upload:/app/upload
+    restart: unless-stopped
+
+volumes:
+  limesurvey_mysql:
+  limesurvey_upload:
