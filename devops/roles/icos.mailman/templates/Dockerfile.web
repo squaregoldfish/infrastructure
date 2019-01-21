@@ -1,0 +1,12 @@
+FROM maxking/mailman-web:latest
+
+RUN OLDUID=$(id -u mailman)				  && \
+	apk --no-cache add shadow			  && \
+    usermod -u {{ _user.uid }} mailman	  && \
+	groupmod -g {{ _user.group }} mailman && \
+	find / -user $OLDUID -print0 | xargs -r0 chown {{ _user.uid }}:{{ _user.group }}
+
+# The maxking/mailman-core image has su-exec support and will run as the mailman
+# user. Manually add the same for the the -web image.
+RUN apk --no-cache add su-exec
+CMD ["su-exec", "mailman", "uwsgi", "--ini", "/opt/mailman-web/uwsgi.ini"]

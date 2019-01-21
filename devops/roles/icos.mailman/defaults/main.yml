@@ -1,0 +1,31 @@
+mailman_user: mailman
+mailman_home: /docker/mailman
+
+mailman_serve_from_domain: "{{ mailman_domain | mandatory }}"
+mailman_nginx_domain: "{{ mailman_domain | mandatory }}"
+
+mailman_postgres_password: "{{ vault_mailman_postgres_password }}"
+mailman_hyperkitty_api_key: "{{ vault_mailman_hyperkitty_api_key }}"
+mailman_web_secret_key: "{{ vault_mailman_web_secret_key }}"
+mailman_admin_email: "{{ vault_mailman_admin_email }}"
+
+mailman_volume_core: "{{ mailman_home }}/volumes/core"
+mailman_volume_web: "{{ mailman_home }}/volumes/web"
+mailman_volume_database: "{{ mailman_home }}/volumes/database"
+
+mailman_build_core: "{{ mailman_home }}/build/core"
+mailman_build_web: "{{ mailman_home }}/build/web"
+mailman_build_database: "{{ mailman_home }}/build/database"
+
+# Django (the mailman-web container) will read this file on startup.
+mailman_django_settings: "{{ mailman_volume_web }}/settings_local.py"
+
+mailman_subnet: 172.19.199.0/24
+mailman_core_ipv4:  172.19.199.2
+mailman_web_ipv4: 172.19.199.3
+mailman_database_ipv4: 172.19.199.4
+
+mailman_nginx_allow_deny: "{{ vault_mailman_nginx_allow_deny }}"
+
+certbot_domains: ["{{ mailman_domain | mandatory }}"]
+certbot_conf_name: mailman

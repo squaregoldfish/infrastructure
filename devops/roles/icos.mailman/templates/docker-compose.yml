@@ -1,0 +1,69 @@
+version: '3'
+
+services:
+  mailman-core:
+    build: {{ mailman_build_core }}
+    container_name: mailman-core
+    hostname: mailman-core
+    volumes:
+    - {{ mailman_volume_core }}:/opt/mailman/
+    stop_grace_period: 30s
+    links:
+    - database:database
+    depends_on:
+    - database
+    environment:
+    - MTA=postfix
+    - DATABASE_URL=postgres://mailman:{{ mailman_postgres_password }}@database/mailmandb
+    - DATABASE_TYPE=postgres
+    - DATABASE_CLASS=mailman.database.postgresql.PostgreSQLDatabase
+    - HYPERKITTY_API_KEY={{ mailman_hyperkitty_api_key }}
+    networks:
+      mailman:
+        ipv4_address: {{ mailman_core_ipv4 }}
+
+  mailman-web:
+    build: {{ mailman_build_web }}
+    container_name: mailman-web
+    hostname: mailman-web
+    depends_on:
+    - database
+    links:
+    - mailman-core:mailman-core
+    - database:database
+    volumes:
+    - {{ mailman_volume_web }}:/opt/mailman-web-data
+    environment:
+    - DATABASE_TYPE=postgres
+    - DATABASE_URL=postgres://mailman:{{ mailman_postgres_password }}@database/mailmandb
+    - HYPERKITTY_API_KEY={{ mailman_hyperkitty_api_key }}
+    - SERVE_FROM_DOMAIN={{ mailman_serve_from_domain }}
+    - MAILMAN_ADMIN_USER=admin
+    - MAILMAN_ADMIN_EMAIL={{ mailman_admin_email }}
+    - SECRET_KEY={{ mailman_web_secret_key }}
+    networks:
+      mailman:
+        ipv4_address: {{ mailman_web_ipv4 }}
+
+  database:
+    build: {{ mailman_build_database }}
+    container_name: mailman-postgres
+    environment:
+      POSTGRES_DB: mailmandb
+      POSTGRES_USER: mailman
+      POSTGRES_PASSWORD: {{ mailman_postgres_password }}
+    restart: always
+    volumes:
+    - {{ mailman_volume_database }}:/var/lib/postgresql/data
+    networks:
+      mailman:
+        ipv4_address: {{ mailman_database_ipv4 }}
+
+networks:
+   mailman:
+     driver: bridge
+     ipam:
+       driver: default
+       config:
+       -
+         subnet: {{ mailman_subnet }}

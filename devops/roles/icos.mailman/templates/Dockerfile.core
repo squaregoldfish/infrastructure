@@ -1,0 +1,9 @@
+FROM maxking/mailman-core:latest
+
+RUN OLDUID=$(id -u mailman)	&& \
+	echo "mailman:x:{{ _user.group}}:mailman" >> /etc/group	&& \
+	sed -ri "s/^mailman:x:$OLDUID:[^:]*:(.*)/mailman:x:{{ _user.uid }}:{{ _user.group }}:\1/" /etc/passwd && \
+	find / -user $OLDUID -print0 | xargs -r0 chown {{ _user.uid }}:{{ _user.group }}
+
+# mailman-core will su-exec to the mailman user
+# USER mailman

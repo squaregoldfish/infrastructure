@@ -1,0 +1,90 @@
+- name: Include mailman-vault
+  include_vars: "mailman-vault.yml"
+
+- name: Create user for mailman
+  user:
+    name: "{{ mailman_user }}"
+    state: present
+    home: "{{ mailman_home }}"
+  register: _user
+
+- name: Create docker build dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ mailman_build_core }}"
+    - "{{ mailman_build_web }}"
+    - "{{ mailman_build_database }}"
+
+- name: Install Dockerfiles
+  template:
+    dest: "{{ item.dest }}/Dockerfile"
+    src: "{{ item.src }}"
+  loop:
+    - { src: Dockerfile.core, dest: "{{ mailman_build_core }}" }
+    - { src: Dockerfile.web, dest: "{{ mailman_build_web }}" }
+    - { src: Dockerfile.database, dest: "{{ mailman_build_database }}" }
+
+- name: Create mailman volumes
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+  loop:
+    - "{{ mailman_volume_core }}"
+    - "{{ mailman_volume_web }}"
+    - "{{ mailman_volume_database }}"
+
+- name: Install mailman docker-compose.yml
+  template:
+    dest: "{{ mailman_home }}/"
+    src: docker-compose.yml
+    mode: 0600
+
+- import_role: name=icos.certbot
+
+- name: Install the mailman nginx conf to nginx/conf.d
+  template:
+    dest: /etc/nginx/conf.d/
+    src: mailman.conf
+  notify: reload nginx config
+
+- name: Install mailman extra-conf file
+  template:
+    dest: "{{ mailman_volume_core }}/mailman-extra.cfg"
+    src: mailman-extra.cfg
+
+- name: Install django settings file for mailman-web
+  template:
+    dest: "{{ mailman_volume_web }}/settings_local.py"
+    src: settings_local.py
+
+- name: Build mailman docker image
+  docker_service:
+    project_src: "{{ mailman_home }}"
+    build: true
+
+- name: Install postfix on host
+  package:
+    name: postfix
+    state: present
+
+- name: Add mailman config to postfix
+  blockinfile:
+    path: /etc/postfix/main.cf
+    marker: "# {mark} ansible mailman config"
+    block: |
+
+      # Support the default VERP delimiter.
+      recipient_delimiter = +
+      unknown_local_recipient_reject_code = 550
+      owner_request_special = no
+
+      transport_maps =
+          regexp:{{ mailman_volume_core }}/var/data/postfix_lmtp
+      local_recipient_maps =
+          regexp:{{ mailman_volume_core }}/var/data/postfix_lmtp
+      relay_domains =
+          regexp:{{ mailman_volume_core }}/var/data/postfix_domains

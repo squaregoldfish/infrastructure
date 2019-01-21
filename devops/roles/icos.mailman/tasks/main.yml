@@ -1,0 +1,2 @@
+- include: mailman.yml
+  tags: mailman_only
