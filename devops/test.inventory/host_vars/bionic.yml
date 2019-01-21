@@ -25,3 +25,7 @@ onlyoffice_secret: secret
 onlyoffice_domain: onlyoffice.icos-cp.eu
 
 onlyoffice_reject_unauthorized: false
+
+mailman_serve_from_domain: mailman.test
+postfix_mailname: mailman.test
+

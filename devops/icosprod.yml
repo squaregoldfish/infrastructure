@@ -82,3 +82,5 @@
         remote_ip: "{{ meta_tunnel_to_ip }}"
         remote_name: meta
         tunnel_args: "-R localhost:{{ meta_port }}:localhost:{{ meta_port }}"
+    - role: icos.mailman
+      tags: mailman
