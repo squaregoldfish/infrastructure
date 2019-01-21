@@ -50,9 +50,9 @@ centos () {
 }
 
 
-if which apt-get 2>&1 /dev/null ; then
+if which apt-get > /dev/null 2>&1; then
 	ubuntu
-elif which yum 2>&1 /dev/null; then
+elif which yum > /dev/null 2>&1; then
 	if ! which yumdownloader > /dev/null; then
 		echo "I can find yum(1) but not yumdownloader(1), please install yum-utils"
 		exit 1
