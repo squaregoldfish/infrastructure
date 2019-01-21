@@ -32,3 +32,7 @@
 - name: Check that python3 version is >= 3.6
   shell: "python3 --version 2>&1 | grep -q '^Python 3.[6789]'"
   changed_when: false
+
+- name: Install pipenv
+  pip:
+    name: pipenv
