@@ -3,17 +3,16 @@
 # Sync (by hardlinking!) stilt data from new-style slot-based directory layout
 # - as used by stiltweb - to the classic stilt layout.
 #
-# Each new-style slot directory contain four files, but only three of those
-# are synced by this script. Those three file - foot, rdata and rdatafoot -
-# have a one-to-one mapping between new-style and old-style and can this
-# easily be hardlinked. The csv file however exists as one-line-per-file in
-# the new-style structure and many-lines-per-file in the old-style and are not
-# synced.
+# Each new-style slot directory contain four files, but only three of those are
+# synced by this script. Those three file - foot, rdata and rdatafoot - have a
+# one-to-one mapping between new-style and old-style and can thus easily be
+# hardlinked. The csv file however exists as one-line-per-file in the new-style
+# structure and many-lines-per-file in the old-style and is not synced.
 #
 # This script will spawn one process per station. By default it only shows what
-# would be synced, use '--help' for usage info. The script is designed to run as
-# a systemd service, trigger by a (inotify-based) path trigger - this way one
-# can have access to newly computed stilt data in the old-style layout.
+# would be synced, use '--help' for usage info. The script is designed to run
+# as a systemd service, trigger by a (inotify-based) path trigger - this way
+# one can have access to newly computed stilt data in the old-style layout.
 
 
 import argparse
