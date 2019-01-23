@@ -1,5 +1,5 @@
-stiltrun_image_url  : https://static.icos-cp.eu/share/docker/stilt/stiltcustom-23a6314630a1.tgz
-stiltrun_image_id   : 23a6314630a1
+stiltrun_image_url  : https://static.icos-cp.eu/share/docker/stilt/stiltcustom-8e0c0928e33c.tgz
+stiltrun_image_id   : 8e0c0928e33c
 stiltrun_image_name : 'stiltcustom'
 stiltrun_stiltdir   : /disk/data/stilt
 stiltrun_stiltweb   : /disk/data/stiltweb
