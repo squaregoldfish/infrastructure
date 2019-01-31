@@ -133,15 +133,17 @@ def sync_station(station, dryrun=True, old_root=OLD_ROOT):
         nslots += 1
         # e.g '2007x12x29x12x69.28Nx016.01Ex00005'
         datepos = '%sx%s' % (slot.name, station.pos)
+        didsync = False
         for old_name, old_dir, old_files, new_name in new2old:
             old_path = os.path.join(old_dir, old_name % datepos)
             if old_path in old_files:
-                break
+                continue
             new_path = os.path.join(month, slot, new_name)
             assert(old_path.startswith(old_root))
             if not dryrun:
                 os.link(new_path, old_path)
-        else:
+            didsync = True
+        if didsync:
             nsyncd += 1
             slotnames.append(slot.name)
     return SyncResult(station, nslots, nsyncd, slotnames)
