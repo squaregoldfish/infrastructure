@@ -21,7 +21,6 @@ STILT_DATE_ID_SLOTS = {"0": "00", "125": "03", "25": "06", "375": "09",
 def parse_date_id(s):
     """Parse stilt date/slot string into python objects
 
-
     >>> parse_date_id('17167.5')
     (datetime.date(2007, 1, 1), '12')
     >>> parse_date_id('20820.125')

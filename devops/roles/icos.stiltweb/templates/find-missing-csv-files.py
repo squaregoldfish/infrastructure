@@ -3,12 +3,12 @@
 #
 # Syncing of old stilt data to the new stiltweb directory layout is a long and
 # winding process. Sometimes it goes wrong and ends up creating slot
-# directories which are missing the 'csv' file. That will cause no end up
+# directories which are missing the 'csv' file. That will cause no end of
 # upset. This script will recurse down the {{ stiltweb_statedir }}/slots
 # directory and look for these directories.
 #
-# It will display a nice looking output along with the shell troublesome_slots
-# required to remove the troublesome directories.
+# It will display a nice looking output along a shell script that when
+# run removes the troublesome directories.
 
 
 import concurrent.futures
