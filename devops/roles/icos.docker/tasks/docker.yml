@@ -31,3 +31,8 @@
     - docker-unpack-image
     - docker-lineage
     - docker-list-ips
+
+- name: Copy Makefile for docker-compose projects
+  template:
+    src: Makefile
+    dest: "{{ _home }}/"
