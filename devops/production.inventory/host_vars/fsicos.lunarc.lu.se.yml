@@ -1,5 +1,5 @@
 cpmeta_filestorage_target: /disk/data/metaAppStorage
-docker_compose_src_parent: /disk/data
+docker_compose_home: /disk/data/docker-compose-projects
 
 stilt_nfs_icosprod2_host: fsicos2.lunarc.lu.se
 stilt_nfs_mounts:

@@ -1,17 +1,25 @@
 - include_tasks: "docker_{{ ansible_distribution | lower }}.yml"
 
 - name: Start docker
-  service: name=docker state=started enabled=yes
+  service:
+    name: docker
+    state: started
+    enabled: yes
 
-- name: Create docker-compose based projects home
+# We want all our docker projects to live below /docker. But since
+# some of them use volumes that can grow quite large, we don't want
+# them filling up the root filesystem. The solution is to first create
+# a 'docker-compose-projects' elsewhere and then link it to /docker.
+- name: Create {{ docker_compose_home }}
   file:
-    path: "{{ docker_compose_src_parent }}/docker-compose-projects"
+    path: "{{ docker_compose_home }}"
     state: directory
+  register: _home
 
-- name: Create {{ docker_compose_dst_parent }}
+- name: Create link from {{ docker_compose_link }} to {{ docker_compose_home }}
   file:
-    dest: "{{ docker_compose_dst_parent }}"
-    src: "{{ docker_compose_src_parent }}/docker-compose-projects"
+    dest: "{{ docker_compose_link }}"
+    src: "{{ _home.path }}"
     state: link
 
 - name: Copy docker helper scripts

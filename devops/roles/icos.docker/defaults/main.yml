@@ -1,3 +1,2 @@
-docker_compose_src_parent: /var
-docker_compose_dst_parent: /docker
-docker_compose_dir: "{{ docker_compose_dst_parent }}"
+docker_compose_home: /var/docker-compose-projects
+docker_compose_link: /docker
