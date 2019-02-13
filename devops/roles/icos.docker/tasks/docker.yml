@@ -31,6 +31,7 @@
     - docker-unpack-image
     - docker-lineage
     - docker-list-ips
+    - docker-entrypoint
 
 - name: Copy Makefile for docker-compose projects
   template:
