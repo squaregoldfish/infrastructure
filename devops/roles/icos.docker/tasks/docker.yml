@@ -32,6 +32,7 @@
     - docker-lineage
     - docker-list-ips
     - docker-entrypoint
+    - docker-extract
 
 - name: Copy Makefile for docker-compose projects
   template:

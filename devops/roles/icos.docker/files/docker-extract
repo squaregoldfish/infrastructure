@@ -1,0 +1,40 @@
+#!/bin/bash
+# Extract the file/directory from the container or image.
+
+set -u
+set -e
+
+if [[ $# -lt 2 ]]; then
+    cat <<EOF
+usage: docker-extract <obj> <src> [dst]
+
+Extract /entrypoint.sh from mycontainer into current directory.
+  $ docker-extract mycontainer /entrypoint.sh
+
+Extract the entire /etc directory from the ubuntu image into /tmp.
+  $ docker-extract ubuntu /etc /tmp
+EOF
+    exit 1
+fi
+
+OBJ="$1"
+SRC="$2"
+DST="${3:-$PWD}"
+
+if [[ -e "$DST/${SRC##*/}" ]]; then
+    echo "${SRC##*/} already exists in $DST, refusing to overwrite"
+    exit 1
+fi
+
+# is object a container?
+if docker inspect -f '{{ .Image }}' "$OBJ" >&/dev/null; then
+    docker cp "$OBJ:$SRC" "$DST"
+# is object an image?
+elif docker inspect -f '{{ .RepoTags }}' "$OBJ" >&/dev/null; then
+    CID=$(docker create "$OBJ")
+    trap 'docker rm "$CID" >/dev/null' EXIT
+    docker cp "$CID:$SRC" "$DST"
+else
+    echo "'$1' is neither a container nor an image."
+    exit 1
+fi
