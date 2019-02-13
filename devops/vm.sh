@@ -15,7 +15,6 @@
 
 set -e
 set -u
-set -x
 
 HOST="${0##*/}"
 DEVOPS="$(dirname $(realpath $0))"
