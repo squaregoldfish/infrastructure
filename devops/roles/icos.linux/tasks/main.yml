@@ -1,4 +1,5 @@
-- include_vars:
+- name: Include distribution specific variables
+  include_vars:
     file: vars/{{ ansible_distribution | lower }}.yml
 
 - name: Change linux timezone
@@ -74,7 +75,7 @@
       else
           exec {{ _ss_bin.stdout_lines[0] }} "$@"
       fi
-  when:  _ss_bin.failed == false
+  when:  _ss_bin.failed == False
 
 - block:
     - name: Allowing inbound SSH

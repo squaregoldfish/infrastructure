@@ -1,4 +1,3 @@
----
 # Having this simple test speeds up execution of the playbook quite a bit.
 - name: Check whether the java binary is present
   stat: path=/usr/bin/java
@@ -10,18 +9,20 @@
       get_url:
         headers='Cookie:oraclelicense=accept-securebackup-cookie'
         url={{java_rpm_url}}
-        dest=/tmp/{{java_rpm_url | basename}}
+        dest=/tmp/{{ java_rpm_url | basename }}
         mode=0644
     - name: Install Java using RPM
       package:
-        name=/tmp/{{java_rpm_url | basename}}
+        name=/tmp/{{ java_rpm_url | basename }}
         state=present
   when: ansible_distribution == 'CentOS' and not java_bin_present.stat.exists
 
 - block:
     # http://stackoverflow.com/a/19391042
     - name: Accept Oracles java license
-      shell: 'echo debconf shared/accepted-oracle-license-v1-1 {{item}} true | debconf-set-selections'
+      shell: >-
+        echo debconf shared/accepted-oracle-license-v1-1 {{ item }} true \
+        | debconf-set-selections
       with_items :
         - select
         - seen

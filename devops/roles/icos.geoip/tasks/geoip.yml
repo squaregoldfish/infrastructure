@@ -1,4 +1,5 @@
-- include_vars:
+- name: Read distribution specific variables
+  include_vars:
     file: vars/{{ ansible_distribution | lower }}.yml
 
 - name: Create geoip user
@@ -52,7 +53,7 @@
   # Extract config.py, but only if it has changed or doesn't exist. Be verbose
   # about it so that we can get a correct 'changed' status.
   command: |
-    cp {{ _git.changed and "-f" or "-n"}} -v "{{ geoip_config_src }}" "{{ geoip_config_bld }}"
+    cp {{ _git.changed and "-f" or "-n" }} -v "{{ geoip_config_src }}" "{{ geoip_config_bld }}"
   register: _cp
   changed_when: _cp.stdout_lines
 

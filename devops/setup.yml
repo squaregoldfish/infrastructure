@@ -81,8 +81,8 @@
   tags: always
   gather_facts: no
   tasks:
-    # This is sort of 'gather_facts: only environment variables'.
-    - setup:
+    - name: Collect environment variables
+      setup:
         gather_subset: env
 
     - name: Save the remote ip of the host
