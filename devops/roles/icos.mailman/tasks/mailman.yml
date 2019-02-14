@@ -43,7 +43,7 @@
     src: docker-compose.yml
     mode: 0600
 
-- import_role: name=icos.certbot
+- include_role: name=icos.certbot
 
 - name: Install the mailman nginx conf to nginx/conf.d
   template:

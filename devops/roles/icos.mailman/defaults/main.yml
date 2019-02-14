@@ -1,8 +1,7 @@
 mailman_user: mailman
 mailman_home: /docker/mailman
 
-mailman_serve_from_domain: "{{ mailman_domain | mandatory }}"
-mailman_nginx_domain: "{{ mailman_domain | mandatory }}"
+mailman_serve_from_domain: "{{ mailman_domains | mandatory | first}}"
 
 mailman_postgres_password: "{{ vault_mailman_postgres_password }}"
 mailman_hyperkitty_api_key: "{{ vault_mailman_hyperkitty_api_key }}"
@@ -27,5 +26,5 @@ mailman_database_ipv4: 172.19.199.4
 
 mailman_nginx_allow_deny: "{{ vault_mailman_nginx_allow_deny }}"
 
-certbot_domains: ["{{ mailman_domain | mandatory }}"]
+certbot_domains: "{{ mailman_domains | mandatory }}"
 certbot_conf_name: mailman
