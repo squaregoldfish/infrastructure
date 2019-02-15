@@ -50,11 +50,11 @@ function cmd_attach {
 	    if [[ $i -gt 1 ]]; then
 		    tmux new-window -t "$TMUX_SESSION"
 	    fi
-	    tmux select-window -t"$SESSION:$i"
-	    tmux send-key -t "$SESSION:$i" "ssh -t $HOST sudo su -" C-m
+	    tmux select-window -t"$TMUX_SESSION:$i"
+	    tmux send-key -t "$TMUX_SESSION:$i" "ssh -t $HOST sudo su -" C-m
     done
 
-    tmux switch-client -t "$SESSION:1"
+    tmux switch-client -t "$TMUX_SESSION:1"
 }    
 
 
