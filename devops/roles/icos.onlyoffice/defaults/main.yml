@@ -16,5 +16,5 @@ certbot_conf_name: onlyoffice
 
 # By default OnlyOffice will reject outgoing https connections that has an
 # invalid certificate. But when running in testing - where we use self-signed
-# certificates - we want to disable this.
+# certificates - we want to disable that check by setting this to false.
 onlyoffice_reject_unauthorized: true
