@@ -30,6 +30,11 @@
     - Dockerfile
     - reject_unauthorized.diff
 
+- name: Copy ICOS fonts
+  copy:
+    src: droidserif.rar
+    dest: "{{ _build.path }}"
+
 - name: Copy runtime files
   template:
     src: "{{ item.name }}"
