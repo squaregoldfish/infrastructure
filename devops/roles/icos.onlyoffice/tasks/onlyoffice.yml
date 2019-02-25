@@ -46,7 +46,9 @@
         mode: o-r }
 
 - name: Build images using docker-compose
-  command: docker-compose build
+  shell: |
+    ( echo -n '=== starting build '; date; docker-compose build ) \
+    | tee -a build.log
   args:
     chdir: "{{ _user.home }}"
   register: _build
