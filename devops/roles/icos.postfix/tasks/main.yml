@@ -1,0 +1,26 @@
+- name: Install postfix
+  apt:
+    name: postfix
+    state: present
+
+- name: Start and enable postfix
+  service:
+    name: postfix
+    state: started
+    enabled: true
+
+- name: Set configuration parameters
+  postconf:
+    param: "{{ item.param }}"
+    value: "{{ item.value }}"
+    append: "{{ item.append | default(omit) }}"
+    reload: "{{ item.reload | default(omit) }}"
+    separator: "{{ item.separator | default(omit) }}"
+  loop: "{{ postfix_config_list }}"
+
+- name: Allowing inbound SMTP
+  ufw:
+    rule: allow
+    port: smtp
+
+- import_tasks: postfix_fail2ban.yml
