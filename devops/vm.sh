@@ -81,7 +81,8 @@ case "${1:-}" in
         ;;
     "provision")
 	shift
-        ansible-playbook "-i$HOST," "$@"
+	cd "$DEVOPS"
+        ansible-playbook -i test.inventory -lbionic "$@"
         ;;
     "icosprod")
 	shift;
