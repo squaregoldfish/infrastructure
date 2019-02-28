@@ -20,11 +20,34 @@ mailman_build_database: "{{ mailman_home }}/build/database"
 mailman_django_settings: "{{ mailman_volume_web }}/settings_local.py"
 
 mailman_subnet: 172.19.199.0/24
-mailman_core_ipv4:  172.19.199.2
+mailman_core_ipv4: 172.19.199.2
 mailman_web_ipv4: 172.19.199.3
 mailman_database_ipv4: 172.19.199.4
 
-mailman_nginx_allow_deny: "{{ vault_mailman_nginx_allow_deny }}"
-
 certbot_domains: "{{ mailman_domains | mandatory }}"
 certbot_conf_name: mailman
+
+mailman_postfix_config:
+  # https://github.com/maxking/docker-mailman#setting-up-your-mta
+  - param: recipient_delimiter
+    value: "+"
+  - param: unknown_local_recipient_reject_code
+    value: 550
+  - param: owner_request_special
+    value: "no"
+  - param: transport_maps
+    value: "regexp:{{ mailman_volume_core }}/var/data/postfix_lmtp"
+    append: True
+  - param: local_recipient_maps
+    value: "regexp:{{ mailman_volume_core }}/var/data/postfix_lmtp"
+    append: True
+  - param: relay_domains
+    value: "regexp:{{ mailman_volume_core }}/var/data/postfix_domains"
+    append: True
+  # Allow relaying of mails from the containers
+  - param: mynetworks
+    value: "{{ mailman_core_ipv4 }}"
+    append: True
+  - param: mynetworks
+    value: "{{ mailman_web_ipv4 }}"
+    append: True
