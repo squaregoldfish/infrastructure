@@ -19,17 +19,23 @@ Installation proceeds as follows:
   all three images are built.
 * The mailman service is started through docker-compose.
 
-# Structure of the docker images
+
+
+# Building the docker images
 
 All three images are built on the host as part of deployment. During
 the docker build, all three images have their default user's UID
 modified to match the host mailman user.
 
-## The 'database' container
+
+
+# The 'database' container
 
 * Vanilla postgresql-10.
 
-## The 'core' container
+
+
+# The 'core' container
 
 * Runs the actual mailman backend software.
 * Sends mail through the host postfix.
@@ -39,7 +45,8 @@ modified to match the host mailman user.
   /docker/mailman/volumes/core/vara/data/postfix_*
 
 
-## The 'web' container
+
+# The 'web' container
 
 * Runs two Django web frontends - postorius and hyperkitty.
 * These are run by the container using uwsgi.
@@ -47,7 +54,17 @@ modified to match the host mailman user.
 * Since they are django applications, much of the configuration is
   done using the manage.py command.
 
+## Startup
 
-## Resources for configuring postfix
++ The entrypoint is /usr/local/bin/docker-entrypoint.sh
++ Will wait for database to become available.
++ Copies settings_local.py from /opt/mailman-web-data to/ opt/mailman/web
++ Start uwsgi which will start hyperkitty using django
++ django reads settings.py and settings_local.py
+
+
+
+
+# Resources for configuring postfix
 http://www.postfix.org/INSTALL.html#mandatory
 https://github.com/maxking/docker-mailman#setting-up-your-mta
