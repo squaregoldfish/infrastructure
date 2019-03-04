@@ -6,6 +6,7 @@ PartOf=stiltweb_tunnels.target
 User=stiltweb
 ExecStart=/usr/bin/ssh -NT -v %i
 Restart=always
+RestartSec=10
 
 [Install]
 WantedBy=stiltweb_tunnels.target
