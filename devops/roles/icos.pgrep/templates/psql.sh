@@ -12,6 +12,6 @@ if [ -t 0 ] && [ -t 1 ]; then O="-it"; else O="-i"; fi
 
 # The feature forecast for the coming hack is - cloudy!
 # https://github.com/docker/compose/issues/3352
-CID=$(docker-compose -f .docker-compose.yml ps -q db)
+CID=$(docker-compose -f docker-compose.yml ps -q db)
 
 docker exec "$O" "$CID" psql "$@"

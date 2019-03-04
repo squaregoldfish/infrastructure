@@ -24,49 +24,45 @@
   loop:
     - "{{ pgrep_home }}/volumes/data"
 
-- name: Install docker-compose.yml
-  template:
-    dest: "{{ pgrep_home }}/.docker-compose.yml"
-    src: docker-compose.yml.j2
-    mode: 0600
-  register: _dc
-
-- name: Syntax check the docker-compose file
-  command: "docker-compose -f {{ _dc.dest }} config"
-  changed_when: false
-
-# We will leave the build requirements (indeed the whole build directory) since
-# having them around aids debugging.
+# We will leave the build requirements (indeed the whole build
+# directory) since having them around aids debugging.
 - name: Install docker build requirements
   template:
-    dest: "{{ _build.path }}/{{ item }}"
-    src: "{{ item }}.j2"
+    dest: "{{ _build.path }}"
+    src: "{{ item }}"
   loop:
     - Dockerfile
     - pgpass
     - entrypoint.sh
-  register: _docker
 
 - name: Install peer certificate
   copy:
     src: "{{ pgrep_peer_cert }}"
     dest: "{{ _build.path }}/peer.crt"
-  register: _peer_cert
 
-- name: Build pgrep docker image
+- name: Install docker-compose.yml
+  template:
+    dest: "{{ pgrep_home }}/docker-compose.yml"
+    src: docker-compose.yml
+    mode: 0600
+
+- name: Build image using docker-compose
+  shell: |
+    ( echo -n '=== starting build '; date; docker-compose build --pull ) \
+    | tee -a build.log
+  args:
+    chdir: "{{ pgrep_home }}"
+  register: _output
+  changed_when: '" ---> Running in " in _output.stdout'
+
+- name: Start containers
   docker_service:
     project_src: "{{ pgrep_home }}"
-    files: ['.docker-compose.yml']
-    state: present
-    # Contrary to the documentation, the image doesn't always get rebuilt when
-    # its build directory contents change. Thus we always force a build - since
-    # the results are cached it will be very quick if nothing changed.
-    build: true
 
 - name: Specialized psql scripts
   template:
     dest: "{{ pgrep_home }}/{{ item }}"
-    src: "{{ item }}.sh.j2"
+    src: "{{ item }}.sh"
     mode: 0755
   loop:
     - psql
@@ -75,6 +71,6 @@
 
 - name: Install sql status file
   template:
-    src: status.sql.j2
+    src: status.sql
     dest: "{{ pgrep_home }}/.status.sql"
     mode: 0755
