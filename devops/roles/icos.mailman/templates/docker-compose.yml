@@ -7,6 +7,7 @@ services:
     hostname: mailman-core
     volumes:
     - {{ mailman_volume_core }}:/opt/mailman/
+    - /etc/localtime:/etc/localtime:ro
     stop_grace_period: 30s
     links:
     - database:database
@@ -31,6 +32,7 @@ services:
     links:
     - mailman-core:mailman-core
     - database:database
+    - /etc/localtime:/etc/localtime:ro
     volumes:
     - {{ mailman_volume_web }}:/opt/mailman-web-data
     environment:
@@ -55,6 +57,7 @@ services:
     restart: always
     volumes:
     - {{ mailman_volume_database }}:/var/lib/postgresql/data
+    - /etc/localtime:/etc/localtime:ro
     networks:
       mailman:
         ipv4_address: {{ mailman_database_ipv4 }}
