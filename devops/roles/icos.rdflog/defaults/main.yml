@@ -1,6 +1,6 @@
 # This is where we'll be creating the 'build' directory and where we'll install
 # control scripts.
-rdflog_dir: /docker/rdflog
+rdflog_home: /docker/rdflog
 
 # The host system user, which will own the postgresql files on disk. This will
 # also be the name of the admin user in the image (instead of 'postgres').

@@ -2,13 +2,13 @@
 
 set -Eeo pipefail
 
-function dcomp { docker-compose -f .docker-compose.yml "$@"; }
+function dcomp { docker-compose -f docker-compose.yml "$@"; }
 # https://github.com/docker/compose/issues/3352
 function dexec { docker exec -i "$(dcomp ps -q db)" "$@"; }
 function abort { >&2 echo "$@"; exit 1; }
 function is_running { dcomp top | grep -q postgres; }
 
-cd "{{ rdflog_dir }}"
+cd "{{ rdflog_home }}"
 
 case "${1:-}" in
 	"" | "help")
@@ -16,17 +16,11 @@ case "${1:-}" in
 		echo ""
 		echo "where [cmd] is one of:"
 		echo "  help    - this text"
-		echo "  up      - docker-compose up"
-		echo "  down    - docker-compose down"
-		echo "  logs    - docker-compose logs"
 		echo "  shell   - start a shell in the running container"
 		echo "  status  - database/replication status"
 		echo "  backup  - backup to file"
 		echo "  restore - restore from file"
 		;;
-	"up")    dcomp up -d;;
-	"down")	 dcomp down;;
-	"logs")	 dcomp logs;;
 	"shell") dcomp exec db bash -i ;;
 	"status")
 		if ! is_running; then abort "rdflog is not running, try './ctl up'"
