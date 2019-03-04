@@ -6,7 +6,8 @@ After=network.target
 Type=simple
 User={{ username }}
 ExecStart=/usr/bin/java -jar "{{ installed_jarfile.dest }}"
-Restart=on-abort
+Restart=always
+RestartSec=10
 WorkingDirectory=/home/{{ username }}
 
 [Install]
