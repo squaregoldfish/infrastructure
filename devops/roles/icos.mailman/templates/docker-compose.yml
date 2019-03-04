@@ -49,7 +49,7 @@ services:
 
   database:
     build: {{ mailman_build_database }}
-    container_name: mailman-postgres
+    container_name: mailman-database
     environment:
       POSTGRES_DB: mailmandb
       POSTGRES_USER: mailman
