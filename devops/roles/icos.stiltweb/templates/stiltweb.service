@@ -8,7 +8,8 @@ Wants=stiltweb_tunnels.target
 Type=simple
 User=stiltweb
 ExecStart=/usr/bin/java -jar {{ installed_jarfile.dest }}
-Restart=on-abort
+Restart=always
+RestartSec=30
 WorkingDirectory=/home/stiltweb
 
 [Install]
