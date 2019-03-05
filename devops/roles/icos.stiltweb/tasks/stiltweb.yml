@@ -21,8 +21,6 @@
     servicetemplate : "{{ stiltweb_template }}"
     nginxconfig     : "{{ stiltweb_nginxconfig }}"
     appconfig       : "{{ stiltweb_appconfig }}"
-  when:
-    - stiltweb_jar_file is defined
 
 - name: Add systemd service files
   template:

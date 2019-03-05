@@ -34,7 +34,6 @@
     src: "{{ destjarfile }}"
     dest: "{{ jarservice_jar }}"
     state: link
-  register: installed_jarfile
   notify: restart {{ servicename }}
 
 - name: Keep the jarfiles directory from filling up

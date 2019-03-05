@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=simple
 User=stiltcluster
-ExecStart=/usr/bin/java -jar {{ installed_jarfile.dest }}
+ExecStart=/usr/bin/java -jar "{{ jarservice_jar }}"
 Restart=always
 RestartSec=30
 WorkingDirectory=/home/stiltcluster

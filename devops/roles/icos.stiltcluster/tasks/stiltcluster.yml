@@ -8,7 +8,6 @@
     servicename     : "{{ stiltcluster_servicename }}"
     servicetemplate : "{{ stiltcluster_template }}"
     apptemplate     : "{{ stiltcluster_apptemplate }}"
-  when: stiltcluster_jar_file is defined
 
 - name: Add stiltweb key to authorized_keys
   authorized_key:
