@@ -1,0 +1,50 @@
+# We set up a directory where we keep not only the current jar file but also
+# older copies. This makes it easier to roll back to earlier versions of the
+# service - simply change the symbolic link and restart.
+- name: Create directory for jar files
+  file:
+    path: "{{ _user.home }}/jarfiles"
+    state: directory
+  register: jardir
+
+# Since we keep multiple versions of the jar files around, we need to
+# distinguish their file names by appending their checksum.
+- name: Get checksum of local jar file.
+  # Stop ansible from running local_action as root (toplevel "become: true")
+  become: false
+  local_action: stat path="{{jarfile}}" checksum_algorithm=sha256
+  register: _stat
+
+- name: To aid debugging, explicitly check that the local jar file exist.
+  fail:
+    msg: "{{ jarfile }} doesn't exist!"
+  when: not _stat.stat.exists
+
+- name: Compute the destination filename, we'll be using it more than once.
+  set_fact:
+    destjarfile: "{{jardir.path}}/{{jarfile|basename}}-{{_stat.stat.checksum}}"
+
+- name: Copy {{ servicename }} jar file
+  copy:
+    src: "{{ jarfile }}"
+    dest: "{{ destjarfile }}"
+
+- name: Create the {{ servicename}} jar symlink used by systemd
+  file:
+    src: "{{ destjarfile }}"
+    dest: "{{ jarservice_jar }}"
+    state: link
+  register: installed_jarfile
+  notify: restart {{ servicename }}
+
+- name: Keep the jarfiles directory from filling up
+  shell: >-
+    ls -1t {{ jardir.path }}/*.jar-* 2>/dev/null |
+    sed '1,{{jarservice_keep_n_old}}d'
+  register: oldjarfiles
+  changed_when: False
+
+- name: Remove old jarfiles
+  file: path={{ item }} state=absent
+  with_items:
+    - "{{ oldjarfiles.stdout_lines }}"

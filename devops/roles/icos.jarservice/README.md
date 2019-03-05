@@ -1,3 +1,5 @@
+# Overview
+
 This role wraps a Java application consisting of a single jar file running as a
 systemd service.
 
@@ -13,3 +15,26 @@ To use it you must first set up some variables and then use ansibles
 		servicename     : foo
 		servicetemplate : roles/foo/templates/service.j2
 
+
+
+## Deploy only config
+
+To skip deploying a new jar file and only update the config, use:
+
+	- hosts: icosprod
+	  become: true
+	  vars:
+		jarservice_conf_only: True
+	  roles:
+		- role: icos.cpauth
+
+
+To further skip updating the nginx config (which relies on certbot), use:
+
+	- hosts: icosprod
+	  become: true
+	  vars:
+		jarservice_conf_only: True
+		certbot_disabled: True
+	  roles:
+		- role: icos.cpauth

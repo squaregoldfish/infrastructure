@@ -1,4 +1,8 @@
 # keep this many old jarfiles around
 jarservice_keep_n_old: 10
 
+# The path to the jarfile used by systemd. This will be a symbolic
+# link to the actual jarfile.
+jarservice_jar: "{{ _user.home}}/{{ servicename }}.jar"
+
 extra_groups: ""
