@@ -22,6 +22,9 @@
     dest: /etc/nginx/conf.d/
   with_fileglob:
     - "{{nginxconfig}}*"
+  # Our nginx config template is dependent on a variable set by
+  # certbot. This means that if the certbot role is disabled, we
+  # cannot deploy the config.
   when: nginxconfig is defined and not certbot_disabled
   notify: reload nginx config
 

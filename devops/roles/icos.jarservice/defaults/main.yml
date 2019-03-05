@@ -6,3 +6,6 @@ jarservice_keep_n_old: 10
 jarservice_jar: "{{ _user.home}}/{{ servicename }}.jar"
 
 extra_groups: ""
+
+# To support running with certbot disabled, we must have a default.
+certbot_disabled: False
