@@ -37,8 +37,7 @@
   template:
     dest: "{{ mailman_home }}"
     src: Makefile
-    
+
 - name: Start containers
   docker_service:
     project_src: "{{ mailman_home }}"
-
