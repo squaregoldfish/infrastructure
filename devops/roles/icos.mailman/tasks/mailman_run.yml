@@ -33,6 +33,12 @@
     dest: "{{ mailman_volume_web }}"
     src: settings_local.py
 
+- name: Install Makefile
+  template:
+    dest: "{{ mailman_home }}"
+    src: Makefile
+    
 - name: Start containers
   docker_service:
     project_src: "{{ mailman_home }}"
+
