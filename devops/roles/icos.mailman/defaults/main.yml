@@ -20,6 +20,7 @@ mailman_build_database: "{{ mailman_home }}/build/database"
 mailman_django_settings: "{{ mailman_volume_web }}/settings_local.py"
 
 mailman_subnet: 172.19.199.0/24
+mailman_host_ipv4: 172.19.199.1
 mailman_core_ipv4: 172.19.199.2
 mailman_web_ipv4: 172.19.199.3
 mailman_database_ipv4: 172.19.199.4
@@ -51,3 +52,8 @@ mailman_postfix_config:
   - param: mynetworks
     value: "{{ mailman_web_ipv4 }}"
     append: True
+
+
+mailman_rest_user: restadmin
+mailman_rest_port: 8001
+mailman_rest_allow:
