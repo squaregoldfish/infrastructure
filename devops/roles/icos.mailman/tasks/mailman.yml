@@ -63,18 +63,20 @@
 
 - name: Build image using docker-compose
   shell: |
-    ( echo -n '=== starting build '; date; docker-compose build ) \
+    set -o pipefail
+    ( echo -n '=== starting build '; date; docker-compose build --pull) \
     | tee -a build.log
   args:
     chdir: "{{ mailman_home }}"
-  register: _build
-  changed_when: '" ---> Running in " in _build.stdout'
+    executable: /bin/bash
+  register: _output
+  changed_when: '" ---> Running in " in _output.stdout'
 
 - name: Start containers
   docker_service:
     project_src: "{{ mailman_home }}"
 
-- name: Set configuration parameters
+- name: Set postfix parameters
   postconf:
     param: "{{ item.param }}"
     value: "{{ item.value }}"
