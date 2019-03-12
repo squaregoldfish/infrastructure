@@ -1,0 +1,30 @@
+# Copy buildtime dependencies and build containers.
+
+- name: Create docker build dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ mailman_build_core }}"
+    - "{{ mailman_build_web }}"
+    - "{{ mailman_build_database }}"
+
+- name: Install Dockerfiles
+  template:
+    dest: "{{ item.dest }}/Dockerfile"
+    src: "{{ item.src }}"
+  loop:
+    - { src: Dockerfile.core, dest: "{{ mailman_build_core }}" }
+    - { src: Dockerfile.web, dest: "{{ mailman_build_web }}" }
+    - { src: Dockerfile.database, dest: "{{ mailman_build_database }}" }
+
+- name: Build image using docker-compose
+  shell: |
+    set -o pipefail
+    ( echo -n '=== starting build '; date; docker-compose build ) \
+    | tee -a build.log
+  args:
+    chdir: "{{ mailman_home }}"
+    executable: /bin/bash
+  register: _output
+  changed_when: '" ---> Running in " in _output.stdout'

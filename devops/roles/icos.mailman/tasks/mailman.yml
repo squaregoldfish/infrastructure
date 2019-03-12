@@ -8,41 +8,14 @@
     home: "{{ mailman_home }}"
   register: _user
 
-- name: Create docker build dirs
-  file:
-    path: "{{ item }}"
-    state: directory
-  loop:
-    - "{{ mailman_build_core }}"
-    - "{{ mailman_build_web }}"
-    - "{{ mailman_build_database }}"
-
-- name: Install Dockerfiles
-  template:
-    dest: "{{ item.dest }}/Dockerfile"
-    src: "{{ item.src }}"
-  loop:
-    - { src: Dockerfile.core, dest: "{{ mailman_build_core }}" }
-    - { src: Dockerfile.web, dest: "{{ mailman_build_web }}" }
-    - { src: Dockerfile.database, dest: "{{ mailman_build_database }}" }
-
-- name: Create mailman volumes
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ _user.uid }}"
-    group: "{{ _user.group }}"
-  loop:
-    - "{{ mailman_volume_core }}"
-    - "{{ mailman_volume_web }}"
-    - "{{ mailman_volume_database }}"
-
 - name: Install mailman docker-compose.yml
   template:
     dest: "{{ mailman_home }}/"
     src: docker-compose.yml
     mode: 0600
 
+- include_tasks: mailman_build.yml
+- include_tasks: mailman_run.yml
 - include_role: name=icos.certbot
 
 - name: Install the mailman nginx conf to nginx/conf.d
@@ -50,31 +23,6 @@
     dest: /etc/nginx/conf.d/
     src: mailman.conf
   notify: reload nginx config
-
-- name: Install mailman extra-conf file
-  template:
-    dest: "{{ mailman_volume_core }}/mailman-extra.cfg"
-    src: mailman-extra.cfg
-
-- name: Install django settings file for mailman-web
-  template:
-    dest: "{{ mailman_volume_web }}/settings_local.py"
-    src: settings_local.py
-
-- name: Build image using docker-compose
-  shell: |
-    set -o pipefail
-    ( echo -n '=== starting build '; date; docker-compose build --pull) \
-    | tee -a build.log
-  args:
-    chdir: "{{ mailman_home }}"
-    executable: /bin/bash
-  register: _output
-  changed_when: '" ---> Running in " in _output.stdout'
-
-- name: Start containers
-  docker_service:
-    project_src: "{{ mailman_home }}"
 
 - name: Set postfix parameters
   postconf:

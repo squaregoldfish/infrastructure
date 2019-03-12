@@ -1,0 +1,38 @@
+# Copy runtime configuration and start docker containers.
+
+- name: Create mailman volumes
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+  loop:
+    - "{{ mailman_volume_core }}"
+    - "{{ mailman_volume_web }}"
+    - "{{ mailman_volume_database }}"
+
+- name: Generate passwords
+  include_role:
+    name: icos.password_env_file
+  vars:
+      file: "{{ item.file }}"
+      set_fact: "{{ item.set_fact }}"
+      file_var: "{{ item.file_var }}"
+  loop:
+    - file: "{{ mailman_home }}/.rest-pass"
+      set_fact: mailman_rest_pass
+      file_var: MAILMAN_REST_PASS
+
+- name: Install mailman core configuration
+  template:
+    dest: "{{ mailman_volume_core }}"
+    src: mailman-extra.cfg
+
+- name: Install django settings file for mailman-web
+  template:
+    dest: "{{ mailman_volume_web }}"
+    src: settings_local.py
+
+- name: Start containers
+  docker_service:
+    project_src: "{{ mailman_home }}"
