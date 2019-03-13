@@ -8,3 +8,6 @@ ALLOWED_HOSTS = [
     "{{ host }}",
     {% endfor %}
 ]
+
+MAILMAN_REST_API_USER = "{{ mailman_rest_user }}"
+MAILMAN_REST_API_PASS = "{{ mailman_rest_pass }}"
