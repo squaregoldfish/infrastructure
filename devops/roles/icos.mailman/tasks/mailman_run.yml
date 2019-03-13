@@ -41,3 +41,18 @@
 - name: Start containers
   docker_service:
     project_src: "{{ mailman_home }}"
+
+- name: Test the REST API
+  uri:
+    url: "https://{{ mailman_domains | first }}/rest/3.0/domains"
+    user: "{{ mailman_rest_user }}"
+    password: "{{ mailman_rest_pass }}"
+  register: r
+  failed_when:
+    - r.status != 200
+    - "{{ r.json | json_query('entries[*].mail_host') | sort }} != \
+       {{ mailman_domains | sort }}"
+  # Give Mailman a chance to come online.
+  retries: 2
+  delay: 10
+  until: not rc.failed
