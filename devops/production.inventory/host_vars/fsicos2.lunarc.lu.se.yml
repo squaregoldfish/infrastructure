@@ -36,4 +36,4 @@ onlyoffice_secret: "{{ vault_onlyoffice_secret }}"
 onlyoffice_domain: onlyoffice.icos-cp.eu
 
 mailman_domains: ['lists.icos-ri.eu', 'lists.eric-forum.eu']
-mailman_rest_allow: "{{ vault_mailman_rest_allow }}"
+mailman_rest_allow_deny: "{{ vault_mailman_rest_allow_deny }}"

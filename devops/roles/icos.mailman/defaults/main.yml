@@ -56,4 +56,4 @@ mailman_postfix_config:
 
 mailman_rest_user: restadmin
 mailman_rest_port: 8001
-mailman_rest_allow:
+mailman_rest_allow_deny:
