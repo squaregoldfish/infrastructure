@@ -32,9 +32,9 @@ services:
     links:
     - mailman-core:mailman-core
     - database:database
-    - /etc/localtime:/etc/localtime:ro
     volumes:
     - {{ mailman_volume_web }}:/opt/mailman-web-data
+    - /etc/localtime:/etc/localtime:ro
     environment:
     - DATABASE_TYPE=postgres
     - DATABASE_URL=postgres://mailman:{{ mailman_postgres_password }}@database/mailmandb
