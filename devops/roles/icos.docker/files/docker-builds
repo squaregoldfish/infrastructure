@@ -1,0 +1,241 @@
+#!/usr/bin/python3
+# Interpret the docker-compose build log and switch between builds.
+#
+# We build our image on the host and append the output to a log
+# file. This script will parse that file and explain which builds are
+# available. It can then let the user switch between available builds.
+#
+# This is useful mostly if you mess up a deployment and quickly need
+# to roll back to an earlier version of the images.
+
+import collections
+import os
+import re
+import subprocess
+import sys
+import textwrap
+
+
+# The length of the image ids as output by 'docker-compose build'. The
+# ids output by 'docker inspect' are longer, thus we need to truncate
+# them.
+SHORT_ID_LENGTH = 12
+
+# Wrap diagnostic messages to this column.
+WRAP_TO_COLUMN = 80
+
+Build = collections.namedtuple(
+    'Build', ['num', 'when', 'images'])
+
+Image = collections.namedtuple(
+    'Image', ['id', 'name'])
+
+
+def output(msg, wrap=True, nl=False, file=sys.stdout):
+    if wrap:
+        msg = textwrap.fill(msg, width=WRAP_TO_COLUMN)
+        if nl:
+            msg += '\n'
+    print(msg, file=file)
+
+
+def stderr(msg, **kwargs):
+    output(msg, file=sys.stderr, **kwargs)
+
+
+def stdout(msg, **kwargs):
+    output(msg, file=sys.stdout, **kwargs)
+
+
+def docker_compose_images(path):
+    stdout = subprocess.check_output(['docker-compose', '-f', path, 'images'])
+    stdout = stdout.decode('ascii')
+    for n, line in enumerate(stdout.splitlines()):
+        if n == 0:
+            assert line.lstrip().startswith("Container")
+            continue
+        if n == 1:
+            assert line.startswith("---------------")
+            continue
+        # "mailman-core  mailman_mailman-core   latest   394317963a53   135 MB"
+        m = re.match(r'\S+\s+(?P<repo>\S+)\s+(?P<tag>\S+)\s+(?P<id>\S+)', line)
+        assert m, "Could not parse_build_log '%s'" % line
+        yield Image(id=m.group("id"),
+                    name="%s:%s" % (m.group("repo"), m.group("tag")))
+
+
+def parse_build_log(lines):
+    build_num = 0
+    image_id = None
+    build = None
+    for line in lines:
+        # '=== starting build Tue Mar 12 14:19:12 CET 2019'
+        m = re.match('=== starting build (.*)', line)
+        if m:
+            if build is not None:
+                yield build
+            build_num += 1
+            build = Build(num=build_num, when=m.group(1), images=[])
+            continue
+        m = re.match('Successfully built (.*)', line)
+        if m:
+            assert image_id is None
+            image_id = m.group(1)
+            assert len(image_id) == SHORT_ID_LENGTH, (len(image_id), image_id)
+            continue
+        m = re.match('Successfully tagged (.*)', line)
+        if m:
+            assert build is not None
+            assert image_id is not None
+            build.images.append(Image(id=image_id, name=m.group(1)))
+            image_id = None
+    if build is not None:
+        yield build
+
+
+def find_active_build(builds):
+    """Given a list of builds, try to find the currently tagged.
+    """
+    for build in reversed(builds):
+        stdout = subprocess.check_output(
+            ['docker', 'inspect', '-f', '{{ .Id }}',
+             *[i.name for i in build.images]]).decode('ascii')
+        # line looks like 'sha256:94e814e2....'
+        docker_ids = [line.split(':', 1)[1][:SHORT_ID_LENGTH]
+                      for line in stdout.splitlines()]
+        build_ids = [i.id for i in build.images]
+        if docker_ids == build_ids:
+            return build
+
+
+def cmd_list(args):
+    all_builds = list(parse_build_log(args.buildlog))
+    for build in all_builds:
+        print('%4d - %s' % (build.num, build.when))
+        for image in build.images:
+            print(" - %s %s" % (image.name, image.id))
+
+
+def cmd_reset(args):
+    builds = {b.num: b for b in parse_build_log(args.buildlog)}
+    if args.id not in builds:
+        stderr("Cannot find that build num. Run 'info', then try again.")
+        return
+    build = builds[args.id]
+    stderr("Remember that a reset will be undone by any of the following:")
+    stderr("  'docker-compose build' will change the tags")
+    stderr("  A redeployment will change the tags _and_ restart")
+    stderr("")
+    stderr("These commands will reset the project to build #%d." % build.num)
+    # If we don't bring docker-compose down, it sometimes becomes very
+    # sad and starts crashing on 'docker-compose images'.
+    stdout("  docker-compose down;")
+    for image in build.images:
+        stdout("  docker tag %s %s;" % (image.id, image.name), wrap=False)
+    stdout("  docker-compose up -d;")
+    stderr("")
+    stderr("To execute the reset, run:\n  eval $(docker-builds %s 2>/dev/null)" % (
+        " ".join(sys.argv[1:])), wrap=False)
+
+
+def cmd_info(args):
+    all_builds = list(parse_build_log(args.buildlog))
+    if not all_builds:
+        print("No builds found in %s" % args.buildlog.name)
+        return
+    stdout("Parsed %s and found %d builds between '%s' and '%s'." % (
+        args.buildlog.name, len(all_builds),
+        all_builds[0].when, all_builds[-1].when), nl=True)
+
+    nonempty_builds = [b for b in all_builds if b.images]
+    unique_names = {tuple(sorted([i.name for i in b.images])): b
+                    for b in nonempty_builds}
+    unique_ids = {tuple(sorted([i.id for i in b.images])): b
+                  for b in nonempty_builds}
+    stdout("Of those builds, %s were empty (docker-compose produced no output)"
+           % (len(all_builds)-len(nonempty_builds)), nl=True)
+
+    stdout("Of the remaining %d builds, %d are unique in the image ids "
+           "that they produced. These are (indexed by their build number):" % (
+               len(nonempty_builds), len(unique_ids)), nl=True)
+
+    for build in sorted(unique_ids.values(), key=lambda b: b.num):
+        stdout("  #%3d - Built '%s'" % (build.num, build.when), wrap=False)
+
+    stdout("")
+
+    if len(unique_names) == 1:
+        stdout("Only one set of image names was found, container naming has "
+               "not changed.")
+    else:
+        stdout("Warning! %d sets of image names were found, container naming "
+               "has changed. The following image name sets were found:" % (
+                   len(unique_names)))
+        for names, build in unique_names.items():
+            stdout("  - %s\n    last build '%s'" % (
+                ",".join(names), build.when), wrap=False)
+
+    stdout("")
+
+    build_dir = os.path.abspath(os.path.dirname(args.buildlog.name))
+    dc_path = os.path.join(build_dir, "docker-compose.yml")
+    if not os.path.exists(dc_path):
+        stdout("No docker-compose.yml found in %s, cannot query about current "
+               "images" % build_dir)
+    else:
+        compose_images = list(docker_compose_images(dc_path))
+        if len(compose_images) == 0:
+            stdout("According to docker-compose, no images are running")
+        else:
+            ids = tuple(sorted(image.id for image in compose_images))
+            if ids not in unique_ids:
+                stdout("Warning! The images that docker-compose says are "
+                       "running were not found in the build log!")
+            else:
+                build = unique_ids[ids]
+                stdout("docker-compose is currently running build "
+                       "#%d:" % build.num)
+                longest = max(len(image.name) for image in build.images)
+                for image in build.images:
+                    print('  {:>{}} - {}'.format(
+                        image.name, longest, image.id))
+
+        stdout("")
+
+        stdout("Asking docker about which images are tagged:")
+        build = find_active_build(list(unique_ids.values()))
+        if build is None:
+            stdout("  Warning! Could not find any build that matches.")
+        else:
+            stdout("  Build num #%d seems to be the currently tagged one."
+                   % build.num)
+            longest = max(len(image.name) for image in build.images)
+            for image in build.images:
+                print('  {:>{}} - {}'.format(
+                    image.name, longest, image.id))
+
+
+if __name__ == '__main__':
+    import argparse
+
+    p = argparse.ArgumentParser(
+        description='Show/set docker-compose builds')
+    p.add_argument('-f', dest='buildlog', default='build.log',
+                   type=argparse.FileType('r'),
+                   help='Name of the build log file')
+    p.set_defaults(func=cmd_info)
+
+    sub = p.add_subparsers()
+    p_list = sub.add_parser('list', help="List all builds")
+    p_list.set_defaults(func=cmd_list)
+
+    p_info = sub.add_parser('info', help="Show summary of builds")
+    p_info.set_defaults(func=cmd_info)
+
+    p_reset = sub.add_parser('reset',
+                             help="Output commands that will reset images.")
+    p_reset.add_argument('id', help="The image to reset to", type=int)
+    p_reset.set_defaults(func=cmd_reset)
+
+    args = p.parse_args()
+    args.func(args)

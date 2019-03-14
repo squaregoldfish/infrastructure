@@ -39,6 +39,7 @@
     - docker-list-ips
     - docker-entrypoint
     - docker-extract
+    - docker-builds
 
 - name: Copy Makefile for docker-compose projects
   template:
