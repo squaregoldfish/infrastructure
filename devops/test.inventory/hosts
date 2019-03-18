@@ -1,3 +1,5 @@
+bionid
+
 [icosprod]
 centos
 
@@ -10,3 +12,8 @@ bionic
 [stiltcluster]
 centos
 
+[bbservers]
+bionic
+
+[bbclients]
+bionid

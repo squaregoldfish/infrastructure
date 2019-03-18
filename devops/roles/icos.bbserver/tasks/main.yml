@@ -1,0 +1,26 @@
+- name: Create bbserver user
+  user:
+    name: "{{ bbserver_user }}"
+    home: "{{ bbserver_home | default(omit) }}"
+    create_home: yes
+
+- name: Download borg binary
+  get_url:
+    url: "{{ bbserver_url }}"
+    dest: "{{ bbserver_bin }}"
+    checksum: "{{ bbserver_checksum }}"
+    mode: +x
+
+- name: Test downloaded binary
+  command: |
+    {{ bbserver_bin }} --version
+  register: _r
+  failed_when: not _r.stdout.startswith('borg')
+  changed_when: no
+
+- name: Create repo directory
+  file:
+    path: "{{ bbserver_repo_home }}"
+    state: directory
+    owner: "{{ bbserver_user }}"
+    group: "{{ bbserver_user }}"

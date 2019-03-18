@@ -29,3 +29,7 @@ onlyoffice_reject_unauthorized: false
 mailman_serve_from_domain: mailman.test
 postfix_mailname: mailman.test
 
+bbserver_user: bbserver
+bbserver_home: /home/bbserver
+bbserver_bin: "/usr/local/bin/borg"
+bbserver_repo_home: "{{ bbserver_home }}/repos"

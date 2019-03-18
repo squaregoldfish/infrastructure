@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -Eeo pipefail
+
+export BORG_REPO="$(head -1 {{ bbclient_repo_file }})"
+export BORG_RSH="ssh -F {{ bbclient_ssh_config }}"
+
+"{{ bbclient_bin }}" "$@"

@@ -1,0 +1,22 @@
+bbclient_bin      : "/usr/local/bin/borg"
+bbclient_url      : https://github.com/borgbackup/borg/releases/download/1.1.9/borg-linux64
+bbclient_checksum : "sha1:bff300fb204b1a12f7572bec51f9e6a057b4de8e"
+
+bbclient_home       : "/home/{{ bbclient_user }}"
+bbclient_ssh        : "{{ bbclient_home }}/.ssh"
+bbclient_ssh_config : "{{ bbclient_home }}/.ssh/config"
+bbclient_ssh_hosts  : "{{ bbclient_home }}/.ssh/known_hosts"
+bbclient_key_file   : "{{ bbclient_ssh }}/bbclient.rsa"
+
+# These are used when delegating to the remote host. There are all
+# based on the bbclient_remote variable which is set to the inventory
+# name of the remote.
+bbclient_remote_user      : "{{ hostvars[bbclient_remote].bbserver_user }}"
+bbclient_remote_home      : "{{ hostvars[bbclient_remote].bbserver_home }}"
+bbclient_remote_bin       : "{{ hostvars[bbclient_remote].bbserver_bin }}"
+bbclient_remote_repo_home : "{{ hostvars[bbclient_remote].bbserver_repo_home }}"
+bbclient_remote_repo      : "{{ bbclient_remote_repo_home }}/{{ inventory_hostname }}/{{ bbclient_user }}"
+bbclient_remote_has_restrict: "{{ hostvars[bbclient_remote].bbserver_has_restrict }}"
+
+bbclient_repo_url: "{{ bbclient_remote }}:{{ bbclient_remote_repo_home | basename }}/{{ inventory_hostname }}/{{ bbclient_user }}/default"
+bbclient_repo_file: "{{ bbclient_home }}/.bbclient-repos"

@@ -1,0 +1,58 @@
+- name: Download borg binary
+  get_url:
+    url: "{{ bbclient_url }}"
+    dest: "{{ bbclient_bin }}"
+    checksum: "{{ bbclient_checksum }}"
+    mode: +x
+
+- name: Test downloaded binary
+  command: |
+    {{ bbclient_bin }} --version
+  register: _r
+  failed_when: not _r.stdout.startswith('borg')
+  changed_when: no
+
+- name: Generate RSA keys
+  become_user: "{{ bbclient_user }}"
+  become: true
+  command: >-
+    ssh-keygen -q -t rsa -f {{ bbclient_key_file }} -N ""
+      -C "bbclient_{{ bbclient_user }}@{{ inventory_hostname }}"
+  args:
+    creates: "{{ bbclient_key_file }}"
+
+- name: Slurp back the public key
+  slurp:
+    src: "{{ bbclient_key_file }}.pub"
+  register: _slurp
+
+- name: Read available repos
+  shell: "cat {{ bbclient_repo_file }} || :"
+  changed_when: no
+  register: _repos
+
+- name: Decode bbclient public key
+  set_fact:
+    bbclient_key_data: "{{ _slurp.content | b64decode }}"
+    bbclient_repos: "{{ _repos.stdout_lines }}"
+
+- include_tasks: repo.yml
+  loop: "{{ bbclient_remotes }}"
+  when: bbclient_repo_url not in bbclient_repos
+  loop_control:
+    loop_var: bbclient_remote
+
+- name: Create bin directory
+  file:
+    path: "{{ bbclient_home }}/bin"
+    state: directory
+  register: _bin
+
+- name: Create helper scripts
+  template:
+    src: "{{ item }}"
+    dest: "{{ _bin.path }}"
+    mode: +x
+  loop:
+    - bbclient-all
+    - bbclient

@@ -1,0 +1,11 @@
+bbserver_user: bbserver
+bbserver_home: /home/bbserver
+
+bbserver_bin: "/usr/local/bin/borg"
+bbserver_url: https://github.com/borgbackup/borg/releases/download/1.1.9/borg-linux64
+bbserver_checksum: sha1:bff300fb204b1a12f7572bec51f9e6a057b4de8e
+
+bbserver_repo_home: "{{ bbserver_home }}/repos"
+
+# Does authorized_keys support the 'restrict' keyword?
+bbserver_has_restrict: True
