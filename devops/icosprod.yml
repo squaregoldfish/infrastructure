@@ -37,8 +37,6 @@
       tags: kanboard
     - role: icos.drupal
       tags: drupal
-    - role: icos.mattermost
-      tags: mattermost
     - role: icos.sitesaquanetform
       tags: sitesaquanetform
     - role: icos.ssh_incoming_tunnel
@@ -84,3 +82,5 @@
         tunnel_args: "-R localhost:{{ meta_port }}:localhost:{{ meta_port }}"
     - role: icos.mailman
       tags: mailman
+    - role: icos.mattermost
+      tags: mattermost

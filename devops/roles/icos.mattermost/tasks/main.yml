@@ -32,10 +32,10 @@
     - logs
     - config
 
-- name: Restore file archives
+- name: Restore volumes
   unarchive:
-    src: "{{ backup_path }}/mattermost/files_backup.tar.gz"
-    dest: "{{ project_dir }}/volumes/app/mattermost/"
+    src: "{{ backup_path }}/mattermost.tar.gz"
+    dest: "{{ project_dir }}/"
   when: restore
 
 - name: Copy docker-compose.yml
@@ -49,10 +49,3 @@
     files: docker-compose.override.yml
     state: present
   notify: reload nginx config
-
-- name: Restore database
-  import_tasks: database.yml
-  when: restore
-
-- name: Setup backup script
-  import_tasks: backup.yml
