@@ -16,13 +16,16 @@
 
 - include_tasks: mailman_build.yml
 - include_tasks: mailman_run.yml
+
 - include_role: name=icos.certbot
+  when: not certbot_disabled
 
 - name: Install the mailman nginx conf to nginx/conf.d
   template:
     dest: /etc/nginx/conf.d/
     src: mailman.conf
   notify: reload nginx config
+  when: not certbot_disabled
 
 - name: Set postfix parameters
   postconf:
