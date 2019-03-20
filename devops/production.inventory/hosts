@@ -1,3 +1,5 @@
+cdb.nateko.lu.se ansible_user=root
+
 [icosprod]
 fsicos.lunarc.lu.se
 

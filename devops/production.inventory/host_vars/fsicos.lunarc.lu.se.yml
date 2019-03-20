@@ -25,3 +25,8 @@ meta_tunnel_from_ip: 194.47.223.139
 certbot_bin: /opt/certbot/bin/certbot
 
 ssh_connection_remote_ip: 194.47.223.133
+
+bbserver_user: bbserver
+bbserver_home: /disk/data/bbserver
+bbserver_bin: /usr/local/bin/borg
+bbserver_repo_home: "{{ bbserver_home }}/repos"

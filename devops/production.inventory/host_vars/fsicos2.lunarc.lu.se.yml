@@ -37,3 +37,7 @@ onlyoffice_domain: onlyoffice.icos-cp.eu
 
 mailman_domains: ['lists.icos-ri.eu', 'lists.eric-forum.eu']
 mailman_rest_allow_deny: "{{ vault_mailman_rest_allow_deny }}"
+
+bbclient_remotes:
+  - fsicos.lunarc.lu.se
+  - cdb.nateko.lu.se
