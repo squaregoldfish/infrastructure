@@ -33,10 +33,15 @@
     dest: "{{ mailman_volume_web }}"
     src: settings_local.py
 
-- name: Install Makefile
+- name: Install Makefile and helper scripts
   template:
     dest: "{{ mailman_home }}"
-    src: Makefile
+    src: "{{ item }}"
+    mode: preserve
+  loop:
+    - Makefile
+    - coldbackup.sh
+    - coldrestore.sh
 
 - name: Start containers
   docker_service:

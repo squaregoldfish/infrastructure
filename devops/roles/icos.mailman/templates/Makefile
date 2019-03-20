@@ -19,3 +19,12 @@ maillog:
 
 fail2ban:
 	fail2ban-client status; fail2ban-client status postfix-auth
+
+coldbackup:
+	./coldbackup.sh makefile
+
+listbackup:
+	su mailman -c 'bbclient list --short'
+
+cronbackup:
+	./coldbackup.sh cron
