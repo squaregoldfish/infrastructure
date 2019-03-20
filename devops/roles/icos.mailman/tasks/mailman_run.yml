@@ -55,4 +55,4 @@
   # Give Mailman a chance to come online.
   retries: 2
   delay: 10
-  until: not rc.failed
+  until: not r.failed
