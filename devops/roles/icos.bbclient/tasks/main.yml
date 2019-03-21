@@ -19,20 +19,16 @@
   args:
     creates: "{{ bbclient_ssh_key }}"
 
-- name: Slurp back the public key
-  slurp:
-    src: "{{ bbclient_ssh_key }}.pub"
-  register: _slurp
+- name: Read the public key
+  slurpfact:
+    path: "{{ bbclient_ssh_key }}.pub"
+    fact: bbclient_key_data
 
 - name: Read available repos
-  shell: "cat {{ bbclient_repo_file }} || :"
-  changed_when: no
-  register: _repos
-
-- name: Decode bbclient public key
-  set_fact:
-    bbclient_key_data: "{{ _slurp.content | b64decode }}"
-    bbclient_repos: "{{ _repos.stdout_lines }}"
+  slurpfact:
+    path: "{{ bbclient_repo_file }}"
+    fact: bbclient_repos
+    list: true
 
 - include_tasks: repo.yml
   loop: "{{ bbclient_remotes }}"
