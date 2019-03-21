@@ -37,4 +37,3 @@
 - import_role: name=icos.bbclient
   vars:
     bbclient_user: "{{ mailman_user }}"
-    bbclient_home: "{{ mailman_home }}"
