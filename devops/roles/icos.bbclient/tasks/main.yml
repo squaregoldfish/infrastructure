@@ -2,6 +2,12 @@
     msg: "bbclient_user must be set"
   when: not bbclient_user
 
+- name: Get home directory of user
+  shellfact:
+    exec: "getent passwd {{ bbclient_user }} | cut -d: -f6"
+    fact: bbclient_home
+  when: not bbclient_home
+
 - name: Download borg binary
   get_url:
     url: "{{ bbclient_url }}"
