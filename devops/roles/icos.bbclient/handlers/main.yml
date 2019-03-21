@@ -1,0 +1,6 @@
+- name: Test downloaded borg binary
+  command: |
+    {{ bbclient_bin }} --version
+  register: _r
+  failed_when: not _r.stdout.startswith('borg')
+  changed_when: no
