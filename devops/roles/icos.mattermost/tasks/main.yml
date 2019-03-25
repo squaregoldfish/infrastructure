@@ -36,7 +36,7 @@
 
 - name: Copy docker-compose.yml
   template:
-    src: docker-compose.yml.j2
+    src: docker-compose.yml
     dest: "{{ project_dir }}/docker-compose.override.yml"
 
 - name: Run docker-compose
