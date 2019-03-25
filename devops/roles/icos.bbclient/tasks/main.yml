@@ -90,3 +90,9 @@
     - bbclient-all
     - bbclient-coldbackup
     - bbclient-coldrestore
+
+- name: Add tasks to Makefile
+  blockinfile:
+    create: yes
+    path: "{{ bbclient_home }}/Makefile"
+    block: "{{ lookup('template', 'Makefile.backup') }}"
