@@ -4,3 +4,7 @@ certbot_conf_name: mattermost
 project_dir: /disk/data/mattermost
 backup_path: /home/backup/Backup
 restore: False
+
+bbclient_name: mattermost
+bbclient_home: "{{ project_dir }}"
+bbclient_coldbackup_crontab: { hour: 02, minute: 30 }

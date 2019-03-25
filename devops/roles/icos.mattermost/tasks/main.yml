@@ -54,3 +54,5 @@
     files: docker-compose.override.yml
     state: present
   notify: reload nginx config
+
+- import_role: name=icos.bbclient
