@@ -1,29 +1,27 @@
+- fail:
+    msg: "bbclient_user must be set"
+  when: not bbclient_user
+
 - name: Download borg binary
   get_url:
     url: "{{ bbclient_url }}"
     dest: "{{ bbclient_bin }}"
     checksum: "{{ bbclient_checksum }}"
     mode: +x
-
-- name: Test downloaded binary
-  command: |
-    {{ bbclient_bin }} --version
-  register: _r
-  failed_when: not _r.stdout.startswith('borg')
-  changed_when: no
+  notify: Test downloaded borg binary
 
 - name: Generate RSA keys
   become_user: "{{ bbclient_user }}"
   become: true
   command: >-
-    ssh-keygen -q -t rsa -f {{ bbclient_key_file }} -N ""
+    ssh-keygen -q -t rsa -f {{ bbclient_ssh_key }} -N ""
       -C "bbclient_{{ bbclient_user }}@{{ inventory_hostname }}"
   args:
-    creates: "{{ bbclient_key_file }}"
+    creates: "{{ bbclient_ssh_key }}"
 
 - name: Slurp back the public key
   slurp:
-    src: "{{ bbclient_key_file }}.pub"
+    src: "{{ bbclient_ssh_key }}.pub"
   register: _slurp
 
 - name: Read available repos
@@ -42,16 +40,15 @@
   loop_control:
     loop_var: bbclient_remote
 
-- name: Create bin directory
+- name: Create scripts directory
   file:
-    path: "{{ bbclient_home }}/bin"
+    path: "{{ bbclient_script_dir }}"
     state: directory
-  register: _bin
 
 - name: Create helper scripts
   template:
     src: "{{ item }}"
-    dest: "{{ _bin.path }}"
+    dest: "{{ bbclient_script_dir }}"
     mode: +x
   loop:
     - bbclient-all

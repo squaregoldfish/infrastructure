@@ -59,7 +59,7 @@
       Host {{ bbclient_remote }}
         HostName {{ bbclient_remote_ip }}
         User {{ bbclient_remote_user }}
-        Identityfile {{ bbclient_key_file }}
+        Identityfile {{ bbclient_ssh_key }}
 
 - name: Update known_hosts
   blockinfile:

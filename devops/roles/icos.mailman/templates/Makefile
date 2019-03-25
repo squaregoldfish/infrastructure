@@ -24,7 +24,7 @@ coldbackup:
 	./coldbackup.sh makefile
 
 listbackup:
-	su mailman -c 'bbclient list --short'
+	bin/bbclient list --short
 
 cronbackup:
 	./coldbackup.sh cron
