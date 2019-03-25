@@ -60,7 +60,7 @@
 
 - name: Initialize repo
   command: |
-    {{ bbclient_bin }} init {{ bbclient_repo_url }} --encryption=none
+    {{ bbclient_wrapper }} init {{ bbclient_repo_url }} --encryption=none
 
 - name: Remember repo url
   lineinfile:
