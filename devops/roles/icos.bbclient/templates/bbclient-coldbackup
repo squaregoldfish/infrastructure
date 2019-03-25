@@ -1,0 +1,52 @@
+#!/bin/bash
+# Shut down service. Do backup. Start service again.
+
+set -Eueo pipefail
+
+if [[ ! -f docker-compose.yml ]]; then
+   echo "Expected to find docker-compose.yml here."
+   exit 1
+fi
+
+if [[ ! -d volumes ]]; then
+    echo "Expected to find volumes directory here."
+    exit 1
+fi
+       
+if [[ -z "${1:-}" ]]; then
+    ARCHIVE="test-{now}"
+else
+    ARCHIVE="$1-{now}"
+fi
+
+# Prefer a bbclient that has been localized for this project, fall
+# back to one found in PATH.
+for bbc in bin/bbclient-all bbclient-all; do
+    BBCLIENT=$(type -p $bbc)
+    if [[ -x "$BBCLIENT" ]]; then
+	break;
+    fi
+done
+
+if [[ ! -x "$BBCLIENT" ]]; then
+    echo "Could not locate a bbclient script."
+    exit 1
+fi
+
+BUILD_INFO=$PWD/volumes/build.info
+# If our docker-builds script is available then dump information about
+# currently running images.
+if [[ -f build.log ]]; then
+    docker-builds > "$BUILD_INFO" || :
+fi
+
+# Do 'docker-compose up' as part of that trap so that we the service
+# resume even if the backup fails.
+trap 'rm -f "$BUILD_INFO"; docker-compose up -d' EXIT
+
+docker-compose down
+
+(echo -n '=== starting backup '; date;
+ "$BBCLIENT" create --verbose --stats "::$ARCHIVE" volumes 2>&1) \
+    | tee -a backup.log || :
+
