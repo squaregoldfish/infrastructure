@@ -1,2 +1,5 @@
 certbot_domains: [chat.fieldsites.se]
 certbot_conf_name: mattermost
+
+project_dir: /disk/data/mattermost
+backup_path: /home/backup/Backup
