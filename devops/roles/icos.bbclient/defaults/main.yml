@@ -6,9 +6,7 @@ bbclient_ssh_dir    : "{{ bbclient_home }}/.ssh"
 bbclient_ssh_config : "{{ bbclient_ssh_dir }}/config"
 bbclient_ssh_hosts  : "{{ bbclient_ssh_dir }}/known_hosts"
 bbclient_ssh_key    : "{{ bbclient_ssh_dir }}/bbclient.rsa"
-bbclient_script_dir : >-
-  {% if bbclient_user == "root" %}/usr/local/sbin
-  {%- else %}{{ bbclient_home }}/bin{% endif -%}
+bbclient_script_dir : "{{ bbclient_home }}/bin"
 
 # These are used when delegating to the remote host. There are all
 # based on the bbclient_remote variable which is set to the inventory
