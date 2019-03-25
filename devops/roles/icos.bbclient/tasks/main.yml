@@ -8,9 +8,17 @@
     mode: +x
   notify: Test downloaded borg binary
 
+- name: Create ssh directory
+  file:
+    path: "{{ bbclient_ssh_dir }}"
+    state: directory
+    mode: 0700
+    owner: "{{ bbclient_user }}"
+    group: "{{ bbclient_user }}"
+
 - name: Generate RSA keys
-  become_user: "{{ bbclient_user }}"
   become: true
+  become_user: "{{ bbclient_user }}"
   command: >-
     ssh-keygen -q -t rsa -f {{ bbclient_ssh_key }} -N ""
       -C "bbclient_{{ bbclient_user }}@{{ inventory_hostname }}"
@@ -21,6 +29,13 @@
   slurpfact:
     path: "{{ bbclient_ssh_key }}.pub"
     fact: bbclient_key_data
+
+- name: Add known_hosts to our ssh config
+  lineinfile:
+    path: "{{ bbclient_ssh_config }}"
+    line: "UserKnownHostsFile {{ bbclient_ssh_hosts }}"
+    state: present
+    create: yes
 
 - name: Create scripts directory
   file:
