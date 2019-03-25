@@ -2,7 +2,6 @@ bbclient_bin      : "/usr/local/bin/borg"
 bbclient_url      : https://github.com/borgbackup/borg/releases/download/1.1.9/borg-linux64
 bbclient_checksum : "sha1:bff300fb204b1a12f7572bec51f9e6a057b4de8e"
 
-bbclient_home       :
 bbclient_ssh_dir    : "{{ bbclient_home }}/.ssh"
 bbclient_ssh_config : "{{ bbclient_ssh_dir }}/config"
 bbclient_ssh_hosts  : "{{ bbclient_ssh_dir }}/known_hosts"

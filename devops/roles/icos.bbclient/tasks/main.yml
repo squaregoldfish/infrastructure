@@ -1,12 +1,4 @@
-- fail:
-    msg: "bbclient_user must be set"
-  when: not bbclient_user
-
-- name: Get home directory of user
-  shellfact:
-    exec: "getent passwd {{ bbclient_user }} | cut -d: -f6"
-    fact: bbclient_home
-  when: not bbclient_home
+- import_tasks: user_name_home.yml
 
 - name: Download borg binary
   get_url:
@@ -35,6 +27,24 @@
     path: "{{ bbclient_repo_file }}"
     fact: bbclient_repos
     list: true
+    fail: false
+
+- name: Check that remote is properly configured
+  fail:
+    msg: |
+      The host "{{ bbclient_remote }}" must set the following host variables:
+        bbserver_user
+        bbserver_home
+        bbserver_bin
+        bbserver_repo_home
+  when: |
+    hostvars[bbclient_remote].bbserver_user is undefined or
+    hostvars[bbclient_remote].bbserver_home is undefined or
+    hostvars[bbclient_remote].bbserver_bin is undefined or
+    hostvars[bbclient_remote].bbserver_repo_home is undefined
+  loop: "{{ bbclient_remotes }}"
+  loop_control:
+    loop_var: bbclient_remote
 
 - include_tasks: repo.yml
   loop: "{{ bbclient_remotes }}"
