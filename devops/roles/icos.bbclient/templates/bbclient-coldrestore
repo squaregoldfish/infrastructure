@@ -1,0 +1,47 @@
+#!/bin/bash
+# Retrive backup. Shut down service. Switch volumes dir. Start service.
+
+set -Eeo pipefail
+
+if [[ ! -f docker-compose.yml ]]; then
+   echo "Expected to find docker-compose.yml here."
+   exit 1
+fi
+
+if [[ ! -d volumes ]]; then
+    echo "Expected to find volumes directory here."
+    exit 1
+fi
+
+if [[ -z "${1:-}" ]]; then
+    echo 'usage: coldrestore name'
+    echo '  run "make listbackup" to find the candidates'
+    exit 1
+fi
+
+# We use these directories during operation so if they already exists,
+# a previous restore has gone awry.
+for d in volumes.previous volumes.restoring; do
+    if [[ -e "$d" ]]; then
+	1>&2 echo "The directory '$d' already exists - aborting."
+	exit 1
+    fi
+done
+
+mkdir volumes.restoring
+cd volumes.restoring
+../bin/bbclient extract "::$1" --strip-components 1
+cd ..
+
+read -r -p "Restore complete. Restart service? (y/n) " ans
+if [[ "$ans" != "y" ]]; then
+    echo "Aborting. Leaving restored backup in volumes.restoring"
+    exit 1
+fi
+
+docker-compose down
+mv volumes volumes.previous
+mv volumes.restoring volumes
+docker-compose up -d
+
+echo "Backup restored and service restarted. Previous data available as volumes.previous"

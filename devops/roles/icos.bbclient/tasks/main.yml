@@ -89,3 +89,4 @@
     - bbclient
     - bbclient-all
     - bbclient-coldbackup
+    - bbclient-coldrestore
