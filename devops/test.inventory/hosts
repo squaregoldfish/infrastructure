@@ -14,6 +14,8 @@ centos
 
 [bbservers]
 bionic
-
-[bbclients]
 bionid
+
+
+[all:vars]
+certbot_fake_certificate=True
