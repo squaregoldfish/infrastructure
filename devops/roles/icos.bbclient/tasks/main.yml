@@ -96,3 +96,12 @@
     create: yes
     path: "{{ bbclient_home }}/Makefile"
     block: "{{ lookup('template', 'Makefile.backup') }}"
+
+- name: Add coldbackup to crontab
+  when: bbclient_coldbackup_crontab is defined
+  cron:
+    job: "cd {{ bbclient_home }} && {{ bbclient_script_dir }}/bbclient-coldbackup"
+    hour: "{{ bbclient_coldbackup_crontab.hour | default('0') }}"
+    minute: "{{ bbclient_coldbackup_crontab.minute | default('0') }}"
+    state: present
+    name: "bbclient_{{ bbclient_name }}_coldbackup"
