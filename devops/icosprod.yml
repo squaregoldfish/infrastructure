@@ -16,6 +16,7 @@
       tags: nginx
     - role: icos.java
       tags: java
+    - role: icos.bbserver
 
 - hosts: icosprod
   become: true
