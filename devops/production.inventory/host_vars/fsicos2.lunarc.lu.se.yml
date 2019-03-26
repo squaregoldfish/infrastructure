@@ -38,6 +38,12 @@ onlyoffice_domain: onlyoffice.icos-cp.eu
 mailman_domains: ['lists.icos-ri.eu', 'lists.eric-forum.eu']
 mailman_rest_allow_deny: "{{ vault_mailman_rest_allow_deny }}"
 
+bbserver_user: bbserver
+bbserver_home: /disk/data/bbserver
+bbserver_bin: /usr/local/bin/borg
+bbserver_repo_home: "{{ bbserver_home }}/repos"
+
 bbclient_remotes:
   - fsicos.lunarc.lu.se
+  - fsicos2.lunarc.lu.se
   - cdb.nateko.lu.se
