@@ -24,3 +24,8 @@
     state: directory
     owner: "{{ bbserver_user }}"
     group: "{{ bbserver_user }}"
+
+- name: Copy Makefile
+  template:
+    src: Makefile
+    dest: "{{ bbserver_home }}"
