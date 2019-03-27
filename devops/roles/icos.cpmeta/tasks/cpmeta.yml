@@ -25,16 +25,21 @@
     owner: "{{ cpmeta_username }}"
     group: "{{ cpmeta_username }}"
 
-- block:
-    - name: Ensure that the remotebackup script is present
-      file:
-        path: "{{ cpmeta_remotebackup_bin }}"
-        mode: +x
+- import_role: name=icos.bbclient
+  vars:
+    bbclient_name: "{{ cpmeta_username }}"
+    bbclient_home: "{{ cpmeta_home }}"
 
-    - name: Install cronjob to backup cpmetas fileStorage
-      cron:
-        name: Backup cpmeta fileStorage
-        job: >-
-          {{ cpmeta_remotebackup_bin }} -La {{ cpmeta_filestorage_target }} meta
-        special_time: hourly
-  when: cpmeta_enable_remotebackup
+- name: Copy backup.sh
+  template:
+    src: backup.sh
+    dest: "{{ cpmeta_backup_script }}"
+    mode: +x
+
+- name: Add backup to crontab
+  cron:
+    job: "{{ cpmeta_backup_script }}"
+    hour: "*"
+    minute: "0"
+    state: present
+    name: "cpmeta_backup"

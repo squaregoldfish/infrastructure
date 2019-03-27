@@ -17,9 +17,10 @@ cpmeta_db_user: "{{ rdflog_db_user }}"
 cpmeta_db_port: "{{ rdflog_db_port }}"
 cpmeta_db_pass: "{{ rdflog_db_pass }}"
 
+cpmeta_home: /home/cpmeta
+cpmeta_backup_script: "{{ cpmeta_home }}/backup.sh"
+
 certbot_domains: [meta.icos-cp.eu, meta.fieldsites.se]
 certbot_conf_name: meta
 
-cpmeta_enable_remotebackup: yes
-
-cpmeta_remotebackup_bin: /usr/local/sbin/remotebackup
+cpmeta_jarservice_disable: True
