@@ -21,7 +21,7 @@
   become_user: "{{ bbclient_user }}"
   command: >-
     ssh-keygen -q -t rsa -f {{ bbclient_ssh_key }} -N ""
-      -C "bbclient_{{ bbclient_user }}@{{ inventory_hostname }}"
+      -C "bbclient_{{ bbclient_name }}@{{ inventory_hostname }}"
   args:
     creates: "{{ bbclient_ssh_key }}"
 
