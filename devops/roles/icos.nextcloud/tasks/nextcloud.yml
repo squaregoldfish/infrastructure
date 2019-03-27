@@ -69,13 +69,19 @@
 - name: Copy docker-compose.yml
   template:
     src: docker-compose.yml
-    dest: "{{ nextcloud_home }}/docker-compose.yml"
-  register: _compose
+    dest: "{{ nextcloud_home }}"
 
 - name: Build nextcloud images using docker-compose
-  command: docker-compose -f {{ _compose.dest }} build
-  register: _build
-  changed_when: '" ---> Running in " in _build.stdout'
+  shell: |
+    set -o pipefail
+    ( echo -n '=== starting build '; date; docker-compose build --pull) \
+    | tee -a build.log
+  args:
+    chdir: "{{ nextcloud_home }}"
+    executable: /bin/bash
+  register: _output
+  changed_when: '" ---> Running in " in _output.stdout'
+  when: nextcloud_docker_build | default(True)
 
 - include_role: name=icos.certbot
 
