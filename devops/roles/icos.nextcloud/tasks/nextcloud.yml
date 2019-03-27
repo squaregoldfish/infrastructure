@@ -84,6 +84,7 @@
   when: nextcloud_docker_build | default(True)
 
 - include_role: name=icos.certbot
+  when: nextcloud_certbot_enable | default(True)
 
 - name: Copy nextcloud nginx config files
   template:
