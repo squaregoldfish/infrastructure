@@ -40,8 +40,6 @@
     mode: preserve
   loop:
     - Makefile
-    - coldbackup.sh
-    - coldrestore.sh
 
 - name: Start containers
   docker_service:

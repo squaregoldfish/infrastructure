@@ -36,4 +36,6 @@
 
 - import_role: name=icos.bbclient
   vars:
-    bbclient_user: "{{ mailman_user }}"
+    bbclient_name: mailman
+    bbclient_home: "{{ mailman_home }}"
+    bbclient_coldbackup_crontab: { hour: 02, minute: 40 }
