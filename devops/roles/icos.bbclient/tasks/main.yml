@@ -30,10 +30,15 @@
     path: "{{ bbclient_ssh_key }}.pub"
     fact: bbclient_key_data
 
-- name: Add known_hosts to our ssh config
-  lineinfile:
+- name: Add global ssh config
+  blockinfile:
+    # It's important that this config appears first in the file, that
+    # way it applies to all following 'Host' configurations.
+    insertbefore: BOF
     path: "{{ bbclient_ssh_config }}"
-    line: "UserKnownHostsFile {{ bbclient_ssh_hosts }}"
+    block: |
+      UserKnownHostsFile {{ bbclient_ssh_hosts }}
+      Identityfile {{ bbclient_ssh_key }}
     state: present
     create: yes
 
