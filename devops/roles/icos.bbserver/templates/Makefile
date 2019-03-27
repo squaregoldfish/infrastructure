@@ -1,5 +1,9 @@
+# For make to use bash instead of sh (dash), otherwise 'echo -e' might not work.
+SHELL=/bin/bash
+
 .PHONY: repos latest
 export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
+export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
 # Display each repo along with the latest archive in that repo.
 latest:
