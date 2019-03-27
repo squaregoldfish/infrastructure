@@ -4,6 +4,11 @@
     home: "{{ bbserver_home | default(omit) }}"
     create_home: yes
 
+- name: Change access rights on bbserver_home
+  file:
+    path: "{{ bbserver_home }}"
+    mode: 0700
+
 - name: Download borg binary
   get_url:
     url: "{{ bbserver_url }}"
