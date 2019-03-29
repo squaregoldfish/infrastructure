@@ -35,6 +35,8 @@ function cmd_setup {
       raw: "test -e /usr/bin/python || apt install -y python-minimal"
       register: raw_python
       changed_when: '"Setting up python" in raw_python.stdout'
+      retries: 3
+      delay: 5
 EOF
                                 )
 }
