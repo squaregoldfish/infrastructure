@@ -10,6 +10,7 @@ global:
 
   js:
     //static.icos-cp.eu/constant/bootstrap/3.3.5/js/bootstrap.min.js: { type: external, minified: true }
+    js/cp_theme_d8.js: {}
     js/cookie-notice.js: {}
 {% if cp_theme_d8 | default(false) %}
     js/{{ cp_theme_d8 }}.js: {}
