@@ -1,0 +1,10 @@
+passdb {
+  driver = passwd-file
+  args = scheme=CRYPT username_format=%u /etc/dovecot/users
+}
+
+userdb {
+  driver = passwd-file
+  default_fields = uid={{ dovecot_vmail_user.uid }} gid={{ dovecot_vmail_user.group }} mail=maildir:~/Maildir home=/var/vmail/%d/%n
+  args = username_format=%Lu /etc/dovecot/users
+}

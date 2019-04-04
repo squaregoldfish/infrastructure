@@ -47,3 +47,8 @@ bbclient_remotes:
   - fsicos.lunarc.lu.se
   - fsicos2.lunarc.lu.se
   - cdb.nateko.lu.se
+
+
+dovecot_domains:
+  - test.icos-cp.eu
+  - otc-nrt.icos-cp.eu

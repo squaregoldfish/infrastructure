@@ -1,0 +1,6 @@
+{% for domain in dovecot_domains %}
+local_name {{ domain }} {
+  ssl_cert = </etc/letsencrypt/live/{{ domain }}/fullchain.pem
+  ssl_key = </etc/letsencrypt/live/{{ domain }}/privkey.pem
+}
+{% endfor %}

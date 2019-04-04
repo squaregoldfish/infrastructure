@@ -1,0 +1,23 @@
+- name: Change listening port
+  lineinfile:
+    path: /etc/dovecot/conf.d/10-master.conf
+    regex: "(?:#port = 993$)|(?:^    port = {{ dovecot_port }}$)"
+    line: "    port = {{ dovecot_port }}"
+    state: present
+
+- name: Open firewall
+  ufw:
+    rule: allow
+    port: "{{ dovecot_port }}"
+    proto: tcp
+
+- name: Add postfix lmtp listener
+  blockinfile:
+    path: /etc/dovecot/conf.d/10-master.conf
+    marker: "# {mark} ansible / icos.dovecot / postfix lmtp"
+    insertafter: "^service lmtp {"
+    block: |4
+          unix_listener {{ dovecot_lmtp }} {
+            user = postfix
+            group = postfix
+          }

@@ -1,0 +1,18 @@
+- name: Copy {{ dovecot_cert_file }}
+  template:
+    src: "{{ dovecot_cert_file }}"
+    dest: /etc/dovecot/conf.d/
+
+- name: Require SSL for dovecot
+  lineinfile:
+    path: /etc/dovecot/conf.d/10-ssl.conf
+    regex: "(?:ssl = yes)|(?:ssl = required)"
+    line: "ssl = required"
+    state: present
+
+- name: Include {{ dovecot_cert_file }}
+  lineinfile:
+    path: /etc/dovecot/conf.d/10-ssl.conf
+    line: "!include {{ dovecot_cert_file }}"
+    state: present
+    insertafter: EOF

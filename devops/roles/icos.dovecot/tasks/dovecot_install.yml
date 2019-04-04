@@ -1,0 +1,12 @@
+- name: Install dovecot
+  apt:
+    name:
+      - dovecot-imapd
+      - dovecot-lmtpd
+    state: present
+
+- name: Enable dovecot
+  service:
+    name: dovecot
+    state: started
+    enabled: yes

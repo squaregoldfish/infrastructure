@@ -1,0 +1,45 @@
+- name: Create domains file
+  blockinfile:
+    path: "{{ dovecot_domains_file }}"
+    create: yes
+    insertbefore: BOF
+    marker: "# {mark} ansible - icos.dovecot"
+    block: |
+      # These are used both for 'relay_domains' and for 'transport_maps'
+      {% for domain in dovecot_domains %}
+      {{ domain }}	lmtp:unix:private/{{ dovecot_lmtp | basename }}
+      {% endfor %}
+  notify: Reload postfix
+
+- name: Make sure that postfix dbs exists
+  copy:
+    dest: "{{ item }}"
+    force: no
+    content: ""
+  loop:
+    - /etc/postfix/transport
+    - /etc/postfix/virtual
+  notify: Reload postfix
+
+- name: Compile postfix database files
+  command: postmap {{ item }}
+  changed_when: no
+  loop:
+    - /etc/postfix/transport
+    - /etc/postfix/virtual
+    - "{{ dovecot_domains_file }}"
+
+- name: Configure postfix to use database files
+  postconf:
+    param: "{{ item.param }}"
+    value: "{{ item.value }}"
+    append: "{{ item.append | default(True) }}"
+  loop:
+    # Virtual alias domains is by default set to $virtual_alias_maps,
+    # but it will conflict with relay_domains - "warning: do not list
+    # domain test.icos-cp.eu in BOTH virtual_alias_domains and
+    # relay_domains.
+    - { param: virtual_alias_domains, value: "", append: False }
+    - { param: virtual_alias_maps,    value: "hash:/etc/postfix/virtual" }
+    - { param: transport_maps,        value: "hash:{{ dovecot_domains_file }}" }
+    - { param: relay_domains,         value: "hash:{{ dovecot_domains_file }}" }
