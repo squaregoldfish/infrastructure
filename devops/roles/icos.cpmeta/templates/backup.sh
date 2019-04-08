@@ -11,6 +11,5 @@ else
 fi
 
 export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
 ./bin/bbclient-all create --verbose --stats "::$ARCHIVE" "{{ cpmeta_filestorage_target }}"
