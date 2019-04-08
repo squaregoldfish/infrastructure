@@ -33,13 +33,12 @@
     dest: "{{ mailman_volume_web }}"
     src: settings_local.py
 
-- name: Install Makefile and helper scripts
-  template:
-    dest: "{{ mailman_home }}"
-    src: "{{ item }}"
-    mode: preserve
-  loop:
-    - Makefile
+- name: Install Makefile
+  blockinfile:
+    create: yes
+    marker: "# {mark} ansible / icos.mailman"
+    path: "{{ mailman_home }}/Makefile"
+    block: "{{ lookup('template', 'Makefile') }}"
 
 - name: Start containers
   docker_service:
