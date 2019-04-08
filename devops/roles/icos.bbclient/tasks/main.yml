@@ -53,7 +53,9 @@
     dest: "{{ bbclient_wrapper }}"
     content: |
       #!/bin/bash
-      BORG_RSH="ssh -F {{ bbclient_ssh_config }}" {{ bbclient_bin }} "$@"
+      export BORG_RSH="ssh -F {{ bbclient_ssh_config }}"
+      export BORG_BASE_DIR="{{ bbclient_borg_base }}"
+      {{ bbclient_bin }} "$@"
 
 - name: Read available repos
   slurpfact:
@@ -98,6 +100,7 @@
 
 - name: Add tasks to Makefile
   blockinfile:
+    marker: "# {mark} ansible / icos.bbclient"
     create: yes
     path: "{{ bbclient_home }}/Makefile"
     block: "{{ lookup('template', 'Makefile.backup') }}"

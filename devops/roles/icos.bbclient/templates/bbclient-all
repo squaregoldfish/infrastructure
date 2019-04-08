@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export BORG_RSH="ssh -F {{ bbclient_ssh_config }}"
-
 while read repo; do
-    BORG_REPO="$repo" "{{ bbclient_bin }}" "$@";
+    BORG_REPO="$repo" "{{ bbclient_wrapper }}" "$@";
 done < "{{ bbclient_repo_file }}"

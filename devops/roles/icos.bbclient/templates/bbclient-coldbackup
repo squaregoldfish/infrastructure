@@ -12,26 +12,18 @@ if [[ ! -d volumes ]]; then
     echo "Expected to find volumes directory here."
     exit 1
 fi
-       
+
+if [[ ! -x "bin/bbclient-all" ]]; then
+    echo "Could not execute bin/bbclient-all"
+    exit 1
+fi
+
 if [[ -z "${1:-}" ]]; then
     ARCHIVE="test-{now}"
 else
     ARCHIVE="$1-{now}"
 fi
 
-# Prefer a bbclient that has been localized for this project, fall
-# back to one found in PATH.
-for bbc in bin/bbclient-all bbclient-all; do
-    BBCLIENT=$(type -p $bbc)
-    if [[ -x "$BBCLIENT" ]]; then
-	break;
-    fi
-done
-
-if [[ ! -x "$BBCLIENT" ]]; then
-    echo "Could not locate a bbclient script."
-    exit 1
-fi
 
 BUILD_INFO=$PWD/volumes/build.info
 # If our docker-builds script is available then dump information about
@@ -46,7 +38,9 @@ trap 'rm -f "$BUILD_INFO"; docker-compose up -d' EXIT
 
 docker-compose down
 
+export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
+
 (echo -n '=== starting backup '; date;
- "$BBCLIENT" create --verbose --stats "::$ARCHIVE" volumes 2>&1) \
+ "bin/bbclient-all" create --verbose --stats "::$ARCHIVE" volumes 2>&1) \
     | tee -a backup.log || :
 
