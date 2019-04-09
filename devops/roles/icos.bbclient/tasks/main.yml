@@ -30,7 +30,7 @@
     path: "{{ bbclient_ssh_key }}.pub"
     fact: bbclient_key_data
 
-- name: Add global ssh config
+- name: Add ssh config
   blockinfile:
     # It's important that this config appears first in the file, that
     # way it applies to all following 'Host' configurations.
