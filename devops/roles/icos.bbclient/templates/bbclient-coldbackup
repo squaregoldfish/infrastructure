@@ -1,5 +1,6 @@
 #!/bin/bash
 # Shut down service. Do backup. Start service again.
+# Designed to run from cron.
 
 set -Eueo pipefail
 
@@ -32,15 +33,25 @@ if [[ -f build.log ]]; then
     docker-builds > "$BUILD_INFO" || :
 fi
 
-# Do 'docker-compose up' as part of that trap so that we the service
-# resume even if the backup fails.
-trap 'rm -f "$BUILD_INFO"; docker-compose up -d' EXIT
+# Do 'docker-compose up' as part of that trap so that the service resume even
+# if the backup fails.
+trap 'rm -f -- "$BUILD_INFO"; docker-compose up -d' EXIT
 
 docker-compose down
 
 export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 
-(echo -n '=== starting backup '; date;
- "bin/bbclient-all" create --verbose --stats "::$ARCHIVE" volumes 2>&1) \
-    | tee -a backup.log || :
+LOGFILE=backup.log
+HEADER="=== starting backup"
+
+echo "$HEADER $(date)" >> "$LOGFILE"
+
+# By default we generate no output, as not to spook cron.
+if ! bin/bbclient-all create --verbose --stats \
+     "::$ARCHIVE" volumes >> "$LOGFILE" 2>&1
+then
+    # In case of error, output everything after the last header.
+    sed -n ":a;\$p;N;/$HEADER/d;ba" "$LOGFILE"
+    exit 1
+fi
 
