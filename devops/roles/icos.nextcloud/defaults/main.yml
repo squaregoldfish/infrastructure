@@ -4,9 +4,9 @@ nextcloud_nextcloud_version: 14.0.10
 # https://hub.docker.com/_/postgres/
 nextcloud_postgres_version: 10.6
 
-nextcloud_subnet: 172.20.199.0/24
-nextcloud_ip: 172.20.199.2
-nextcloud_postgres_cont_ip: 172.20.199.4
+nextcloud_subnet: 172.22.199.0/24
+nextcloud_ip: 172.22.199.2
+nextcloud_postgres_cont_ip: 172.22.199.4
 
 nextcloud_port: 9000
 
