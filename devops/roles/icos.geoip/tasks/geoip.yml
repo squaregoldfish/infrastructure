@@ -32,10 +32,10 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
   with_items:
-    - { src: README.md.j2, dest: "{{ geoip_home }}/README.md" }
-    - { src: Makefile.j2, dest: "{{ geoip_home }}/Makefile" }
-    - { src: Dockerfile.j2, dest: "{{ geoip_build_dir }}/Dockerfile" }
-    - { src: docker-compose.yml.j2, dest: "{{ geoip_home }}/docker-compose.yml" }
+    - { src: README.md, dest: "{{ geoip_home }}/README.md" }
+    - { src: Makefile, dest: "{{ geoip_home }}/Makefile" }
+    - { src: Dockerfile, dest: "{{ geoip_build_dir }}/Dockerfile" }
+    - { src: docker-compose.yml, dest: "{{ geoip_home }}/docker-compose.yml" }
 
 - name: Pull source
   git:
@@ -89,6 +89,6 @@
 
 - name: Install nginx config file
   template:
-    src: geoip.conf.j2
-    dest: /etc/nginx/conf.d/geoip.conf
+    src: geoip.conf
+    dest: /etc/nginx/conf.d/
   notify: reload nginx config
