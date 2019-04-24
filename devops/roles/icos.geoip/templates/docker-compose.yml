@@ -2,7 +2,12 @@ version: '2'
 
 services:
   geoip:
-    build: build
+    build:
+      context: ./build
+      args:
+        PYTHON_VERSION: "{{ geoip_python_version }}"
+        UID: "{{ _user.uid }}"
+        GID: "{{ _user.group }}"
     ports:
       - "127.0.0.1:{{ geoip_host_port }}:5000"
     volumes:

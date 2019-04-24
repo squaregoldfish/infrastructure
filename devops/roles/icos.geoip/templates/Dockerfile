@@ -1,11 +1,13 @@
-FROM python:{{ geoip_python_version }}
+ARG PYTHON_VERSION=3.6
+FROM python:$PYTHON_VERSION
 
-RUN groupadd --gid {{ _user.group }} {{ _user.name }} && \
-	useradd --gid {{ _user.group }} --uid {{ _user.uid }} {{ _user.name }} \
-  	        --home-dir /geoip --create-home
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g $GID -o geoip
+RUN useradd -m -u $UID -g $GID -o -s /bin/bash --home-dir=/geoip geoip
 
 RUN pip install pipenv
-USER {{ _user.name }} {# geoip #}
+USER geoip
 
 COPY repo/src/main/python/geoip /geoip
 COPY config.py /geoip/py/config.py
