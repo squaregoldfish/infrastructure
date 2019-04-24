@@ -80,10 +80,21 @@
     owner: "{{ _user.name }}"
     group: "{{ _user.group }}"
 
-- name: Build and start
+- name: Build geoip images using docker-compose
+  shell: |
+    set -o pipefail
+    ( echo -n '=== starting build '; date; docker-compose build --pull) \
+    | tee -a build.log
+  args:
+    chdir: "{{ geoip_home }}"
+    executable: /bin/bash
+  register: _output
+  changed_when: '" ---> Running in " in _output.stdout'
+  when: geoip_docker_build | default(True)
+
+- name: Start containers
   docker_service:
     project_src: "{{ geoip_home }}"
-    build: yes
 
 - include_role: name=icos.certbot
 
