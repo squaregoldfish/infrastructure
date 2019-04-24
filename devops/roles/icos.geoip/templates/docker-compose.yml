@@ -8,8 +8,10 @@ services:
         PYTHON_VERSION: "{{ geoip_python_version }}"
         UID: "{{ _user.uid }}"
         GID: "{{ _user.group }}"
+    container_name: geoip
     ports:
       - "127.0.0.1:{{ geoip_host_port }}:5000"
     volumes:
       - {{ geoip_db_dir }}:/geoip/DB
+      - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
