@@ -11,5 +11,5 @@
     state: reloaded
 
 - name: reload systemd config
-  command: systemctl daemon-reload
-  
+  systemd:
+    daemon_reload: yes

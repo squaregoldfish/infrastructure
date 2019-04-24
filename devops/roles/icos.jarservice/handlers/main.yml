@@ -3,7 +3,8 @@
   command: systemctl restart {{ servicename }}
 
 - name: reload systemd config
-  command: systemctl daemon-reload
+  systemd:
+    daemon_reload: yes
 
 - name: reload nginx config
   # First syntax check the config. This gives us direct feedback when running
