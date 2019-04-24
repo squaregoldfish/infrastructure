@@ -16,15 +16,15 @@
 # some of them use volumes that can grow quite large, we don't want
 # them filling up the root filesystem. The solution is to first create
 # a 'docker-compose-projects' elsewhere and then link it to /docker.
-- name: Create {{ docker_compose_home }}
+- name: Create {{ docker_compose_real_home }}
   file:
-    path: "{{ docker_compose_home }}"
+    path: "{{ docker_compose_real_home }}"
     state: directory
   register: _home
 
-- name: Create link from {{ docker_compose_link }} to {{ docker_compose_home }}
+- name: Create link from {{ docker_compose_home }} to {{ docker_compose_real_home }}
   file:
-    dest: "{{ docker_compose_link }}"
+    dest: "{{ docker_compose_home }}"
     src: "{{ _home.path }}"
     state: link
 
