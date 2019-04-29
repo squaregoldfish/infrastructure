@@ -1,0 +1,21 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - site
+    - file
+
+- name: Copy site config file for {{ site }}
+  template:
+    src: "{{ file }}"
+    dest: "{{ nginxsite_path_available }}"
+  notify: reload nginx config
+
+- name: Create symlink to sites-enabled
+  file:
+    dest: "{{ nginxsite_path_enable }}"
+    src: "{{ nginxsite_path_available }}"
+    state: "{% if nginxsite_enable %}link{% else %}absent{% endif %}"
+  when: nginxsite_enable
+  notify: reload nginx config

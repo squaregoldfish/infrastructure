@@ -1,0 +1,3 @@
+nginxsite_path_available: "/etc/nginx/sites-available/{{ site }}"
+nginxsite_path_enable: "/etc/nginx/sites-enabled/{{ site }}"
+nginxsite_enable: True
