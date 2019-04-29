@@ -92,3 +92,5 @@
       tags: mailman
     - role: icos.mattermost
       tags: mattermost
+    - role: icos.nexus
+      tags: nexus
