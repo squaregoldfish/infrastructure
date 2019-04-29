@@ -1,0 +1,12 @@
+nexus_user: nexus
+nexus_home: "{{ docker_compose_home | default('/docker') }}/nexus"
+nexus_build: "{{ nexus_home }}/build"
+
+nexus_vol_storage: "./volumes/storage"
+
+# Version of the nexus docker image
+# https://hub.docker.com/r/sonatype/nexus/tags
+nexus_version: 2.14.13-01
+
+nexus_host_port: 8881
+nexus_domains: ["repo.icos-cp.eu"]

@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  nexus:
+    build:
+      context: ./build
+      args:
+        UID: "{{ _user.uid }}"
+        GID: "{{ _user.group }}"
+        VERSION: "{{ nexus_version }}"
+    container_name: nexus
+    ports:
+      - "127.0.0.1:{{ nexus_host_port }}:8081"
+    volumes:
+      - {{ nexus_vol_storage }}:/sonatype-work
+    restart: unless-stopped
