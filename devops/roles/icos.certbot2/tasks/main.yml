@@ -1,0 +1,34 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - certbot_name
+    - certbot_domains
+
+- name: Install software-properties-common for Ubuntu
+  apt:
+    name: software-properties-common
+
+- name: Add Certbot PPA
+  apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: Install Certbot for nginx
+  package:
+    name: python-certbot-nginx
+
+- name: Run certbot for {{ certbot_name }}
+  command: |
+    {{ certbot_bin }} certonly --nginx
+    --cert-name {{ certbot_name }}
+    --non-interactive --agree-tos --email {{ certbot_email }}
+    {% for d in certbot_domains %} -d {{ d }} {% endfor %}
+  register: _r
+  changed_when: "'Certificate not yet due for renewal;' not in _r.stdout"
+
+- name: Add job to renew certificates
+  cron:
+    name: Certbot renewal
+    job: "{{ certbot_bin }} renew --post-hook 'service nginx reload'"
+    special_time: daily
