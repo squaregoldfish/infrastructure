@@ -1,0 +1,46 @@
+- name: Create nexus user
+  user:
+    name: "{{ nexus_user }}"
+    home: "{{ nexus_home | default(omit) }}"
+    shell: /usr/sbin/nologin
+  register: _user
+
+- name: Create docker directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ nexus_build }}"
+    - "{{ nexus_home }}/{{ nexus_vol_storage }}"
+
+- name: Copy Dockerfile
+  copy:
+    src: Dockerfile
+    dest: "{{ nexus_build }}"
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ nexus_home }}"
+
+- name: Change owner of volume directory
+  file:
+    path: "{{ nexus_home  }}/{{ nexus_vol_storage }}"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_user }}"
+
+- name: Build nexus images using docker-compose
+  shell: |
+    set -o pipefail
+    ( echo -n '=== starting build '; date; docker-compose build --pull) \
+    | tee -a build.log
+  args:
+    chdir: "{{ nexus_home }}"
+    executable: /bin/bash
+  register: _output
+  changed_when: '" ---> Running in " in _output.stdout'
+  when: nexus_docker_build | default(True)
+
+- name: Start containers
+  docker_service:
+    project_src: "{{ nexus_home }}"

@@ -1,75 +1,15 @@
-- name: Create nexus user
-  user:
-    name: "{{ nexus_user }}"
-    home: "{{ nexus_home | default(omit) }}"
-    shell: /usr/sbin/nologin
-  register: _user
+- name: Build and deploy docker images
+  include_tasks: nexus_docker.yml
+  when: nexus_docker_enable
 
-- name: Create docker directories
-  file:
-    path: "{{ item }}"
-    state: directory
-  loop:
-    - "{{ nexus_build }}"
-    - "{{ nexus_home }}/{{ nexus_vol_storage }}"
+- name: Create certificate and create nginx config
+  include_tasks: nexus_nginx.yml
+  when: nexus_nginx_enable
 
-- name: Copy Dockerfile
-  copy:
-    src: Dockerfile
-    dest: "{{ nexus_build }}"
-
-- name: Copy docker-compose.yml
-  template:
-    src: docker-compose.yml
-    dest: "{{ nexus_home }}"
-
-- name: Change owner of volume directory
-  file:
-    path: "{{ nexus_home  }}/{{ nexus_vol_storage }}"
-    owner: "{{ nexus_user }}"
-    group: "{{ nexus_user }}"
-
-- name: Build nexus images using docker-compose
-  shell: |
-    set -o pipefail
-    ( echo -n '=== starting build '; date; docker-compose build --pull) \
-    | tee -a build.log
-  args:
-    chdir: "{{ nexus_home }}"
-    executable: /bin/bash
-  register: _output
-  changed_when: '" ---> Running in " in _output.stdout'
-  when: nexus_docker_build | default(True)
-
-- name: Start containers
-  docker_service:
-    project_src: "{{ nexus_home }}"
-
-- import_role: name=icos.certbot2
-  vars:
-    certbot_name: nexus
-    certbot_domains: "{{ nexus_domains }}"
-  when: nexus_certbot_enable | default(True)
-
-- import_role: name=icos.nginxsite
-  vars:
-    site: nexus
-    file: nexus-nginx-config
-
-- name: Check that nexus responds with correct version
-  uri:
-    url: "http://127.0.0.1:{{ nexus_host_port }}/nexus/service/local/status"
-    return_content: yes
-  register: r
-  failed_when:
-    - 'not (("<version>%s</version>" % nexus_version) in r.content)'
-  # Give nexus a chance to come online
-  retries: 2
-  delay: 10
-  until: not r.failed
-
-- import_role: name=icos.bbclient
+- name: Add borgbackup support
+  include_role: name=icos.bbclient
   vars:
     bbclient_name: "{{ nexus_user }}"
     bbclient_home: "{{ nexus_home }}"
     bbclient_coldbackup_crontab: { hour: 02, minute: 50 }
+  when: nexus_bbclient_enable
