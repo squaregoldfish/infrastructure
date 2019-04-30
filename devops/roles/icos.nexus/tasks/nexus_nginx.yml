@@ -11,7 +11,7 @@
 
 - name: Check that nexus responds with correct version
   uri:
-    url: "http://127.0.0.1:{{ nexus_host_port }}/nexus/service/local/status"
+    url: "http://127.0.0.1:{{ nexus_host_port }}/service/local/status"
     return_content: yes
   register: r
   failed_when:
