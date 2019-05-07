@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 set -Eeuo pipefail
-cd {{ drupal_home }}
+cd "{{ drupal_home }}"
 
 BB="{{ drupal_home }}/bin/bbclient-all"
 PROJECTS=({{ drupal_websites | join(" ") }})
@@ -14,12 +14,12 @@ for project in "${PROJECTS[@]}"; do
         continue
     fi
 
-    cd $project/drupal
+    cd "$project/drupal"
 
     docker-compose down
     $BB create --verbose --stats "::$project-{now}" . >> "$LOGFILE"
     docker-compose up -d
 
-    cd {{ drupal_home }}
+    cd "{{ drupal_home }}"
 
 done
