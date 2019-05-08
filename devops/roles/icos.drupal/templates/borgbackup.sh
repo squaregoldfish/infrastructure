@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 set -Eeuo pipefail
 cd "{{ drupal_home }}"
@@ -14,10 +14,10 @@ for project in "${PROJECTS[@]}"; do
         continue
     fi
 
-    cd "$project/drupal"
+    cd "$project/drupal/docker"
 
     docker-compose down
-    $BB create --verbose --stats "::$project-{now}" . >> "$LOGFILE"
+    $BB create --verbose --stats "::$project-{now}" {{ drupal_home }}/$project/drupal >> "$LOGFILE"
     docker-compose up -d
 
     cd "{{ drupal_home }}"

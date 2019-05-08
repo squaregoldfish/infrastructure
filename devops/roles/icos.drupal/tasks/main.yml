@@ -18,7 +18,7 @@
 
 - name: Add drupal borgbackup to crontab
   cron:
-    job: "cd {{ drupal_home }} && bin/borgbackup cron"
+    job: "{{ drupal_home }}/bin/borgbackup"
     hour: "3"
     minute: "10"
     state: present
