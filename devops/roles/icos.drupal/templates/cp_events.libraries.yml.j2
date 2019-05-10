@@ -2,9 +2,9 @@ style:
   css:
     theme:
       css/cp_events.css: {}
-  {% if cp_events | default(false) %}
+{% if cp_events | default(false) %}
       css/{{ cp_events }}.css: {}
-  {% endif %}
+{% endif %}
 
 script:
   js:

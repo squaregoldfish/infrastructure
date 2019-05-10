@@ -3,3 +3,4 @@ linux_add_ssh_root:
 certbot_install_certificate: False
 check_infrastructure_version: False
 cpmeta_filestorage_target: /tmp
+skip_borg_backup: True

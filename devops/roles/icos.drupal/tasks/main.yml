@@ -5,21 +5,6 @@
   tags:
     - drupal_only
 
-- include_role: name=icos.bbclient
-  vars:
-    bbclient_name: "drupal"
-    bbclient_home: "{{ drupal_home }}"
-
-- name: Create drupal backup script
-  template:
-    src: borgbackup.sh
-    dest: "{{ drupal_home }}/bin/borgbackup"
-    mode: +x
-
-- name: Add drupal borgbackup to crontab
-  cron:
-    job: "{{ drupal_home }}/bin/borgbackup"
-    hour: "3"
-    minute: "10"
-    state: present
-    name: "drupal_borg"
+- name: Setup borg backup
+  import_tasks: backup.yml
+  when: skip_borg_backup is not defined
