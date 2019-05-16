@@ -1,2 +1,18 @@
-- import_tasks: limesurvey.yml
-  tags: [limesurvey_only]
+- name: Create limesurvey directory
+  file:
+    path: "{{ limesurvey_home }}"
+    state: directory
+
+- import_role: name=icos.certbot2
+
+- import_role: name=icos.nginxsite
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ limesurvey_home }}"
+
+- name: Run limesurvey docker compose
+  docker_service:
+    project_src: "{{ limesurvey_home }}"
+    state: present
