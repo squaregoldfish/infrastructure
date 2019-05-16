@@ -41,8 +41,6 @@
       tags: filedrop
     - role: icos.kanboard
       tags: kanboard
-    - role: icos.sitesaquanetform
-      tags: sitesaquanetform
     - role: icos.ssh_incoming_tunnel
       tags: ssh_incoming_tunnel
       vars:
@@ -94,3 +92,5 @@
       tags: nexus
     - role: icos.drupal
       tags: drupal
+    - role: icos.sitesaquanetform
+      tags: sitesaquanetform
