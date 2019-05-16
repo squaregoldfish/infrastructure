@@ -60,8 +60,25 @@
   roles:
     - role: icos.postfix
       tags: postfix
+
     - role: icos.limesurvey
-      tags: limesurvey
+      tags:
+        - limesurvey
+        - survey
+      vars:
+        certbot_domains:
+          - survey.icos-cp.eu
+
+    - role: icos.limesurvey
+      tags:
+        - limesurvey
+        - survey2
+      vars:
+        limesurvey_home: /docker/limesurvey2
+        limesurvey_port: 9873
+        certbot_domains: ['survey2.icos-cp.eu']
+        nginxsite_name: survey2
+
     - role: icos.geoip
       tags: geoip
     - role: icos.rdflog
