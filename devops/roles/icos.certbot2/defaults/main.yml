@@ -1,5 +1,6 @@
 certbot_bin: certbot
 certbot_email: carbon.admin@nateko.lu.se
+certbot_name: "{{ certbot_domains | first }}"
 
 # The variables are not used by the roles itself, but serves as a convenience
 # to users.

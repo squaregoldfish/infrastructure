@@ -3,7 +3,6 @@
     msg: "{{ item }} needs to be defined"
   when: vars[item] is undefined
   loop:
-    - certbot_name
     - certbot_domains
 
 - name: Install software-properties-common for Ubuntu
