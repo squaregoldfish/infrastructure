@@ -1,13 +1,7 @@
 - import_role: name=icos.certbot2
-  vars:
-    certbot_name: nexus
-    certbot_domains: "{{ nexus_domains }}"
   when: nexus_certbot_enable | default(True)
 
 - import_role: name=icos.nginxsite
-  vars:
-    site: nexus
-    file: nexus-nginx-config
 
 - name: Check that nexus responds with correct version
   uri:

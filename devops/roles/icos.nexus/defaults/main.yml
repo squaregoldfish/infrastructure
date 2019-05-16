@@ -13,3 +13,9 @@ nexus_version: 2.11.4-01
 
 nexus_host_port: 8881
 nexus_domains: ["repo.icos-cp.eu"]
+
+certbot_name: nexus
+certbot_domains: "{{ nexus_domains }}"
+
+nginxsite_name: nexus
+nginxsite_file: nexus-nginx-config
