@@ -1,0 +1,19 @@
+FROM jupyterhub/jupyterhub@sha256:2bd3ea9602f61aa719a4f9458c64966c9cd839145cec08f0f1980124595dbd69
+
+# Conda does not work properly in the "base" environment unless it's
+# activated. The manual even states that - "Activating environments is
+# essential to making the software in the environments work well.". Even more
+# confusingly, even when activated, the "base" enviroment don't always work the
+# same way as newly created environments. Thus, we create a new environment,
+# but make it a clone of base.
+RUN conda create -y -q --name default --clone base
+
+# We can't use the standard 'conda activate' mechanism, since that depends on
+# each RUN instruction executing in the same shell process, which is not the
+# case with 'docker build'. The following instruction will make all further
+# RUNs go through conda, using the newly created environment.
+SHELL ["conda", "run", "--name", "default", "bash", "-c"]
+
+# "conda run --name XXX" didn't work as an entrypoint
+COPY execute-in-default-environment.sh /
+ENTRYPOINT ["/execute-in-default-environment.sh"]

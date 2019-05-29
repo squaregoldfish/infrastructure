@@ -1,0 +1,13 @@
+FROM jh-packages
+
+RUN apt update -y && apt install -y iproute2 iputils-ping
+
+RUN useradd --create-home jovyan
+
+RUN chown -R jovyan: /home/jovyan
+
+# this is in the base jupyter/base-notebook image but seem to get lost
+CMD ["python", "/opt/conda/bin/jupyterhub-singleuser"]
+
+WORKDIR /home/jovyan
+USER jovyan
