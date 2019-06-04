@@ -31,16 +31,6 @@
     dest: "{{ project_dir }}"
     force: yes
 
-- name: Restore file archives
-  unarchive:
-    src: "{{ backup_path }}/{{ project_name }}Drupal/files/{{ item }}.tar.gz"
-    dest: "{{ project_dir }}/"
-  with_items:
-    - files_backup
-    - modules_backup
-    - themes_backup
-  when: restore
-
 - name: Create {{ project_dir }}/config/ directory
   file: path={{ project_dir }}/config/ state=directory recurse=yes
 
@@ -112,7 +102,3 @@
 
 - name: Change files directory owner
   command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files
-
-- name: Restore database
-  import_tasks: database.yml
-  when: restore
