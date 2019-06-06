@@ -19,3 +19,7 @@ maillog:
 
 fail2ban:
 	fail2ban-client status; fail2ban-client status postfix-auth
+
+# This changes the password used to login as the 'admin' user in the web gui.
+changadminpassword:
+	docker-compose exec mailman-web /opt/mailman-web/manage.py passwd admin
