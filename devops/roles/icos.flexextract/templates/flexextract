@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -Eueo pipefail
+
+if [[ ! -t 0  ]]
+then
+    exec >> "$HOME/run.log"
+    exec 2>&1
+    echo -n "=== starting flexextract "; date
+fi
+
+set -x
+
+TAG="{{ flexextract_tag }}"
+HOST_DIR={{ flexextract_download_host }}
+CONT_DIR={{ flexextract_download_cont }}
+

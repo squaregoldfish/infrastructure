@@ -1,0 +1,8 @@
+flexextract_user: flexextract
+flexextract_home: /docker/flexextract
+flexextract_tag: flexextract
+
+flexextract_download_host: "{{ flexextract_home }}/download"
+flexextract_download_cont: /usr/local/Flexpart_9.0.3/download/
+
+flexextract_bin_dir: "{{ flexextract_home }}/bin"

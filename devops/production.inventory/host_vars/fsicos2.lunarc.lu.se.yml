@@ -52,3 +52,5 @@ bbclient_remotes:
 dovecot_domains:
   - test.icos-cp.eu
   - otc-nrt.icos-cp.eu
+
+flexextract_download_host: /disk/data/flexextract_download

@@ -1,0 +1,66 @@
+- name: Create {{ flexextract_home }}/build directory
+  file:
+    path: "{{ flexextract_home }}/build"
+    state: directory
+  register: _build
+
+- name: Copy {{ flexextract_src_dir }} directory
+  copy:
+    src: "{{ flexextract_src_dir }}/"
+    dest: "{{ _build.path }}"
+
+- name: Build flexextract image
+  shell: |
+    set -o pipefail
+    ( echo -n '=== starting build '; date; \
+      docker build -t {{ flexextract_tag }} build --pull) \
+    | tee -a build.log
+  args:
+    chdir: "{{ flexextract_home }}"
+    executable: /bin/bash
+  register: _output
+  changed_when: '" ---> Running in " in _output.stdout'
+  when: flexextract_docker_build | default(True)
+
+# The download directory might be located outside flexextract's home directory,
+# hence we need to be root.
+- name: Create download directory
+  become: yes
+  become_user: root
+  file:
+    path: "{{ flexextract_download_host }}"
+    state: directory
+    owner: "{{ flexextract_user }}"
+    group: "{{ flexextract_user }}"
+
+# If the download directory is located outside the download directory then it's
+# nice to have a link to it.
+- name: Create a link to the download directory in home directory
+  file:
+    dest: "{{ flexextract_home }}/download"
+    src: "{{ flexextract_download_host }}"
+    state: link
+  when: flexextract_download_host  != (flexextract_home+"/download")
+
+- name: Create {{ flexextract_bin_dir }} directory
+  file:
+    path: "{{ flexextract_bin_dir }}"
+    state: directory
+
+- name: Copy flexextract script
+  copy:
+    src: flexextract.sh
+    dest: "{{ flexextract_bin_dir }}/"
+    mode: -x
+  register: _script
+
+- name: Create flexextract wrapper
+  copy:
+    dest: "{{ flexextract_bin_dir }}/flexextract"
+    mode: +x
+    content: |
+      #!/bin/bash
+      TAG="{{ flexextract_tag }}"
+      HOST_DIR="{{ flexextract_download_host }}"
+      CONT_DIR="{{ flexextract_download_cont }}"
+      source "{{ _script.dest }}"
