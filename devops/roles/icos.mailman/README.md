@@ -2,7 +2,9 @@
 
 This role will install [GNU Mailman](https://www.gnu.org/software/mailman/)
 
-It installs Mailman using three separate Docker images, as described by the [official mailman documentation](http://docs.mailman3.org/en/latest/prodsetup.html#mailman-3-in-docker).
+It installs Mailman using three separate Docker images, as described by the
+[official mailman
+documentation](http://docs.mailman3.org/en/latest/prodsetup.html#mailman-3-in-docker).
 
 Dependencies:
 * Postfix is required on the host. Use the icos.postfix role.
