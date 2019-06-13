@@ -1,4 +1,9 @@
-FROM maxking/mailman-core:latest
+FROM maxking/mailman-core:0.2.2
+
+ARG UID
+ARG GID
+RUN groupmod --gid=$GID mailman
+RUN usermod --uid=$UID --gid=$GID mailman
 
 RUN OLDUID=$(id -u mailman)	&& \
 	echo "mailman:x:{{ _user.group}}:mailman" >> /etc/group	&& \

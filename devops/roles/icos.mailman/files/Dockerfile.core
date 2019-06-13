@@ -1,0 +1,15 @@
+FROM maxking/mailman-core:0.2.2
+
+# Install groupmod/usermod.
+RUN apk --no-cache add shadow
+
+ARG UID=101
+ARG GID=101
+
+# Change container user to match host.
+# We don't need to chown anything since the entrpoint will do that.
+RUN groupadd --gid=$GID mailman
+RUN usermod --uid=$UID --gid=$GID mailman
+
+# mailman-core will su-exec to the mailman user
+# USER mailman

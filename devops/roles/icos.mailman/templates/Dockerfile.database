@@ -1,9 +1,0 @@
-FROM postgres:10
-
-RUN OLDUID=$(id -u postgres) &&\
-	groupmod --gid={{ _user.group }} postgres &&\
-	usermod --uid={{ _user.uid }} --gid={{ _user.group }} postgres &&\
-    find / -user 999 -print0 | xargs -r0 chown postgres:postgres 2>/dev/null
-
-# The postgres image fully supports running as another user.
-USER postgres

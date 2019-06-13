@@ -1,0 +1,8 @@
+FROM postgres:10
+
+ARG UID=999
+ARG GID=999
+RUN groupmod --gid=$GID postgres
+RUN usermod --uid=$UID --gid=$GID postgres
+
+# The postgres image will switch to the postgres user

@@ -10,7 +10,7 @@
     - "{{ mailman_build_database }}"
 
 - name: Install Dockerfiles
-  template:
+  file:
     dest: "{{ item.dest }}/Dockerfile"
     src: "{{ item.src }}"
   loop:

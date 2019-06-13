@@ -1,0 +1,20 @@
+FROM maxking/mailman-web:0.2.2
+
+# Install groupmod/usermod.
+RUN apk --no-cache add shadow
+
+# 101 is the default value in the base image.
+ARG UID=101
+ARG GID=101
+
+# Change container user to match host.
+# We don't need to chown anything since the entrpoint will do that.
+RUN groupmod --gid=$GID mailman
+RUN usermod --uid=$UID --gid=$GID mailman
+
+
+# The maxking/mailman-core image has su-exec support and will run as the mailman
+# user. Manually add the same for the the -web image.
+RUN apk --no-cache add su-exec
+CMD ["su-exec", "mailman", "uwsgi", "--ini", "/opt/mailman-web/uwsgi.ini"]
+q
