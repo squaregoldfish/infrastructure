@@ -41,16 +41,16 @@
       tags: filedrop
     - role: icos.kanboard
       tags: kanboard
-    - role: icos.ssh_incoming_tunnel
-      tags: ssh_incoming_tunnel
-      vars:
-        user: tunnel_icosprod2_meta
-        remote_host: "{{ meta_tunnel_from_ip }}"
-        public_key: >-
-          "{{ lookup('file', 'roles/icos.ssh_outgoing_tunnel/files/ssh_tunnel.pub') }}"
+    - { role: icos.ssh_incoming_tunnel,
+        tags: ssh_incoming_tunnel,
+        user: tunnel_icosprod2_meta,
+        remote_host: "{{ meta_tunnel_from_ip }}",
+        public_key: "{{ lookup('file', 'roles/icos.ssh_outgoing_tunnel/files/ssh_tunnel.pub') }}",
+      }
     - { role: icos.pgrep,
         tags: pgrep,
-        arg: "{{ pgrep_rdflog_instance }}" }
+        arg: "{{ pgrep_rdflog_instance }}"
+      }
 
 - hosts: icosprod2
   become: true
@@ -61,23 +61,18 @@
     - role: icos.postfix
       tags: postfix
 
-    - role: icos.limesurvey
-      tags:
-        - limesurvey
-        - survey
-      vars:
-        certbot_domains:
-          - survey.icos-cp.eu
+    - { role: icos.limesurvey,
+        tags: ['limesurvey', 'survey'],
+        certbot_domains: ['survey.icos-cp.eu']
+      }
 
-    - role: icos.limesurvey
-      tags:
-        - limesurvey
-        - survey2
-      vars:
-        limesurvey_home: /docker/limesurvey2
-        limesurvey_port: 9873
-        certbot_domains: ['survey2.icos-cp.eu']
+    - { role: icos.limesurvey,
+        tags: ['limesurvey', 'survey2'],
+        limesurvey_home: /docker/limesurvey2,
+        limesurvey_port: 9873,
+        certbot_domains: ['survey2.icos-cp.eu'],
         nginxsite_name: survey2
+      }
 
     - role: icos.geoip
       tags: geoip
@@ -91,16 +86,15 @@
       tags: nextcloud
     - role: icos.onlyoffice
       tags: onlyoffice
-    - role: icos.ssh_outgoing_tunnel
-      tags: ssh_outgoing_tunnel
-      vars:
-        remote_host: icosprod
-        remote_host_key: >-
-          "{{ hostvars[meta_tunnel_to_host].ansible_ssh_host_key_ecdsa_public }}"
-        remote_acct: tunnel_icosprod2_meta
-        remote_ip: "{{ meta_tunnel_to_ip }}"
-        remote_name: meta
+    - { role: icos.ssh_outgoing_tunnel,
+        tags: ssh_outgoing_tunnel,
+        remote_host: icosprod,
+        remote_host_key: "{{ hostvars[meta_tunnel_to_host].ansible_ssh_host_key_ecdsa_public }}",
+        remote_acct: tunnel_icosprod2_meta,
+        remote_ip: "{{ meta_tunnel_to_ip }}",
+        remote_name: meta,
         tunnel_args: "-R localhost:{{ meta_port }}:localhost:{{ meta_port }}"
+      }
     - role: icos.mailman
       tags: mailman
     - role: icos.mattermost
