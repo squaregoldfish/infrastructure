@@ -40,23 +40,6 @@
         msg: "Your infrastructure repo is not in sync with origin. Pull/push origin/master."
       when: check_infrastructure_version|default(true)|bool and git_result.stdout|int > 0
 
-# The system that is being provisioned needs to have python installed. Of the
-# two systems we currently support, CentOS 7 and Ubuntu 16.04, only CentOS have
-# python installed out of the box. This play will attempt to blindly install
-# python on Ubuntu. The play needs to have gather_facts turned off, because
-# gather_facts requires python to be already installed.
-- hosts: all
-  tags: setup
-  become: true
-  become_user: root
-  gather_facts: no
-  pre_tasks:
-    - name: Install python (as required by ansible)
-      # http://docs.ansible.com/ansible/intro_installation.html
-      raw: "test -e /usr/bin/python || apt install -y python-minimal"
-      register: raw_python
-      changed_when: '"Setting up python" in raw_python.stdout'
-
 # Set the remote IP of the ssh connection, something that's surprisingly hard to
 # get from ansible. Even though ansible can give you a list of all the
 # interfaces on the machine, it cannot tell you which one of them you connected

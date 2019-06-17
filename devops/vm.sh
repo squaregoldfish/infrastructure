@@ -22,25 +22,6 @@ TMUX_SESSION="$HOST"
 TMUX_WINDOWS=6
 
 
-# Python is required for ansible to work, but Ubuntu doesn't come with
-# it pre-installed.
-function cmd_setup {
-    ansible-playbook "-i$HOST," <(cat <<EOF
-- hosts: all
-  become: true
-  gather_facts: no
-  pre_tasks:
-    - name: Install python (as required by ansible)
-      # http://docs.ansible.com/ansible/intro_installation.html
-      raw: "test -e /usr/bin/python || apt install -y python-minimal"
-      register: raw_python
-      changed_when: '"Setting up python" in raw_python.stdout'
-      retries: 3
-      delay: 5
-EOF
-                                )
-}
-
 function cmd_attach {
     if tmux has-session -t "$TMUX_SESSION" > /dev/null; then
 	    tmux kill-session -t "$TMUX_SESSION"
@@ -76,7 +57,6 @@ case "${1:-}" in
         cd "$DEVOPS"
         vagrant destroy -f "$HOST"
         vagrant up "$HOST"
-        cmd_setup
         ;;
     "attach")
         cmd_attach
@@ -99,9 +79,6 @@ case "${1:-}" in
         cd "$DEVOPS"
         vagrant box update
         ;;
-    "setup")
-        cmd_setup
-        ;;
     ""|"help")
         cat <<EOF
 usage: $HOST <cmd>
@@ -113,6 +90,5 @@ usage: $HOST <cmd>
   provision	ansible-playbook -i$HOST, "\$@"
   icosprod	ansible-playbook icosprod.yml -i test.inventory -l$HOST "\$@"
   update	vagrant box update
-  setup		blindly install python (part of recreate)
 EOF
 esac    
