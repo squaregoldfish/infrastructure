@@ -4,3 +4,4 @@ certbot_install_certificate: False
 check_infrastructure_version: False
 cpmeta_filestorage_target: /tmp
 skip_borg_backup: True
+docker_compose_real_home: /disk/data/docker-compose-projects
