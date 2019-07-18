@@ -4,17 +4,18 @@
   include_role:
     name: icos.jarservice
   vars:
+    servicename     : "{{ cpmeta_servicename }}"
     username        : "{{ cpmeta_username }}"
     jarfile         : "{{ cpmeta_jar_file }}"
-    apptemplate     : "{{ cpmeta_apptemplate }}"
-    nginxconfig     : "{{ cpmeta_nginxconfig }}"
-    servicename     : "{{ cpmeta_servicename }}"
-    servicetemplate : "{{ cpmeta_template }}"
+    # Cannot use variables for paths to roles due to https://github.com/ansible/ansible/issues/10374
+    configfile      : roles/icos.cpmeta/templates/application.conf
+    nginxconfig     : roles/icos.cpmeta/files/meta.conf
+    servicetemplate : roles/icos.cpmeta/templates/cpmeta.service
 
 - name: Copy SSL certs and private key for Handle.net client
   copy:
     src: ssl
-    dest: /home/{{ cpmeta_username }}/
+    dest: "{{ cpmeta_home }}/"
     owner: "{{ cpmeta_username }}"
     group: "{{ cpmeta_username }}"
 

@@ -5,14 +5,6 @@ stiltweb_servicename: stiltweb
 stiltweb_home_dir: "{{ _stiltweb.home }}"
 stiltweb_bin_dir: "{{ stiltweb_home_dir }}/bin"
 
-# Sadly, we cannot use our {{role_path}} to define this path, since that
-# variable wont be resolved until in the role_included jarservice, by which
-# point it'll point to jarservice.
-# https://github.com/ansible/ansible/issues/15439
-stiltweb_template: roles/icos.stiltweb/templates/stiltweb.service
-stiltweb_nginxconfig:  roles/icos.stiltweb/files/stiltweb.conf
-stiltweb_appconfig:  roles/icos.stiltweb/files/local.conf
-
 # This is where stiltweb keeps it's archive of of stilt files
 stiltweb_statedir: /disk/data/stiltweb
 

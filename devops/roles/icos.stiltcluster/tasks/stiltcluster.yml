@@ -2,12 +2,13 @@
   include_role:
     name: icos.jarservice
   vars:
+    servicename     : "{{ stiltcluster_servicename }}"
     username        : "{{ stiltcluster_username }}"
     extra_groups    : docker
     jarfile         : "{{ stiltcluster_jar_file }}"
-    servicename     : "{{ stiltcluster_servicename }}"
-    servicetemplate : "{{ stiltcluster_template }}"
-    apptemplate     : "{{ stiltcluster_apptemplate }}"
+    # Cannot use variables for paths to roles due to https://github.com/ansible/ansible/issues/10374
+    configfile      : roles/icos.stiltcluster/templates/local.conf
+    servicetemplate : roles/icos.stiltcluster/templates/stiltcluster.service
 
 - name: Add stiltweb key to authorized_keys
   authorized_key:

@@ -1,11 +1,6 @@
 cpauth_username: cpauth
 cpauth_servicename: cpauth
-# Sadly, we cannot use our {{role_path}} to define the following paths, since
-# that variable wont be resolved until in the role_included jarservice, by which
-# point it'll point to jarservice.
-# https://github.com/ansible/ansible/issues/15439
-cpauth_template: roles/icos.cpauth/templates/cpauth.service
-cpauth_nginxconfig:  roles/icos.cpauth/files/cpauth.conf
+
 cpauth_oauth_conf: "{{ vault_cpauth_oauth_conf }}"
 cpauth_mailing_pass: "{{ vault_cpauth_mailing_pass }}"
 cpauth_masteradmin_pass: "{{ vault_cpauth_masteradmin_pass }}"

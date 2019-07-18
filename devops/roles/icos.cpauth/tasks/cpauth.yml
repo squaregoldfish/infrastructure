@@ -4,13 +4,13 @@
   include_role:
     name: icos.jarservice
   vars:
+    servicename     : "{{ cpauth_servicename }}"
     username        : "{{ cpauth_username }}"
     jarfile         : "{{ cpauth_jar_file }}"
-    # https://github.com/ansible/ansible/issues/20597
-    apptemplate     : roles/icos.cpauth/templates/application.conf
-    nginxconfig     : "{{ cpauth_nginxconfig }}"
-    servicename     : "{{ cpauth_servicename }}"
-    servicetemplate : "{{ cpauth_template }}"
+    # Cannot use variables for paths to roles due to https://github.com/ansible/ansible/issues/10374
+    configfile      : roles/icos.cpauth/templates/application.conf
+    nginxconfig     : roles/icos.cpauth/files/cpauth.conf
+    servicetemplate : roles/icos.cpauth/templates/cpauth.service
 
 - name: Copy keys
   copy:

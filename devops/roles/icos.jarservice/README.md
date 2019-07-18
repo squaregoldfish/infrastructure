@@ -10,10 +10,12 @@ To use it you must first set up some variables and then use ansibles
 	  include_role:
 		name: icos.jarservice
 	  vars:
+		servicename     : foo
 		username        : foouser
 		jarfile         : foo.jar
-		servicename     : foo
-		servicetemplate : roles/foo/templates/service.j2
+		configfile      : roles/foo/templates/application.conf
+		nginxconfig     : roles/foo/files/meta.conf
+		servicetemplate : roles/foo/templates/service
 
 
 

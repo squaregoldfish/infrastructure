@@ -4,10 +4,10 @@
   include_role:
     name: icos.jarservice
   vars:
+    servicename     : "{{ doi_servicename }}"
     username        : "{{ doi_username }}"
     jarfile         : "{{ doi_jar_file }}"
-    # https://github.com/ansible/ansible/issues/20597
-    apptemplate     : roles/icos.doi/templates/application.conf.j2
-    nginxconfig     : "{{ doi_nginxconfig }}"
-    servicename     : "{{ doi_servicename }}"
-    servicetemplate : "{{ doi_template }}"
+    # Cannot use variables for paths to roles due to https://github.com/ansible/ansible/issues/10374
+    configfile      : roles/icos.doi/templates/application.conf
+    nginxconfig     : roles/icos.doi/files/doi.conf
+    servicetemplate : roles/icos.doi/templates/doi.service

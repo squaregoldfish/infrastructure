@@ -4,10 +4,18 @@
   include_role:
     name: icos.jarservice
   vars:
+    servicename     : "{{ cpdata_servicename }}"
     username        : "{{ cpdata_username }}"
     jarfile         : "{{ cpdata_jar_file }}"
-    # https://github.com/ansible/ansible/issues/20597
-    apptemplate     : roles/icos.cpdata/templates/application.conf.j2
-    nginxconfig     : "{{ cpdata_nginxconfig }}"
-    servicename     : "{{ cpdata_servicename }}"
-    servicetemplate : "{{ cpdata_template }}"
+    # Cannot use variables for paths to roles due to https://github.com/ansible/ansible/issues/10374
+    configfile      : roles/icos.cpdata/templates/application.conf
+    nginxconfig     : roles/icos.cpdata/files/data.conf
+    servicetemplate : roles/icos.cpdata/templates/cpdata.service
+
+- name: Create dataAppStorage directory (if not present), take ownership
+  file:
+    path: "{{ cpdata_filestorage_target }}"
+    state: directory
+    owner: "{{ cpdata_username }}"
+    group: "{{ cpdata_username }}"
+

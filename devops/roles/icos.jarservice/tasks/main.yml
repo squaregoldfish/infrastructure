@@ -9,14 +9,13 @@
 - include_tasks: jarfile.yml
   when: not (jarservice_conf_only | default(False) | bool)
 
-- name: Copy {{ servicename }} config file
+- name: Copy {{ servicename }} config file {{ configfile }}
   template:
     src: "{{ configfile }}"
     dest: "{{ _user.home}}/"
-  when: configfile is defined
   notify: restart {{ servicename }}
 
-- name: Copy {{ servicename }} nginx config file
+- name: Copy {{ servicename }} nginx config file(s) {{nginxconfig}}*
   template:
     src: "{{ item }}"
     dest: /etc/nginx/conf.d/

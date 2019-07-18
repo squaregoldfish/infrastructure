@@ -1,13 +1,7 @@
 doi_username: doi
 doi_servicename: doi
-# Sadly, we cannot use our {{role_path}} to define the following paths, since
-# that variable wont be resolved until in the role_included jarservice, by which
-# point it'll point to jarservice.
-# https://github.com/ansible/ansible/issues/15439
-doi_template: roles/icos.doi/templates/doi.service.j2
-doi_nginxconfig:  roles/icos.doi/files/doi.conf
-doi_password: "{{ vault_doi_password }}"
 
+doi_password: "{{ vault_doi_password }}"
 
 certbot_domains: [doi.icos-cp.eu]
 certbot_conf_name: doi

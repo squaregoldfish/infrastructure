@@ -14,13 +14,14 @@
   include_role:
     name: icos.jarservice
   vars:
+    servicename     : "{{ stiltweb_servicename }}"
     username        : "{{ stiltweb_username }}"
     extra_groups    : docker
     jarfile         : "{{ stiltweb_jar_file }}"
-    servicename     : "{{ stiltweb_servicename }}"
-    servicetemplate : "{{ stiltweb_template }}"
-    nginxconfig     : "{{ stiltweb_nginxconfig }}"
-    appconfig       : "{{ stiltweb_appconfig }}"
+    # Cannot use variables for paths to roles due to https://github.com/ansible/ansible/issues/10374
+    configfile      : roles/icos.stiltweb/files/local.conf
+    nginxconfig     : roles/icos.stiltweb/files/stiltweb.conf
+    servicetemplate : roles/icos.stiltweb/templates/stiltweb.service
 
 - name: Add systemd service files
   template:
