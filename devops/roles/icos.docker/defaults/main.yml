@@ -1,2 +1,2 @@
-docker_compose_home: /var/docker-compose-projects
-docker_compose_link: /docker
+docker_compose_home: /docker
+docker_compose_link: /var/docker-compose-projects

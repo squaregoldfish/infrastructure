@@ -8,7 +8,7 @@ stiltcluster_maxcores: 30
 
 cpmeta_filestorage_target: /disk/data/metaAppStorage
 cpdata_filestorage_target: /disk/data/dataAppStorage
-docker_compose_real_home: /disk/data/docker-compose-projects
+docker_compose_link: /disk/data/docker-compose-projects
 
 flexpart_install_run: true
 flexpart_max_parallel: 12
