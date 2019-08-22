@@ -13,6 +13,6 @@
     dest: "{{ limesurvey_home }}"
 
 - name: Run limesurvey docker compose
-  docker_service:
+  docker_compose:
     project_src: "{{ limesurvey_home }}"
     state: present

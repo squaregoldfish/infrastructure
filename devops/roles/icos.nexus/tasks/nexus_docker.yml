@@ -42,5 +42,5 @@
   when: nexus_docker_build | default(True)
 
 - name: Start containers
-  docker_service:
+  docker_compose:
     project_src: "{{ nexus_home }}"

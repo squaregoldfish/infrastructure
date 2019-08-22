@@ -91,7 +91,7 @@
     dest: "{{ project_dir }}/docker/.env"
 
 - name: Run docker-compose
-  docker_service:
+  docker_compose:
     project_src: "{{ project_dir }}/docker"
     state: present
     pull: yes

@@ -56,7 +56,7 @@
   changed_when: '" ---> Running in " in _output.stdout'
 
 - name: Start containers
-  docker_service:
+  docker_compose:
     project_src: "{{ pgrep_home }}"
 
 - name: Specialized psql scripts

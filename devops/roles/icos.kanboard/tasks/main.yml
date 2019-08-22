@@ -26,7 +26,7 @@
     mode: g=rw
 
 - name: Run kanboard docker compose
-  docker_service:
+  docker_compose:
     project_src: /disk/data/kanboard/kanboard
     state: present
 

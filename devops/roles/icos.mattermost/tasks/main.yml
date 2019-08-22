@@ -49,7 +49,7 @@
     dest: "{{ project_dir }}/docker-compose.override.yml"
 
 - name: Run docker-compose
-  docker_service:
+  docker_compose:
     project_src: "{{ project_dir }}"
     files: docker-compose.override.yml
     state: present

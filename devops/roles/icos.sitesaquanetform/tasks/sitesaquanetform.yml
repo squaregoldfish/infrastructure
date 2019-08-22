@@ -34,7 +34,7 @@
     dest: "{{ project_dir }}/docker-compose.yml"
 
 - name: Run docker-compose
-  docker_service:
+  docker_compose:
     project_src: "{{ project_dir }}"
     state: present
   notify: reload nginx config

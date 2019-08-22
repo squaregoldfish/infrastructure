@@ -61,7 +61,7 @@
   changed_when: '" ---> Running in " in _output.stdout'
 
 - name: Start containers
-  docker_service:
+  docker_compose:
     project_src: "{{ rdflog_home }}"
 
 - name: Install psql script specialized for rdflog

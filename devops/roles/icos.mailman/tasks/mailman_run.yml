@@ -41,7 +41,7 @@
     block: "{{ lookup('template', 'Makefile') }}"
 
 - name: Start containers
-  docker_service:
+  docker_compose:
     project_src: "{{ mailman_home }}"
 
 - name: Test the REST API

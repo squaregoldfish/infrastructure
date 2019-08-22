@@ -31,7 +31,7 @@
     - { src: env, dest: /disk/data/alfresco/docker/alfresco/.env, mode: u=rw }
 
 - name: Run alfresco docker-compose
-  docker_service:
+  docker_compose:
     project_src: /disk/data/alfresco/docker/alfresco/
     state: present
 

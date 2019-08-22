@@ -93,7 +93,7 @@
   when: geoip_docker_build | default(True)
 
 - name: Start containers
-  docker_service:
+  docker_compose:
     project_src: "{{ geoip_home }}"
 
 - include_role: name=icos.certbot
