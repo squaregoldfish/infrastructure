@@ -1,0 +1,58 @@
+- name: Download tomcat binary
+  get_url:
+    url: "{{ quince_tomcat_url }}"
+    dest: /opt/tomcat.tgz
+    checksum: "sha1:{{ quince_tomcat_sha }}"
+
+- name: Unarchive /opt/tomcat.tgz
+  unarchive:
+    src: /opt/tomcat.tgz
+    dest: /opt
+    remote_src: yes
+    owner: "{{ quince_user }}"
+    group: "{{ quince_user }}"
+
+- name: Find the unpackad tomcat directory
+  find:
+    file_type: directory
+    recurse: no
+    paths: /opt
+    patterns: apache-tomcat-*
+  register: _fs
+
+- name: Extract the version-specific directory of tomcat
+  set_fact:
+    # If quince_tomcat_url is updated to a newer version of tomcat, that will
+    # result in a new file being downloaded and a new directory extracted. The
+    # following will sort the tomcat directories by name and and choose the
+    # last one, which should be the one with the highest version number.
+    quince_tomcat_dir: "{{ (_fs.files | sort(attribute='path') | last).path  }}"
+
+- name: Create /opt/tomcat symlink
+  file:
+    dest: "{{ quince_tomcat_home }}"
+    src: "{{ quince_tomcat_dir }}"
+    state: link
+
+- name: Create /usr/bin/catalina.sh symlink
+  file:
+    dest: /usr/bin/catalina.sh
+    src: "{{ quince_tomcat_home }}/bin/catalina.sh"
+    state: link
+
+- name: Allowing inbound traffic on the tomcat port
+  ufw:
+    rule: allow
+    port: "{{ quince_tomcat_port }}"
+
+- name: Copy quince.service
+  template:
+    src: quince.service
+    dest: /etc/systemd/system/quince.service
+  notify: reload systemd config
+
+- name: Enable QuinCe service
+  service:
+    name: quince
+    state: started
+    enabled: yes

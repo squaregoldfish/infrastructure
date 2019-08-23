@@ -1,0 +1,12 @@
+- name: Copy quince-backup.sh
+  template:
+    src: quince-backup.sh
+    dest: "{{ quince_home }}/backup.sh"
+    mode: +x
+  register: _b
+
+- name: Install cron job for backups
+  cron:
+    name: quince borg backup
+    hour: "*/3"
+    job: "{{ _b.dest }}"

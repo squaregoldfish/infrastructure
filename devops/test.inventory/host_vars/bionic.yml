@@ -35,3 +35,4 @@ bbserver_bin: "/usr/local/bin/borg"
 bbserver_repo_home: "{{ bbserver_home }}/repos"
 
 bbclient_remotes: "{{ groups.bbservers }}"
+quince_key_file: /home/vagrant/.ssh/authorized_keys

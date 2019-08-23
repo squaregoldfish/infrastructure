@@ -1,0 +1,11 @@
+quince_lxd_name: quince
+quince_key_file: /root/.ssh/authorized_keys
+quince_ext_port: 60522
+
+quince_domains: ["quince.bcdc.no"]
+
+certbot_name: quince
+certbot_domains: "{{ quince_domains }}"
+
+nginxsite_name: quince
+nginxsite_file: quince-nginx-config

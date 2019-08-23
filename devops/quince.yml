@@ -1,0 +1,48 @@
+# Install the QuinCe software in a LXD container on a remote host.
+#
+# 1. Setup the host.
+#   + Create the LXD container.
+#   + Forwarding a port on the host to the container ssh port.
+#   + Generate a nginx certificate for the quince domains.
+#   + Setting up nginx proxy to the container tomcat server.
+#
+# 2. Setting up the container
+#   + Connect directly to the container through the forwarded ssh port.
+#   + Install MySQL and Java using system packages.
+#   + Install Gradle and Tomcat by downloading specific versions.
+#   + Clone the QuinCe source code and compile it using Gradle.
+#   + Setup a systemd service that runs QuinCe using Tomcat.
+#
+# To provision the host and create the quince container:
+#   $ deploy quince -lquince_host
+#
+# To provision the container
+#   $ deploy quince -lquince
+#
+# To provision backups
+#   $ deploy quince -lquince backup
+#
+# Note that new versions of quince are supposed to be deployd using quince's
+# own scripts, run interactively, from inside the container.
+- import_playbook: setup.yml
+
+- hosts: quince_host
+  become: true
+  roles:
+    - role: icos.quince_host
+      
+- hosts: quince
+  become: true
+  vars:
+    quince_username: quince
+  roles:
+    - role: icos.linux
+      tags: quince_linux
+
+    - role: icos.quince
+        
+    - role: icos.bbclient
+      vars:
+        bbclient_user: quince
+      tags:
+        - quince_backup

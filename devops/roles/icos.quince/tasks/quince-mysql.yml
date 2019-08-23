@@ -1,0 +1,23 @@
+- name: Install MySQL
+  apt:
+    name: "{{ item }}"
+    state: present
+    cache_valid_time: 3600
+    force_apt_get: true
+  loop:
+    - mysql-server
+    - python3-pymysql
+
+- name: Create quince database
+  mysql_db:
+    name: "{{ quince_db_name }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create quince database user
+  mysql_user:
+    name: "{{ quince_db_user }}"
+    password: "{{ quince_db_pass }}"
+    priv: '*.*:ALL'
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock

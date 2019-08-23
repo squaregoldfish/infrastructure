@@ -1,0 +1,35 @@
+- name: Create quince user
+  user:
+    name: "{{ quince_user }}"
+    home: "{{ quince_home | default(omit) }}"
+    shell: /bin/bash
+
+- name: Create {{ quince_filestore }}/opt/quince_filestore directory
+  file:
+    path: "{{ quince_filestore }}"
+    state: directory
+    owner: "{{ quince_user }}"
+    group: "{{ quince_user }}"
+    
+- name: Install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    cache_valid_time: 3600
+    force_apt_get: true
+  loop:
+    - mysql-server
+    - openjdk-8-jdk
+    - git
+    - patch
+
+# We've pre-populated the containers authorized_keys file with keys from the
+# host system. Now add extra keys.
+- name: Install extra authorized_keys
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - extra_authorized_keys
+    

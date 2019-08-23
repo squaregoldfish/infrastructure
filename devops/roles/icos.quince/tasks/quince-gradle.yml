@@ -1,0 +1,35 @@
+- name: Download gradle binary
+  get_url:
+    url: "{{ quince_gradle_url }}"
+    dest: /opt/gradle.zip
+    checksum: "sha1:{{ quince_gradle_sha }}"
+
+- name: Install unzip
+  apt:
+    name: unzip
+    state: present
+    force_apt_get: yes
+
+- name: Unarchive /opt/gradle.zip
+  unarchive:
+    src: /opt/gradle.zip
+    dest: /opt
+    remote_src: yes
+
+- name: Find the unpackad gradle directory
+  find:
+    file_type: directory
+    recurse: no
+    paths: /opt
+    patterns: gradle-*
+  register: _fs
+
+- name: Create /usr/bin/gradle symlink
+  file:
+    dest: /usr/bin/gradle
+    # If quince_gradle_url is updated to a newer version of gradle, that will
+    # result in a new file being downloaded and a new directory extracted. The
+    # following will sort the gradle directories by name and and choose the
+    # last one, which should be the one with the highest version number.
+    src: "{{ (_fs.files | sort(attribute='path') | last).path  }}/bin/gradle"
+    state: link

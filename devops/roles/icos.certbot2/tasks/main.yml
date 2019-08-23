@@ -5,6 +5,7 @@
   loop:
     - certbot_name
     - certbot_domains
+    - certbot_name
 
 - name: Install software-properties-common for Ubuntu
   apt:

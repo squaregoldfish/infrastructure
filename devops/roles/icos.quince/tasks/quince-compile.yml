@@ -1,0 +1,37 @@
+- name: Check whether the quince repo is present
+  stat:
+    path: "{{ quince_home }}"
+  register: _q
+
+- name: Clone quince
+  git:
+    repo: "{{ quince_git_repo }}"
+    version: "{{ quince_git_version }}"
+    recursive: no
+    dest: "{{ quince_home }}"
+  # Only clone QuinCe if it's not available. Further updates will be done
+  # interactively.
+  when: not _q.stat.exists
+
+# Extract the host's IP - it'll be our default gateway.
+- name: Retrieve host IP
+  shellfact:
+    exec: "ip r show default | awk '{ print $3}'"
+    fact: quince_host_ip
+
+- name: Copy quince.setup
+  template:
+    src: quince.setup
+    dest: "{{ quince_home }}"
+    backup: yes
+
+- name: Copy Makefile
+  template:
+    src: Makefile
+    dest: /opt/
+
+- debug:
+    msg: |
+      QuinCe has now been cloned.
+      It needs to be compile and deployed interactively.
+      See /opt/Makefile

@@ -1,0 +1,54 @@
+################################################
+#
+# Default setup properties for quince. These
+# are used on deployment, and on checkout by
+# git. Override these settings by adding a
+# quince.setup file to your setup.
+#
+################################################
+%quince_root_folder%=/opt/quince
+%filestore_folder%={{ quince_filestore }}
+%db_username%={{ quince_db_user }}
+%db_password%={{ quince_db_pass }}
+%db_database%={{ quince_db_name }}
+%db_port%=3306
+%db_host%=localhost
+%app.urlstub%=http://{{ quince_domain }}
+%slack_app_url%={{ quince_slack_url }}
+
+####################
+# Email properties #
+####################
+%email_tls%=false
+%email_ssl%=false
+%email_hostname%={{ quince_host_ip }}
+%email_port%=25
+%email_username%=
+%email_password%=
+%email_fromname%=QuinCe
+%email_fromaddress%=quince@uib.no
+
+
+###########################
+# Test server properties  #
+###########################
+
+# Which branch is checked out running full_restore_from_prod.sh
+%git_test_branch%=master
+
+# Which remote is used for full_restore_from_prod.sh
+%git_test_remote%=origin
+
+
+###########################
+# Prod server properties  #
+###########################
+
+# Folder backups are stored from the production server on deployment
+%prod_backup_folder%=tagged_backups
+
+# Folder where the output WAR file is copied after compilation setup
+%prod_deploy_folder%={{ quince_webapp_dir }}
+
+# Branch used for deployment to production server
+%git_deploy_branch%={{ quince_git_version }}

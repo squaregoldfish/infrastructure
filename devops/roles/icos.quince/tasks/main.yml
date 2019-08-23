@@ -1,0 +1,35 @@
+- name: Install system packages required to compile and run quince
+  tags:
+    - quince_setup
+    - quince_system
+  import_tasks: quince-system.yml
+
+- name: Download specific version of gradle
+  tags:
+    - quince_setup
+    - quince_gradle
+  import_tasks: quince-gradle.yml
+
+- name: Download specific version of tomcat
+  tags:
+    - quince_setup
+    - quince_tomcat
+  import_tasks: quince-tomcat.yml
+
+- name: Setup mysql database
+  tags:
+    - quince_setup
+    - quince_mysql
+  import_tasks: quince-mysql.yml
+
+- name: Compile quince from source using gradle
+  tags: quince_compile
+  import_tasks: quince-compile.yml
+
+- name: Install backup script
+  become: yes
+  become_user: "{{ quince_user }}"
+  tags:
+    - quince_backup
+    - quince_backup_script
+  import_tasks: quince-backup.yml

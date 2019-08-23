@@ -1,4 +1,6 @@
 bionid
+quince
+quince_host
 
 [icosprod]
 centos
@@ -15,7 +17,6 @@ centos
 [bbservers]
 bionic
 bionid
-
 
 [all:vars]
 certbot_fake_certificate=True

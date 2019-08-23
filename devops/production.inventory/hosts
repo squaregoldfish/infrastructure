@@ -1,4 +1,6 @@
 cdb.nateko.lu.se ansible_user=root
+quince
+quince_host
 
 [icosprod]
 fsicos.lunarc.lu.se

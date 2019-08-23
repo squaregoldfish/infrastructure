@@ -1,0 +1,22 @@
+- name: Create container, port forwarding and ssh keys
+  import_tasks: quince-setup.yml
+  tags: quince_setup
+
+- name: Generate certificates using certbot
+  import_role: name=icos.certbot2
+  tags: quince_certbot
+
+# In case we're restricted by tags to only setup nginx, then we don't have
+# access to this variable and need to retrieve it.
+- name: Retrieve IP of container
+  shellfact:
+    fact: quince_int_ip
+    exec: >-
+      lxc info {{ quince_lxd_name }} |
+      awk '$1 == "eth0:" && $2 == "inet" { print $3 }'
+  when: quince_int_ip is not defined
+  tags: quince_nginx
+
+- name: Create nginx redirect
+  import_role: name=icos.nginxsite
+  tags: quince_nginx

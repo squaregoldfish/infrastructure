@@ -1,0 +1,36 @@
+quince_user: quince
+quince_home: /opt/quince
+quince_filestore: /opt/quince_filestore
+
+quince_git_repo: https://github.com/BjerknesClimateDataCentre/QuinCe.git
+# The default branch is 'next_release' which is not what we want.
+quince_git_version: master
+
+quince_gradle_url: https://services.gradle.org/distributions/gradle-5.6-bin.zip
+quince_gradle_sha: a8d15141093d0df419e925f906578053565de99d
+
+quince_tomcat_url: http://apache.mirrors.spacedump.net/tomcat/tomcat-9/v9.0.24/bin/apache-tomcat-9.0.24.tar.gz
+quince_tomcat_sha: f18703beb5994cd5e500d72d397a12f2d203588b
+quince_tomcat_port: "8080"
+
+quince_db_user: quince
+quince_db_pass: quince
+quince_db_name: quince
+
+quince_domain: "quince.bcdc.no"
+quince_webapp_dir: /opt/tomcat/webapps/
+quince_build_war: "{{ quince_home }}/build/libs/QuinCe.war"
+
+quince_tomcat_home: "/opt/tomcat"
+quince_tomcat_war: "{{ quince_tomcat_home }}/webapps/ROOT.war"
+
+quince_slack_url: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66303732346131626538333962623435343666323838346363666665373131653539326138626334
+          3836626638326464623263363461616233366561633330610a383263383765383732383865333437
+          35393631646436323933663433353136383561363964356436326661353336323732313035646331
+          3133623434326463350a396332343431373233376237393766306432303637306138666236653766
+          39363231346537373633343161633332333034666233376531636363343335376331346562356636
+          31626463633630633466313337373463333534356131343961306336316134613935323632316137
+          38663631643561383861613132623735323238363335626462363332303064363732643763346235
+          63633230643631373838

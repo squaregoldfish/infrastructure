@@ -1,0 +1,14 @@
+[Unit]
+Description=QuinCe web application
+After=network.target mysql.target
+
+[Service]
+Type=simple
+User={{ quince_user }}
+ExecStart=/usr/bin/catalina.sh run
+Restart=always
+RestartSec=30
+WorkingDirectory={{ quince_home }}
+
+[Install]
+WantedBy=multi-user.target
