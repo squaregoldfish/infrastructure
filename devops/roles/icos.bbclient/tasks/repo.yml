@@ -3,6 +3,10 @@
   shellfact:
     exec: echo $SSH_CONNECTION | cut -d ' ' -f 3
     fact: bbclient_ip
+  # If the bbclient is a container, the this task would set bbclient_ip to a
+  # private address, which would end up in a authorized_keys file - which would
+  # break things. In those cases, set bbclient_ip manually.
+  when: bbclient_ip is not defined
 
 - delegate_to: "{{ bbclient_remote }}"
   block:
