@@ -62,6 +62,9 @@
       {{ bbclient_remote_keys }}
 
 - name: Initialize repo
+  # borg(1) will create it's cache as the user it's running as, which needs to
+  # be the one we're installing as.
+  become: "{{ bbclient_user }}"
   command: |
     {{ bbclient_wrapper }} init {{ bbclient_repo_url }} --encryption=none
   register: r
