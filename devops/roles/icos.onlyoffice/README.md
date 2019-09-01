@@ -1,7 +1,7 @@
 # Overview
 
-This role will the OnlyOffice Documentserver as a docker container proxied by a
-host nginx.
+This role will install the OnlyOffice Documentserver as a docker container
+proxied by a host nginx.
 
 # Purpose
 
@@ -15,7 +15,8 @@ doesn't really need any storage of its own.
 
 # Known bugs
 
-* It's very complex. The single container will use supervised(1) to start:
+* The OnlyOffice image is very complex. The single container will use
+  supervised(1) to start:
   * postgres 9.5 (i.e, an older version)
   * redis
   * nginx (for internal proxying)
