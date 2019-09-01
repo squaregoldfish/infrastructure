@@ -1,6 +1,7 @@
 FROM onlyoffice/documentserver:{{ onlyoffice_version }}
 
-RUN apt update -y && apt upgrade -y && apt install -y patch unrar
+RUN apt update
+RUN apt install -y patch unrar
 
 COPY reject_unauthorized.diff /app/onlyoffice
 RUN patch -p1 < /app/onlyoffice/reject_unauthorized.diff
