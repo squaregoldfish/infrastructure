@@ -61,3 +61,7 @@
     src: onlyoffice.conf
     dest: /etc/nginx/conf.d/
   notify: reload nginx config
+
+- debug:
+    msg: |
+      Don't forget to manually restart onlyoffice.
