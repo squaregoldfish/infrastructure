@@ -5,6 +5,7 @@
     name: icos.certbot
   vars:
     - certbot_domains: "{{conf_to_domains[nginx_conf_name]}}"
+    - certbot_conf_name: "{{nginx_conf_name}}"
   when: conf_to_domains[nginx_conf_name] is defined
 
 - name: Copy {{nginx_conf_name}} nginx config file
