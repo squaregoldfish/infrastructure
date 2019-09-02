@@ -19,8 +19,8 @@
     # https://github.com/ansible/ansible/issues/27124
      - name: Fail if ansible is too old
        fail:
-        msg: "This playbook uses features that requires ansible >= 2.7"
-       when: "ansible_version.full is version_compare('2.7', '<=')"
+        msg: "This playbook uses features that requires ansible >= 2.8"
+       when: "ansible_version.full is version_compare('2.8', '<=')"
 
 - hosts: all
   tags: always
