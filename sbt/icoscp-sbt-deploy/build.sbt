@@ -1,6 +1,8 @@
+
+scalaVersion in ThisBuild := "2.12.9"
 name := "icoscp-sbt-deploy"
 organization := "se.lu.nateko.cp"
-version := "0.2.1-SNAPSHOT"
+version := "0.2.1"
 
 sbtPlugin := true
 
