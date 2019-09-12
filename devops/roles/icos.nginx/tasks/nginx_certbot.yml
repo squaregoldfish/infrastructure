@@ -1,0 +1,17 @@
+- name: Install software-properties-common for Ubuntu
+  apt:
+    name: software-properties-common
+
+- name: Add Certbot PPA
+  apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: Install Certbot for nginx
+  package:
+    name: python-certbot-nginx
+
+- name: Add job to renew certificates
+  cron:
+    name: Certbot renewal
+    job: "{{ certbot_bin }} renew --post-hook 'service nginx reload'"
+    special_time: daily

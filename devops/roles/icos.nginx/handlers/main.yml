@@ -1,4 +1,3 @@
----
 - name: reload nginx config
   # First syntax check the config. This gives us direct feedback when running
   # ansible instead of just having 'systemctl reload' (sometimes!) failing.

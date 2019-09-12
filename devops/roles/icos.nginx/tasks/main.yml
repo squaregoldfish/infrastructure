@@ -1,18 +1,9 @@
----
-- include_vars:
-    file: vars/{{ ansible_distribution }}.yml
-
-# By default, selinux on centos/7 will disallow the httpd to connect to
-# cpauth (localhost:8080) You can see it in /var/log/nginx/error.log as
-# '... [crit] 16897#0: *10 connect() to 127.0.0.1:8080 failed (13:
-# Permission denied) while connecting to upstream ...'
-- name: Set selinux into 'permissive' mode.
-  selinux: policy=targeted state=permissive
-  when: ansible_distribution == 'CentOS'
-
-- name: Install NGINX
-  package:
-    name=nginx state=present
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+    cache_valid_time: 3600
+    force_apt_get: yes
 
 - name: Add mitigation for systemd/nginx race-condition
   block:
@@ -29,9 +20,10 @@
         dest: /etc/systemd/system/nginx.service.d/override.conf
       notify: reload systemd config
 
-- name: Start NGINX
+- name: Start nginx
   service:
-    name=nginx state=started
+    name: nginx
+    state: started
 
 - name: Install nginx.conf
   template:
@@ -50,12 +42,13 @@
     mode: 0700
   notify: reload nginx config
 
-- name: Allowing inbound HTTP/HTTPS (CentOS)
-  firewalld: service={{ item }} permanent=true state=enabled immediate=true
-  with_items: [http, https]
-  when: ansible_distribution == "CentOS"
+- name: Allowing inbound HTTP/HTTPS
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  loop:
+    - http
+    - https
 
-- name: Allowing inbound HTTP/HTTPS (Ubuntu)
-  ufw: rule=allow port={{ item }}
-  with_items: [http, https]
-  when: ansible_distribution == "Ubuntu"
+- import_tasks: nginx_certbot.yml
+  tags: nginx_certbot

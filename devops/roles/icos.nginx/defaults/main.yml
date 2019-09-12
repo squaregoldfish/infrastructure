@@ -1,6 +1,1 @@
----
-# defaults file for icos.nginx
-nginx_ssl_conf_dir: /etc/nginx/ssl
-# list of config files to install
-# a corresponding .conf file must exist in files/conf.d
-extra_configs: []
+nginx_user: www-data
