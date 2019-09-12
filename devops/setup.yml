@@ -1,7 +1,7 @@
 ---
 # Include local_vars.yml if it exist but don't fail if it doesn't.
 # That file is meant for local variables (not checked into git).
-- hosts: all
+- hosts: localhost
   tags: always
   gather_facts: no
   pre_tasks:
@@ -11,7 +11,7 @@
         - /dev/null
 
 # Version check play.
-- hosts: all
+- hosts: localhost
   tags: always
   gather_facts: no
   pre_tasks:
@@ -22,7 +22,7 @@
         msg: "This playbook uses features that requires ansible >= 2.8"
        when: "ansible_version.full is version_compare('2.8', '<=')"
 
-- hosts: all
+- hosts: localhost
   tags: always
   gather_facts: no
   pre_tasks:
