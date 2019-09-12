@@ -1,0 +1,56 @@
+# This playbook contains various third-party domains.
+#
+# This playbook should be removed and the roles contained herein should be
+# moved to other - mostly drupal - roles.
+#
+# It's been tested with the deploy.py script, i.e:
+#   $ deploy domains nordspec
+
+
+- hosts: icosprod2
+  become: yes
+  roles:
+    - role: icos.nginxsite
+      vars:
+        nginxsite_name: nordspec
+        nginxsite_file: files/domains/nordspec.conf
+      tags:
+        - domains_nordspec
+
+    # BROKEN (these mostly lives on icosprod)
+    # - role: icos.nginxsite
+    #   vars:
+    #     nginxsite_name: eurocom
+    #     nginxsite_file: files/domains/eurocom.conf
+
+    # - role: icos.nginxsite
+    #   vars:
+    #     nginxsite_name: jupyter
+    #     nginxsite_file: files/domains/jupyter.conf
+
+    # - role: icos.nginxsite
+    #   vars:
+    #     nginxsite_name: nexus
+    #     nginxsite_file: files/domains/nexus.conf
+
+    # - role: icos.nginxsite
+    #   vars:
+    #     nginxsite_name: phplist
+    #     nginxsite_file: files/domains/phplistsconf
+
+    # - role: icos.nginxsite
+    #   vars:
+    #     nginxsite_name: restheart
+    #     nginxsite_file: files/domains/restheart.conf
+
+    # - role: icos.nginxsite
+    #   vars:
+    #     nginxsite_name: scicosri
+    #     nginxsite_file: files/domains/scicosri.conf
+
+    # - role: icos.nginxsite
+    #   vars:
+    #     nginxsite_name: static
+    #     nginxsite_file: files/domains/static.conf
+    #   tags:
+    #     - domains_static

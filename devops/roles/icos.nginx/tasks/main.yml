@@ -41,19 +41,13 @@
     group: "{{ nginx_user }}"
   notify: reload nginx config
 
-- include_tasks: conf.yml
-  loop: "{{ extra_configs }}"
-  loop_control:
-    loop_var: nginx_conf_name
-
 - name: Copy nginx SSL files (this operation is slow)
-  copy: src=files/ssl/ dest=/etc/nginx/ssl/ owner=root group=root mode=0700
-  notify: reload nginx config
-
-- name: Copy nginx conf folder
-  copy: >-
-    src=files/conf/ dest=/etc/nginx/conf/ mode=0770
-    group="{{nginx_user}}" owner="{{nginx_user}}"
+  copy:
+    src: files/ssl/
+    dest: /etc/nginx/ssl/
+    owner: root
+    group: root
+    mode: 0700
   notify: reload nginx config
 
 - name: Allowing inbound HTTP/HTTPS (CentOS)
