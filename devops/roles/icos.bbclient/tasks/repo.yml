@@ -60,6 +60,10 @@
 - name: Initialize repo
   command: |
     {{ bbclient_wrapper }} init {{ bbclient_repo_url }} --encryption=none
+  register: r
+  failed_when:
+    - r.rc != 0
+    - not r.stderr.startswith('A repository already exists at')
 
 - name: Remember repo url
   lineinfile:
