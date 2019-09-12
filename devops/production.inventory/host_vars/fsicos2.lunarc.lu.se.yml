@@ -24,10 +24,6 @@ nginx_set_real_ip_from: |
     # restrictions to work.
     set_real_ip_from 194.47.223.133; # fsicos
 
-
-remotebackup_remote_hosts: [fsicos.lunarc.lu.se]
-remotebackup_remote_root: /disk/data/remotebackup
-
 ssh_connection_remote_ip: 194.47.223.139
 
 nextcloud_admin_password: "{{ vault_nextcloud_admin_password }}"

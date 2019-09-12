@@ -80,8 +80,6 @@
       tags: rdflog
     - role: icos.cpmeta
       tags: cpmeta
-    - role: icos.remotebackup
-      tags: remotebackup
     - role: icos.nextcloud
       tags: nextcloud
     - role: icos.onlyoffice
