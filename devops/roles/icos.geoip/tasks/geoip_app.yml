@@ -1,42 +1,3 @@
-- name: Read distribution specific variables
-  include_vars:
-    file: vars/{{ ansible_distribution | lower }}.yml
-
-- name: Create geoip user
-  user:
-    name: "{{ geoip_user }}"
-    state: present
-    create_home: no
-    home: "{{ geoip_home }}"
-  register: _user
-
-- name: Install sqlite
-  package:
-    name: "{{ sqlite_package_name }}"
-    state: present
-
-- name: Create build directory
-  file:
-    path: "{{ geoip_home }}/build"
-    state: directory
-
-- name: Create database volume directory
-  file:
-    path: "{{ geoip_db_dir }}"
-    state: directory
-    owner: "{{ _user.uid }}"
-    group: "{{ _user.group }}"
-
-- name: Install files
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-  with_items:
-    - { src: README.md, dest: "{{ geoip_home }}/README.md" }
-    - { src: Makefile, dest: "{{ geoip_home }}/Makefile" }
-    - { src: Dockerfile, dest: "{{ geoip_build_dir }}/Dockerfile" }
-    - { src: docker-compose.yml, dest: "{{ geoip_home }}/docker-compose.yml" }
-
 - name: Pull source
   git:
     repo: "{{ geoip_git_repo }}"
@@ -77,8 +38,8 @@
 - name: Change owner of the database file to geoip
   file:
     path: "{{ geoip_db_file }}"
-    owner: "{{ _user.name }}"
-    group: "{{ _user.group }}"
+    owner: "{{ geoip_user }}"
+    group: "{{ geoip_user }}"
 
 - name: Build geoip images using docker-compose
   shell: |
@@ -96,10 +57,14 @@
   docker_compose:
     project_src: "{{ geoip_home }}"
 
-- include_role: name=icos.certbot
-
-- name: Install nginx config file
-  template:
-    src: geoip.conf
-    dest: /etc/nginx/conf.d/
-  notify: reload nginx config
+- name: Check that geoip responds
+  uri:
+    url: "http://{{ certbot_domains | first }}:/ip/8.8.8.8"
+    return_content: yes
+  register: r
+  failed_when: r.failed or r.json | json_query('ip') != '8.8.8.8'
+  #  Give geoip a chance to come online
+  retries: 2
+  delay: 10
+  until: not r.failed
+  tags: geoip_check

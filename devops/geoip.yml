@@ -1,0 +1,19 @@
+# Run everything 
+#   $ deploy geoip
+#
+# Deploy new version
+#   $ deploy geoip app
+#
+# Show other tags
+#   $ deploy geoip --list-tags
+#
+
+- import_playbook: setup.yml
+  
+- hosts: icosprod2
+  become: yes
+  vars_files:
+    - vars.yml
+    - vault.yml
+  roles:
+    - role: icos.geoip

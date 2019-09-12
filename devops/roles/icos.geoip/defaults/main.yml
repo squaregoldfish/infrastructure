@@ -15,3 +15,5 @@ geoip_nginx_allow_deny : "{{ vault_geoip_nginx_allow_deny }}"
 geoip_python_version   : 3.6
 certbot_domains        : [geoip.icos-cp.eu]
 certbot_conf_name      : geoip
+nginxsite_name         : geoip
+nginxsite_file         : geoip.conf

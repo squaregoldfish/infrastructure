@@ -1,0 +1,34 @@
+- name: Create geoip user
+  user:
+    name: "{{ geoip_user }}"
+    state: present
+    create_home: no
+    home: "{{ geoip_home }}"
+  register: _user
+
+- name: Install sqlite
+  package:
+    name: sqlite3
+    state: present
+
+- name: Create build directory
+  file:
+    path: "{{ geoip_home }}/build"
+    state: directory
+
+- name: Create database volume directory
+  file:
+    path: "{{ geoip_db_dir }}"
+    state: directory
+    owner: "{{ _user.uid }}"
+    group: "{{ _user.group }}"
+
+- name: Install files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: README.md, dest: "{{ geoip_home }}/README.md" }
+    - { src: Makefile, dest: "{{ geoip_home }}/Makefile" }
+    - { src: Dockerfile, dest: "{{ geoip_build_dir }}/Dockerfile" }
+    - { src: docker-compose.yml, dest: "{{ geoip_home }}/docker-compose.yml" }
