@@ -1,2 +1,33 @@
-- include: mailman.yml
-  tags: mailman_only
+- name: Create user for mailman
+  user:
+    name: "{{ mailman_user }}"
+    state: present
+    home: "{{ mailman_home }}"
+  register: _user
+
+- name: Install mailman docker-compose.yml
+  template:
+    dest: "{{ mailman_home }}/"
+    src: docker-compose.yml
+    mode: 0600
+
+- include_tasks: mailman_build.yml
+
+- include_tasks: mailman_run.yml
+
+- import_role: name=icos.certbot
+  tags: mailman_certbot
+
+- name: Install the mailman nginx conf to nginx/conf.d
+  template:
+    dest: /etc/nginx/conf.d/
+    src: mailman.conf
+  notify: reload nginx config
+  when: not certbot_disabled
+
+- name: Set postfix parameters
+  postconf:
+    param: "{{ item.param }}"
+    value: "{{ item.value }}"
+    append: "{{ item.append | default(omit) }}"
+  loop: "{{ mailman_postfix_config }}"

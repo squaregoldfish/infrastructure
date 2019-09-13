@@ -1,0 +1,14 @@
+- import_playbook: setup.yml
+
+- hosts: icosprod2
+  become: true
+  vars:
+    mailman_username: mailman
+  roles:
+    - role: icos.mailman
+
+    - role: icos.bbclient
+      tags: mailman_backup
+      vars:
+        bbclient_user: "{{ mailman_username }}"
+        bbclient_coldbackup_crontab: { hour: 02, minute: 40 }
