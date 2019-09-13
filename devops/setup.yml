@@ -19,7 +19,12 @@
     # https://github.com/ansible/ansible/issues/27124
      - name: Fail if ansible is too old
        fail:
-        msg: "This playbook uses features that requires ansible >= 2.8"
+        msg: |
+          This playbook uses features that requires ansible >= 2.8.
+          Please upgrade your version of ansible, to do this, first run:
+            pip install --user ansible==q
+          Then find the latest version from the output and then run:
+            pip install --user ansible==2.8.5
        when: "ansible_version.full is version_compare('2.8', '<=')"
 
 - hosts: localhost
