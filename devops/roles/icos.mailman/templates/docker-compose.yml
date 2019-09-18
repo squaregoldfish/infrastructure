@@ -19,6 +19,7 @@ services:
     - DATABASE_TYPE=postgres
     - DATABASE_CLASS=mailman.database.postgresql.PostgreSQLDatabase
     - HYPERKITTY_API_KEY={{ mailman_hyperkitty_api_key }}
+    restart: always
     networks:
       mailman:
         ipv4_address: {{ mailman_core_ipv4 }}
@@ -43,6 +44,7 @@ services:
     - MAILMAN_ADMIN_USER=admin
     - MAILMAN_ADMIN_EMAIL={{ mailman_admin_email }}
     - SECRET_KEY={{ mailman_web_secret_key }}
+    restart: always
     networks:
       mailman:
         ipv4_address: {{ mailman_web_ipv4 }}
