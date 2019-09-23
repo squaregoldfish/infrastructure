@@ -51,12 +51,12 @@ server {
 {% if project_name == "ac" %}
 server {
   listen       80;
-  server_name  ac.icos-cp.eu {{ domain | replace("www.","") }} {{ domain }};
+  server_name  {{ domain | replace("www.","") }} {{ domain }};
   return 301   https://{{ domain }}$request_uri;
 }
 server {
   listen       443 ssl;
-  server_name  ac.icos-cp.eu {{ domain | replace("www.","") }};
+  server_name  {{ domain | replace("www.","") }};
 
   {{ certbot_nginx_conf | indent(2) }}
 
