@@ -1,10 +1,20 @@
-- include_tasks: drupal_only.yml
-  with_items: "{{ websites }}"
-  loop_control:
-    loop_var: project_name
-  tags:
-    - drupal_only
+- name: Include {{ website }} vars
+  include_vars: "{{ website }}-vars.yml"
+  tags: always
 
-- name: Setup borg backup
-  import_tasks: backup.yml
-  when: skip_borg_backup is not defined
+- name: Include {{ website }} vault
+  include_vars: "{{ website }}-vault.yml"
+  tags: always
+
+- name: Include vars
+  include_vars: drupal.yml
+  tags: always
+
+- import_tasks: nginx.yml
+  tags: drupal_nginx
+
+- import_tasks: drupal.yml
+  tags: drupal
+
+- import_tasks: backup.yml
+  tags: drupal_borg

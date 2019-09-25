@@ -1,22 +1,4 @@
 ---
-- name: Include {{ project_name }} vars
-  include_vars: "{{ project_name }}-vars.yml"
-
-- name: Include {{ project_name }} vault
-  include_vars: "{{ project_name }}-vault.yml"
-
-- name: Include vars
-  include_vars: drupal.yml
-
-- include_role: name=icos.certbot
-
-- name: Copy nginx {{ nginx_conf_name }}.conf
-  template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/conf.d/{{ nginx_conf_name }}.conf
-    mode: 0700
-  notify: reload nginx config
-
 - name: Create project directory
   file:
     path: "{{ project_dir }}"
@@ -96,7 +78,7 @@
   notify: reload nginx config
 
 - name: Change private directory owner
-  command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/private/
+  command: docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/private/
 
 - name: Change files directory owner
-  command: docker exec {{project_name}}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files
+  command: docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files

@@ -99,7 +99,5 @@
       tags: mattermost
     - role: icos.nexus
       tags: nexus
-    - role: icos.drupal
-      tags: drupal
     - role: icos.sitesaquanetform
       tags: sitesaquanetform

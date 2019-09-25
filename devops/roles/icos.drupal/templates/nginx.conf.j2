@@ -4,11 +4,11 @@ server {
 
   {{ certbot_nginx_conf | indent(2) }}
 
-{% if project_name == "ri" %}
+{% if website == "ri" %}
   location =/science-conference {
     return 301 https://conference.icos-ri.eu/;
   }
-{% elif project_name == "cp" %}
+{% elif website == "cp" %}
   location = /license {
     return 301 https://data.icos-cp.eu/licence;
   }
@@ -48,7 +48,7 @@ server {
   }
 }
 
-{% if project_name == "ac" %}
+{% if website == "ac" %}
 server {
   listen       80;
   server_name  {{ domain | replace("www.","") }} {{ domain }};

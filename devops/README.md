@@ -62,8 +62,6 @@ Finally, a production deployment to all our servers would look like:
 
 ## Deploying Drupal websites
 
-For example, for installing just the `ac` Drupal project:
+The drupal playbook requires a `website` variable with the short name of the website to be updated.
 
-`ansible-playbook -i production.inventory -t drupal_only -e '{"websites":["ac"]}' icosprod.yml`
-
-(Use `-t drupal` for a from-scratch run!)
+`ansible-playbook -i production.inventory -t drupal -e "website=ac" drupal.yml`

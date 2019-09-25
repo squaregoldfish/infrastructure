@@ -1,0 +1,6 @@
+- import_playbook: setup.yml
+
+- hosts: icosprod2
+  become: true
+  roles:
+    - role: icos.drupal

@@ -1,4 +1,0 @@
-# Workaround to apply the drupal_only tag to all subtasks
-# TODO: Use 'apply' from Ansible 2.7 https://github.com/ansible/ansible/pull/39236
-- import_tasks: drupal.yml
-  tags: drupal_only
