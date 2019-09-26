@@ -1,0 +1,30 @@
+- name: Install docker
+  tags: docker
+  apt:
+    name:
+      - docker.io
+      - python-docker
+
+- name: Install pip
+  tags: docker
+  apt:
+    name: python-pip
+
+- name: Install docker-compose using pip
+  tags: docker
+  pip:
+    name:
+      - docker-compose
+    state: latest
+
+- name: Install public key
+  tags: keys
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ vault_exploredata_ssh_keys }}"
+
+- name: Set timezone to Europe/Stockholm
+  timezone:
+    name: Europe/Stockholm
+  notify: Restart crond

@@ -1,0 +1,11 @@
+- name: Check that all vars are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - exploredata_type
+
+- name: Check type of deployment
+  fail:
+    msg: "exploredata_type must be either 'prod' or 'test'"
+  when: exploredata_type not in ('prod', 'test')

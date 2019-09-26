@@ -1,0 +1,135 @@
+# Deploy jupyterhub to exploredata.icos-cp.eu.
+#
+# 1. Create a LXD container running on 'exploredata_host'
+# 2. Setup letsencrypt certificates on the host along with nginx configuration
+#    to forward traffic to the container.
+# 4. Setup ssh port-forwarding to allow remote login to this container.
+# 4. Provision the container with docker and a number of extra ssh keys.
+# 5. Push a directory containing docker-compose.yml along with several build
+#    directories that together provides a jupyter
+# 6. Compile and start the hub.
+#
+# Steps 1-4 will be done once by an administrator.
+# Steps 5-6 is done by the people who develop the jupyter notebooks.
+#
+# Two distinct domains are in play:
+#   exploredata.icos-cp.eu - this is the production domain
+#   exploretest.icos-cp.eu - this is the testing domain
+#
+# Examples of using the playbook with deploy.py:
+#
+# Setup the host
+#   $ deploy exploredata -lexploredata_host
+#
+# Recreate the lxd container
+#   $ deploy exploredata lxd
+#
+# For details about how to push jupyter to testing/production, look in
+# ../exploredata.
+
+
+# Create the LXD container
+- hosts: exploredata_host
+  become: true
+  tasks:
+    - name: Create exploredata LXD configuration
+      tags:
+        - lxd
+        - profile
+      lxd_profile:
+        config:
+          # Allow docker
+          security.nesting: "true"
+          # Restrict CPU usage
+          limits.cpu: "4"
+        description: "Configuration for exploredata"
+        devices:
+          # Mount stilt data inside LXD for later mounting inside docker.
+          download:
+            path: /disk/data/stiltweb
+            source: "{{ exploredata_stiltweb_data_src }}"
+            type: disk
+            readonly: "true"
+        name: exploredata
+
+    - import_role: name=icos.lxdhost
+      tags: lxd
+      vars:
+        lxdhost_name: exploredata
+        lxdhost_port: "{{ hostvars['exploredata'].ansible_port }}"
+        lxdhost_profiles:
+          - default
+          - exploredata
+
+    - import_role: name=icos.certbot2
+      tags:
+        - cert
+      vars:
+        certbot_name: exploredata-test
+        certbot_domains:
+          - exploretest.icos-cp.eu
+          - exploredata.icos-cp.eu
+
+    - import_role: name=icos.nginxsite
+      tags: nginx
+      vars:
+        nginxsite_name: exploredata-test
+        nginxsite_file: files/exploredata-nginx.conf
+        exploredata_name: test
+        exploredata_port: 4567
+        exploredata_host: "{{ lxdhost_ip }}"
+        exploredata_domain: exploretest.icos-cp.eu
+
+    - import_role: name=icos.nginxsite
+      tags: nginx
+      vars:
+        nginxsite_name: exploredata-prod
+        nginxsite_file: files/exploredata-nginx.conf
+        exploredata_name: prod
+        exploredata_port: 4566
+        exploredata_host: "{{ lxdhost_ip }}"
+        exploredata_domain: exploredata.icos-cp.eu
+
+
+# Setup the LXD container
+- hosts: exploredata
+  tasks:
+    - tags: setup
+      block:
+        # Reading the vault as a task (instead of a vars_files) allows people
+        # who don't have the password to use the other tasks.
+        - name: Include vault.yml
+          include_vars:
+            file: vault.yml
+
+        - import_role:
+            name: icos.exploredata
+            tasks_from: common
+
+        - import_role:
+            name: icos.exploredata
+            tasks_from: environ
+          vars:
+            exploredata_type: prod
+            exploredata_password: "{{ vault_exploredata_password_prod }}"
+
+        - import_role:
+            name: icos.exploredata
+            tasks_from: environ
+          vars:
+            exploredata_type: test
+            exploredata_password: "{{ vault_exploredata_password_test }}"
+
+    - tags: pushprod
+      import_role:
+        name: icos.exploredata
+        tasks_from: deploy
+      vars:
+        exploredata_type: prod
+
+    - tags: pushtest
+      import_role:
+        name: icos.exploredata
+        tasks_from: deploy
+      vars:
+        exploredata_type: test

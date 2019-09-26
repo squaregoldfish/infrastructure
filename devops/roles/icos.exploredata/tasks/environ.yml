@@ -1,0 +1,26 @@
+- import_tasks: check-vars.yml
+
+- name: Create {{ exploredata_home }} directory
+  file:
+    path: "{{ exploredata_home }}"
+    state: directory
+
+- name: Copy exploredata.env
+  template:
+    src: exploredata.env
+    dest: "{{ exploredata_home }}/.env"
+
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ exploredata_home }}/"
+
+- name: Create {{ exploredata_home }}/build.hub directory
+  file:
+    path: "{{ exploredata_home }}/build.hub"
+    state: directory
+
+- name: Copy jupyterhub_config.py
+  template:
+    src: jupyterhub_config.py
+    dest: "{{ exploredata_home }}/build.hub/"

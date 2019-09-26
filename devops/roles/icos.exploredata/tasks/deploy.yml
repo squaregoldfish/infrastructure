@@ -1,0 +1,26 @@
+- import_tasks: check-vars.yml
+
+- name: Synchronize source
+  synchronize:
+    src: "{{ exploredata_src }}/"
+    dest: "{{ exploredata_home }}"
+    delete: yes
+    rsync_opts:
+      - "--exclude=/docker-compose.yml"
+      - "--exclude=/.env"
+      - "--exclude=/build.hub/jupyterhub_config.py"
+  register: rsync
+
+- name: Build the notebook image
+  docker_image:
+    name: "{{ exploredata_notebook_image }}"
+    source: build
+    force_source: yes
+    build:
+      path: "{{ exploredata_home }}/build.notebook"
+      pull: yes
+
+- name: Build and start the hub image
+  docker_compose:
+    project_src: "{{ exploredata_home }}"
+    build: yes
