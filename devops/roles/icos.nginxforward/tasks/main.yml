@@ -1,0 +1,27 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - nginxforward_port
+    - nginxforward_name
+    - nginxforward_cert
+    - nginxforward_domain
+
+- import_tasks: auth.yml
+  when: nginxforward_users is defined
+  tags: auth
+
+- name: Copy config for {{ nginxforward_name }}
+  template:
+    src: "{{ nginxforward_file }}"
+    dest: "{{ nginxforward_path_available }}"
+  notify: reload nginx config
+
+- name: Create symlink to sites-enabled
+  file:
+    dest: "{{ nginxforward_path_enable }}"
+    src: "{{ nginxforward_path_available }}"
+    state: "{% if nginxforward_enable %}link{% else %}absent{% endif %}"
+  when: nginxforward_enable
+  notify: reload nginx config

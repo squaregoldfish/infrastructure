@@ -1,0 +1,14 @@
+nginxforward_file: nginxforward-default
+nginxforward_host: 127.0.0.1
+nginxforward_path_available: "/etc/nginx/sites-available/{{ nginxforward_name }}"
+nginxforward_path_enable: "/etc/nginx/sites-enabled/{{ nginxforward_name }}"
+nginxforward_enable: True
+
+nginxforward_site_path  : "/etc/letsencrypt/live/{{ nginxforward_cert }}"
+nginxforward_cert_path  : "{{ nginxforward_site_path }}/fullchain.pem"
+nginxforward_key_path   : "{{ nginxforward_site_path }}/privkey.pem"
+nginxforward_cert_conf  : |
+   ssl_certificate {{ nginxforward_cert_path }};
+   ssl_certificate_key {{ nginxforward_key_path }};
+
+nginxforward_user_file: "/etc/nginx/passwords/{{ nginxforward_name }}.pass"

@@ -1,0 +1,17 @@
+# This gets us htpasswd(1)
+- name: Install apache2-utils
+  apt:
+    name: apache2-utils
+    state: present
+
+- name: Install the passlib library
+  pip:
+    name: passlib
+    state: present
+
+- name: Add basic auth users
+  htpasswd:
+    path: "{{ nginxforward_user_file }}"
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+  loop: "{{ nginxforward_users }}"
