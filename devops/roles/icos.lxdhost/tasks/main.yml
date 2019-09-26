@@ -1,0 +1,87 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - lxdhost_name
+    - lxdhost_port
+
+- name: Create the {{ lxdhost_name }} container
+  lxd_container:
+    name: "{{ lxdhost_name }}"
+    state: started
+    source:
+      type: image
+      mode: pull
+      server: https://cloud-images.ubuntu.com/releases
+      protocol: simplestreams
+      alias: "18.04"
+    config:
+      security.nesting: "true" # allow nested docker
+      limits.cpu: "{{ lxdhost_cpu | default(omit) }}"
+    wait_for_ipv4_addresses: true
+    wait_for_ipv4_interfaces: eth0
+    timeout: 600
+  register: _lxd
+
+- set_fact:
+    lxdhost_ip: "{{ _lxd.addresses.eth0 | first }}"
+
+# Make sure that we don't lock ourselves out of the remote machine.
+- name: Allowing inbound SSH
+  ufw:
+    rule: allow
+    port: ssh
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_set: yes
+
+- name: Add port forward for {{ lxdhost_name }} ssh
+  blockinfile:
+    marker: "# {mark} ansible / {{ lxdhost_name }} ssh"
+    backup: yes
+    create: no
+    insertafter: EOF
+    path: /etc/ufw/before.rules
+    block: |
+      *nat
+      :PREROUTING ACCEPT [0:0]
+      -A PREROUTING -p tcp --dport {{ lxdhost_port }} -j DNAT --to-destination {{ lxdhost_ip }}:22
+      COMMIT
+  notify: Reload UFW
+
+- name: Allow traffic on containers external ssh port
+  ufw:
+    route: true
+    rule: allow
+    port: "'{{ lxdhost_port }}'"
+  notify: Reload UFW
+
+# To be able to access the container via ssh, ssh keys have to be added.
+# The choices as to which keys to add are:
+#   1. generate keys - either locally, on the remote machine or in the conatiner
+#   2. pre-generate keys and keep as part of this role
+#   3. add some other, pre-existing keys
+#
+# This tasks uses choice 3 and takes the authorized_keys file from a user on
+# the remote machine and merges into the container. The user is typically the
+# same used by ansible to deploy the container.
+- name: Merge {{ lxdhost_key_file }} into the container
+  shell: >-
+    lxc exec {{ lxdhost_name }} -- bash -c '
+    while read line; do
+    grep -qFx "$line" .ssh/authorized_keys || {
+    echo "$line"; echo "$line" >> .ssh/authorized_keys;
+    }; done
+    ' < {{ lxdhost_key_file }}
+  register: r
+  # Each merged key is echoed, thus we know if any were added.
+  changed_when: r.stdout != ""
+  when: lxdhost_key_file is defined
