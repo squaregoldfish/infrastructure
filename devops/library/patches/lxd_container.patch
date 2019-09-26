@@ -1,0 +1,34 @@
+--- /home/andre/.local/lib/python2.7/site-packages/ansible/modules/cloud/lxd/lxd_container.py	2019-09-26 14:23:06.199094576 +0200
++++ ../lxd_container.py	2019-09-26 14:25:03.267502270 +0200
+@@ -321,6 +321,7 @@
+ 
+         self.timeout = self.module.params['timeout']
+         self.wait_for_ipv4_addresses = self.module.params['wait_for_ipv4_addresses']
++        self.wait_for_ipv4_interfaces = self.module.params['wait_for_ipv4_interfaces']
+         self.force_stop = self.module.params['force_stop']
+         self.addresses = None
+ 
+@@ -416,9 +417,10 @@
+         addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
+         return addresses
+ 
+-    @staticmethod
+-    def _has_all_ipv4_addresses(addresses):
+-        return len(addresses) > 0 and all(len(v) > 0 for v in addresses.values())
++    def _has_all_ipv4_addresses(self, addresses):
++        interfaces = self.wait_for_ipv4_interfaces
++        return len(addresses) > 0 and all(len(v) > 0 for v in addresses.values()
++                                          if not interfaces or v in interfaces)
+ 
+     def _get_addresses(self):
+         try:
+@@ -615,6 +617,9 @@
+                 type='bool',
+                 default=False
+             ),
++            wait_for_ipv4_interfaces=dict(
++                type='list',
++            ),
+             force_stop=dict(
+                 type='bool',
+                 default=False

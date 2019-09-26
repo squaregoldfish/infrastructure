@@ -1,0 +1,50 @@
+--- /home/andre/.local/lib/python2.7/site-packages/ansible/modules/cloud/lxd/lxd_container.py	2019-09-26 14:23:06.199094576 +0200
++++ ../lxd_container.py	2019-09-26 22:17:03.268161546 +0200
+@@ -94,6 +94,15 @@
+         required: false
+         default: false
+         type: bool
++    wait_for_ipv4_interfaces:
++        description:
++          - A list of interfaces for which C(wait_for_ipv4_addresses) will
++            wait.  This is useful if the container is running a nested docker,
++            in which case it might have interfaces which never acquires ipv4
++            addresses.
++        required: false
++        default: [] (wait for all interfaces)
++        type: list
+     force_stop:
+         description:
+           - If this is true, the C(lxd_container) forces to stop the container
+@@ -321,6 +330,7 @@
+ 
+         self.timeout = self.module.params['timeout']
+         self.wait_for_ipv4_addresses = self.module.params['wait_for_ipv4_addresses']
++        self.wait_for_ipv4_interfaces = self.module.params['wait_for_ipv4_interfaces']
+         self.force_stop = self.module.params['force_stop']
+         self.addresses = None
+ 
+@@ -416,9 +426,10 @@
+         addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
+         return addresses
+ 
+-    @staticmethod
+-    def _has_all_ipv4_addresses(addresses):
+-        return len(addresses) > 0 and all(len(v) > 0 for v in addresses.values())
++    def _has_all_ipv4_addresses(self, addresses):
++        interfaces = self.wait_for_ipv4_interfaces
++        return len(addresses) > 0 and all(len(v) > 0 for v in addresses.values()
++                                          if not interfaces or v in interfaces)
+ 
+     def _get_addresses(self):
+         try:
+@@ -615,6 +626,9 @@
+                 type='bool',
+                 default=False
+             ),
++            wait_for_ipv4_interfaces=dict(
++                type='list',
++            ),
+             force_stop=dict(
+                 type='bool',
+                 default=False
