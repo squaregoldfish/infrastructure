@@ -45,4 +45,4 @@
       vars:
         bbclient_user: quince
       tags:
-        - quince_backup
+        - backup

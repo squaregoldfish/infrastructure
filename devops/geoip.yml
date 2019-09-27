@@ -2,7 +2,7 @@
 #   $ deploy geoip
 #
 # Deploy new version
-#   $ deploy geoip app
+#   $ deploy geoip geoip_app
 #
 # Show other tags
 #   $ deploy geoip --list-tags

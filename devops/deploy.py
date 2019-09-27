@@ -61,9 +61,8 @@ PLAYBOOK = "%s.yml" % NAME
 if not os.path.exists(PLAYBOOK):
     die("Cannot find %s in %s" % (PLAYBOOK, DEVOPS))
 
-# The remaining arguments are either tag suffixes or options to ansible.
-TAGS = ["-t%s_%s" % (NAME, suffix) for suffix in sys.argv
-        if not suffix.startswith('-')]
+# The remaining arguments are either tags or options to ansible.
+TAGS = ["-t%s" % tag for tag in sys.argv if not tag.startswith('-')]
 OPTS = [opt for opt in sys.argv if opt.startswith('-')]
 ARGS = ['ansible-playbook', '-i', INVENTORY, PLAYBOOK] + TAGS + OPTS
 
