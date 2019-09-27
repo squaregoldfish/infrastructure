@@ -1,3 +1,11 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - website
+  tags: always
+
 - name: Include {{ website }} vars
   include_vars: "{{ website }}-vars.yml"
   tags: always
