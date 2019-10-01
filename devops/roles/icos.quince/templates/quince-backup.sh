@@ -4,6 +4,8 @@
 set -e
 set -u
 
+PATH=$HOME/bin:$PATH
+
 tmp=$(mktemp -d /tmp/quince-backup.XXXXXX)
 trap 'rm -rf "$tmp"' EXIT
 cd "$tmp"
