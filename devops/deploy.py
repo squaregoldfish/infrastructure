@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # Frontend for ansible-playbook + ICOS playbooks.
 #
 # This scripts assumes that:
