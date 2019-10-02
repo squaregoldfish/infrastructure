@@ -7,6 +7,7 @@
 
 - name: Install cron job for backups
   cron:
+    user: "{{ quince_user }}"
     name: quince borg backup
     minute: "15"
     hour: "*/3"
