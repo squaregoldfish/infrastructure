@@ -8,5 +8,6 @@
 - name: Install cron job for backups
   cron:
     name: quince borg backup
+    minute: "15"
     hour: "*/3"
     job: "{{ _b.dest }}"
