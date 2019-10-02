@@ -44,5 +44,11 @@
     - role: icos.bbclient
       vars:
         bbclient_user: quince
-      tags:
-        - backup
+      tags: backup
+
+  tasks:
+    - import_role:
+        name: icos.quince
+        tasks_from: quince-backup
+      tags: backup
+      
