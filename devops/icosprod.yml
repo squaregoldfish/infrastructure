@@ -2,27 +2,6 @@
 
 - import_playbook: setup.yml
 
-- hosts: icosprod icosprod2
-  become: true
-  vars_files:
-    - vault.yml
-    - vars.yml
-  roles:
-    - role: icos.linux
-      tags: linux
-    - role: icos.docker
-      tags: docker
-    - role: icos.nginx
-      tags: nginx
-    - role: icos.java
-      tags: java
-
-- hosts: bbservers
-  become: true
-  roles:
-    - role: icos.bbserver
-      tags: bbserver
-
 - hosts: icosprod
   become: true
   vars_files:
@@ -39,8 +18,6 @@
       tags: doi
     - role: icos.filedrop
       tags: filedrop
-    - role: icos.kanboard
-      tags: kanboard
     - { role: icos.ssh_incoming_tunnel,
         tags: ssh_incoming_tunnel,
         user: tunnel_icosprod2_meta,
@@ -52,38 +29,21 @@
         arg: "{{ pgrep_rdflog_instance }}"
       }
 
+
 - hosts: icosprod2
   become: true
   vars_files:
     - vault.yml
     - vars.yml
   roles:
-    - role: icos.postfix
-      tags: postfix
-
-    - { role: icos.limesurvey,
-        tags: ['limesurvey', 'survey'],
-        certbot_domains: ['survey.icos-cp.eu']
-      }
-
-    - { role: icos.limesurvey,
-        tags: ['limesurvey', 'survey2'],
-        limesurvey_home: /docker/limesurvey2,
-        limesurvey_port: 9873,
-        certbot_domains: ['survey2.icos-cp.eu'],
-        nginxsite_name: survey2
-      }
-
-    - role: icos.geoip
-      tags: geoip
+    - role: icos.cpmeta
+      tags: cpmeta
+    - role: icos.nexus
+      tags: nexus
     - role: icos.rdflog
       tags: rdflog
     - role: icos.cpmeta
       tags: cpmeta
-    - role: icos.nextcloud
-      tags: nextcloud
-    - role: icos.onlyoffice
-      tags: onlyoffice
     - { role: icos.ssh_outgoing_tunnel,
         tags: ssh_outgoing_tunnel,
         remote_host: icosprod,
@@ -93,11 +53,3 @@
         remote_name: meta,
         tunnel_args: "-R localhost:{{ meta_port }}:localhost:{{ meta_port }}"
       }
-    - role: icos.mailman
-      tags: mailman
-    - role: icos.mattermost
-      tags: mattermost
-    - role: icos.nexus
-      tags: nexus
-    - role: icos.sitesaquanetform
-      tags: sitesaquanetform

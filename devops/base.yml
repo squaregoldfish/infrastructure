@@ -1,0 +1,22 @@
+- import_playbook: setup.yml
+
+- hosts: all
+  roles:
+    - role: icos.linux
+      tags: linux
+
+- hosts: icosprod icosprod2
+  roles:
+    - role: icos.docker
+      tags: docker
+
+    - role: icos.nginx
+      togs: nginx
+
+    - role: icos.java
+      tags: java
+
+- hosts: bbservers
+  roles:
+    - role: icos.bbserver
+      tags: bbserver

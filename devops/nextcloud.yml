@@ -1,0 +1,15 @@
+- import_playbook: setup.yml
+
+- hosts: icosprod2
+  become: true
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.nextcloud
+      tags: nextcloud
+
+    - { role: icos.onlyoffice,
+        tags: onlyoffice,
+        onlyoffice_domain: onlyoffice.icos-cp.eu,
+        onlyoffice_secret: "{{ vault_onlyoffice_secret }}"
+        }

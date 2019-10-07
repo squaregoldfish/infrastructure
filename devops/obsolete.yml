@@ -1,0 +1,10 @@
+- hosts: icosprod2
+  roles:
+    - role: icos.mattermost
+      tags: mattermost
+
+    - role: icos.sitesaquanetform
+      tags: sitesaquanetform
+
+    - role: icos.kanboard
+      tags: kanboard
