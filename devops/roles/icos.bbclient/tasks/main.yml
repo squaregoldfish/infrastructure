@@ -1,115 +1,16 @@
 - import_tasks: user_name_home.yml
 
-- name: Download borg binary
-  get_url:
-    url: "{{ bbclient_url }}"
-    dest: "{{ bbclient_bin }}"
-    checksum: "{{ bbclient_checksum }}"
-    mode: +x
-  notify: Test downloaded borg binary
-
-- name: Create ssh directory
-  file:
-    path: "{{ bbclient_ssh_dir }}"
-    state: directory
-    mode: 0700
-    owner: "{{ bbclient_user }}"
-    group: "{{ bbclient_user }}"
-
-- name: Generate RSA keys
-  become: true
+- import_tasks: ssh.yml
+  become: yes
   become_user: "{{ bbclient_user }}"
-  command: >-
-    ssh-keygen -q -t rsa -f {{ bbclient_ssh_key }} -N ""
-      -C "bbclient_{{ bbclient_name }}@{{ inventory_hostname }}"
-  args:
-    creates: "{{ bbclient_ssh_key }}"
 
-- name: Read the public key
-  slurpfact:
-    path: "{{ bbclient_ssh_key }}.pub"
-    fact: bbclient_key_data
+- import_tasks: scripts.yml
+  become: yes
+  become_user: "{{ bbclient_user }}"
 
-- name: Add ssh config
-  blockinfile:
-    # It's important that this config appears first in the file, that
-    # way it applies to all following 'Host' configurations.
-    insertbefore: BOF
-    path: "{{ bbclient_ssh_config }}"
-    block: |
-      UserKnownHostsFile {{ bbclient_ssh_hosts }}
-      Identityfile {{ bbclient_ssh_key }}
-    state: present
-    create: yes
+- import_tasks: repos.yml
 
-- name: Create scripts directory
-  file:
-    path: "{{ bbclient_script_dir }}"
-    state: directory
-
-- name: Install borg wrapper that contains our ssh info
-  copy:
-    mode: +x
-    dest: "{{ bbclient_wrapper }}"
-    content: |
-      #!/bin/bash
-      export BORG_RSH="ssh -F {{ bbclient_ssh_config }}"
-      export BORG_BASE_DIR="{{ bbclient_borg_base }}"
-      {{ bbclient_bin }} "$@"
-
-- name: Read available repos
-  slurpfact:
-    path: "{{ bbclient_repo_file }}"
-    fact: bbclient_repos
-    list: true
-    fail: false
-
-- name: Check that remote is properly configured
-  fail:
-    msg: |
-      The host "{{ bbclient_remote }}" must set the following host variables:
-        bbserver_user
-        bbserver_home
-        bbserver_bin
-        bbserver_repo_home
-  when: |
-    hostvars[bbclient_remote].bbserver_user is undefined or
-    hostvars[bbclient_remote].bbserver_home is undefined or
-    hostvars[bbclient_remote].bbserver_bin is undefined or
-    hostvars[bbclient_remote].bbserver_repo_home is undefined
-  loop: "{{ bbclient_remotes }}"
-  loop_control:
-    loop_var: bbclient_remote
-
-- include_tasks: repo.yml
-  loop: "{{ bbclient_remotes }}"
-  when: bbclient_repo_url not in bbclient_repos
-  loop_control:
-    loop_var: bbclient_remote
-
-- name: Create helper scripts
-  template:
-    src: "{{ item }}"
-    dest: "{{ bbclient_script_dir }}"
-    mode: +x
-  loop:
-    - bbclient
-    - bbclient-all
-    - bbclient-coldbackup
-    - bbclient-coldrestore
-
-- name: Add tasks to Makefile
-  blockinfile:
-    marker: "# {mark} ansible / icos.bbclient"
-    create: yes
-    path: "{{ bbclient_home }}/Makefile"
-    block: "{{ lookup('template', 'Makefile.backup') }}"
-
-- name: Add coldbackup to crontab
+- import_tasks: coldbackup.yml
   when: bbclient_coldbackup_crontab is defined
-  cron:
-    job: "cd {{ bbclient_home }} && {{ bbclient_script_dir }}/bbclient-coldbackup cron"
-    hour: "{{ bbclient_coldbackup_crontab.hour | default('0') }}"
-    minute: "{{ bbclient_coldbackup_crontab.minute | default('0') }}"
-    state: present
-    name: "bbclient_{{ bbclient_name }}_coldbackup"
+  become: yes
+  become_user: "{{ bbclient_user }}"

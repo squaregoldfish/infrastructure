@@ -1,0 +1,34 @@
+- name: Write SSH config
+  blockinfile:
+    create: yes
+    path: "{{ bbclient_ssh_config }}"
+    mode: 0600
+    marker: "# {mark} bbclient {{ bbclient_remote }}"
+    block: |
+      Host {{ bbclient_remote }}
+        HostName {{ bbclient_remote_ip }}
+        User {{ bbclient_remote_user }}
+
+- name: Update known_hosts
+  blockinfile:
+    create: yes
+    path: "{{ bbclient_ssh_hosts }}"
+    mode: 0600
+    marker: "# {mark} {{ bbclient_remote }}"
+    block: |
+      {{ bbclient_remote_keys }}
+
+- name: Initialize repo
+  command: |
+    {{ bbclient_wrapper }} init {{ bbclient_repo_url }} --encryption=none
+  register: r
+  failed_when:
+    - r.rc != 0
+    - not r.stderr.startswith('A repository already exists at')
+
+- name: Remember repo url
+  lineinfile:
+    path: "{{ bbclient_repo_file}}"
+    line: "{{ bbclient_repo_url }}"
+    state: present
+    create: yes

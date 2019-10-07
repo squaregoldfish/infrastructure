@@ -1,0 +1,33 @@
+- delegate_to: "{{ bbclient_remote }}"
+  block:
+    - name: Retrieve remote SSH IP
+      become: no # without this, the env disappear
+      shellfact:
+        exec: echo $SSH_CONNECTION | cut -d ' ' -f 3
+        fact: bbclient_remote_ip
+
+    - name: Retrieve host keys
+      become: no # without this, the env disappear
+      shellfact:
+        exec: ssh-keyscan localhost | sed "s/^localhost/{{ bbclient_remote_ip }}/"
+        fact: bbclient_remote_keys
+
+    - name: Create repo directory for host
+      file:
+        path: "{{ bbclient_remote_repo }}"
+        state: directory
+        owner: "{{ bbclient_remote_user }}"
+        group: "{{ bbclient_remote_user }}"
+
+    - name: Install public key
+      authorized_key:
+        user: "{{ bbclient_remote_user }}"
+        state: present
+        key: "{{ bbclient_key_data }}"
+        key_options: >-
+          command="{{ bbclient_remote_bin }} serve --restrict-to-path {{ bbclient_remote_repo }}",from="{{ bbclient_ip }}",{% if bbclient_remote_has_restrict %}restrict{% else %}no-agent-forwarding,no-port-forwarding,no-user-rc,no-X11-forwarding{% endif %}
+
+
+- import_tasks: single_repo_local.yml
+  become: yes
+  become_user: "{{ bbclient_user }}"

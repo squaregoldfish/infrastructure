@@ -1,0 +1,31 @@
+- name: Download borg binary
+  get_url:
+    url: "{{ bbclient_url }}"
+    dest: "{{ bbclient_bin }}"
+    checksum: "{{ bbclient_checksum }}"
+    mode: +x
+  notify: Test downloaded borg binary
+
+- name: Create scripts directory
+  file:
+    path: "{{ bbclient_script_dir }}"
+    state: directory
+
+- name: Install borg wrapper that contains our ssh info
+  copy:
+    mode: +x
+    dest: "{{ bbclient_wrapper }}"
+    content: |
+      #!/bin/bash
+      export BORG_RSH="ssh -F {{ bbclient_ssh_config }}"
+      export BORG_BASE_DIR="{{ bbclient_borg_base }}"
+      {{ bbclient_bin }} "$@"
+
+- name: Create helper scripts
+  template:
+    src: "{{ item }}"
+    dest: "{{ bbclient_script_dir }}"
+    mode: +x
+  loop:
+    - bbclient
+    - bbclient-all

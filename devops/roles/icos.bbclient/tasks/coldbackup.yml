@@ -1,0 +1,23 @@
+- name: Create coldbackup helper scripts
+  template:
+    src: "{{ item }}"
+    dest: "{{ bbclient_script_dir }}"
+    mode: +x
+  loop:
+    - bbclient-coldbackup
+    - bbclient-coldrestore
+
+- name: Add tasks to Makefile
+  blockinfile:
+    marker: "# {mark} ansible / icos.bbclient"
+    create: yes
+    path: "{{ bbclient_home }}/Makefile"
+    block: "{{ lookup('template', 'Makefile.backup') }}"
+
+- name: Add coldbackup to crontab
+  cron:
+    job: "cd {{ bbclient_home }} && {{ bbclient_script_dir }}/bbclient-coldbackup cron"
+    hour: "{{ bbclient_coldbackup_crontab.hour | default('0') }}"
+    minute: "{{ bbclient_coldbackup_crontab.minute | default('0') }}"
+    state: present
+    name: "bbclient_{{ bbclient_name }}_coldbackup"
