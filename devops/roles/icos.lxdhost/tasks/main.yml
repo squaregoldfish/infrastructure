@@ -9,19 +9,16 @@
 - name: Create the {{ lxdhost_name }} container
   lxd_container:
     name: "{{ lxdhost_name }}"
-    state: started
     source:
       type: image
       mode: pull
       server: https://cloud-images.ubuntu.com/releases
       protocol: simplestreams
       alias: "18.04"
-    config:
-      security.nesting: "true" # allow nested docker
-      limits.cpu: "{{ lxdhost_cpu | default(omit) }}"
+    profiles: "{{ lxdhost_profiles | default(omit) }}"
     wait_for_ipv4_addresses: true
     wait_for_ipv4_interfaces: eth0
-    timeout: 600
+    timeout: 30
   register: _lxd
 
 - set_fact:
