@@ -1,0 +1,27 @@
+# https://docs.docker.com/compose/compose-file/#resources
+
+version: "2.4"
+
+networks:
+  jupyter:
+      name: ${NETWORK_NAME-exploredata}
+
+services:
+  hub:
+    build:
+      context: build.hub
+    restart: ${HUB_RESTART-no}
+    image: ${HUB_IMAGE-hub}
+    container_name: ${HUB_CONTAINER_NAME-hub}
+    volumes:
+      # Bind Docker socket on the host so we can connect to the daemon from
+      # within the container
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+    ports:
+      - "${HUB_HOST-127.0.0.1}:${HUB_PORT-4567}:8000"
+    command: >
+      jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+    networks:
+      - jupyter
+    env_file:
+      - .env

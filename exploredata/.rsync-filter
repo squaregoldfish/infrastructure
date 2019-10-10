@@ -1,0 +1,4 @@
+# We're using ansible/rsync to transfer this directory to testing/production.
+# The following are the files we don't want to transfer.
+- Makefile
+- .env
