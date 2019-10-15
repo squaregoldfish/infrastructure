@@ -1,26 +1,7 @@
 - import_role: name=icos.certbot2
   tags: cpmeta_certbot
 
-- name: Check that all parameters are defined
-  fail:
-    msg: "{{ item }} needs to be defined"
-  when: vars[item] is undefined
-  loop:
-    - cpmeta_jar_file
-  tags: cpmeta_app
-
-- name: Run the jarservice role
-  import_role:
-    name: icos.jarservice
-  tags: cpmeta_app
-  vars:
-    servicename     : "{{ cpmeta_servicename }}"
-    username        : "{{ cpmeta_username }}"
-    jarfile         : "{{ cpmeta_jar_file }}"
-    # Cannot use variables for paths to roles due to https://github.com/ansible/ansible/issues/10374
-    configfile      : roles/icos.cpmeta/templates/application.conf
-    nginxconfig     : roles/icos.cpmeta/files/meta.conf
-    servicetemplate : roles/icos.cpmeta/templates/cpmeta.service
+- import_tasks: deploy.yml
 
 - name: Copy SSL certs and private key for Handle.net client
   tags: cpmeta_other

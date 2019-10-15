@@ -35,9 +35,13 @@
   vars_files:
     - vault.yml
     - vars.yml
+  tasks:
+    - import_role:
+        name: icos.cpmeta
+        tasks_from: deploy
+      tags: cpmeta_only
+
   roles:
-    - role: icos.cpmeta
-      tags: cpmeta
     - role: icos.nexus
       tags: nexus
     - role: icos.rdflog
