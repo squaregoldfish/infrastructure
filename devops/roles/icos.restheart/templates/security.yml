@@ -1,0 +1,18 @@
+# This file will overwrite RESTHeart default security configuration file.
+
+---
+users:
+    - userid: admim
+      password: changeit
+      roles: [admins]
+    - userid: user
+      password: changeit
+      roles: [users]
+
+permissions:
+    #- role: admins
+    #  predicate: path-prefix[path="/"]
+    #- role: users
+    #  predicate: path-prefix[path="/publicdb/"]
+    - role: $unauthenticated
+      predicate: path-prefix[path="/"]

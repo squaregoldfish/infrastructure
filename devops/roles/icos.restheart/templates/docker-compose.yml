@@ -1,0 +1,19 @@
+version: '2'
+services:
+  restheart:
+    image: softinstigate/restheart:3.0.3
+    links:
+      - mongodb
+    ports:
+      - "127.0.0.1:8088:8080"
+    volumes:
+     - "/etc/localtime:/etc/localtime:ro"
+     - "./security.yml:/opt/restheart/etc/security.yml:ro"
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:3.6
+    volumes:
+     - "/etc/localtime:/etc/localtime:ro"
+     - "./volumes/mongo.db:/data/db"
+    restart: unless-stopped

@@ -1,43 +1,26 @@
-- name: Add restheart user
-  user:
-    name: restheart
-    groups: docker
-    append: yes
-    shell: /bin/bash
+- name: Create volume directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ restheart_home }}/volumes/mongo.db"
 
-- name: Make sure git is installed
-  package: name=git state=present
+- name: Copy files
+  template:
+    src: "{{ item }}"
+    dest: "{{ restheart_home }}"
+  loop:
+    - docker-compose.yml
+    - security.yml
 
-- name: Clone infrastructure
-  become: True
-  become_user: restheart
-  git:
-    repo: https://github.com/ICOS-Carbon-Portal/infrastructure.git
-    version: master
-    dest: /home/restheart/infrastructure
+- name: Build and start the images
+  docker_compose:
+    project_src: "{{ restheart_home }}"
+    build: yes
 
-- name: Launch MongoDB
-  docker_container:
-    name: mongodb
-    image: mongo:3.2
-    volumes:
-      - /home/restheart/infrastructure/restheart/storage:/data/db
-
-- name: Launch RestHeart
-  docker_container:
-    name: restheart
-    image: softinstigate/restheart:2.0.2
-    links:
-      - mongodb
-    ports:
-      - "{{ restheart_host_addr }}:{{ restheart_host_port }}:8080"
-    volumes:
-      - /home/restheart/infrastructure/restheart/security.yml:/opt/restheart/etc/security.yml:ro
-
-- name: Test restheart
-  get_url:
-    url: "http://{{ restheart_host_addr }}:{{ restheart_host_port }}/"
-    dest: /dev/null
+- name: Test Restheart
+  uri:
+    url: "http://{{ restheart_host_addr}}:{{ restheart_host_port }}/"
   register: r
-  failed_when: r.status_code != 200
-  changed_when: false
+  failed_when:
+    - r.status != 200

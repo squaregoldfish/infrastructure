@@ -1,2 +1,7 @@
+restheart_user: restheart
+restheart_home: "{{ docker_compose_home | default('/docker') }}/restheart"
 restheart_host_addr: 127.0.0.1
 restheart_host_port: 8088
+
+restheart_cert_name: restheart.icos-cp.eu
+restheart_domains: [restheart.icos-cp.eu]
