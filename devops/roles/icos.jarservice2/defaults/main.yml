@@ -1,0 +1,11 @@
+# keep this many old jarfiles around
+jarservice_keep_n_old: 10
+
+# The path to the jarfile used by systemd. This will be a symbolic
+# link to the actual jarfile.
+jarservice_jar: "{{ jarservice_home }}/{{ jarservice_name }}.jar"
+
+extra_groups: ""
+
+# To support running with certbot disabled, we must have a default.
+certbot_disabled: False

@@ -1,0 +1,10 @@
+- name: restart {{ jarservice_name }}
+  service:
+    name: "{{ jarservice_name }}"
+    state: restarted
+  # To deploy a service without starting it, set jarservice_state=stopped
+  when: jarservice_state | default('started') == 'started'
+
+- name: reload systemd config
+  systemd:
+    daemon_reload: yes
