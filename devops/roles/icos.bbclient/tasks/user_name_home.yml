@@ -5,19 +5,17 @@
     not (bbclient_user is defined or
         (bbclient_home is defined and bbclient_name is defined))
 
-- name: Use bbclient_user to derive bbclient_name and bbclient_home as needed.
+- name: Use bbclient_user to derive bbclient_name and bbclient_home
   when: bbclient_user is defined
   block:
     - name: Home directory defaults to that of the user
       shellfact:
         exec: "getent passwd {{ bbclient_user }} | cut -d: -f6"
         fact: bbclient_home
-      when: bbclient_home is undefined
 
     - name: Name defaults to that of the user
       set_fact:
         bbclient_name: "{{ bbclient_user }}"
-      when: bbclient_name is undefined
 
 - name: bbclient_user defaults to root
   set_fact:
