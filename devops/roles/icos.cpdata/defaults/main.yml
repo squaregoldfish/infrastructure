@@ -1,10 +1,11 @@
-cpdata_username: cpdata
-cpdata_servicename: cpdata
+cpdata_user: cpdata
+cpdata_home: /home/cpdata
+cpdata_service: cpdata
 
 cpdata_meta_port: 9094
 cpdata_meta_addr: 127.0.0.1
 
-cpdata_bind_port: 9010
+cpdata_bind_port: 9011
 cpdata_bind_addr: 127.0.0.1
 
 cpdata_irods_pass:       "{{ vault_cpdata_irods_pass }}"
@@ -13,5 +14,5 @@ cpdata_b2stage_pass:     "{{ vault_cpdata_b2stage_pass }}"
 cpdata_dlreporter_pass:  "{{ vault_cpdata_dlreporter_pass }}"
 cpdata_etcfacade_secret: "{{ vault_cpdata_etcfacade_secret }}"
 
-certbot_domains: [data.icos-cp.eu, data.fieldsites.se]
-certbot_conf_name: data
+cpdata_domains: [data.icos-cp.eu, data.fieldsites.se]
+cpdata_cert_name: data.icos-cp.eu

@@ -1,0 +1,14 @@
+- name: Deploy jarfile as a service
+  include_role:
+    name: icos.jarservice2
+  vars:
+    jarservice_name : cpdata
+    jarservice_home : "{{ cpdata_home }}"
+    jarservice_local: "{{ cpdata_jar_file }}"
+    jarservice_unit : "{{ lookup('template', 'cpdata.service') }}"
+
+- name: Copy application.conf
+  template:
+    src: application.conf
+    dest: "{{ cpdata_home }}"
+  notify: restart cpdata
