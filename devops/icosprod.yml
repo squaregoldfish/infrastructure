@@ -12,8 +12,6 @@
       tags: restheart
     - role: icos.cpauth
       tags: cpauth
-    - role: icos.cpdata
-      tags: cpdata
     - role: icos.doi
       tags: doi
     - role: icos.filedrop
@@ -40,6 +38,11 @@
         name: icos.cpmeta
         tasks_from: deploy
       tags: cpmeta_only
+
+    - import_role:
+        name: icos.cpdata
+        tasks_from: deploy
+      tags: cpdata_only
 
   roles:
     - role: icos.nexus
