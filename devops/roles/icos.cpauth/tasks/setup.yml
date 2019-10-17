@@ -1,0 +1,16 @@
+- name: Create cpauth user
+  user:
+    name: "{{ cpauth_user }}"
+    home: "{{ cpauth_home }}"
+    shell: /bin/bash
+
+- name: Copy keys
+  copy:
+    src: privateKeys
+    dest: "{{ cpauth_home }}"
+    owner: "{{ cpauth_user }}"
+
+- include_role: name=icos.nginxsite
+  vars:
+    nginxsite_name: cpauth
+    nginxsite_file: cpauth.conf

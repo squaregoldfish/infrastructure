@@ -1,9 +1,9 @@
-cpauth_username: cpauth
-cpauth_servicename: cpauth
+cpauth_user: cpauth
+cpauth_home: /home/cpauth
 
 cpauth_oauth_conf: "{{ vault_cpauth_oauth_conf }}"
 cpauth_mailing_pass: "{{ vault_cpauth_mailing_pass }}"
 cpauth_masteradmin_pass: "{{ vault_cpauth_masteradmin_pass }}"
 
-certbot_domains: [cpauth.icos-cp.eu, auth.fieldsites.se]
-certbot_conf_name: cpauth
+cpauth_domains: [cpauth.icos-cp.eu, auth.fieldsites.se]
+cpauth_cert_name: cpauth.icos-cp.eu

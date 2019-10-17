@@ -1,0 +1,14 @@
+- name: Deploy jarfile as a service
+  include_role:
+    name: icos.jarservice2
+  vars:
+    jarservice_name : cpauth
+    jarservice_home : "{{ cpauth_home }}"
+    jarservice_local: "{{ cpauth_jar_file }}"
+    jarservice_unit : "{{ lookup('template', 'cpauth.service') }}"
+
+- name: Copy application.conf
+  template:
+    src: application.conf
+    dest: "{{ cpauth_home }}"
+  notify: restart cpauth
