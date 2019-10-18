@@ -6,21 +6,21 @@
     - nginxforward_port
     - nginxforward_name
     - nginxforward_cert
-    - nginxforward_domain
+    - nginxforward_domains
 
 - import_tasks: auth.yml
   when: nginxforward_users is defined
-  tags: auth
+  tags: nginxforward_auth
 
 - name: Copy config for {{ nginxforward_name }}
   template:
     src: "{{ nginxforward_file }}"
-    dest: "{{ nginxforward_path_available }}"
+    dest: "{{ nginxforward_conf_file }}"
   notify: reload nginx config
 
 - name: Create symlink to sites-enabled
   file:
-    dest: "{{ nginxforward_path_enable }}"
+    dest: "{{ nginxforward_conf_file }}"
     src: "{{ nginxforward_path_available }}"
     state: "{% if nginxforward_enable %}link{% else %}absent{% endif %}"
   when: nginxforward_enable

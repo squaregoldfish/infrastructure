@@ -1,6 +1,7 @@
 nginxforward_file: nginxforward-default
 nginxforward_host: 127.0.0.1
-nginxforward_path_available: "/etc/nginx/sites-available/{{ nginxforward_name }}"
+nginxforward_conf_dir: /etc/nginx/sites-available
+nginxforward_conf_file: "{{ nginxforward_conf_dir }}/{{ nginxforward_name }}"
 nginxforward_path_enable: "/etc/nginx/sites-enabled/{{ nginxforward_name }}"
 nginxforward_enable: True
 

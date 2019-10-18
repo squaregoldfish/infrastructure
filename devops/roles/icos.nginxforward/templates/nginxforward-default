@@ -1,6 +1,6 @@
 server {
     listen       443 ssl;
-    server_name  {{ nginxforward_domain }};
+    server_name  {{ nginxforward_domains | join(" ") }};
 
     {{ nginxforward_cert_conf | indent(4) }}
     access_log /var/log/nginx/{{ nginxforward_name}}.log;
@@ -10,7 +10,7 @@ server {
         auth_basic "Login required";
         auth_basic_user_file {{ nginxforward_user_file }};
         {% endif -%}
-        proxy_pass http://{{ nginxforward_host }}:{{ nginxforward_port }};
+        proxy_pass https://{{ nginxforward_host }}:{{ nginxforward_port }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -20,7 +20,7 @@ server {
 
 server {
     listen 80;
-    server_name  {{ nginxforward_domain }};
+    server_name  {{ nginxforward_domains | join(" ") }};
 
     return 301 https://$host$request_uri;
 }

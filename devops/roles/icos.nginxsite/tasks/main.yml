@@ -6,7 +6,7 @@
     - nginxsite_name
     - nginxsite_file
 
-- name: Copy nginxsite_name config nginxsite_file for {{ nginxsite_name }}
+- name: Copy {{ nginxsite_name }} config
   template:
     src: "{{ nginxsite_file }}"
     dest: "{{ nginxsite_path_available }}"
