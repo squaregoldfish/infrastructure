@@ -12,7 +12,7 @@
   tags: cpmeta_app
   vars:
     servicename     : "{{ cpmeta_servicename }}"
-    username        : "{{ cpmeta_username }}"
+    username        : "{{ cpmeta_user }}"
     jarfile         : "{{ cpmeta_jar_file }}"
     # Cannot use variables for paths to roles due to https://github.com/ansible/ansible/issues/10374
     configfile      : roles/icos.cpmeta/templates/application.conf

@@ -1,5 +1,5 @@
 # The name of the linux user that runs the service.
-cpmeta_username: cpmeta
+cpmeta_user: cpmeta
 
 # The name of the systemd service
 cpmeta_servicename: cpmeta

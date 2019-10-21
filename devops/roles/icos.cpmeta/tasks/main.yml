@@ -8,16 +8,16 @@
   copy:
     src: ssl
     dest: "{{ cpmeta_home }}/"
-    owner: "{{ cpmeta_username }}"
-    group: "{{ cpmeta_username }}"
+    owner: "{{ cpmeta_user }}"
+    group: "{{ cpmeta_user }}"
 
 - name: Create metaAppStorage directory (if not present), take ownership
   tags: cpmeta_other
   file:
     path: "{{ cpmeta_filestorage_target }}"
     state: directory
-    owner: "{{ cpmeta_username }}"
-    group: "{{ cpmeta_username }}"
+    owner: "{{ cpmeta_user }}"
+    group: "{{ cpmeta_user }}"
 
 - name: Copy backup.sh
   tags: cpmeta_backup
