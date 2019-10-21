@@ -41,12 +41,6 @@ jupyter/storage/
 stilt/base/docker-compose.yml
 stilt/custom/docker-compose.yml
 
-
-# Concrete local Docker configuration for RESTHeart. #
-#############################################
-restheart/docker-compose.yml
-restheart/storage/
-
 # Concrete local Docker configuration for EUDAT client tools. #
 #############################################
 eudat/docker-compose.yml
