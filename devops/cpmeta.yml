@@ -8,8 +8,6 @@
 #  $ deploy cpmeta bbclient
 #  $ deploy cpmeta cpmeta_backup
 
-- import_playbook: setup.yml
-
 - hosts: icosprod2
   become: true
   vars_files:
