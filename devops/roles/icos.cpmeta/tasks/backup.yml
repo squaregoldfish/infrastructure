@@ -8,7 +8,7 @@
 - name: Add backup to crontab
   tags: cpmeta_backup
   cron:
-    job: "{{ cpmeta_backup_script }}"
+    job: "{{ cpmeta_backup_script }} cron"
     hour: "*"
     minute: "0"
     state: present
