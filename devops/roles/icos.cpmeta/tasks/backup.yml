@@ -1,0 +1,15 @@
+- name: Copy backup.sh
+  tags: cpmeta_backup
+  template:
+    src: backup.sh
+    dest: "{{ cpmeta_backup_script }}"
+    mode: +x
+
+- name: Add backup to crontab
+  tags: cpmeta_backup
+  cron:
+    job: "{{ cpmeta_backup_script }}"
+    hour: "*"
+    minute: "0"
+    state: present
+    name: "cpmeta_backup"

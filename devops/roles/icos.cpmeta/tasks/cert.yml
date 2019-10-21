@@ -1,0 +1,4 @@
+- include_role: name=icos.certbot2
+  vars:
+    certbot_name: "{{ cpmeta_cert_name }}"
+    certbot_domains: "{{ cpmeta_domains }}"

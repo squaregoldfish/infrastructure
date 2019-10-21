@@ -1,36 +1,11 @@
-- import_role: name=icos.certbot2
-  tags: cpmeta_certbot
+- import_tasks: setup.yml
+  tags: cpmeta_setup
+
+- import_tasks: nginx.yml
+  tags: cpmeta_nginx
 
 - import_tasks: deploy.yml
+  tags: cpmeta_deploy
 
-- name: Copy SSL certs and private key for Handle.net client
-  tags: cpmeta_other
-  copy:
-    src: ssl
-    dest: "{{ cpmeta_home }}/"
-    owner: "{{ cpmeta_user }}"
-    group: "{{ cpmeta_user }}"
-
-- name: Create metaAppStorage directory (if not present), take ownership
-  tags: cpmeta_other
-  file:
-    path: "{{ cpmeta_filestorage_target }}"
-    state: directory
-    owner: "{{ cpmeta_user }}"
-    group: "{{ cpmeta_user }}"
-
-- name: Copy backup.sh
+- import_tasks: backup.yml
   tags: cpmeta_backup
-  template:
-    src: backup.sh
-    dest: "{{ cpmeta_backup_script }}"
-    mode: +x
-
-- name: Add backup to crontab
-  tags: cpmeta_backup
-  cron:
-    job: "{{ cpmeta_backup_script }}"
-    hour: "*"
-    minute: "0"
-    state: present
-    name: "cpmeta_backup"

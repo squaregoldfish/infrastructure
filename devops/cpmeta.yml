@@ -1,8 +1,12 @@
-# Redeploy only the jarfile.
-#   deploy cpmeta app -ecpmeta_jar_file=$meta
+# To deploy everything:
+#   deploy cpmeta
 #
-# If bbclient_remotes have been updated, re-deploy backup:
-#   deploy cpmeta backup
+# To do step-by-step deployment:
+#  $ deploy cpmeta cpmeta_setup
+#  $ deploy cpmeta cpmeta_nginx
+#  $ deploy cpmeta cpmeta_deploy -ecpmeta_jar_file=cpmeta.jar
+#  $ deploy cpmeta bbclient
+#  $ deploy cpmeta cpmeta_backup
 
 - import_playbook: setup.yml
 
@@ -11,14 +15,10 @@
   vars_files:
     - vault.yml
     - vars.yml
-  vars:
-    # This is used both by icos.cpmeta and icos.bbclient and needs to defined
-    # at the toplevel.
-    cpmeta_user: cpmeta
   roles:
     - role: icos.cpmeta
 
     - role: icos.bbclient
-      tags: cpmeta_backup
+      tags: bbclient
       vars:
         bbclient_user: "{{ cpmeta_user }}"

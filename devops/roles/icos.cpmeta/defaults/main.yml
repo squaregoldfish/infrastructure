@@ -12,7 +12,7 @@ cpmeta_db_pass: "{{ rdflog_db_pass }}"
 cpmeta_home: /home/cpmeta
 cpmeta_backup_script: "{{ cpmeta_home }}/backup.sh"
 
-certbot_domains: [meta.icos-cp.eu, meta.fieldsites.se]
-certbot_conf_name: meta
+cpmeta_domains: [meta.icos-cp.eu, meta.fieldsites.se]
+cpmeta_cert_name: meta.icos-cp.eu
 
 cpmeta_jarservice_disable: True

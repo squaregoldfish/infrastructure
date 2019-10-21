@@ -16,8 +16,6 @@
   tags: always
   gather_facts: no
   pre_tasks:
-    # Use fail since assert is to verbose.
-    # https://github.com/ansible/ansible/issues/27124
      - name: Fail if ansible is too old
        fail:
         msg: |
@@ -33,7 +31,7 @@
   gather_facts: no
   pre_tasks:
     - name: Ensure infrastructure repo is up to date
-      delegate_to_: localhost
+      delegate_to: localhost
       # --count will return the number of commits that would have been
       # listed. Either local unpushed commits or remote unmerged commits.
       shell: shell git fetch && git rev-list HEAD...origin/master --count

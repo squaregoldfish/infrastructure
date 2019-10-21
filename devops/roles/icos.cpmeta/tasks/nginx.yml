@@ -1,0 +1,9 @@
+- import_role: name=icos.certbot2
+  vars:
+    certbot_name: "{{ cpmeta_cert_name }}"
+    certbot_domains: "{{ cpmeta_domains }}"
+
+- import_role: name=icos.nginxsite
+  vars:
+    nginxsite_name: cpmeta
+    nginxsite_file: cpmeta.conf
