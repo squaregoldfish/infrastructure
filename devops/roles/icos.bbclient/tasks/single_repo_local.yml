@@ -28,7 +28,7 @@
 
 - name: Remember repo url
   lineinfile:
-    path: "{{ bbclient_repo_file}}"
+    path: "{{ bbclient_repo_file }}"
     line: "{{ bbclient_repo_url }}"
     state: present
     create: yes

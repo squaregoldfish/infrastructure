@@ -5,7 +5,8 @@
   tags: always
   gather_facts: no
   pre_tasks:
-    - include_vars: "{{ item }}"
+    - name: Include local variables (if present)
+      include_vars: "{{ item }}"
       with_first_found:
         - local_vars.yml
         - /dev/null
@@ -32,9 +33,10 @@
   gather_facts: no
   pre_tasks:
     - name: Ensure infrastructure repo is up to date
+      delegate_to_: localhost
       # --count will return the number of commits that would have been
       # listed. Either local unpushed commits or remote unmerged commits.
-      local_action: shell git fetch && git rev-list HEAD...origin/master --count
+      shell: shell git fetch && git rev-list HEAD...origin/master --count
       register: git_result
       changed_when: false
       # The extra '|bool' is to allow the setting to be passed with '-echeck...'

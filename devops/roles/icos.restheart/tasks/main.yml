@@ -20,7 +20,7 @@
 
 - name: Test Restheart
   uri:
-    url: "http://{{ restheart_host_addr}}:{{ restheart_host_port }}/"
+    url: "http://{{ restheart_host_addr }}:{{ restheart_host_port }}/"
   register: r
   failed_when:
     - r.status != 200
