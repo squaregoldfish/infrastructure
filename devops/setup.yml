@@ -34,7 +34,7 @@
       delegate_to: localhost
       # --count will return the number of commits that would have been
       # listed. Either local unpushed commits or remote unmerged commits.
-      shell: shell git fetch && git rev-list HEAD...origin/master --count
+      shell: git fetch && git rev-list HEAD...origin/master --count
       register: git_result
       changed_when: false
       # The extra '|bool' is to allow the setting to be passed with '-echeck...'
