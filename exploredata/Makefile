@@ -21,10 +21,10 @@ build.notebook: force
 hub:
 	docker-compose build
 
-pushtest: build
+pushtest: build.notebook
 	$(EXPLOREDATA) -eexploredata_src=$(PWD) -tpushtest
 
-pushprod: build
+pushprod: build.notebook
 	$(EXPLOREDATA) -eexploredata_src=$(PWD) -tpushprod
 
 notebook-shell: notebook
