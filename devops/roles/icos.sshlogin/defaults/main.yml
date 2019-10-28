@@ -1,0 +1,30 @@
+sshlogin_dst_from:
+sshlogin_dst_command:
+sshlogin_dst_restrict:
+
+sshlogin_dst_home        : "{{ _dst_user.home | default(omit) }}"
+sshlogin_dst_ssh_dir     : "{{ sshlogin_dst_home }}/.ssh"
+sshlogin_dst_known_hosts : "{{ sshlogin_dst_ssh_dir }}/known_hosts"
+sshlogin_dst_key_file    : "{{ sshlogin_dst_ssh_dir }}/id_rsa"
+sshlogin_dst_key_options : "{{ _sshlogin_opt_list | select('ne', '') | join(',') }}"
+_sshlogin_opt_list       :
+  - >-
+    {% if sshlogin_dst_command -%}
+    command="{{ sshlogin_dst_command}}"
+    {%- endif -%}
+  - >-
+    {% if sshlogin_dst_from == 'srcip' -%}
+    from="{{ sshlogin_src_ip }}"
+    {%- elif sshlogin_dst_from -%}
+    from="{{ sshlogin_dst_from }}"
+    {%- endif -%}
+  - >-
+    {% if sshlogin_dst_restrict -%}
+    restrict
+    {%- endif -%}
+
+sshlogin_src_dst         : "{{ sshlogin_dst }}"
+sshlogin_src_home        : "{{ _src_user.home | default(omit) }}"
+sshlogin_src_ssh_dir     : "{{ sshlogin_src_home }}/.ssh"
+sshlogin_src_known_hosts : "{{ sshlogin_src_ssh_dir }}/known_hosts"
+sshlogin_src_key_file    : "{{ sshlogin_src_ssh_dir }}/id_rsa"
