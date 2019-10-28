@@ -1,5 +1,5 @@
     # This file is the default nginx config file as recommended by nextcloud.
-	# https://docs.nextcloud.com/server/13/admin_manual/installation/nginx.html
+    # https://docs.nextcloud.com/server/13/admin_manual/installation/nginx.html
 
     # Add headers to serve security related headers
     # Before enabling Strict-Transport-Security headers please read into this
@@ -60,7 +60,7 @@
     #pagespeed off;
 
     location / {
-        rewrite ^ /index.php$request_uri;
+        rewrite ^ /index.php;
     }
 
     location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)/ {
@@ -72,6 +72,7 @@
 
     location ~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updater/.+|ocs-provider/.+)\.php(?:$|/) {
         fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+        try_files $fastcgi_script_name =404;
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME /var/www/html$fastcgi_script_name;
         fastcgi_param PATH_INFO $fastcgi_path_info;
