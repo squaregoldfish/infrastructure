@@ -42,9 +42,8 @@
     - role: icos.quince
         
     - role: icos.bbclient
-      vars:
-        bbclient_user: quince
       tags: backup
+      bbclient_user: "{{ quince_username }}"
 
   tasks:
     - import_role:
