@@ -30,6 +30,16 @@
   become: true
   roles:
     - role: icos.quince_host
+  tasks:
+    # The ships sends data to quince using attachments. These are sometimes
+    # larger than the postfix default of 10Mb.
+    - name: Configure postfix to accept a larger attachment size
+      tags: postconf
+      postconf:
+        param: message_size_limit
+        # default was 10240000
+        value: "20480000"
+        reload: yes
       
 - hosts: quince
   become: true
