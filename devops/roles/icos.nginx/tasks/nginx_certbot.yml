@@ -13,5 +13,13 @@
 - name: Add job to renew certificates
   cron:
     name: Certbot renewal
-    job: "{{ certbot_bin }} renew --post-hook 'service nginx reload'"
+    job: "{{ nginx_certbot_bin }} renew"
     special_time: daily
+
+- name: Add a nginx deploy-hook for certbot
+  copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/nginx.sh
+    mode: +x
+    content: |
+      #!/bin/bash
+      service nginx reload
