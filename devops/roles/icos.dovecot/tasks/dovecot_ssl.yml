@@ -16,3 +16,11 @@
     line: "!include {{ dovecot_cert_file }}"
     state: present
     insertafter: EOF
+
+- name: Add a dovecot deploy-hook for certbot
+  copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/dovecot.sh
+    mode: +x
+    content: |
+      #!/bin/bash
+      service dovecot reload

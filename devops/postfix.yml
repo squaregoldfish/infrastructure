@@ -1,5 +1,8 @@
 - hosts: icosprod2
   become: yes
   roles:
-    - icos.postfix
-    - icos.dovecot
+    - role: icos.postfix
+      tags: postfix
+
+    - role: icos.dovecot
+      tags: dovecot

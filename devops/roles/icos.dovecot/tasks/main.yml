@@ -3,6 +3,7 @@
 - import_tasks: dovecot_logging.yml
 - import_tasks: dovecot_auth.yml
 - import_tasks: dovecot_ssl.yml
+  tags: dovecot_ssl
 - import_tasks: dovecot_postfix.yml
 
 # Instead of cluttering the role with 'notify: reload dovecot' we do
