@@ -1,15 +1,22 @@
+- name: Create bin directory
+  file:
+    path: "{{ cpmeta_home }}/bin"
+    state: directory
+  register: _bin
+
 - name: Copy backup.sh
   tags: cpmeta_backup
   template:
     src: backup.sh
-    dest: "{{ cpmeta_backup_script }}"
+    dest: "{{ _bin.path }}/"
     mode: +x
+  register: _backup
 
 - name: Add backup to crontab
   tags: cpmeta_backup
   cron:
-    job: "{{ cpmeta_backup_script }} cron"
+    job: "{{ _backup.dest }} cron"
     hour: "*"
-    minute: "0"
+    minute: "18"
     state: present
     name: "cpmeta_backup"
