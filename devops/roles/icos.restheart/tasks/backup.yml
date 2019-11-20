@@ -1,0 +1,20 @@
+- name: Create bin directory
+  file:
+    path: "{{ restheart_home }}/bin"
+    state: directory
+  register: _bin
+
+- name: Copy backup.sh
+  template:
+    src: backup.sh
+    dest: "{{ _bin.path }}/"
+    mode: +x
+  register: _backup
+
+- name: Add backup to crontab
+  cron:
+    job: "{{ _backup.dest }}"
+    hour: "*/6"
+    minute: "36"
+    state: present
+    name: "restheart_backup"

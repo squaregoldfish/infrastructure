@@ -1,4 +1,5 @@
 # deploy cpdata cpdata_deploy -ecpdata_jar_file=/tmp/cpdata.jar
+# deploy cpdata restheart_backup
 
 - hosts: icosprod2
   become: true

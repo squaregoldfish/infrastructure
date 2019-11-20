@@ -24,3 +24,6 @@
   register: r
   failed_when:
     - r.status != 200
+
+- import_tasks: backup.yml
+  tags: restheart_backup
