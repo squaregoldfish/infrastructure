@@ -21,7 +21,7 @@ echo "$HEADER $(date)" >> $LOGFILE
 # sit well with cron, which will think that an error occured and send a mail to
 # root. So we capture all output to a logfile, detect when borg fails, and
 # then manually output the logs for the last run.
-if ! ./bin/bbclient-all create --verbose --stats               \
+if ! ./bin/bbclient-all create                                 \
      "::$ARCHIVE" "{{ cpmeta_filestorage_target }}" rdfStorage \
      >> "$LOGFILE" 2>&1; then
     # output everything after the last header
