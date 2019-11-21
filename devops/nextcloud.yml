@@ -8,8 +8,7 @@
     - role: icos.nextcloud
       tags: nextcloud
 
-    - { role: icos.onlyoffice,
-        tags: onlyoffice,
-        onlyoffice_domain: onlyoffice.icos-cp.eu,
-        onlyoffice_secret: "{{ vault_onlyoffice_secret }}"
-        }
+    - role: icos.onlyoffice
+      tags: onlyoffice
+      onlyoffice_domain: onlyoffice.icos-cp.eu
+      onlyoffice_secret: "{{ vault_onlyoffice_secret }}"
