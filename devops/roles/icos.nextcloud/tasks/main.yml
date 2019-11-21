@@ -94,9 +94,3 @@
     - nextcloud.conf
     - nextcloud-nextcloud.inc
   notify: reload nginx config
-
-- include_role: name=icos.bbclient
-  vars:
-    bbclient_name: nextcloud
-    bbclient_home: "{{ nextcloud_home }}"
-    bbclient_coldbackup_crontab: { hour: 03, minute: 00 }

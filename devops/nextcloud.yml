@@ -10,3 +10,9 @@
       tags: onlyoffice
       onlyoffice_domain: onlyoffice.icos-cp.eu
       onlyoffice_secret: "{{ vault_onlyoffice_secret }}"
+
+    - role: icos.bbclient
+      tags: bbclient
+      bbclient_name: nextcloud
+      bbclient_home: "{{ nextcloud_home }}"
+      bbclient_coldbackup_crontab: { hour: 03, minute: 00 }
