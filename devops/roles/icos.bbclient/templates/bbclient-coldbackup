@@ -35,9 +35,9 @@ fi
 
 # Do 'docker-compose up' as part of that trap so that the service resume even
 # if the backup fails.
-trap 'rm -f -- "$BUILD_INFO"; docker-compose up -d' EXIT
+trap 'rm -f -- "$BUILD_INFO"; docker-compose up -d >& /dev/null' EXIT
 
-docker-compose down
+docker-compose down >& /dev/null
 
 export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 
