@@ -1,0 +1,26 @@
+# deploy restheart restheart_backup
+
+- hosts: icosprod2
+  become: true
+  vars_files:
+    - vars.yml
+    - vault.yml
+  roles:
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: "{{ restheart_cert_name }}"
+      certbot_domains: "{{ restheart_domains }}"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: restheart
+      nginxsite_file: roles/icos.restheart/templates/restheart.conf
+
+    - role: icos.bbclient
+      tags: bbclient
+      bbclient_user: root
+      bbclient_home: "{{ restheart_home }}"
+      bbclient_name: restheart
+
+    - role: icos.restheart
+      tags: restheart

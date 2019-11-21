@@ -1,5 +1,4 @@
 # deploy cpdata cpdata_deploy -ecpdata_jar_file=/tmp/cpdata.jar
-# deploy cpdata restheart_backup
 
 - hosts: icosprod2
   become: true
@@ -7,43 +6,20 @@
     - vars.yml
     - vault.yml
   roles:
-    # CERTS
     - role: icos.certbot2
-      tags: [cert, cert_restheart]
-      certbot_name: "{{ restheart_cert_name }}"
-      certbot_domains: "{{ restheart_domains }}"
-
-    - role: icos.certbot2
-      tags: [cert, cert_data]
+      tags: cert
       certbot_name: "{{ cpdata_cert_name }}"
       certbot_domains: "{{ cpdata_domains }}"
 
-    # NGINX
     - role: icos.nginxsite
-      tags: [nginx, nginx_restheart]
-      nginxsite_name: restheart
-      nginxsite_file: roles/icos.restheart/templates/restheart.conf
-
-    - role: icos.nginxsite
-      tags: [nginx, nginx_cpdata]
+      tags: nginx
       nginxsite_name: cpdata
       nginxsite_file: roles/icos.cpdata/templates/cpdata.conf
 
-    # BBCLIENT
     - role: icos.bbclient
-      tags: [backup, bbclient, bbclient_restheart]
-      bbclient_user: root
-      bbclient_home: "{{ restheart_home }}"
-      bbclient_name: restheart
-
-    - role: icos.bbclient
+      tags: bbclient
       bbclient_user: cpdata
       bbclient_remotes: [fsicos2.lunarc.lu.se]
-      tags: [backup, bbclient, bbclient_cpdata]
 
-    # APPS
     - role: icos.cpdata
       tags: cpdata
-
-    - role: icos.restheart
-      tags: restheart
