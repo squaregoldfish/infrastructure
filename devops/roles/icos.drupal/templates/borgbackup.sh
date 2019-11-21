@@ -16,13 +16,13 @@ for project in "${PROJECTS[@]}"; do
 
     cd "$project/drupal/docker"
 
-    docker-compose down
-    docker-compose up -d
+    docker-compose down >& /dev/null
     # If bbclient fails, it might be because one of its repos cannot be
     # reached. In that case we want to continue looping through the other
     # projects
     $BB create --verbose --stats "::$project-{now}" {{ drupal_home }}/$project/drupal \
         >> "$LOGFILE" 2>&1 || :
+    docker-compose up -d >& /dev/null
 
     cd "{{ drupal_home }}"
 
