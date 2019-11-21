@@ -1,4 +1,7 @@
 # deploy cpdata cpdata_deploy -ecpdata_jar_file=/tmp/cpdata.jar
+# deploy cpdata cpdata_config
+#
+# Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
 
 - hosts: icosprod2
   become: true
@@ -23,3 +26,39 @@
 
     - role: icos.cpdata
       tags: cpdata
+      cpdata_netcdf_folder: /disk/data/common/netcdf/dataDemo
+
+  tasks:
+    - name: Create mountpoint for netcdf
+      file:
+        path: /disk/data/common/netcdf/dataDemo
+        state: directory
+      tags: netcdf
+
+    - name: Mount netcdf
+      mount:
+        path: /disk/data/common/netcdf/dataDemo
+        src: fsicos.lunarc.lu.se:/disk/data/common/netcdf/dataDemo
+        fstype: nfs
+        opts: ro
+        state: mounted
+      tags: netcdf
+
+
+- hosts: icosprod
+  tasks:
+    - name: Export netcdf to icosprod2
+      lineinfile:
+        path: /etc/exports
+        line: "/disk/data/common/netcdf/dataDemo	194.47.223.139(ro)"
+        state: present
+      register: _exports
+      tags: netcdf
+
+    - name: Reload NFS server
+      service:
+        name: nfs-server
+        state: reloaded
+        enabled: yes
+      when: _exports.changed
+      tags: netcdf

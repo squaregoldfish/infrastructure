@@ -1,0 +1,5 @@
+- name: Copy application.conf
+  template:
+    src: application.conf
+    dest: "{{ cpdata_home }}"
+  notify: restart cpdata

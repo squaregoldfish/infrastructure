@@ -7,8 +7,5 @@
     jarservice_local: "{{ cpdata_jar_file }}"
     jarservice_unit : "{{ lookup('template', 'cpdata.service') }}"
 
-- name: Copy application.conf
-  template:
-    src: application.conf
-    dest: "{{ cpdata_home }}"
-  notify: restart cpdata
+- import_tasks: config.yml
+  tags: cpdata_config
