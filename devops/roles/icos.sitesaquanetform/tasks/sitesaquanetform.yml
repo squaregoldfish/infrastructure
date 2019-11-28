@@ -28,6 +28,11 @@
     dest: "{{ project_dir }}/repo"
     key_file: "{{ project_dir }}/.ssh/id_rsa"
 
+- name: Copy config
+  template:
+    src: config.json
+    desk: "{{ project_dir }}/repo/"
+
 - name: Copy docker-compose.yml
   template:
     src: docker-compose.yml.j2
