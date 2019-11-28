@@ -1,4 +1,4 @@
 {
   "email": "noreply.sitesdata@gmail.com",
-  "password": {{ aquanet_email_password }}
+  "password": "{{ aquanet_email_password }}"
 }
