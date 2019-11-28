@@ -1,27 +1,4 @@
 ---
-- name: Include vars
-  include_vars: vars.yml
-
-- name: Include vault
-  include_vars: vault.yml
-
-- include_role: name=icos.certbot
-
-- name: Copy nginx conf
-  template:
-    src: sites-aquanet-form.conf
-    dest: /etc/nginx/conf.d/
-    mode: 0700
-  notify: reload nginx config
-
-- name: Create project directory
-  file:
-    path: "{{ project_dir }}"
-    state: directory
-    recurse: yes
-
-- import_tasks: bitbucket.yml
-
 - name: Pull source from git
   git:
     repo: "{{ vault_aquanet_form_git_repo }}"
@@ -31,7 +8,7 @@
 - name: Copy config
   template:
     src: config.json
-    desk: "{{ project_dir }}/repo/"
+    dest: "{{ project_dir }}/repo/"
 
 - name: Copy docker-compose.yml
   template:

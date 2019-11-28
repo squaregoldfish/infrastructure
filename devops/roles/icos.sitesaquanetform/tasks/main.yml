@@ -1,2 +1,20 @@
+- name: Include vars
+  include_vars: vars.yml
+
+- name: Include vault
+  include_vars: vault.yml
+
+- import_tasks: nginx.yml
+  tags: nginx
+
+- name: Create project directory
+  file:
+    path: "{{ project_dir }}"
+    state: directory
+    recurse: yes
+
+- import_tasks: bitbucket.yml
+  tags: repo
+
 - import_tasks: sitesaquanetform.yml
-  tags: sitesaquanetform_only
+  tags: pull
