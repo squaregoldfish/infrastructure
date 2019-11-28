@@ -19,4 +19,5 @@
   docker_compose:
     project_src: "{{ project_dir }}"
     state: present
+    build: yes
   notify: reload nginx config
