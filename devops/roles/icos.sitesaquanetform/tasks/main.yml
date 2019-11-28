@@ -1,8 +1,10 @@
 - name: Include vars
   include_vars: vars.yml
+  tags: always
 
 - name: Include vault
   include_vars: vault.yml
+  tags: always
 
 - import_tasks: nginx.yml
   tags: nginx
@@ -12,6 +14,7 @@
     path: "{{ project_dir }}"
     state: directory
     recurse: yes
+  tags: [repo, pull]
 
 - import_tasks: bitbucket.yml
   tags: repo
