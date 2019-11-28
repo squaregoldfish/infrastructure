@@ -15,4 +15,3 @@
       tags: bbclient
       bbclient_name: nextcloud
       bbclient_home: "{{ nextcloud_home }}"
-      bbclient_coldbackup_crontab: { hour: 03, minute: 00 }

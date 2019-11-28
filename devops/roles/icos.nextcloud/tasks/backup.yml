@@ -1,0 +1,20 @@
+- name: Create bin directory
+  file:
+    path: "{{ nextcloud_home }}/bin"
+    state: directory
+  register: _bin
+
+- name: Copy backup.sh
+  template:
+    src: backup.sh
+    dest: "{{ _bin.path }}"
+    mode: +x
+  register: _backup
+
+- name: Add backup to crontab
+  cron:
+    job: "{{ _backup.dest }}"
+    hour: "{{ nextcloud_cron.hour | default('3') }}"
+    minute: "{{ nextcloud_cron.minute | default('0') }}"
+    state: present
+    name: "nextcloud_backup"

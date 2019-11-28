@@ -94,3 +94,6 @@
     - nextcloud.conf
     - nextcloud-nextcloud.inc
   notify: reload nginx config
+
+- import_tasks: backup.yml
+  tags: nextcloud_backup
