@@ -45,9 +45,19 @@
         description: "Configuration for exploredata"
         devices:
           # Mount stilt data inside LXD for later mounting inside docker.
-          download:
+          stilt:
             path: /disk/data/stiltweb
-            source: "{{ exploredata_stiltweb_data_src }}"
+            source: /disk/data/stiltweb
+            type: disk
+            readonly: "true"
+          ringo:
+            path: /opt/stiltdata/RINGO
+            source: /disk/data/fsicos-stilt/RINGO
+            type: disk
+            readonly: "true"
+          footprints:
+            path: /opt/stiltdata/fsicos2/stilt/Footprints
+            source: /disk/data/stilt/Footprints
             type: disk
             readonly: "true"
         name: exploredata
@@ -101,6 +111,7 @@
         - name: Include vault.yml
           include_vars:
             file: vault.yml
+          tags: vault
 
         - import_role:
             name: icos.exploredata
@@ -108,17 +119,19 @@
 
         - import_role:
             name: icos.exploredata
-            tasks_from: environ
+            tasks_from: setup
           vars:
             exploredata_type: prod
             exploredata_password: "{{ vault_exploredata_password_prod }}"
+          tags: config-prod
 
         - import_role:
             name: icos.exploredata
-            tasks_from: environ
+            tasks_from: setup
           vars:
             exploredata_type: test
             exploredata_password: "{{ vault_exploredata_password_test }}"
+          tags: config-test
 
     - tags: pushprod
       import_role:

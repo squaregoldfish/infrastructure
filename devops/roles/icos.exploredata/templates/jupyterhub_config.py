@@ -47,9 +47,12 @@ c.DockerSpawner.network_name = os.environ["NETWORK_NAME"]
 c.DockerSpawner.notebook_dir = '/home/jovyan'
 c.DockerSpawner.remove_containers = True
 c.DockerSpawner.debug = True
-c.DockerSpawner.read_only_volumes = { '/etc/localtime': '/etc/localtime',
-                                      '/disk/data/stiltweb/stations': "/data/stiltweb/stations",
-                                      '/disk/data/stiltweb/slots': "/data/stiltweb/slots" }
+c.DockerSpawner.read_only_volumes = { '/etc/localtime'                          : '/etc/localtime',
+                                      '/disk/data/stiltweb/stations'            : "/data/stiltweb/stations",
+                                      '/disk/data/stiltweb/slots'               : "/data/stiltweb/slots",
+                                      '/opt/stiltdata/RINGO'                    : '/opt/stiltdata/RINGO',
+                                      '/opt/stiltdata/fsicos2/stilt/Footprints' : '/opt/stiltdata/fsicos2/stilt/Footprints' }
+
 
 
 # RESTRICTIONS ON THE NOTEBOOKS
