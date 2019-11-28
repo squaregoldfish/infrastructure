@@ -47,7 +47,7 @@ HEADER="=== starting backup"
 echo "$HEADER $(date)" >> "$LOGFILE"
 
 # By default we generate no output, as not to spook cron.
-if ! bin/bbclient-all create \
+if ! bin/bbclient-all create --verbose --stats \
      "::$ARCHIVE" volumes >> "$LOGFILE" 2>&1
 then
     # In case of error, output everything after the last header.
