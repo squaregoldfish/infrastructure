@@ -21,3 +21,4 @@
     minute: "{{ bbclient_coldbackup_crontab.minute | default('0') }}"
     state: present
     name: "bbclient_{{ bbclient_name }}_coldbackup"
+  when: bbclient_coldbackup_crontab is defined

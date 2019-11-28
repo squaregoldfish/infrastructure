@@ -1,4 +1,7 @@
 - import_tasks: user_name_home.yml
+  # These task only sets facts, and those facts are required no matter what
+  # other tasks we want to run.
+  tags: always
 
 - import_tasks: ssh.yml
   become: yes
@@ -11,6 +14,6 @@
 - import_tasks: repos.yml
 
 - import_tasks: coldbackup.yml
-  when: bbclient_coldbackup_crontab is defined
   become: yes
   become_user: "{{ bbclient_user }}"
+  tags: bbclient_coldbackup
