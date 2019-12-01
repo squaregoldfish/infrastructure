@@ -4,6 +4,8 @@ services:
   app:
     build: {{ nextcloud_build_nextcloud }}
     user: www-data
+    ports:
+      - "127.0.0.1:{{ nextcloud_port }}:{{ nextcloud_port }}"
     expose:
       - {{ nextcloud_port }}
     volumes:
@@ -12,9 +14,6 @@ services:
     restart: unless-stopped
     env_file:
       - nextcloud.env
-    networks:
-      nextcloud:
-        ipv4_address: {{ nextcloud_ip }}
 
   {{ nextcloud_db_host }}:
     build: {{ nextcloud_build_postgres }}
@@ -26,15 +25,3 @@ services:
       - {{ nextcloud_volume_postgres }}:/var/lib/postgresql/data
     env_file:
       - postgres.env
-    networks:
-      nextcloud:
-        ipv4_address: {{ nextcloud_postgres_cont_ip }}
-
-networks:
-   nextcloud:
-     driver: bridge
-     ipam:
-       driver: default
-       config:
-       -
-         subnet: {{ nextcloud_subnet }}
