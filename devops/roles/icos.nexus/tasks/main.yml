@@ -1,15 +1,7 @@
 - name: Build and deploy docker images
-  include_tasks: nexus_docker.yml
-  when: nexus_docker_enable
+  import_tasks: nexus_docker.yml
+  tags: nexus_docker
 
 - name: Create certificate and create nginx config
-  include_tasks: nexus_nginx.yml
-  when: nexus_nginx_enable
-
-- name: Add borgbackup support
-  include_role: name=icos.bbclient
-  vars:
-    bbclient_name: "{{ nexus_user }}"
-    bbclient_home: "{{ nexus_home }}"
-    bbclient_coldbackup_crontab: { hour: 02, minute: 50 }
-  when: nexus_bbclient_enable
+  import_tasks: nexus_nginx.yml
+  tags: nexus_nginx

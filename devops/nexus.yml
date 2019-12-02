@@ -1,0 +1,10 @@
+- hosts: icosprod2
+  roles:
+    - role: icos.nexus
+      tags: nexus
+    
+    - role: icos.bbclient
+      bbclient_name: "{{ nexus_user }}"
+      bbclient_home: "{{ nexus_home }}"
+      bbclient_coldbackup_crontab: { hour: 02, minute: 50 }
+      tags: bbclient
