@@ -13,7 +13,7 @@
 - name: Add job to renew certificates
   cron:
     name: Certbot renewal
-    job: "{{ nginx_certbot_bin }} renew"
+    job: "{{ nginx_certbot_bin }} renew -q"
     special_time: daily
 
 - name: Add a nginx deploy-hook for certbot
