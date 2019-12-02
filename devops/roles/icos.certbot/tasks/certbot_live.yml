@@ -1,5 +1,4 @@
 - block:
-    - import_tasks: certbot_install_software.yml
     - import_tasks: certbot_generate_live.yml
 
 - name: Set nginx config variable
