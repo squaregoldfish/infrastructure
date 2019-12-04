@@ -39,12 +39,6 @@
   register: o
   changed_when: '"Certificate not yet due for renewal; no action taken." not in o.stdout'
 
-- name: Add job to renew certificates
-  cron:
-    name: Certbot renewal
-    job: "{{ certbot_bin }} renew --post-hook 'service nginx reload'"
-    special_time: daily
-
 - name: Set nginx config variable
   set_fact:
     certbot_nginx_conf: |
