@@ -1,57 +1,41 @@
-#!/bin/bash
+#!/usr/bin/python3
 # Shut down service. Do backup. Start service again.
 # Designed to run from cron.
 
-set -Eueo pipefail
+import sys
+from os import access, X_OK, environ
+from os.path import exists, isdir, getsize
+from subprocess import run, DEVNULL, CalledProcessError
 
-if [[ ! -f docker-compose.yml ]]; then
-   echo "Expected to find docker-compose.yml here."
-   exit 1
-fi
+# The script relies on the current directory having a certain structure.
+assert exists('docker-compose.yml')
+assert isdir('volumes')
+assert access('bin/bbclient-all', X_OK)
 
-if [[ ! -d volumes ]]; then
-    echo "Expected to find volumes directory here."
-    exit 1
-fi
+LOGSIZE = getsize('backup.log') if exists('backup.log') else 0
+ARCHIVE = "%s-{now}" % (sys.argv+['test'])[1]
 
-if [[ ! -x "bin/bbclient-all" ]]; then
-    echo "Could not execute bin/bbclient-all"
-    exit 1
-fi
+try:
+    environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = 'yes'
 
-if [[ -z "${1:-}" ]]; then
-    ARCHIVE="test-{now}"
-else
-    ARCHIVE="$1-{now}"
-fi
+    # If our docker-builds script is available then dump information about
+    # currently running images. Don't care if it fails.
+    run("docker-builds > volumes/build.info", shell=1, stderr=DEVNULL)
 
+    run(['docker-compose', 'down'], stderr=DEVNULL, check=1)
 
-BUILD_INFO=$PWD/volumes/build.info
-# If our docker-builds script is available then dump information about
-# currently running images.
-if [[ -f build.log ]]; then
-    docker-builds > "$BUILD_INFO" || :
-fi
+    run('echo "=== starting backup $(date)" >> backup.log; '
+        'bin/bbclient-all create --verbose --stats "::%s" volumes '
+        '>> backup.log 2>&1' % ARCHIVE, shell=1, check=1)
 
-# Do 'docker-compose up' as part of that trap so that the service resume even
-# if the backup fails.
-trap 'rm -f -- "$BUILD_INFO"; docker-compose up -d >& /dev/null' EXIT
+    run(['docker-compose', 'up', '-d'], stderr=DEVNULL)
 
-docker-compose down >& /dev/null
-
-export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-
-LOGFILE=backup.log
-HEADER="=== starting backup"
-
-echo "$HEADER $(date)" >> "$LOGFILE"
-
-# By default we generate no output, as not to spook cron.
-if ! bin/bbclient-all create --verbose --stats \
-     "::$ARCHIVE" volumes >> "$LOGFILE" 2>&1
-then
-    # In case of error, output everything after the last header.
-    sed -n ":a;\$p;N;/$HEADER/d;ba" "$LOGFILE"
-    exit 1
-fi
-
+    run('echo "=== starting prune $(date)" >> backup.log; '
+        'bin/bbclient-all prune --verbose --stats --keep-within 7d '
+        '--keep-daily=30 --keep-weekly=150 >> backup.log 2>&1',
+        shell=1, check=1)
+except CalledProcessError:
+    # In case of error, print logs created since we started.
+    f = open('backup.log'); f.seek(LOGSIZE); print(f.read())  # noqa
+finally:
+    run(['docker-compose', 'up', '-d'], stderr=DEVNULL)
