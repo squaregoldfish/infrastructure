@@ -1,0 +1,10 @@
+- hosts: icosprod
+  roles:
+    - role: icos.pgrep,
+      tags: pgrep,
+      arg: "{{ pgrep_rdflog_instance }}"
+
+- hosts: icosprod2
+  roles:
+    - role: icos.rdflog
+      tags: rdflog

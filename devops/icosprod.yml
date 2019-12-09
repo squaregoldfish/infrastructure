@@ -12,10 +12,6 @@
       tags: doi
     - role: icos.filedrop
       tags: filedrop
-    - { role: icos.pgrep,
-        tags: pgrep,
-        arg: "{{ pgrep_rdflog_instance }}"
-      }
 
 - hosts: icosprod2
   become: true
@@ -41,5 +37,3 @@
   roles:
     - role: icos.nexus
       tags: nexus
-    - role: icos.rdflog
-      tags: rdflog
