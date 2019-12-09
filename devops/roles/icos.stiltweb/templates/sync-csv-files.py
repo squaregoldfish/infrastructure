@@ -43,7 +43,7 @@ MATCHING_CSV = re.compile(r'stiltresult(\d{4})x[^_]+_\d+.csv')
 
 # This object serves as something to return to the process executor.
 SyncResult = collections.namedtuple(
-    'SyncResult', ['csvdir', 'nwritten', 'nnoexist'])
+    'SyncResult', ['csvdir', 'nwritten', 'nnoexist', 'nskipped'])
 
 
 def parse_date_id(s):
@@ -62,7 +62,12 @@ def parse_date_id(s):
         s += '.0'
     ndays, nslot = s.split('.')
     date = ORIGIN + datetime.timedelta(days=int(ndays))
-    slot = STILT_DATE_ID_SLOTS[nslot]
+    try:
+        slot = STILT_DATE_ID_SLOTS[nslot]
+    except KeyError:
+        # This happens - presumably - if stilt has been run for another
+        # resolution that three-hourly. nslot might look like '4583333333'.
+        slot = None
     return date, slot
 
 
@@ -103,6 +108,8 @@ def calculate_slotdir_path(station, row):
     '/disk/data/stiltweb/stations/HEI/2007/07/2007x07x02x06'
     """
     date, slot = parse_date_id(row[0])
+    if slot is None:
+        return None
     slotname = "%sx%02dx%02dx%s" % (date.year, date.month, date.day, slot)
     return os.path.join(STILTWEB_STATIONS,
                         station,
@@ -118,6 +125,7 @@ def extract_csv_for_station(csvdir, station):
     """
     nnoexist = 0
     nwritten = 0
+    nskipped = 0
     for f in sorted(os.scandir(csvdir), key=lambda k: k.name):
         m = MATCHING_CSV.match(f.name)
         if not m:
@@ -126,6 +134,9 @@ def extract_csv_for_station(csvdir, station):
         nwritten_save = nwritten
         for row in reader:
             slotdir = calculate_slotdir_path(station, row)
+            if slotdir is None:
+                nskipped += 1
+                continue
             if not os.path.exists(slotdir):
                 nnoexist += 1
                 continue
@@ -137,7 +148,7 @@ def extract_csv_for_station(csvdir, station):
                 nwritten += 1
         if nwritten > nwritten_save:
             remove_csv_cache_file(station, m.group(1))
-    return SyncResult(csvdir, nwritten, nnoexist)
+    return SyncResult(csvdir, nwritten, nnoexist, nskipped)
 
 
 if __name__ == '__main__':
