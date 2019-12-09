@@ -16,7 +16,7 @@
 
 - name: Add coldbackup to crontab
   cron:
-    job: "cd {{ bbclient_home }} && {{ bbclient_script_dir }}/bbclient-coldbackup cron"
+    job: "cd {{ bbclient_home }} && {{ bbclient_script_dir }}/bbclient-coldbackup"
     hour: "{{ bbclient_coldbackup_crontab.hour | default('0') }}"
     minute: "{{ bbclient_coldbackup_crontab.minute | default('0') }}"
     state: present
