@@ -1,4 +1,4 @@
-FROM jupyterhub/jupyterhub:1.0
+FROM jupyterhub/jupyterhub:1.0.0
 
 RUN conda install -y -c pyviz pyviz
 
