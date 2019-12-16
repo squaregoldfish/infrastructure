@@ -38,7 +38,7 @@ def logfile():
 
 def logfmt(msg):
     now = datetime.datetime.now().astimezone()
-    return "=== %s %s" % (msg, now.strftime('%a %b %2w %H:%M:%S %Z %Y'))
+    return "=== %s %s" % (msg, now.strftime('%a %b %d %H:%M:%S %Z %Y'))
 
 
 def bbclient(what, arg):
