@@ -3,7 +3,7 @@ services:
   jupyterhub:
     build: .
     image: jupyter_jupyterhub3:2019.03.01
-    mem_limit: 35g
+    mem_limit: 64g
     ports:
       - "127.0.0.1:8889:8000"
     volumes:
