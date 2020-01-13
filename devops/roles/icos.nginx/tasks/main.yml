@@ -20,11 +20,6 @@
         dest: /etc/systemd/system/nginx.service.d/override.conf
       notify: reload systemd config
 
-- name: Start nginx
-  service:
-    name: nginx
-    state: started
-
 - name: Install nginx.conf
   template:
     src: nginx.conf.j2
@@ -49,6 +44,11 @@
   loop:
     - http
     - https
+
+- name: Start nginx
+  service:
+    name: nginx
+    state: started
 
 - import_tasks: nginx_certbot.yml
   tags: nginx_certbot
