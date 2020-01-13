@@ -51,3 +51,5 @@ dovecot_domains:
   - otc-nrt.icos-cp.eu
 
 flexextract_download_host: /disk/data/flexextract_download
+
+prometheus_graf_pass: "{{ vault_prometheus_graf_pass }}"
