@@ -16,6 +16,11 @@
     job: "{{ nginx_certbot_bin }} renew -q"
     special_time: daily
 
+- name: Create /etc/letsencrypt/renewal-hooks/deploy directory
+  file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+
 - name: Add a nginx deploy-hook for certbot
   copy:
     dest: /etc/letsencrypt/renewal-hooks/deploy/nginx.sh
