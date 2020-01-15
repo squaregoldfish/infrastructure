@@ -8,9 +8,14 @@
 
 - name: Run certbot for {{ certbot_name }}
   command: |
-    {{ certbot_bin }} certonly --nginx
+    {{ certbot_bin }}
+    certonly
+    --nginx
+    --non-interactive
+    --agree-tos
+    --expand
     --cert-name {{ certbot_name }}
-    --non-interactive --agree-tos --email {{ certbot_email }}
+    --email {{ certbot_email }}
     {% for d in certbot_domains %} -d {{ d }} {% endfor %}
   register: _r
   changed_when: "'Certificate not yet due for renewal;' not in _r.stdout"
