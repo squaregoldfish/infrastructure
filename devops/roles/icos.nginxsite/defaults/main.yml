@@ -1,3 +1,3 @@
-nginxsite_path_available: "/etc/nginx/sites-available/{{ nginxsite_name }}"
-nginxsite_path_enable: "/etc/nginx/sites-enabled/{{ nginxsite_name }}"
+nginxsite_path_available: "/etc/nginx/sites-available/{{ nginxsite_name }}.conf"
+nginxsite_path_enable: "/etc/nginx/sites-enabled/{{ nginxsite_name }}.conf"
 nginxsite_enable: True
