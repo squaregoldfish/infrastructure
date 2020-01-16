@@ -1,0 +1,46 @@
+# Examples:
+# https://github.com/VictoriaMetrics/VictoriaMetrics/blob/master/deployment/docker/prometheus.yml
+
+global:
+  scrape_interval:     30s
+  evaluation_interval: 30s
+  # scrape_timeout is set to the global default (10s).
+
+
+# This is what makes prometheus use victoriametrics.
+# https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_write
+remote_write:
+  - url: "http://victoriametrics:8428/api/v1/write"
+    queue_config:
+      max_samples_per_send: 10000
+
+
+scrape_configs:
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - prometheus:9090
+
+  - job_name: 'victoriametrics'
+    static_configs:
+      - targets:
+          - victoriametrics:8428
+
+  - job_name: 'pushgateway'
+    static_configs:
+      - targets:
+          - pushgateway:9091
+
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets:
+          - alertmanager:9093
+
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "alertmanager:9093"

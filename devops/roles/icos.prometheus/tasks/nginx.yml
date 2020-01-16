@@ -1,0 +1,11 @@
+- import_role: name=icos.nginxsite
+  tags: prometheus_nginx
+  vars:
+    nginxsite_name: prometheus
+    nginxsite_file: prometheus.conf
+
+- import_role: name=icos.nginxsite
+  tags: prometheus_nginx
+  vars:
+    nginxsite_name: grafana
+    nginxsite_file: grafana.conf

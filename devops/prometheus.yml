@@ -1,0 +1,42 @@
+# Full deploy:
+#   $ deploy prometheus
+#
+# After updating the prometheus nginx config:
+#   $ deploy prometheus nginx
+#
+# Rebuild the docker images:
+#   $ deploy prometheus docker
+#
+# Update certificate (maybe added a new subdomain):
+#   $ deploy prometheus certbot
+
+- hosts: icosprod2
+  become: true
+  vars_files:
+    - vault.yml
+  vars:
+    # These two are used by both icos.certbot2 and icos.prometheus.
+    certbot_name: prometheus
+    certbot_domains:
+      - "{{ prometheus_prom_domain }}"
+      - "{{ prometheus_graf_domain }}"
+    prometheus_admin_password: "{{ vault_prometheus_admin_password }}"
+  tasks:
+    - import_role:
+        name: icos.certbot2
+      tags: certbot
+
+    - import_role:
+        name: icos.prometheus
+        tasks_from: docker
+      tags: docker
+
+    - import_role:
+        name: icos.prometheus
+        tasks_from: nginx
+      tags: nginx
+
+    - import_role:
+        name: icos.prometheus
+        tasks_from: auth
+      tags: auth

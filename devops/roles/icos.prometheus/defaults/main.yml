@@ -1,0 +1,11 @@
+prometheus_prom_domain: prom.icos-cp.eu
+prometheus_graf_domain: graf.icos-cp.eu
+
+prometheus_home: /docker/prometheus
+prometheus_prom_port: 9090
+prometheus_graf_port: 3000
+
+prometheus_user_file: /etc/nginx/auth/prometheus
+prometheus_users:
+  - name: admin
+    password: "{{ prometheus_admin_password }}"

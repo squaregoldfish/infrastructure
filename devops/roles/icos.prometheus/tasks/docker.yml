@@ -1,0 +1,34 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - prometheus_graf_pass
+
+- name: Create {{ prometheus_home }} directory
+  file:
+    path: "{{ prometheus_home }}"
+    state: directory
+
+- name: Copy files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ prometheus_home }}"
+  loop:
+    - docker-compose.yml
+    - alertmanager
+    - prometheus.yml
+    - provisioning
+
+- name: Create grafana.env
+  copy:
+    dest: "{{ prometheus_home }}/grafana.env"
+    content: |
+      GF_SECURITY_ADMIN_USER=admin
+      GF_SECURITY_ADMIN_PASSWORD={{ prometheus_graf_pass }}
+      GF_USERS_ALLOW_SIGN_UP=false
+
+- name: Build and start
+  docker_compose:
+    project_src: "{{ prometheus_home }}"
+    build: yes
