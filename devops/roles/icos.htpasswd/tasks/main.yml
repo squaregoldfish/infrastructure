@@ -1,0 +1,25 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - htpasswd_users
+    - htpasswd_file
+
+# This gets us htpasswd(1)
+- name: Install apache2-utils
+  apt:
+    name: apache2-utils
+    state: present
+
+- name: Install the passlib library
+  pip:
+    name: passlib
+    state: present
+
+- name: Add basic auth users
+  htpasswd:
+    path: "{{ htpasswd_file }}"
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+  loop: "{{ htpasswd_users }}"
