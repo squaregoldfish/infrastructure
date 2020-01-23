@@ -1,0 +1,23 @@
+- name: Copy docker-compose.yml
+  copy:
+    src: docker-compose.yml
+    dest: "{{ onlyoffice_home }}"
+
+- name: Copy runtime environment file
+  template:
+    src: onlyoffice.env
+    dest: "{{ onlyoffice_home }}"
+
+- name: Copy parsetime environment file
+  copy:
+    dest: "{{ onlyoffice_home }}/.env"
+    content: |
+      ONLYOFFICE_PORT={{ onlyoffice_port }}
+      ONLYOFFICE_VERSION={{ onlyoffice_version }}
+
+- name: Build and start
+  docker_compose:
+    project_src: "{{ onlyoffice_home }}"
+    build: no
+    state: present
+    restarted: yes

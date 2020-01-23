@@ -15,6 +15,8 @@ doesn't really need any storage of its own.
 
 # Known bugs
 
+The below was true for 5.3.x, haven't looked into the new 5.4 version.
+
 * The OnlyOffice image is very complex. The single container will use
   supervised(1) to start:
   * postgres 9.5 (i.e, an older version)
@@ -27,9 +29,8 @@ doesn't really need any storage of its own.
   * It'll start some services as other users and some as root
 
 # Resources
-https://hub.docker.com/r/onlyoffice/documentserver/
-https://api.onlyoffice.com/editors/nextcloud
-https://docs.nextcloud.com/server/14/admin_manual/contents.html
-https://help.nextcloud.com/
-https://github.com/ONLYOFFICE/Docker-DocumentServer/blob/master/README.md#running-onlyoffice-document-server-using-https
-https://helpcenter.onlyoffice.com/server/docker/document/docker-installation.aspx
++ [Onlyoffice docker installation](https://github.com/ONLYOFFICE/Docker-DocumentServer/blob/master/README.md#running-onlyoffice-document-server-using-https)
++ [Community version (the one we're running)](https://helpcenter.onlyoffice.com/server/docker/community/index.aspx)
++ [The official forum](http://dev.onlyoffice.org/)
++ [Docker images and tags](https://hub.docker.com/r/onlyoffice/documentserver/)
++ [Nextcloud integration](https://api.onlyoffice.com/editors/nextcloud)

@@ -1,27 +1,18 @@
 - import_tasks: setup.yml
   tags: onlyoffice_setup
 
-- name: Build images using docker-compose
-  tags: onlyoffice_build
-  shell: |
-    ( echo -n '=== starting build '; date; docker-compose build ) \
-    | tee -a build.log
-  args:
-    chdir: "{{ _user.home }}"
-  register: _build
-  changed_when: '" ---> Running in " in _build.stdout'
+- import_tasks: docker.yml
+  tags: onlyoffice_docker
 
-- include_role: name=icos.certbot2
+- import_role: name=icos.certbot2
   tags: onlyoffice_certbot
+  vars:
+    certbot_name: "{{ onlyoffice_cert_name }}"
+    certbot_domains:
+      - "{{ onlyoffice_domain }}"
 
-- name: Copy nginx config file
+- import_role: name=icos.nginxsite
   tags: onlyoffice_nginx
-  template:
-    src: onlyoffice.conf
-    dest: /etc/nginx/conf.d/
-  notify: reload nginx config
-
-- debug:
-    msg: |
-      Don't forget to manually restart onlyoffice.
-  tags: onlyoffice_build
+  vars:
+    nginxsite_name: "{{ onlyoffice_site_name }}"
+    nginxsite_file: onlyoffice.conf

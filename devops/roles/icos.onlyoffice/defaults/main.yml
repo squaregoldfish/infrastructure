@@ -1,18 +1,15 @@
 # https://hub.docker.com/r/onlyoffice/documentserver/
-onlyoffice_version: 5.3.4.3
-
-onlyoffice_ip: 172.21.198.2
-onlyoffice_subnet: 172.21.198.0/24
+onlyoffice_version: 5.4.2.46
+onlyoffice_port: 8201
 
 onlyoffice_home: /docker/onlyoffice
 onlyoffice_user: onlyoffice
 
-onlyoffice_volume_logs: "{{ onlyoffice_home }}/volumes/logs"
-
 onlyoffice_build_dir: "{{ onlyoffice_home }}/build"
 
-certbot_domains: ["{{ onlyoffice_domain | mandatory }}"]
-certbot_name: onlyoffice
+onlyoffice_domain: onlyoffice.icos-cp.eu
+onlyoffice_cert_name: onlyoffice
+onlyoffice_site_name: onlyoffice
 
 # By default OnlyOffice will reject outgoing https connections that has an
 # invalid certificate. But when running in testing - where we use self-signed
