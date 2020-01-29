@@ -1,4 +1,4 @@
-- import_playbook: setup.yml
+# $ deploy stilt stiltweb_sync
 
 
 - hosts: stiltcluster

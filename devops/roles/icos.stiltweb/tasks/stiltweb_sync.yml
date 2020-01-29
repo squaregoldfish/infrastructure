@@ -1,4 +1,4 @@
-# This file installs the script/service/trigger needed to keep the new-style and
+# This file installs the script/service/timer needed to keep the new-style and
 # old-style stilt directory structures in sync (by hardlinking them).
 
 - name: Install stiltweb->stilt sync script
@@ -24,27 +24,31 @@
 
         [Unit]
         Description=Sync slots from stiltweb to classic stilt
-        # These makes sure that we only run once every 10 seconds. Otherwise we
-        # might trigger very often and svamp the system.
-        StartLimitBurst=1
-        StartLimitIntervalSec=10
   notify: reload systemd config
 
 
-- name: Install stiltweb->stilt path trigger
+- name: Install stiltweb->stilt timer
   copy:
-    dest: /etc/systemd/system/sync-stiltweb-to-stilt.path
+    dest: /etc/systemd/system/sync-stiltweb-to-stilt.timer
     content: |
-        [Path]
-        PathChanged={{ stiltweb_statedir }}/slots
+        [Timer]
+        OnBootSec=15min
+        OnUnitActiveSec=15min
 
         [Unit]
-        Description=Detect when stiltweb slots changes and sync them
+        Description=Periodically sync stiltweb->stilt
 
         [Install]
-        WantedBy=multi-user.target
+        WantedBy=timers.target
   notify: reload systemd config
 
-
 - name: Enable sync service
-  service: name=sync-stiltweb-to-stilt enabled=true
+  systemd:
+    name: sync-stiltweb-to-stilt.service
+    enabled: true
+
+- name: Enable sync service timer
+  systemd:
+    name: sync-stiltweb-to-stilt.timer
+    enabled: true
+    state: started

@@ -11,8 +11,8 @@
 #
 # This script will spawn one process per station. By default it only shows what
 # would be synced, use '--help' for usage info. The script is designed to run
-# as a systemd service, trigger by a (inotify-based) path trigger - this way
-# one can have access to newly computed stilt data in the old-style layout.
+# as a systemd service, triggered by a timer - this way one can have access to
+# newly computed stilt data in the old-style layout.
 
 
 import argparse
