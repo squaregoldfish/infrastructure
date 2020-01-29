@@ -1,0 +1,9 @@
+- import_role: name=icos.certbot2
+  vars:
+    certbot_name: "{{ doi_cert_name }}"
+    certbot_domains: "{{ doi_domains }}"
+
+- import_role: name=icos.nginxsite
+  vars:
+    nginxsite_name: doi
+    nginxsite_file: doi.conf

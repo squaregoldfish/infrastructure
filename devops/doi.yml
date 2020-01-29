@@ -1,0 +1,10 @@
+- hosts: icosprod2
+  become: true
+  vars_files:
+    - vault.yml
+  vars:
+    doi_jar_file: /home/andre/tmp/doi.jar
+  roles:
+    - role: icos.doi
+      tags: doi
+      

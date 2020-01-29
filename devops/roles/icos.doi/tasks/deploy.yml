@@ -1,0 +1,14 @@
+- name: Deploy jarfile as a service
+  include_role:
+    name: icos.jarservice2
+  vars:
+    jarservice_name : doi
+    jarservice_home : "{{ doi_home }}"
+    jarservice_local: "{{ doi_jar_file }}"
+    jarservice_unit : "{{ lookup('template', 'doi.service') }}"
+
+- name: Copy application.conf
+  template:
+    src: application.conf
+    dest: "{{ doi_home }}"
+  notify: restart doi

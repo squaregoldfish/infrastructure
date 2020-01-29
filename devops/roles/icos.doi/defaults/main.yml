@@ -1,7 +1,8 @@
-doi_username: doi
+doi_user: doi
+doi_home: /home/doi
 doi_servicename: doi
-
+doi_port: 8079
 doi_password: "{{ vault_doi_password }}"
-
-certbot_domains: [doi.icos-cp.eu]
-certbot_conf_name: doi
+doi_domains: [doi.icos-cp.eu]
+doi_cert_name: doi.icos-cp.eu
+doi_admins: "{{ vault_doi_admins }}"

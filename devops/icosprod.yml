@@ -8,8 +8,6 @@
     - vault.yml
     - vars.yml
   roles:
-    - role: icos.doi
-      tags: doi
     - role: icos.filedrop
       tags: filedrop
 
@@ -33,6 +31,11 @@
         name: icos.cpauth
         tasks_from: deploy
       tags: cpauth_only
+
+    - import_role:
+        name: icos.doi
+        tasks_from: deploy
+      tags: doi_only
 
   roles:
     - role: icos.nexus
