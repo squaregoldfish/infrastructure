@@ -29,6 +29,7 @@
   ufw:
     rule: allow
     port: ssh
+    comment: ssh
 
 - name: Enable UFW
   ufw:
@@ -59,6 +60,7 @@
     route: true
     rule: allow
     port: "'{{ lxdhost_port }}'"
+    comment: "ssh to lxd {{ lxd_host }}"
   notify: Reload UFW
 
 # To be able to access the container via ssh, ssh keys have to be added.

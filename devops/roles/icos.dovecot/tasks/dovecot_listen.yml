@@ -10,6 +10,7 @@
     rule: allow
     port: "{{ dovecot_port }}"
     proto: tcp
+    comment: dovecot
 
 - name: Add postfix lmtp listener
   blockinfile:

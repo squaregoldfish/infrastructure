@@ -79,7 +79,7 @@
 
 - block:
     - name: Allowing inbound SSH
-      ufw: rule=allow port=ssh
+      ufw: rule=allow port=ssh comment=ssh
     - name: Enabling UFW with default deny policy
       ufw: state=enabled policy=deny direction=incoming
   when: ansible_distribution == "Ubuntu"

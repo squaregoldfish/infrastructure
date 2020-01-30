@@ -43,6 +43,7 @@
   ufw:
     rule: allow
     port: "{{ item }}"
+    comment: nginx
   loop:
     - http
     - https

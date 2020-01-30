@@ -69,7 +69,10 @@
       when: _exports.changed
 
     - name: Completely open firewall to {{ stilt_nfs_icosprod1_ip }}
-      ufw: rule=allow src="{{ stilt_nfs_icosprod1_ip }}"
+      ufw:
+        rule: allow
+        src: "{{ stilt_nfs_icosprod1_ip }}"
+        comment: fsicos1
 
 
 - hosts: icosprod

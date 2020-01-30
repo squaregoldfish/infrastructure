@@ -22,5 +22,6 @@
   ufw:
     rule: allow
     port: smtp
+    comment: postfix
 
 - import_tasks: postfix_fail2ban.yml

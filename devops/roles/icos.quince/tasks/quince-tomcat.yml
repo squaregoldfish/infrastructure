@@ -44,6 +44,7 @@
   ufw:
     rule: allow
     port: "{{ quince_tomcat_port }}"
+    comment: tomcat
 
 - name: Copy quince.service
   template:
