@@ -1,10 +1,12 @@
 cdb.nateko.lu.se ansible_user=root
 
 [aliases]
-exploredata_host
+exploredata_host ansible_host=fsicos2.lunarc.lu.se
 exploredata ansible_host=fsicos2.lunarc.lu.se ansible_port=60532 ansible_user=root
-quince
+
 quince_host
+quince ansible_host=fsicos2.lunarc.lu.se
+
 
 [icosprod]
 fsicos.lunarc.lu.se
