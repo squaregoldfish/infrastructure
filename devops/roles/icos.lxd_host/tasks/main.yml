@@ -3,47 +3,31 @@
     msg: "{{ item }} needs to be defined"
   when: vars[item] is undefined
   loop:
-    - lxdhost_name
-    - lxdhost_port
+    - lxd_host_name
+    - lxd_host_port
 
-- name: Create the {{ lxdhost_name }} container
+- name: Create the {{ lxd_host_name }} container
   lxd_container:
-    name: "{{ lxdhost_name }}"
+    name: "{{ lxd_host_name }}"
     source:
       type: image
       mode: pull
       server: https://cloud-images.ubuntu.com/releases
       protocol: simplestreams
       alias: "18.04"
-    profiles: "{{ lxdhost_profiles | default(omit) }}"
+    config: "{{ lxd_host_config | default(omit) }}"
+    profiles: "{{ lxd_host_profiles | default(omit) }}"
     wait_for_ipv4_addresses: true
     wait_for_ipv4_interfaces: eth0
     timeout: 30
   register: _lxd
 
 - set_fact:
-    lxdhost_ip: "{{ _lxd.addresses.eth0 | first }}"
+    lxd_host_ip: "{{ _lxd.addresses.eth0 | first }}"
 
-# Make sure that we don't lock ourselves out of the remote machine.
-- name: Allowing inbound SSH
-  ufw:
-    rule: allow
-    port: ssh
-    comment: ssh
-
-- name: Enable UFW
-  ufw:
-    state: enabled
-
-- name: Enable IP forwarding
-  sysctl:
-    name: net.ipv4.ip_forward
-    value: "1"
-    sysctl_set: yes
-
-- name: Add port forward for {{ lxdhost_name }} ssh
+- name: Add port forward for {{ lxd_host_name }} ssh
   blockinfile:
-    marker: "# {mark} ansible / {{ lxdhost_name }} ssh"
+    marker: "# {mark} ansible / ssh to lxd {{ lxd_host_name }}"
     backup: yes
     create: no
     insertafter: EOF
@@ -51,7 +35,7 @@
     block: |
       *nat
       :PREROUTING ACCEPT [0:0]
-      -A PREROUTING -p tcp --dport {{ lxdhost_port }} -j DNAT --to-destination {{ lxdhost_ip }}:22
+      -A PREROUTING -p tcp --dport {{ lxd_host_port }} -j DNAT --to-destination {{ lxd_host_ip }}:22
       COMMIT
   notify: Reload UFW
 
@@ -59,8 +43,8 @@
   ufw:
     route: true
     rule: allow
-    port: "'{{ lxdhost_port }}'"
-    comment: "ssh to lxd {{ lxd_host }}"
+    port: "'{{ lxd_host_port }}'"
+    comment: "ssh to lxd {{ lxd_host_name }}"
   notify: Reload UFW
 
 # To be able to access the container via ssh, ssh keys have to be added.
@@ -72,15 +56,15 @@
 # This tasks uses choice 3 and takes the authorized_keys file from a user on
 # the remote machine and merges into the container. The user is typically the
 # same used by ansible to deploy the container.
-- name: Merge {{ lxdhost_key_file }} into the container
+- name: Merge {{ lxd_host_key_file }} into the container
   shell: >-
-    lxc exec {{ lxdhost_name }} -- bash -c '
+    lxc exec {{ lxd_host_name }} -- bash -c '
     while read line; do
     grep -qFx "$line" .ssh/authorized_keys || {
     echo "$line"; echo "$line" >> .ssh/authorized_keys;
     }; done
-    ' < {{ lxdhost_key_file }}
+    ' < {{ lxd_host_key_file }}
   register: r
   # Each merged key is echoed, thus we know if any were added.
   changed_when: r.stdout != ""
-  when: lxdhost_key_file is defined
+  when: lxd_host_key_file is defined

@@ -62,12 +62,12 @@
             readonly: "true"
         name: exploredata
 
-    - import_role: name=icos.lxdhost
+    - import_role: name=icos.lxd_host
       tags: lxd
       vars:
-        lxdhost_name: exploredata
-        lxdhost_port: "{{ hostvars['exploredata'].ansible_port }}"
-        lxdhost_profiles:
+        lxd_host_name: exploredata
+        lxd_host_port: "{{ hostvars['exploredata'].ansible_port }}"
+        lxd_host_profiles:
           - default
           - exploredata
 
@@ -87,7 +87,7 @@
         nginxsite_file: files/exploredata-nginx.conf
         exploredata_name: test
         exploredata_port: 4567
-        exploredata_host: "{{ lxdhost_ip }}"
+        exploredata_host: "{{ lxd_host_ip }}"
         exploredata_domain: exploretest.icos-cp.eu
 
     - import_role: name=icos.nginxsite
@@ -97,7 +97,7 @@
         nginxsite_file: files/exploredata-nginx.conf
         exploredata_name: prod
         exploredata_port: 4566
-        exploredata_host: "{{ lxdhost_ip }}"
+        exploredata_host: "{{ lxd_host_ip }}"
         exploredata_domain: exploredata.icos-cp.eu
 
 
