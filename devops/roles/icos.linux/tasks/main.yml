@@ -50,10 +50,14 @@
     create: yes
 
 - name: Copy utilities
+  tags: linux_utils
   copy:
-    src: retrieve-original.sh
-    dest: /usr/local/sbin/retrieve-original
+    src: "{{ item }}"
+    dest: "/usr/local/sbin/{{ item }}"
     mode: 0755
+  loop:
+    - retrieve-original
+
 
 - name: Find built-in ss(1)
   shell: which -a ss | grep -v /usr/local/sbin/ss
