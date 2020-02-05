@@ -1,0 +1,41 @@
+- hosts: wordpress_host
+  become: true
+  vars_files:
+    - vault.yml
+  tasks:
+    - name: Create wordpress LXD profile
+      tags:
+        - lxd
+        - profile
+      lxd_profile:
+        name: wordpress
+        config:
+          limits.cpu: "2"
+          limits.memory: "2GB"
+        devices:
+          eth0:
+            name: eth0
+            nictype: bridged
+            parent: lxdbr0
+            type: nic
+          root:
+            path: /
+            type: disk
+            # This pool was created manually.
+            pool: wordpress
+            size: "500GB"
+
+    - import_role: name=icos.lxd_host
+      tags: lxd
+      vars:
+        lxd_host_name: wordpress
+        lxd_host_port: "{{ hostvars['wordpress'].ansible_port }}"
+        lxd_host_extra_keys: "{{ vault_wordpress_extra_keys }}"
+        lxd_host_profiles:
+          - default
+          - wordpress
+
+- hosts: wordpress
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
