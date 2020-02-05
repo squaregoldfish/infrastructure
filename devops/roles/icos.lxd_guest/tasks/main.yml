@@ -1,0 +1,18 @@
+- name: Set timezone to Europe/Stockholm
+  timezone:
+    name: Europe/Stockholm
+  notify: restart crond
+
+- name: Install utilities
+  apt:
+    name:
+      - mg       # microemacs
+      - htop     # a better top(1)
+      - jq       # like sed for json
+      - make     # party like it's 1976
+      - fail2ban # stop ssh drive-by
+      - netcat-openbsd
+      - git
+      - tree
+      - tcpdump
+    update_cache: yes
