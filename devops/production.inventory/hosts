@@ -4,8 +4,11 @@ cdb.nateko.lu.se ansible_user=root
 exploredata_host ansible_host=fsicos2.lunarc.lu.se
 exploredata ansible_host=fsicos2.lunarc.lu.se ansible_port=60532 ansible_user=root
 
-quince_host
+quince_host ansible_host=fsicos2.lunarc.lu.se
 quince ansible_host=fsicos2.lunarc.lu.se
+
+jupyter_host ansible_host=fsicos2.lunarc.lu.se
+jupyter ansible_host=fsicos2.lunarc.lu.se ansible_port=60542 ansible_user=root
 
 wordpress_host ansible_host=fsicos2.lunarc.lu.se
 wordpress ansible_host=fsicos2.lunarc.lu.se ansible_port=60552 ansible_user=root
