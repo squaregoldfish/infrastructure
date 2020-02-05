@@ -25,27 +25,8 @@
 - set_fact:
     lxd_host_ip: "{{ _lxd.addresses.eth0 | first }}"
 
-- name: Add port forward for {{ lxd_host_name }} ssh
-  blockinfile:
-    marker: "# {mark} ansible / ssh to lxd {{ lxd_host_name }}"
-    backup: yes
-    create: no
-    insertafter: EOF
-    path: /etc/ufw/before.rules
-    block: |
-      *nat
-      :PREROUTING ACCEPT [0:0]
-      -A PREROUTING -p tcp --dport {{ lxd_host_port }} -j DNAT --to-destination {{ lxd_host_ip }}:22
-      COMMIT
-  notify: Reload UFW
-
-- name: Allow traffic on containers external ssh port
-  ufw:
-    route: true
-    rule: allow
-    port: "'{{ lxd_host_port }}'"
-    comment: "ssh to lxd {{ lxd_host_name }}"
-  notify: Reload UFW
+- import_tasks: forward.yml
+  tags: lxd_host_forward
 
 - import_tasks: keys.yml
   tags: lxd_host_keys

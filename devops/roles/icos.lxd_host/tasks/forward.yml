@@ -1,0 +1,37 @@
+# Make sure that we don't lock ourselves out of the remote machine.
+- name: Allowing inbound SSH
+  ufw:
+    rule: allow
+    port: ssh
+    comment: ssh
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+
+- name: Add port forward for {{ lxd_host_name }} ssh
+  blockinfile:
+    marker: "# {mark} ansible / ssh to lxd {{ lxd_host_name }}"
+    backup: yes
+    create: no
+    insertafter: EOF
+    path: /etc/ufw/before.rules
+    block: |
+      *nat
+      :PREROUTING ACCEPT [0:0]
+      -A PREROUTING -p tcp --dport {{ lxd_host_port }} -j DNAT --to-destination {{ lxd_host_ip }}:22
+      COMMIT
+  notify: Reload UFW
+
+- name: Allow traffic on containers external ssh port
+  ufw:
+    route: true
+    rule: allow
+    port: "'{{ lxd_host_port }}'"
+    comment: "ssh to lxd {{ lxd_host_name }}"
+  notify: Reload UFW
