@@ -7,6 +7,8 @@ exploredata ansible_host=fsicos2.lunarc.lu.se ansible_port=60532 ansible_user=ro
 quince_host
 quince ansible_host=fsicos2.lunarc.lu.se
 
+wordpress_host ansible_host=fsicos2.lunarc.lu.se
+wordpress ansible_host=fsicos2.lunarc.lu.se ansible_port=60552 ansible_user=root
 
 [icosprod]
 fsicos.lunarc.lu.se
