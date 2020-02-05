@@ -1,1 +1,5 @@
+# This file is read from the LXD host (i.e the ansible target).
 lxd_host_key_file: /root/.ssh/authorized_keys
+
+# Extra keys to be added to the authorized_keys file.
+lxd_host_extra_keys: []
