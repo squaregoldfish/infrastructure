@@ -1,0 +1,29 @@
+# deplay netdata install
+# deploy netdata certbot
+# deploy netdata nginx
+
+- hosts: icosprod2
+  vars_files:
+    - vault.yml
+  vars:
+    netdata_domain: netdata.icos-cp.eu
+    netdata_user_file: /etc/nginx/auth/netdata
+  roles:
+    - role: icos.netdata
+      tags: netdata
+
+    - role: icos.certbot2
+      tags: certbot
+      certbot_name: netdata
+      certbot_domains:
+        - "{{ netdata_domain }}"
+
+    - role: icos.nginxauth
+      tags: auth
+      nginxauth_file: "{{ netdata_user_file }}"
+      nginxauth_users: "{{ vault_netdata_nginx_users }}"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: netdata
+      nginxsite_file: files/netdata.conf
