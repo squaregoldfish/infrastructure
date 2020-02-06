@@ -6,24 +6,8 @@
     - lxd_host_name
     - lxd_host_port
 
-- name: Create the {{ lxd_host_name }} container
-  lxd_container:
-    name: "{{ lxd_host_name }}"
-    source:
-      type: image
-      mode: pull
-      server: https://cloud-images.ubuntu.com/releases
-      protocol: simplestreams
-      alias: "18.04"
-    config: "{{ lxd_host_config | default(omit) }}"
-    profiles: "{{ lxd_host_profiles | default(omit) }}"
-    wait_for_ipv4_addresses: true
-    wait_for_ipv4_interfaces: eth0
-    timeout: 30
-  register: _lxd
-
-- set_fact:
-    lxd_host_ip: "{{ _lxd.addresses.eth0 | first }}"
+- import_tasks: create.yml
+  tags: lxd_host_create
 
 - import_tasks: forward.yml
   tags: lxd_host_forward
