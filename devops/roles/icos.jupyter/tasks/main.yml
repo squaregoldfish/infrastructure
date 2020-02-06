@@ -1,0 +1,39 @@
+- name: Create jupyter home
+  file:
+    path: "{{ jupyter_home }}"
+    state: directory
+
+- name: Copy files
+  tags: jupyter_copy
+  copy:
+    dest: "{{ jupyter_home }}"
+    src: "{{ item }}"
+  loop:
+    - build.hub
+    - build.notebook
+    - Makefile
+    - docker-compose.yml
+    - jupyter_home
+
+- name: Create auth token
+  tags: jupyter_token
+  # https://jupyter.readthedocs.io/en/stable/reference/separate-proxy.html#proxy-configuration
+  shell: openssl rand -hex 20 | awk '{ print "CONFIGPROXY_AUTH_TOKEN=" $1 }' > auth_token.env
+  args:
+    chdir: "{{ jupyter_home }}"
+    creates: auth_token.env
+
+# We want the network to be external to docker-compose, so that it leaves it
+# alone when it goes down, since the notebook containers need it.
+- name: Create jupyter network
+  docker_network:
+    name: jupyter
+
+- name: Build the jupyter image
+  docker_image:
+    name: hub
+    source: build
+    force_source: yes
+    build:
+      path: "{{ jupyter_home }}/build.hub"
+      pull: yes

@@ -1,0 +1,48 @@
+# https://docs.docker.com/compose/compose-file/#resources
+
+version: "3.5"
+
+networks:
+  jupyter:
+    external:
+      name: jupyter
+
+services:
+  proxy:
+    container_name: proxy
+    image: jupyterhub/configurable-http-proxy
+    ports:
+      - "8000:8000"
+    command: >-
+      configurable-http-proxy --ip 0.0.0.0 --port 8000 --api-ip 0.0.0.0 --api-port 8001 --error-target http://hub:8081/hub/error
+    env_file:
+      - auth_token.env
+    networks:
+      - jupyter
+
+  hub:
+    build:
+      context: build.hub
+    restart: unless-stopped
+    depends_on:
+      - proxy
+    container_name: hub
+    env_file:
+      - auth_token.env
+    environment:
+      - JUPYTER_ENABLE_LAB=1
+      - NETWORK_NAME=jupyter
+    volumes:
+      # Bind Docker socket on the host so we can connect to the daemon from
+      # within the container
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "./jupyterhub_home:/srv/jupyterhub:rw"
+      - "/etc/passwd:/etc/passwd:ro"
+      - "/etc/shadow:/etc/shadow:ro"
+      - "/etc/group:/etc/group:ro"
+      - "/etc/gshadow:/etc/gshadow:ro"
+    command: >
+      jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+    networks:
+      - jupyter

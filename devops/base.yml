@@ -1,6 +1,7 @@
 - import_playbook: setup.yml
 
 - hosts: all
+  become: true
   roles:
     - role: icos.linux
       tags: linux

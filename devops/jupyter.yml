@@ -1,0 +1,95 @@
+# Update nginx config (need lxd_host_create to get lxd_host_ip)
+# $ deploy jupyter -ljupyter_host lxd_host_create nginx
+#
+# Deploy the hub.
+# $ deploy jupyter -ljupyter jupyter
+#
+# Update hub configuration
+# $ deploy jupyter -ljupyter jupyter_copy
+#
+# Create authentication token
+# $ deploy jupyter -ljupyter jupyter_token
+#
+# Update the home profile
+# $ deploy jupyter -ljupyter_host home_profile container
+
+- hosts: jupyter_host
+  become: true
+  vars_files:
+    - vault.yml
+  pre_tasks:
+- hosts: jupyter_host
+  become: true
+  pre_tasks:
+    - name: Create LXD home profile
+      tags: home_profile
+      lxd_profile:
+        name: jupyter_home
+        description: "Jupyter home directories"
+        devices:
+          home:
+            path: /home
+            source: /disk/data/jupyter/home
+            type: disk
+          homejupyter:
+            path: /home_jupyter
+            source: /disk/data/jupyter/old_jupyter_from_fsicos1/jupyter/storage
+            type: disk
+          homejupyter3:
+            path: /home_jupyter3
+            source: /disk/data/jupyter/old_jupyter_from_fsicos1/jupyter3/storage
+            type: disk
+
+    - name: Create jupyter LXD profile
+      tags: profile
+      lxd_profile:
+        name: jupyter
+        config:
+          # Allow docker
+          security.nesting: "true"
+        devices:
+          root:
+            path: /
+            type: disk
+            pool: jupyter
+
+  roles:
+    - role: icos.lxd_host
+      tags: container
+      lxd_host_name: jupyter
+      lxd_host_port: "{{ hostvars['jupyter'].ansible_port }}"
+      lxd_host_profiles:
+        - default
+        - jupyter
+        - jupyter_home
+        - icosdata # created by icosdata.yml
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: jupyter
+      nginxsite_file: files/jupyter.conf
+      jupyter_domain: test.icos-cp.eu
+      jupyter_cert_name: test.icos-cp.eu
+      jupyter_port: 8000
+
+
+- hosts: jupyter
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.docker
+      tags: docker
+
+    - role: icos.jupyter
+      tags: jupyter
+
+  tasks:
+    - name: Install additional ssh keys
+      tags: keys
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ vault_jupyter_ssh_keys }}"
