@@ -35,7 +35,28 @@
           - default
           - wordpress
 
+    - import_role: name=icos.nginxsite
+      tags: nginx
+      vars:
+        nginxsite_name: wordpress
+        nginxsite_file: files/wordpress.conf
+        wordpress_domains:
+          - www.ingos-infrastructure.eu
+          - www.eric-forum.eu
+
+
 - hosts: wordpress
   roles:
     - role: icos.lxd_guest
       tags: guest
+
+  tasks:
+    - debug:
+        msg: |
+          # Don't forget to add the following in your wp-config.php, after the
+          # WP_DEBUG line. Otherwise you'll get redirect loops.
+          if ( $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' )
+          {
+              $_SERVER['HTTPS']       = 'on';
+              $_SERVER['SERVER_PORT'] = 443;
+          }
