@@ -1,8 +1,11 @@
+# Update nginx config (needs the lxd_host_ip)
+#   $ deploy wordpress -lwordpress_host lxd_host_create nginx
+
 - hosts: wordpress_host
   become: true
   vars_files:
     - vault.yml
-  tasks:
+  pre_tasks:
     - name: Create wordpress LXD profile
       tags:
         - lxd
@@ -25,24 +28,28 @@
             pool: wordpress
             size: "500GB"
 
-    - import_role: name=icos.lxd_host
+  roles:
+    - role: icos.lxd_host
       tags: lxd
-      vars:
-        lxd_host_name: wordpress
-        lxd_host_port: "{{ hostvars['wordpress'].ansible_port }}"
-        lxd_host_extra_keys: "{{ vault_wordpress_extra_keys }}"
-        lxd_host_profiles:
-          - default
-          - wordpress
+      lxd_host_name: wordpress
+      lxd_host_port: "{{ hostvars['wordpress'].ansible_port }}"
+      lxd_host_extra_keys: "{{ vault_wordpress_extra_keys }}"
+      lxd_host_profiles:
+        - default
+        - wordpress
 
-    - import_role: name=icos.nginxsite
+    - role: icos.certbot2
+      tags: cert
+      certbot_domain: www.icos-summerschool.eu
+
+    - role: icos.nginxsite
       tags: nginx
-      vars:
-        nginxsite_name: wordpress
-        nginxsite_file: files/wordpress.conf
-        wordpress_domains:
-          - www.ingos-infrastructure.eu
-          - www.eric-forum.eu
+      nginxsite_name: wordpress
+      nginxsite_file: files/wordpress.conf
+      wordpress_domains:
+        - www.ingos-infrastructure.eu
+        - www.eric-forum.eu
+        - www.icos-summerschool.eu
 
 
 - hosts: wordpress
