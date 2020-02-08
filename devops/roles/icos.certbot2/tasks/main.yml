@@ -1,3 +1,11 @@
+- set_fact:
+    certbot_name: "{{ certbot_domain }}"
+    certbot_domains: ["{{ certbot_domain }}"]
+  when:
+    - certbot_domain is defined
+    - certbot_name is undefined
+    - certbot_domains is undefined
+
 - name: Check that all parameters are defined
   fail:
     msg: "{{ item }} needs to be defined"
