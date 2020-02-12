@@ -1,0 +1,27 @@
+- name: Create eddyetc user
+  user:
+    name: "{{ eddyetc_user }}"
+    state: present
+
+- name: Create build directories
+  file:
+    path: "{{ eddyetc_build_dir }}"
+    state: directory
+
+- name: Install build requirements
+  template:
+    src: "{{ item }}"
+    dest: "{{ eddyetc_build_dir }}"
+  loop:
+    - Dockerfile
+    - entrypoint.sh
+
+- name: Build the eddyetc image
+  tags: eddyetc_build
+  docker_image:
+    name: "{{ eddyetc_image }}"
+    build:
+      path: "{{ eddyetc_build_dir }}"
+      pull: yes
+    source: build
+    force_source: yes

@@ -2,28 +2,19 @@
 
 set -euo pipefail
 
-USAGE_NAME="{{ eddyetc_bin_path | basename }}"
-INPUT_FILE="{{ eddyetc_input_file }}"
+PATCHES=/eddyetc/patches
+WORKDIR=/workdir/EC-Flux-nonICOS
 
-abort () { echo "$@" >&2; exit 1; }
+mkdir -p "$WORKDIR"
 
-if [ $# -ne 1 ]; then
-	abort "usage: ${USAGE_NAME} name_of_output_file.zip"
+cd "$WORKDIR"
+
+if [ -d "$PATCHES" ]; then
+    echo "Installing patches from $PATCHES."
+    cp $PATCHES/* .
 fi
 
-
-if [ ! -f "$INPUT_FILE" ]; then
-	abort "$INPUT_FILE is missing"
-fi
-
-cd /workdir
-Rscript "{{ eddyetc_r_name }}"
-
-if [ -e output ]; then
-	zip -qr "/output/${1}" output
-else
-	abort 'R script produced no output!'
-fi
-
-	
-
+echo "Now run 'Rscript nonICOS_WorkHorse.R NAME DIR'"
+echo "Example:"
+echo "  Rscript nonICOS_WorkHorse.R CZ-Bk1 /eddyetc/CZ-Bk1/CZ-Bk1_G3/"
+exec bash -i

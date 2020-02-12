@@ -1,0 +1,85 @@
+# Update nginx config (need lxd_host_create to get lxd_host_ip)
+# $ deploy eddyetc -leddyetc_host lxd_host_create nginx
+#
+# Deploy the hub:
+#   deploy eddyetc -leddyetc eddyetc
+#
+# Create user and copy build files, but don't build and test:
+#   deploy eddyetc eddyetc_setup
+#
+# Change the mounting of input data by recreating the profile:
+#   deploy eddyetc profile
+#
+# Create certificate, auth file and nginx config
+#   deploy eddyetc cert auth nginx
+
+
+- hosts: eddyetc_host
+  become: true
+  vars_files:
+    - vault.yml
+  vars:
+    eddyetc_domains:
+      - eddyetc.icos-cp.eu
+    eddyetc_cert_name: eddyetc
+    eddyetc_user_file: /etc/nginx/auth/eddyetc
+  pre_tasks:
+    - name: Create eddyetc LXD profile
+      tags: profile
+      lxd_profile:
+        name: eddyetc
+        config:
+          security.nesting: "true"
+        devices:
+          root:
+            path: /
+            type: disk
+            pool: eddyetc
+
+          ringo:
+            path: /input
+            source: "/disk/data/docker-compose-projects/nextcloud/volumes/nextcloud/data/__groupfolders/10/raw data for Deliverable 4.2"
+            readonly: "1"
+            type: disk
+
+          project:
+            path: /eddyetc
+            source: "/data/project/eddyetc"
+            type: disk
+
+  roles:
+    - role: icos.lxd_host
+      tags: container
+      lxd_host_name: eddyetc
+      lxd_host_port: "{{ hostvars['eddyetc'].ansible_port }}"
+      lxd_host_profiles:
+        - default
+        - eddyetc
+
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: "{{ eddyetc_cert_name }}"
+      certbot_domains: "{{ eddyetc_domains }}"
+
+    - role: icos.nginxauth
+      tags: auth
+      nginxauth_file: "{{ eddyetc_auth_file }}"
+      nginxauth_users: "{{ vault_eddyetc_nginx_users }}"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: eddyetc
+      nginxsite_file: files/eddyetc.conf
+
+
+- hosts: eddyetc
+  become: true
+  roles:
+    - role: icos.lxd_guest
+      tags: linux
+
+    - role: icos.docker
+      tags: docker
+
+    - role: icos.eddyetc
+      tags: eddyetc

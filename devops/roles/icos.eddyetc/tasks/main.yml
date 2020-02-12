@@ -1,3 +1,9 @@
-- import_tasks: eddyetc.yml
-  tags:
-    - eddyetc_only
+- import_tasks: build.yml
+  tags: eddyetc_build
+
+- name: Copy eddyetc
+  tags: eddyetc_wrapper
+  copy:
+    src: eddyetc
+    dest: "{{ eddyetc_bin_path }}"
+    mode: +x
