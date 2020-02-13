@@ -44,6 +44,10 @@
           limits.cpu: "4"
         description: "Configuration for exploredata"
         devices:
+          root:
+            path: /
+            type: disk
+            pool: exploredata
           # Mount stilt data inside LXD for later mounting inside docker.
           stilt:
             path: /disk/data/stiltweb
