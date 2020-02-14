@@ -69,10 +69,11 @@ def reachable(ip):
 
 
 @click.command()
-@click.option('-q', 'quiet', is_flag=True, default=False)
-def main(quiet):
+@click.option('--remove', 'remove', is_flag=True,
+              default=False, help="Remove the rules.")
+def main(remove):
     def log(msg):
-        if not quiet:
+        if not remove:
             print(msg)
     rules_by_num = {}
     rules_by_dpt = {}
@@ -81,45 +82,39 @@ def main(quiet):
             continue
         assert r.num not in rules_by_num
         rules_by_num[r.num] = r
-        rules_by_dpt.setdefault(
-            r.dnat.dpt, {}).setdefault(
-                (r.dnat.to_ip, r.dnat.to_port), []).append(r.num)
+        rules_by_dpt.setdefault(r.dnat.dpt, []).append(r)
 
     deletable = set()
-    for dpt, dst_rules in rules_by_dpt.items():
-        isreachable = []
-        unreachable = {}
-        no_pkts = []
-        has_pkts = []
-        for (dst_ip, dst_port), nums in dst_rules.items():
-            if not reachable(dst_ip):
-                unreachable.setdefault(dst_ip, []).extend(nums)
+    for n, (dpt, rules) in enumerate(sorted(rules_by_dpt.items())):
+        dests = {}
+        if n > 0:
+            log("#")
+        log('# ==> %-5s <===' % dpt)
+        for r in rules:
+            d = (r.dnat.to_ip, r.dnat.to_port)
+            if not reachable(r.dnat.to_ip):
+                log('# %-3s - unreachable - %s' % (r.num, r.extra))
+                deletable.add(r)
+            elif d in dests:
+                log('# %-3s - dup (%-3d)   - %s' % (r.num, dests[d].num,
+                                                    r.extra))
+                deletable.add(r)
             else:
-                isreachable.append(dst_ip)
-                for n in nums:
-                    r = rules_by_num[n]
-                    if r.pkts == 0:
-                        no_pkts.append(n)
-                    else:
-                        has_pkts.append(n)
-        if isreachable and unreachable:
-            for n, (ip, nums) in enumerate(unreachable.items()):
-                deletable.update(nums)
-                for r in (rules_by_num[n] for n in nums):
-                    log('# port %-5s rule %-3s "%s" - unreachable' % (
-                        dpt, r.num, r.extra))
-        if has_pkts and no_pkts:
-            deletable.update(no_pkts)
-            for r in (rules_by_num[n] for n in no_pkts):
-                log('# port %-5s rule %-3s "%s" - no packets' % (
-                    dpt, r.num, r.extra))
+                log('# %-3s - keeping     - %s' % (r.num, r.extra))
+                dests[d] = r
 
     if deletable:
-        inorder = [str(i) for i in sorted([int(s) for s in deletable],
+        inorder = [str(i) for i in sorted([int(s.num) for s in deletable],
                                           reverse=True)]
-        print('echo', ' '.join(inorder),
-              '| xargs -rn1 sudo iptables -t nat -D PREROUTING')
-
+        log('# echo % | xargs -rn1 sudo iptables -t nat -D PREROUTING' % (
+            ' '.join(inorder)))
+        if remove:
+            for num in inorder:
+                subprocess.check_call(['sudo', 'iptables', '-t', 'nat', '-D',
+                                       'PREROUTING', str(num)])
+    elif remove:
+        print('nothing to remove')
+            
 
 if __name__ == '__main__':
     main()

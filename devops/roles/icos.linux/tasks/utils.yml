@@ -6,7 +6,7 @@
     mode: 0755
   loop:
     - retrieve-original
-    - remove-duplicate-port-forwards
+    - duplicate-port-forwards
 
 - name: Install ss(1) wrapper
   copy:
