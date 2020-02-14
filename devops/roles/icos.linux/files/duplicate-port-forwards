@@ -106,7 +106,7 @@ def main(remove):
     if deletable:
         inorder = [str(i) for i in sorted([int(s.num) for s in deletable],
                                           reverse=True)]
-        log('# echo % | xargs -rn1 sudo iptables -t nat -D PREROUTING' % (
+        log('# echo %s | xargs -rn1 sudo iptables -t nat -D PREROUTING' % (
             ' '.join(inorder)))
         if remove:
             for num in inorder:
@@ -114,7 +114,7 @@ def main(remove):
                                        'PREROUTING', str(num)])
     elif remove:
         print('nothing to remove')
-            
+
 
 if __name__ == '__main__':
     main()
