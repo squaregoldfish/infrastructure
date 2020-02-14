@@ -1,96 +1,40 @@
-- name: Include distribution specific variables
-  include_vars:
-    file: vars/{{ ansible_distribution | lower }}.yml
+- name: Set timezone to Europe/Stockholm
+  timezone:
+    name: Europe/Stockholm
+  notify: Restart crond
 
-- name: Change linux timezone
-  # <2017-01-09 mån> My version of ansible doesn't have the 'timezone' module so
-  # I'll just do the linking myself.
-  file:
-    dest: /etc/localtime
-    src: "{{ linux_timezone_path }}"
-    state: link
-  # By default we do nothing. I mostly use this for some vagrant VMs that act up.
-  when: linux_timezone_path is defined
-
-- name: Add ssh key to root
-  authorized_key:
-    user: root
-    state: present
-    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
-  # Mostly set this when testing
-  when: linux_add_ssh_root is defined
-
-- block:
-    - name: Add the EPEL repo
-      yum: name=epel-release state=present
-
-    # This will enable the chronyd service which will keep the clock correct.
-    - name: Enable NTP
-      command: timedatectl set-ntp yes
-      # timedatctl always returns 0 and doesn't print anything
-      changed_when: false
-  when: ansible_distribution == 'CentOS'
-
-- name: Install utilities
-  package: name={{ item }} state=present
-  with_items:
-    - git
-    - mg   # microemacs
-    - htop # a better top(1)
-    - jq   # like sed for json
-    - make # party like it's 1976
-    - "{{ linux_netcat_package }}"
-    - tree
+- name: Install packages
+  apt:
+    name:
+      - git
+      - mg   # microemacs
+      - htop # a better top(1)
+      - jq   # like sed for json
+      - make # party like it's 1976
+      - netcat-openbsd
+      - tree
 
 - name: Install bash aliases
   lineinfile:
     path: /root/.bash_profile
-    line: "alias sc='systemctl'"
+    line: "{{ item }}"
     state: present
     create: yes
-
-- name: Copy utilities
-  tags: linux_utils
-  copy:
-    src: "{{ item }}"
-    dest: "/usr/local/sbin/{{ item }}"
-    mode: 0755
   loop:
-    - retrieve-original
+    - "alias sc='systemctl'"
+    - "alias jc='journalctl'"
 
+- import_tasks: utils.yml
+  tags: linux_utils
 
-- name: Find built-in ss(1)
-  shell: which -a ss | grep -v /usr/local/sbin/ss
-  register: _ss_bin
-  changed_when: false
+- name: Allowing inbound SSH
+  ufw:
+    rule: allow
+    port: ssh
+    comment: ssh
 
-- name: Install ss(1) wrapper
-  copy:
-    mode: 0755
-    dest: /usr/local/sbin/ss
-    content: |
-      #!/bin/sh
-      # ss(1) is frivolous with whitespace which makes output hard to read. This
-      # script will compress the column-separating whitespace when printing to a
-      # terminal.
-
-      if [ -t 1 ]; then
-          exec {{ _ss_bin.stdout_lines[0] }} "$@" | column -t
-      else
-          exec {{ _ss_bin.stdout_lines[0] }} "$@"
-      fi
-  when:  _ss_bin.failed == False
-
-- block:
-    - name: Allowing inbound SSH
-      ufw: rule=allow port=ssh comment=ssh
-    - name: Enabling UFW with default deny policy
-      ufw: state=enabled policy=deny direction=incoming
-  when: ansible_distribution == "Ubuntu"
-
-- block:
-    - name: Enabling firewalld
-      service: name=firewalld state=started enabled=yes
-    - name: Allowing inbound SSH
-      firewalld: service=ssh permanent=true state=enabled immediate=true
-  when: ansible_distribution == "CentOS"
+- name: Enabling UFW with default deny policy
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming

@@ -1,0 +1,125 @@
+#!/usr/bin/python3
+# Remove duplicate or stale rules from the DNAT target.
+import click
+import re
+import subprocess
+import functools
+
+
+class DNAT:
+
+    def __init__(self, extra):
+        # tcp dpt:60522 /* comment */ to:10.189.225.89:22
+        # tcp dpt:60522 to:10.189.225.89:22
+        _prot, src, dst = re.sub(r'/\*.*?\*/', '', extra).split()
+
+        dst_1, dst_2 = src.split(':')
+        assert dst_1 == 'dpt'
+        self.dpt = int(dst_2)
+
+        to, to_ip, to_port = dst.split(':')
+        assert to == 'to'
+        self.to_ip = to_ip
+        self.to_port = int(to_port)
+
+
+class Rule:
+
+    header = ['num', 'pkts', 'bytes', 'target', 'prot', 'opt',
+              'in_', 'out', 'source', 'destination', 'extra']
+
+    def __init__(self, *args):
+        for k, v in zip(self.header, args):
+            setattr(self, k, v)
+        self.num = int(self.num)
+        self.pkts = int(self.pkts)
+        self.bytes = int(self.bytes)
+        if self.target == 'DNAT':
+            self.dnat = DNAT(self.extra)
+
+    def __repr__(self):
+        return str({k: v for k, v in self.__dict__.items()
+                    if k in self.header})
+
+
+# Chain PREROUTING (policy ACCEPT 96422 packets, 5968K bytes)
+# num pkts bytes target prot opt in  out  source   destination
+# 1   115  7264  DNAT   tcp  --  any any  anywhere anywhere extra ....
+def iptables_list_chain(table, chain):
+    cmd = ['sudo', 'iptables',
+           '-t', table, '-L', chain, '--line-numbers', '-n', '-v', '-x']
+    stdout = subprocess.check_output(cmd, universal_newlines=1)
+    for n, l in enumerate(stdout.splitlines()):
+        if n == 0:
+            assert l.startswith('Chain %s' % chain.upper())
+            continue
+        if n == 1:
+            assert l.split() == ['num', 'pkts', 'bytes', 'target', 'prot',
+                                 'opt', 'in', 'out', 'source', 'destination']
+            continue
+        p = l.split(None, 10)
+        r = Rule(*p)
+        yield r
+
+
+@functools.lru_cache(maxsize=None)
+def reachable(ip):
+    r = subprocess.run(['ping', '-w1', '-c1', ip], stdout=subprocess.DEVNULL)
+    return r.returncode == 0
+
+
+@click.command()
+@click.option('-q', 'quiet', is_flag=True, default=False)
+def main(quiet):
+    def log(msg):
+        if not quiet:
+            print(msg)
+    rules_by_num = {}
+    rules_by_dpt = {}
+    for r in iptables_list_chain('nat', 'PREROUTING'):
+        if not r.target == 'DNAT':
+            continue
+        assert r.num not in rules_by_num
+        rules_by_num[r.num] = r
+        rules_by_dpt.setdefault(
+            r.dnat.dpt, {}).setdefault(
+                (r.dnat.to_ip, r.dnat.to_port), []).append(r.num)
+
+    deletable = set()
+    for dpt, dst_rules in rules_by_dpt.items():
+        isreachable = []
+        unreachable = {}
+        no_pkts = []
+        has_pkts = []
+        for (dst_ip, dst_port), nums in dst_rules.items():
+            if not reachable(dst_ip):
+                unreachable.setdefault(dst_ip, []).extend(nums)
+            else:
+                isreachable.append(dst_ip)
+                for n in nums:
+                    r = rules_by_num[n]
+                    if r.pkts == 0:
+                        no_pkts.append(n)
+                    else:
+                        has_pkts.append(n)
+        if isreachable and unreachable:
+            for n, (ip, nums) in enumerate(unreachable.items()):
+                deletable.update(nums)
+                for r in (rules_by_num[n] for n in nums):
+                    log('# port %-5s rule %-3s "%s" - unreachable' % (
+                        dpt, r.num, r.extra))
+        if has_pkts and no_pkts:
+            deletable.update(no_pkts)
+            for r in (rules_by_num[n] for n in no_pkts):
+                log('# port %-5s rule %-3s "%s" - no packets' % (
+                    dpt, r.num, r.extra))
+
+    if deletable:
+        inorder = [str(i) for i in sorted([int(s) for s in deletable],
+                                          reverse=True)]
+        print('echo', ' '.join(inorder),
+              '| xargs -rn1 sudo iptables -t nat -D PREROUTING')
+
+
+if __name__ == '__main__':
+    main()
