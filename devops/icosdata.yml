@@ -1,0 +1,117 @@
+# Try to set up /data so that it looks the same on all our servers.
+# The LXD "icosdata" profile will make the following paths available.
+#
+# /data/stiltweb              fsicos2:/disk/data/stiltweb
+# /data/project               fsicos2:/disk/data/project
+# /data/project/eurocom       fsicos:/disk/data/eurocom
+# /data/project/interpolation fsicos:/disk/data/common/netcdf/gcp_models
+# /data/stilt                 fsicos:/disk/data/STILT/RINGO/T1.3/STILT
+# /data/obspack               fsicos:/disk/data/STILT/ObsPack
+# /data/flexpart              fsicos:/disk/data/flexpart
+#
+# /opt/eurocom                fsicos:/disk/data/eurocom
+# /opt/stiltdata              fsicos:/disk/data/STILT
+
+- hosts: icosprod
+  tasks:
+    - name: Create /etc/exports.d directory
+      file:
+        path: "/etc/exports.d"
+        state: directory
+
+    - name: Add icosdata exports
+      copy:
+        dest: /etc/exports.d/icosdata.exports
+        content: |
+          /disk/data/STILT/RINGO/T1.3/STILT   194.47.223.139(ro)
+          /disk/data/STILT/ObsPack            194.47.223.139(ro)
+          /disk/data/flexpart                 194.47.223.139(ro)
+          /disk/data/common/netcdf/gcp_models 194.47.223.139(ro)
+          /disk/data/eurocom		      194.47.223.139(ro)          
+      register: _exports
+
+    - name: Reload NFS server
+      service:
+        name: nfs-server
+        state: reloaded
+      when: _exports.changed
+
+
+- hosts: icosprod2
+  tasks:
+    - name: Create mount points
+      tags: mkdir
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /data/stilt
+        - /data/obspack
+        - /data/flexpart
+        - /disk/data/project/interpolation
+        - /disk/data/project/eurocom
+
+    - name: Do bind-mount local data
+      tags: bind
+      mount:
+        path: "{{ item.path }}"
+        src:  "{{ item.src }}"
+        fstype: none
+        opts: bind
+        state: mounted
+      loop:
+        - path: /data/stiltweb
+          src: /disk/data/stiltweb
+          
+        - path: /data/project
+          src: /disk/data/project
+
+    - name: Mount "{{ item.path }}" from icosprod
+      tags: nfs
+      mount:
+        path: "{{ item.path }}"
+        src: "{{ item.src }}"
+        fstype: nfs
+        opts: ro
+        state: mounted
+      loop:
+        - path: /data/stilt
+          src: 194.47.223.133:/disk/data/STILT/RINGO/T1.3/STILT
+
+        - path: /data/obspack
+          src: 194.47.223.133:/disk/data/STILT/ObsPack
+
+        - path: /data/flexpart
+          src: 194.47.223.133:/disk/data/flexpart
+
+        - path: /data/project/interpolation
+          src: 194.47.223.133:/disk/data/common/netcdf/gcp_models
+
+        - path: /data/project/eurocom
+          src: 194.47.223.133:/disk/data/eurocom
+
+    - name: Create LXD data profile
+      tags: profile
+      lxd_profile:
+        name: icosdata
+        description: "ICOS Data"
+        devices:
+          old_eurocom:
+            path: /opt/eurocom
+            readonly: "true"
+            source: /data/eurocom
+            type: disk
+          old_stilt:
+            path: /opt/stiltdata
+            readonly: "true"
+            source: /disk/data/fsicos-stilt/
+            type: disk
+          data:
+            path: /data
+            source: /data
+            type: disk
+            readonly: "true"
+          project:
+            path: /data/project
+            source: /data/project
+            type: disk
