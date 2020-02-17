@@ -1,0 +1,17 @@
+- import_tasks: sysctl.yml
+  tags: lxd_sysctl
+
+- import_tasks: utils.yml
+  tags: lxd_utils
+
+- name: Modify /etc/security/limits.conf
+  tags: lxd_limits
+  copy:
+    dest: /etc/security/limits.conf
+    content: |
+      *         soft    nofile  1048576         unset   # maximum number of open files
+      *         hard    nofile  1048576         unset   # maximum number of open files
+      root      soft    nofile  1048576         unset   # maximum number of open files
+      root      hard    nofile  1048576         unset   # maximum number of open files
+      *         soft    memlock unlimited       unset   # maximum locked-in-memory address space (KB)
+      *         hard    memlock unlimited       unset   # maximum locked-in-memory address space (KB)

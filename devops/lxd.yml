@@ -1,0 +1,3 @@
+- hosts: icosprod2
+  roles:
+    - role: icos.lxd

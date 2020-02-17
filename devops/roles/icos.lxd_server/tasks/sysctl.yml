@@ -1,0 +1,47 @@
+# https://lxd.readthedocs.io/en/latest/production-setup/
+- name: Set sysctl value
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+  loop:
+    # "This is the maximum number of keys a non-root user can use, should be
+    # higher than the number of containers"
+    #
+    # Before this was change, a docker build inside an lxd container would go
+    # "OCI runtime create failed: container_linux.go:345: starting container
+    # process caused "process_linux.go:430: container init caused \"join
+    # session keyring: create session key: disk quota exceeded\"": unknown"
+    - name: kernel.keys.maxkeys
+      value: 2000
+
+    # "This is the maximum number of entries in ARP table. You should increase
+    # this if you create over 1024 containers"
+    - name: net.ipv4.neigh.default.gc_thresh3
+      value: 8192
+    - name: net.ipv6.neigh.default.gc_thresh3
+      value: 8192
+
+    # "This denies container access to the messages in the kernel ring
+    # buffer. Please note that this also will deny access to non-root users on
+    # the host system."
+    - name: kernel.dmesg_restrict
+      value: 1
+
+    # "This file contains the maximum number of memory map areas a process may
+    # have. Memory map areas are used as a side-effect of calling malloc,
+    # directly by mmap and mprotect, and also when loading shared libraries."
+    - name: vm.max_map_count
+      value: 262144
+
+    # "This specifies an upper limit on the number of events, instances and
+    # watches that can be created per real user ID."
+    - name: fs.inotify.max_queued_events
+      value: 1048576
+    - name: fs.inotify.max_user_instances
+      value: 1048576
+    - name: fs.inotify.max_user_watches
+      value: 1048576
+
+    # https://wiki.mikejung.biz/Sysctl_tweaks#net.core.netdev_max_backlog
+    - name: net.core.netdev_max_backlog
+      value: 300000

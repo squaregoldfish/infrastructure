@@ -1,0 +1,3 @@
+#!/bin/bash
+unset LC_ALL
+sudo nsenter -t $(pgrep daemon.start) -m -- bash -c 'PATH=/snap/lxd/current/bin/:$PATH; cd /var/snap/lxd/common/lxd/storage-pools; exec bash --noprofile'
