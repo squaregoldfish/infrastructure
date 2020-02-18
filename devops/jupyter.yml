@@ -1,11 +1,8 @@
 # Update nginx config (need lxd_host_create to get lxd_host_ip)
 # $ deploy jupyter -ljupyter_host lxd_host_create nginx
 #
-# Deploy the hub.
+# Push files and restart hub.
 # $ deploy jupyter -ljupyter jupyter
-#
-# Update hub configuration
-# $ deploy jupyter -ljupyter jupyter_copy
 #
 # Create authentication token
 # $ deploy jupyter -ljupyter jupyter_token
