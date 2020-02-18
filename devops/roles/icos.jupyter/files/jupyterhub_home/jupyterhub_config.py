@@ -5,7 +5,7 @@ import os
 
 # Makes the hub really spammy.
 # c.JupyterHub.log_level = logging.DEBUG
-c.DockerSpawner.remove_containers = False
+# c.DockerSpawner.debug = True
 
 
 # CONFIGURATION OF THE HUB
@@ -32,16 +32,17 @@ c.Authenticator.admin_users = admin = set(['ute', 'karolina'])
 
 
 # CONFIGURATION OF THE NOTEBOOK CONTAINERS
-#c.DockerSpawner.use_internal_ip = True
-# network_name = os.environ.get("NETWORK_NAME", "jupyter")
-# c.DockerSpawner.network_name = network_name
-# c.DockerSpawner.extra_host_config = { 'network_name': network_name }
 c.DockerSpawner.network_name = os.environ.get("NETWORK_NAME", "jupyter")
 
+# Remove containers when they're shut down. Since we're using bind-mounted home
+# directories, we won't lose any data and without this option it's very hard to
+# introduce new images (since the containers are just stopped and thus uses the
+# old image).
+c.DockerSpawner.remove = True
+
 c.DockerSpawner.use_internal_hostname = True
-c.DockerSpawner.image = os.environ.get("NOTEBOOK_IMAGE", "notebook_tng")
+c.DockerSpawner.image = os.environ.get("NOTEBOOK_IMAGE", "notebook")
 c.DockerSpawner.notebook_dir = '/home/{username}'
-c.DockerSpawner.debug = True
 c.DockerSpawner.read_only_volumes = {
     '/etc/localtime' : '/etc/localtime',
     '/opt/stiltdata' : '/opt/stiltdata',
@@ -53,10 +54,8 @@ c.DockerSpawner.volumes = {'/home_jupyter/{username}': '/home_jupyter/{username}
                            '/home_jupyter3/{username}': '/home_jupyter3/{username}'}
 
 
-c.DockerSpawner.image_whitelist = {
-    'exploredata but with both python2 and python3' : 'notebook',
-    'all the bestest stuff is in here!'             : 'notebook_tng',
-    'base jupyter notebook'                         : 'notebook-base',
-    'jupyter.icos-cp.eu'                            : 'classic-jupyter-2-fix',
-    'jupyter3.icos-cp.eu'                           : 'classic-jupyter-3'
-}
+# c.DockerSpawner.image_whitelist = {
+#     '1. all the bestest stuff is in here!' : 'notebook_tng',
+#     '2. jupyter3.icos-cp.eu'               : 'classic-jupyter-3',
+#     '3. jupyter.icos-cp.eu'                : 'classic-jupyter-2-fix'
+# }
