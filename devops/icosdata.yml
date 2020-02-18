@@ -1,5 +1,9 @@
 # Try to set up /data so that it looks the same on all our servers.
 # The LXD "icosdata" profile will make the following paths available.
+# 
+# Update LXD profile
+# $ deploy icosdata -licosprod2 profile
+#
 #
 # /data/stiltweb              fsicos2:/disk/data/stiltweb
 # /data/project               fsicos2:/disk/data/project
@@ -11,6 +15,7 @@
 #
 # /opt/eurocom                fsicos:/disk/data/eurocom
 # /opt/stiltdata              fsicos:/disk/data/STILT
+
 
 - hosts: icosprod
   tasks:
@@ -111,6 +116,7 @@
             source: /data
             type: disk
             readonly: "true"
+            recursive: "true"
           project:
             path: /data/project
             source: /data/project
