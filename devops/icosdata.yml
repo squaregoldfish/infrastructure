@@ -104,7 +104,7 @@
           old_eurocom:
             path: /opt/eurocom
             readonly: "true"
-            source: /data/eurocom
+            source: /data/project/eurocom
             type: disk
           old_stilt:
             path: /opt/stiltdata
