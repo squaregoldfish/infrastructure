@@ -1,4 +1,5 @@
-- import_playbook: setup.yml
+# bbserver on icosprod2
+# $ deploy base -licosprod2 bbserver
 
 - hosts: all
   become: true
