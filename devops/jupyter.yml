@@ -9,6 +9,9 @@
 #
 # Update the home profile
 # $ deploy jupyter -ljupyter_host home_profile container
+#
+# Install additional ssh keys
+# $ deploy jupyter -ljupyter keys
 
 - hosts: jupyter_host
   become: true
