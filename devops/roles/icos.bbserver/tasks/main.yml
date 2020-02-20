@@ -12,16 +12,23 @@
 - name: Download borg binary
   get_url:
     url: "{{ bbserver_url }}"
-    dest: "{{ bbserver_bin }}"
+    dest: "{{ bbserver_bin }}_{{ bbserver_ver }}"
     checksum: "{{ bbserver_checksum }}"
     mode: +x
+  register: _download
 
 - name: Test downloaded binary
   command: |
-    {{ bbserver_bin }} --version
+    {{ _download.dest }} --version
   register: _r
   failed_when: not _r.stdout.startswith('borg')
   changed_when: no
+
+- name: Create {{ bbserver_bin }} symlink
+  file:
+    dest: "{{ bbserver_bin }}"
+    src: "{{ _download.dest }}"
+    state: link
 
 - name: Create repo directory
   file:
