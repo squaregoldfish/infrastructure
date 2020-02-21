@@ -1,0 +1,56 @@
+- name: Create node_exporter user
+  user:
+    name: "{{ node_exporter_user }}"
+    home: "{{ node_exporter_home }}"
+    shell: /usr/sbin/nologin
+
+- name: Download node_exporter binary
+  get_url:
+    url: "{{ node_exporter_url }}"
+    dest: /tmp/
+    checksum: "{{ node_exporter_sha }}"
+    mode: +x
+  register: _download
+
+- name: Unarchive {{ _download.dest }}
+  unarchive:
+    src: "{{ _download.dest }}"
+    dest: "{{ node_exporter_home }}"
+    remote_src: yes
+
+- name: Find the unpacked node_exporter directory
+  find:
+    file_type: directory
+    recurse: no
+    paths: /opt/node_exporter
+    patterns: node_exporter-*.linux-amd64
+  register: _find
+
+- name: Set path to unpacked directory
+  set_fact:
+    node_exporter_version_home: "{{ (_find.files | sort(attribute='path') | last).path  }}"
+
+- name: Copy node_exporter
+  template:
+    src: node_exporter.service
+    dest: /etc/systemd/system/
+
+- name: Make sure that {{ node_exporter_environ }} exists
+  copy:
+    dest: "{{ node_exporter_environ }}"
+    force: no
+    content: ""
+
+- name: Restart node_exporter service
+  systemd:
+    name: node_exporter
+    state: restarted
+    daemon_reload: yes
+
+- name: Allowing traffic to node_exporter from prometheus
+  ufw:
+    rule: allow
+    port: "{{ node_exporter_port }}"
+    src: "{{ node_exporter_prom_from }}"
+    state: enabled
+    comment: prometheus docker to host node_exporter

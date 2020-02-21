@@ -1,0 +1,11 @@
+# https://github.com/prometheus/node_exporter/blob/master/examples/systemd/node_exporter.service
+[Unit]
+Description=Node Exporter
+
+[Service]
+User={{ node_exporter_user }}
+EnvironmentFile={{ node_exporter_environ }}
+ExecStart={{ node_exporter_version_home }}/node_exporter  $OPTIONS
+
+[Install]
+WantedBy=multi-user.target
