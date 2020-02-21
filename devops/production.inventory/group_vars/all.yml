@@ -1,2 +1,5 @@
 quince_ext_port: 60522
 ansible_python_interpreter: /usr/bin/python3
+bbclient_remotes:
+  - fsicos2.lunarc.lu.se
+  - cdb.nateko.lu.se

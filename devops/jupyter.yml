@@ -22,11 +22,10 @@
 
 - hosts: jupyter_host
   become: true
+  vars:
+    jupyter_data: /disk/data/jupyter
   vars_files:
     - vault.yml
-  pre_tasks:
-- hosts: jupyter_host
-  become: true
   pre_tasks:
     - name: Create LXD home profile
       tags: home_profile
@@ -36,15 +35,15 @@
         devices:
           home:
             path: /home
-            source: /disk/data/jupyter/home
+            source: "{{ jupyter_data }}/jupyter/home"
             type: disk
           homejupyter:
             path: /home_jupyter
-            source: /disk/data/jupyter/old_jupyter_from_fsicos1/jupyter/storage
+            source: "{{ jupyter_data }}/jupyter/old_jupyter_from_fsicos1/jupyter/storage"
             type: disk
           homejupyter3:
             path: /home_jupyter3
-            source: /disk/data/jupyter/old_jupyter_from_fsicos1/jupyter3/storage
+            source: "{{ jupyter_data }}/jupyter/old_jupyter_from_fsicos1/jupyter3/storage"
             type: disk
 
     - name: Create jupyter LXD profile
@@ -78,6 +77,40 @@
       jupyter_domain: test.icos-cp.eu
       jupyter_cert_name: test.icos-cp.eu
       jupyter_port: 8000
+
+    - role: icos.bbclient
+      tags:
+        - backup
+        - bbclient
+      bbclient_home: "{{ jupyter_data }}"
+      bbclient_name: jupyter
+
+  tasks:
+    - name: Create backup script
+      tags:
+        - backup
+        - backup_script
+      copy:
+        mode: +x
+        dest: "{{ jupyter_data }}/bin/backup.sh"
+        content: |
+          #!/bin/bash
+          PATH={{ jupyter_data }}/bin:$PATH
+          set -eu
+          cd {{ jupyter_data }}
+          bbclient-all create "::{now}" home old_jupyter_from_fsicos1
+          bbclient-all prune --keep-within 2w --keep-daily=30 --keep-weekly=150
+      register: _backup_script
+
+    - name: Add backup script to crontab
+      tags:
+        - backup
+        - backup_script
+      cron:
+        job: "{{ _backup_script.dest }}"
+        special_time: hourly
+        state: present
+        name: "jupyter_backup"
 
 
 - hosts: jupyter
