@@ -1,17 +1,24 @@
 # Update nginx config (need lxd_host_create to get lxd_host_ip)
-# $ deploy jupyter -ljupyter_host lxd_host_create nginx
+#   deploy jupyter -ljupyter_host lxd_host_create nginx
 #
-# Push files and restart hub.
-# $ deploy jupyter -ljupyter jupyter
+# Deploy the hub.
+#   deploy jupyter -ljupyter jupyter
 #
 # Create authentication token
-# $ deploy jupyter -ljupyter jupyter_token
+#   deploy jupyter -ljupyter jupyter_token
 #
 # Update the home profile
-# $ deploy jupyter -ljupyter_host home_profile container
+#   deploy jupyter -ljupyter_host home_profile container
 #
 # Install additional ssh keys
-# $ deploy jupyter -ljupyter keys
+#   deploy jupyter -ljupyter keys
+#
+# Backup stuff
+#   deploy jupyter -ljupyter_host backup
+#
+# Only backup script
+#   deploy jupyter -ljupyter_host backup_script
+
 
 - hosts: jupyter_host
   become: true
