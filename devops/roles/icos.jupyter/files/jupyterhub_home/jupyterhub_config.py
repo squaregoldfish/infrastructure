@@ -54,8 +54,6 @@ c.DockerSpawner.volumes = {'/home_jupyter/{username}': '/home_jupyter/{username}
                            '/home_jupyter3/{username}': '/home_jupyter3/{username}'}
 
 
-# c.DockerSpawner.image_whitelist = {
-#     '1. all the bestest stuff is in here!' : 'notebook_tng',
-#     '2. jupyter3.icos-cp.eu'               : 'classic-jupyter-3',
-#     '3. jupyter.icos-cp.eu'                : 'classic-jupyter-2-fix'
-# }
+c.DockerSpawner.image_whitelist = {
+    '1. 20200217 - py2/py3 - added bqplot' : 'notebook',
+}
