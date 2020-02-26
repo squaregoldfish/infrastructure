@@ -12,7 +12,7 @@ onlyoffice_volume_logs: "{{ onlyoffice_home }}/volumes/logs"
 onlyoffice_build_dir: "{{ onlyoffice_home }}/build"
 
 certbot_domains: ["{{ onlyoffice_domain | mandatory }}"]
-certbot_conf_name: onlyoffice
+certbot_name: onlyoffice
 
 # By default OnlyOffice will reject outgoing https connections that has an
 # invalid certificate. But when running in testing - where we use self-signed
