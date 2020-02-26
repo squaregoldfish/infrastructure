@@ -1,5 +1,9 @@
-# Install coldbackup script
-# $ deploy nextcloud bbclient_coldbackup
+# Deploy nextcloud (copy files and compile images, but no restart!):
+#   deploy nextcloud nextcloud
+#
+# Install coldbackup script:
+#   deploy nextcloud bbclient_coldbackup
+#
 
 - hosts: icosprod2
   become: true
