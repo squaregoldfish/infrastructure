@@ -1,0 +1,3 @@
+climbeco_home: "/docker/climbeco"
+climbeco_port: 50524
+climbeco_password: password

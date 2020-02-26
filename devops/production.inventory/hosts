@@ -13,6 +13,9 @@ jupyter ansible_host=fsicos2.lunarc.lu.se ansible_port=60542 ansible_user=root
 wordpress_host ansible_host=fsicos2.lunarc.lu.se
 wordpress ansible_host=fsicos2.lunarc.lu.se ansible_port=60552 ansible_user=root
 
+climbeco_host ansible_host=fsicos2.lunarc.lu.se
+climbeco ansible_host=fsicos2.lunarc.lu.se ansible_port=60524 ansible_user=root
+
 [icosprod]
 fsicos.lunarc.lu.se
 

@@ -1,0 +1,25 @@
+# https://docs.docker.com/compose/compose-file/#resources
+
+version: "3.5"
+
+networks:
+  climbeco:
+      name: climbeco
+
+services:
+  hub:
+    build:
+      context: build.hub
+    restart: unless-stopped
+    image: hub
+    container_name: hub
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "./jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py:ro"
+      - "./users.txt:/srv/jupyterhub/users.txt:ro"
+      - "./password.txt:/srv/jupyterhub/password.txt:ro"
+    ports:
+      - "{{ climbeco_port }}:8000"
+    networks:
+      - climbeco
