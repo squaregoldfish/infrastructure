@@ -1,2 +1,2 @@
 nginx_user: www-data
-nginx_certbot_bin: certbot
+nginx_certbot_bin: /usr/local/bin/certbot
