@@ -58,7 +58,7 @@ c.DockerSpawner.read_only_volumes ={
 c.JupyterHub.named_server_limit_per_user = 1
 
 # Maximum number of bytes a single-user notebook server is allowed to use.
-c.Spawner.mem_limit = '2G'
+c.Spawner.mem_limit = '5G'
 
 # Maximum number of cpu-cores a single-user notebook server is allowed to use.
 c.Spawner.cpu_limit = 1

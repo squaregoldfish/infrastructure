@@ -23,7 +23,7 @@
         config:
           security.nesting: "true"
           limits.cpu: "4"
-          limits.memory: "20GB"
+          limits.memory: "50GB"
         description: "Configuration for Climbeco"
         devices:
           root:
