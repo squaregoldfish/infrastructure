@@ -6,8 +6,9 @@
     - climbeco_copy
     - climbeco_deploy
 
-- name: Build and start the hub image
+- name: Build and restart the hub image
   tags: climbeco_deploy
   docker_compose:
     project_src: "{{ climbeco_home }}"
     build: yes
+    restarted: yes
