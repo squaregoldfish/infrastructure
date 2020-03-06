@@ -8,7 +8,7 @@
 #   deploy climbeco lxd
 #
 # Redeploy jupyterhub
-#   deploy climbeco
+#   deploy climbeco -lclimbeco climbeco_deploy
 
 - hosts: climbeco_host
   become: true
