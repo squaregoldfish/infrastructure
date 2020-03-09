@@ -5,10 +5,23 @@
   loop:
     - prometheus_graf_pass
 
-- name: Create {{ prometheus_home }} directory
+- name: Create bind-mount directories
   file:
-    path: "{{ prometheus_home }}"
+    path: "{{ item.path }}"
     state: directory
+    # The prometheus and grafana images won't change uid/gid in their
+    # entrypoint, and require uid/gid to already match.
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+  loop:
+    - path: "{{ prometheus_data }}"
+      owner: "65534"
+    - path: "{{ prometheus_fsdc }}"
+      owner: "65534"
+    - path: "{{ prometheus_home }}/grafana_data"
+      owner: "472"
+    - path: "{{ prometheus_home }}/grafana_conf"
+      owner: "472"
 
 - name: Copy files
   copy:
@@ -28,7 +41,18 @@
       GF_SECURITY_ADMIN_PASSWORD={{ prometheus_graf_pass }}
       GF_USERS_ALLOW_SIGN_UP=false
 
+
+- name: Save information about current images
+  shell: |
+    (echo "# $(date -Iseconds) about to pull/restart";
+     docker-compose images) >> images.log
+  args:
+    chdir: "{{ prometheus_home }}"
+  changed_when: false
+
+
 - name: Build and start
   docker_compose:
     project_src: "{{ prometheus_home }}"
-    build: yes
+    pull: yes
+    restarted: yes

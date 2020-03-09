@@ -37,6 +37,13 @@ scrape_configs:
       - targets:
           - alertmanager:9093
 
+  - job_name: 'fsdc'
+    file_sd_configs:
+      - files:
+          # If we look for just '*.yml', then prometheus will detect ansible's
+          # temp files, i.e 'ansible_tmp7ib_k131conf-node_exporter@fsicos2.yml'
+          - 'file_sd_config.d/conf-*.yml'
+
 
 alerting:
   alertmanagers:

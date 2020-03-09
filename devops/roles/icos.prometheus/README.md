@@ -10,6 +10,7 @@ The stack has five separate parts, running in five different containers:
 5. alertmanager - sends out alerts
 
 
+
 ## Promethus
 
 The prometheus container will scrape remote targets for metrics and then write
@@ -21,11 +22,25 @@ victoriametrics since it's more efficient.
 
 TODO - explain how to add scrape targets.
 
++ [Configuration options](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)
++ [Docker images](https://hub.docker.com/r/prom/prometheus)
++ [Dockerfile](https://github.com/prometheus/prometheus/blob/master/Dockerfile)
++ Display help
+  > $ docker run --rm -it prom/prometheus --help
+
+
 
 ## Victoriametrics
 
 A time-series database. It also presents a prometheus-lookalike interface for
 use by grafana.
+
+
++ [Official documentation](https://victoriametrics.github.io/)
++ [Latest tags on docker hub](https://hub.docker.com/r/victoriametrics/victoria-metrics/tags)
++ [How to upgrade](https://victoriametrics.github.io/#how-to-upgrade-victoriametrics)
++ [Sample docker-compose setup](https://github.com/VictoriaMetrics/VictoriaMetrics/tree/master/deployment/docker)
+
 
 
 ## Grafana
@@ -34,10 +49,15 @@ Presents a web interface were one can design dashboards to display
 metrics. Usually set up to query prometheus, but we configure it to read
 directly from victoriametrics.
 
++ [Official Docs](https://grafana.com/docs/grafana/latest/)
++ [Official Docker instructions](https://grafana.com/docs/grafana/latest/installation/docker/)
++ [Dockerfiles used for the official images](https://github.com/grafana/grafana/tree/master/packaging/docker)
+
 
 ## Pushgateway
 
 Prometheus default way of collecting metrics is to pull it from remote targets. Pushgateway instead receives metrics by way of push and sends them on to prometheus.
+
 
 
 ## Alertmanager
@@ -45,27 +65,8 @@ Prometheus default way of collecting metrics is to pull it from remote targets. 
 Sends alerts through email, slack etc.
 https://prometheus.io/docs/alerting/alertmanager/
 
-
 Reloading config.
 "Alertmanager can reload its configuration at runtime. If the new configuration
 is not well-formed, the changes will not be applied and an error is logged. A
 configuration reload is triggered by sending a SIGHUP to the process or sending
 a HTTP POST request to the /-/reload endpoint."
-
-
-## References
-
-Example docker-compose files.
-https://github.com/vegasbrianc/prometheus/blob/master/docker-compose.yml
-https://github.com/VictoriaMetrics/VictoriaMetrics/tree/master/deployment/docker
-
-
-### Victoriametrics configuration
-
-https://github.com/VictoriaMetrics/VictoriaMetrics/wiki/Single-server-VictoriaMetrics
-
-
-### Prometheus configuration
-
-https://prometheus.io/docs/prometheus/latest/configuration/configuration/
-$ docker run --rm -it prom/prometheus --help

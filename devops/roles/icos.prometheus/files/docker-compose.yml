@@ -1,31 +1,25 @@
-# Docker images:
-# https://hub.docker.com/r/prom/prometheus/tags
-
 version: '3.5'
-
-volumes:
-    prometheus_data: {}
-    grafana_data: {}
-    victoriametrics_data: {}
 
 networks:
   prometheus:
     name: prometheus
+
 
 services:
 
   prometheus:
     container_name: prometheus
     image: prom/prometheus
+    # https://github.com/prometheus/prometheus/issues/5976
+    # This should've been handled by their entrypoint.
+    user: "65534"
     depends_on:
       - victoriametrics
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - prometheus_data:/prometheus
+      - ./prometheus_data:/prometheus
+      - ./prometheus_fsdc:/etc/prometheus/file_sd_config.d
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
     networks:
       - prometheus
     ports:
@@ -36,11 +30,13 @@ services:
     container_name: victoriametrics
     image: victoriametrics/victoria-metrics
     volumes:
-      - victoriametrics_data:/storage
+      - ./victoriametrics_data:/storage
     command:
-      - '--storageDataPath=/storage'
+      - '-storageDataPath=/storage'
       # This is the port used by prometheus when it writes data to vm.
-      - '--httpListenAddr=:8428'
+      - '-httpListenAddr=:8428'
+      # Keep data around for this many months, the default is 1.
+      - '-retentionPeriod=24'
     networks:
       - prometheus
     expose:
@@ -54,8 +50,8 @@ services:
       - victoriametrics
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - grafana_data:/var/lib/grafana
-      - ./provisioning:/etc/grafana/provisioning/
+      - ./grafana_data:/var/lib/grafana
+      - ./grafana_conf:/etc/grafana/provisioning/
     networks:
       - prometheus
     ports:

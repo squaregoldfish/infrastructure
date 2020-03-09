@@ -2,6 +2,11 @@ prometheus_prom_domain: prom.icos-cp.eu
 prometheus_graf_domain: graf.icos-cp.eu
 
 prometheus_home: /docker/prometheus
+prometheus_data: "{{ prometheus_home }}/prometheus_data"
+
+# File SD Config - i.e a drop-in directory for scrape targets.
+prometheus_fsdc: "{{ prometheus_home }}/prometheus_fsdc"
+
 prometheus_prom_port: 9090
 prometheus_graf_port: 3000
 

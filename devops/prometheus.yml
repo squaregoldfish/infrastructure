@@ -2,10 +2,10 @@
 #   $ deploy prometheus
 #
 # After updating the prometheus nginx config:
-#   $ deploy prometheus nginx
+#   $ deploy prometheus prometheus_nginx
 #
 # Rebuild the docker images:
-#   $ deploy prometheus docker
+#   $ deploy prometheus prometheus_docker
 #
 # Update certificate (maybe added a new subdomain):
 #   $ deploy prometheus certbot
@@ -15,28 +15,32 @@
   vars_files:
     - vault.yml
   vars:
+    node_exporter_allow_from: 10.10.0.0/16
     # These two are used by both icos.certbot2 and icos.prometheus.
     certbot_name: prometheus
     certbot_domains:
       - "{{ prometheus_prom_domain }}"
       - "{{ prometheus_graf_domain }}"
     prometheus_admin_password: "{{ vault_prometheus_admin_password }}"
-  tasks:
-    - import_role:
-        name: icos.certbot2
+  roles:
+    - role: icos.certbot2
       tags: certbot
 
-    - import_role:
-        name: icos.prometheus
-        tasks_from: docker
-      tags: docker
+    - role: icos.prometheus
+      tags: prometheus
 
-    - import_role:
-        name: icos.prometheus
-        tasks_from: nginx
-      tags: nginx
+    - role: icos.node_exporter
+      tags: node_exporter
 
-    - import_role:
-        name: icos.prometheus
-        tasks_from: auth
-      tags: auth
+  tasks:
+    - name: Install scrape target for node_exporter
+      tags:
+        - node
+        - node_scraper
+      copy:
+        # The file must start with conf- so that prometheus doesn't detect
+        # ansible's temp files.
+        dest: "{{ prometheus_fsdc }}/conf-node_exporter@fsicos2.yml"
+        content: |
+          - targets:
+              - fsicos2.lunarc.lu.se:9100
