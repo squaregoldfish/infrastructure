@@ -19,10 +19,13 @@
 # Examples of using the playbook with deploy.py:
 #
 # Setup the host
-#   $ deploy exploredata -lexploredata_host
+#   deploy exploredata -lexploredata_host
 #
+# Update the profile
+#   deploy exploredata profile
+
 # Recreate the lxd container
-#   $ deploy exploredata lxd
+#   deploy exploredata lxd
 #
 # For details about how to push jupyter to testing/production, look in
 # ../exploredata.
@@ -47,7 +50,8 @@
           root:
             path: /
             type: disk
-            pool: exploredata
+            # named ed for historical reasens
+            pool: ed
           # Mount stilt data inside LXD for later mounting inside docker.
           stilt:
             path: /disk/data/stiltweb
@@ -64,7 +68,14 @@
             source: /disk/data/stilt/Footprints
             type: disk
             readonly: "true"
-        name: exploredata
+          data:
+            path: /data
+            source: /data
+            type: disk
+            readonly: "true"
+            recursive: "true"
+        # named ed for historical reasens
+        name: ed
 
     - import_role: name=icos.lxd_host
       tags: lxd
