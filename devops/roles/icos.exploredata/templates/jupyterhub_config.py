@@ -51,7 +51,9 @@ c.DockerSpawner.read_only_volumes = { '/etc/localtime'                          
                                       '/disk/data/stiltweb/stations'            : "/data/stiltweb/stations",
                                       '/disk/data/stiltweb/slots'               : "/data/stiltweb/slots",
                                       '/opt/stiltdata/RINGO'                    : '/opt/stiltdata/RINGO',
-                                      '/opt/stiltdata/fsicos2/stilt/Footprints' : '/opt/stiltdata/fsicos2/stilt/Footprints' }
+                                      '/opt/stiltdata/fsicos2/stilt/Footprints' : '/opt/stiltdata/fsicos2/stilt/Footprints',
+                                      '/data'                                   : '/data'
+}
 
 
 
