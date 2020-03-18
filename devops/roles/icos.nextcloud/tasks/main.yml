@@ -1,11 +1,3 @@
-- name: Create nextcloud user
-  user:
-    name: "{{ nextcloud_user }}"
-    state: present
-    create_home: yes
-    home: "{{ nextcloud_home }}"
-  register: _user
-
 - include_role:
     name: icos.password_env_file
   vars:
@@ -37,8 +29,6 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ _user.uid }}"
-    group: "{{ _user.group }}"
   loop:
     - "{{ nextcloud_volume_nextcloud }}"
     - "{{ nextcloud_volume_postgres }}"

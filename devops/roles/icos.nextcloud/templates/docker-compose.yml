@@ -3,7 +3,6 @@ version: '2'
 services:
   app:
     build: {{ nextcloud_build_nextcloud }}
-    user: www-data
     ports:
       - "127.0.0.1:{{ nextcloud_port }}:{{ nextcloud_port }}"
     expose:
