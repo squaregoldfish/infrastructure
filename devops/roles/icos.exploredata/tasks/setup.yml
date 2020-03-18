@@ -15,12 +15,5 @@
     src: docker-compose.yml
     dest: "{{ exploredata_home }}/"
 
-- name: Create {{ exploredata_home }}/build.hub directory
-  file:
-    path: "{{ exploredata_home }}/build.hub"
-    state: directory
-
-- name: Copy jupyterhub_config.py
-  template:
-    src: jupyterhub_config.py
-    dest: "{{ exploredata_home }}/build.hub/"
+- import_tasks: hub.yml
+  tags: exploredata_hub

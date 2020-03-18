@@ -27,6 +27,9 @@
 # Recreate the lxd container
 #   deploy exploredata lxd
 #
+# Redeploy hub configs and restart hub
+#   deploy exploredata exploredata_hub
+#
 # For details about how to push jupyter to testing/production, look in
 # ../exploredata.
 

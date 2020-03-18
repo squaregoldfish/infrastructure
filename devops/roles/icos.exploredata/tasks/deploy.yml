@@ -19,8 +19,3 @@
     build:
       path: "{{ exploredata_home }}/build.notebook"
       pull: yes
-
-- name: Build and start the hub image
-  docker_compose:
-    project_src: "{{ exploredata_home }}"
-    build: yes

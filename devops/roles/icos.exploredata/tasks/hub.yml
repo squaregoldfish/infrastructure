@@ -1,0 +1,14 @@
+- name: Create {{ exploredata_home }}/build.hub directory
+  file:
+    path: "{{ exploredata_home }}/build.hub"
+    state: directory
+
+- name: Copy jupyterhub_config.py
+  template:
+    src: jupyterhub_config.py
+    dest: "{{ exploredata_home }}/build.hub/"
+
+- name: Build and start the hub image
+  docker_compose:
+    project_src: "{{ exploredata_home }}"
+    build: yes
