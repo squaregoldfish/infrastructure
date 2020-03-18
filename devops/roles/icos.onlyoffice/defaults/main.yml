@@ -1,10 +1,8 @@
 # https://hub.docker.com/r/onlyoffice/documentserver/
-onlyoffice_version: 5.4.2.46
+onlyoffice_version: 5.5.0.165
 onlyoffice_port: 8201
 
 onlyoffice_home: /docker/onlyoffice
-onlyoffice_user: onlyoffice
-
 onlyoffice_build_dir: "{{ onlyoffice_home }}/build"
 
 onlyoffice_domain: onlyoffice.icos-cp.eu

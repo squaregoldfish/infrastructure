@@ -1,11 +1,26 @@
-- name: Copy docker-compose.yml
+- name: Create build directory
+  file:
+    path: "{{ onlyoffice_build_dir }}"
+    state: directory
+    mode: o-r
+
+- name: Copy build files
   copy:
-    src: docker-compose.yml
-    dest: "{{ onlyoffice_home }}"
+    dest: "{{ onlyoffice_build_dir }}"
+    src: "{{ item }}"
+  loop:
+    - Dockerfile
+    - droidserif.tgz
 
 - name: Copy runtime environment file
   template:
     src: onlyoffice.env
+    dest: "{{ onlyoffice_home }}"
+    mode: "o-r"
+
+- name: Copy docker-compose.yml
+  copy:
+    src: docker-compose.yml
     dest: "{{ onlyoffice_home }}"
 
 - name: Copy parsetime environment file
@@ -18,6 +33,6 @@
 - name: Build and start
   docker_compose:
     project_src: "{{ onlyoffice_home }}"
-    build: no
+    build: yes
     state: present
     restarted: yes
