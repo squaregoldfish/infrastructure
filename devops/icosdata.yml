@@ -62,11 +62,12 @@
         path: "{{ item.path }}"
         src:  "{{ item.src }}"
         fstype: none
-        opts: bind
+        opts: "bind{{ item.opts | default('') }}"
         state: mounted
       loop:
         - path: /data/stiltweb
           src: /disk/data/stiltweb
+          opts: ",ro"
           
         - path: /data/project
           src: /disk/data/project
