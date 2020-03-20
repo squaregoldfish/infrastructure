@@ -112,6 +112,12 @@
         state: present
         name: "jupyter_backup"
 
+    - name: Copy sync-old-jupyter-single-user.sh
+      tags: sync_script
+      copy:
+        src: sync-old-jupyter-single-user.sh
+        dest: "{{ jupyter_data }}/bin"
+        mode: +x
 
 - hosts: jupyter
   vars_files:
