@@ -2,8 +2,10 @@
 # The LXD "icosdata" profile will make the following paths available.
 # 
 # Update LXD profile
-# $ deploy icosdata -licosprod2 profile
+#   deploy icosdata -licosprod2 profile
 #
+# Update the bind-mounts on icosprod2
+#   deploy icosdata -licosprod2 bind
 #
 # /data/stiltweb              fsicos2:/disk/data/stiltweb
 # /data/project               fsicos2:/disk/data/project
@@ -72,6 +74,10 @@
         - path: /data/project
           src: /disk/data/project
 
+        - path: /data/dataAppStorage
+          src: /disk/data/dataAppStorage
+          opts: ",ro"
+          
     - name: Mount "{{ item.path }}" from icosprod
       tags: nfs
       mount:
