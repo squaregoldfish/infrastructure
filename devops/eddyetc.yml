@@ -1,7 +1,7 @@
 # Update nginx config (need lxd_host_create to get lxd_host_ip)
 # $ deploy eddyetc -leddyetc_host lxd_host_create nginx
 #
-# Deploy the hub:
+# Build the docker image and deploy the wrapper script:
 #   deploy eddyetc -leddyetc eddyetc
 #
 # Create user and copy build files, but don't build and test:
