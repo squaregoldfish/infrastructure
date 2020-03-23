@@ -91,7 +91,7 @@ object IcosCpSbtFrontendPlugin extends AutoPlugin{
 				log.info(s"Terminating the front end build process (PID ${proc.pid}) (with children) and waiting for it to finish")
 				proc.killAndWaitFor()
 			}
-			else log.info("The resident front end build process (PID ${proc.pid}) has already stopped")
+			else log.info(s"The resident front end build process (PID ${proc.pid}) has already stopped")
 		}
 	}
 
