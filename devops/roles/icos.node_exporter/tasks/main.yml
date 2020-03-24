@@ -1,3 +1,10 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - node_exporter_allow_from
+
 - name: Create node_exporter user
   user:
     name: "{{ node_exporter_user }}"
