@@ -10,8 +10,11 @@
 # Update certificate (maybe added a new subdomain):
 #   deploy prometheus certbot
 #
-# Deploy node_exporter
-#   deploy prometehus node_exporter
+# Deploy node_exporter on a new node
+#   deploy prometehus node_exporter -lhost
+# Then update the scrape config and:
+#   deploy prometheus node_scraper
+
 
 - hosts: icosprod2
   become: true
@@ -47,3 +50,12 @@
         content: |
           - targets:
               - fsicos2.lunarc.lu.se:9100
+              - cdb.nateko.lu.se:9100
+
+- hosts:
+    - cdb.nateko.lu.se
+  vars:
+    node_exporter_allow_from: 194.47.223.139
+  roles:
+    - role: icos.node_exporter
+      tags: node_exporter
