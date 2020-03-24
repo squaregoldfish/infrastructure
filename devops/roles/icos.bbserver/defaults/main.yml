@@ -10,3 +10,7 @@ bbserver_repo_home: "{{ bbserver_home }}/repos"
 
 # Does authorized_keys support the 'restrict' keyword?
 bbserver_has_restrict: True
+
+# bbserver has support for exporting stats to prometheus via the node_exporter
+# textfiles directory.
+bbserver_textfiles: /opt/node_exporter/textfiles

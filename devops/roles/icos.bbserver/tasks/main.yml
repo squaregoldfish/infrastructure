@@ -41,3 +41,15 @@
   template:
     src: Makefile
     dest: "{{ bbserver_home }}"
+
+- name: Check whether {{ bbserver_textfiles }} exists
+  tags: bbserver_monitor
+  stat:
+    path: "{{ bbserver_textfiles }}"
+  register: _r
+
+- import_tasks: monitor.yml
+  tags: bbserver_monitor
+  # Only enable monitorying via node_exporter if we can find its textfiles
+  # directory.
+  when: _r.stat.exists

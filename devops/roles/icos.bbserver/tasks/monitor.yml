@@ -1,0 +1,30 @@
+- name: Create directories needed for monitoring
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    # bin contains scripts for monitoring etc
+    - "{{ bbserver_home }}/bin"
+    # monitor contains symbolic links to repos we want to monitor
+    - "{{ bbserver_home }}/monitor"
+
+- name: Copy borgmon script
+  copy:
+    src: borgmon.py
+    dest: "{{ bbserver_home }}/bin"
+    mode: +x
+
+- name: Copy borgmon script
+  template:
+    src: borgmon-to-node-exporter.sh
+    dest: "{{ bbserver_home }}/bin"
+    mode: +x
+
+- name: Add borgmon to crontab
+  cron:
+    user: "{{ bbserver_user }}"
+    job: "{{ bbserver_home }}/bin/borgmon-to-node-exporter.sh"
+    hour: "*"
+    minute: "*/5"
+    state: present
+    name: "bbserver_borgmon"

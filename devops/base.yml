@@ -1,5 +1,8 @@
 # bbserver on icosprod2
-# $ deploy base -licosprod2 bbserver
+#   deploy base bbserver -licosprod2
+#
+# borgmon script on icosprod2
+#   deploy base bbserver_monitor -licosprod2
 
 - hosts: all
   become: true
