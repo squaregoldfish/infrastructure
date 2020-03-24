@@ -35,11 +35,19 @@
     src: node_exporter.service
     dest: /etc/systemd/system/
 
+- name: Create the textfile collector directory
+  file:
+    path: "{{ node_exporter_textfiles }}"
+    # Setup this directory in the same way as /tmp, i.e anyone can write to it
+    # but not remove other user's files.
+    mode: '1777'
+    state: directory
+
 - name: Make sure that {{ node_exporter_environ }} exists
   copy:
     dest: "{{ node_exporter_environ }}"
-    force: no
-    content: ""
+    content: |
+      OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}
 
 - name: Restart node_exporter service
   systemd:
@@ -51,6 +59,6 @@
   ufw:
     rule: allow
     port: "{{ node_exporter_port }}"
-    src: "{{ node_exporter_prom_from }}"
+    src: "{{ node_exporter_allow_from }}"
     state: enabled
     comment: prometheus docker to host node_exporter

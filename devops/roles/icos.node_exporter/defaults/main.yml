@@ -1,6 +1,10 @@
 node_exporter_user: node_exporter
 node_exporter_home: /opt/node_exporter
 
+# https://github.com/prometheus/node_exporter#textfile-collector
+node_exporter_textfiles: /opt/node_exporter/textfiles
+
+# List of releases - https://github.com/prometheus/node_exporter/releases/
 node_exporter_ver: 1.0.0-rc.0
 node_exporter_url: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_ver }}/node_exporter-{{ node_exporter_ver }}.linux-amd64.tar.gz
 node_exporter_sha: sha256:f175cffc4b96114e336288c9ea54b54abe793ae6fcbec771c81733ebc2d7be7c
