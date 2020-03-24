@@ -1,47 +1,54 @@
-Docker files for various ICOS Carbon Portal services
+Deployment and development tools for ICOS Carbon Portal services
 ====================================================
 
-alfresco
---------
-Alfresco document management system, deployed at https://docs.icos-cp.eu
+Deployment and provisioning of CP services is automated using Ansible.
+All related configurations and definitions are found in `devops` folder of this repository.
 
-drupal
-------
-ICOS Drupal installation, deployed at https://www.icos-ri.eu/  
-Was developed for ICOS by Aleksi Johansson from [Wunderkraut](http://wunderkraut.com/)
+Some of CP's own, in-house-developed, services, are built, packaged and deployed using SBT build tool. Source code of CP-specific SBT plugins can be found in folder `sbt`.
 
-nexus
------
-Sonatype Nexus OSS installation, deployed at https://repo.icos-cp.eu . Maven/Ivy/npm artifact repository manager.
+Other folders in this Git repository mostly contain legacy Docker files (used before the Ansible era).
 
-rdflogdb
---------
-PostgreSQL installation used to persist Carbon Portal's metadata database's RDF assertion/retraction log.
-Used internally by the [meta](https://github.com/ICOS-Carbon-Portal/meta) project.
-
-thredds
--------
-Unidata's THREDDS Data Server, deployed at http://thredds.icos-cp.eu
-
-
-Getting started
+Getting started (common)
 ===============
-To get started, one needs:  
-- Linux
+To get started, one needs:
+- Ubuntu 20.04 LTS or an equivalent Linux distribution
 - Git
 - Docker
 - docker-compose
+- pip
+- Ansible
 
-To avoid cloning the whole `infrastructure` repository, one can use Git's sparse checkouts.
-To automate sparse cloning you can use the `sparse.sh` script from the root of this repo.
-Run the following from a newly created folder for your new repo:
+To install all of the above, run
 
-`wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/sparse.sh`  
-`chmod +x sparse.sh`
-`./sparse.sh <subproject> [<branch>]` (default branch is `master`)
+`sudo apt install git docker-io docker-compose python-pip`
 
-`subproject` above must be one of the first-level folders in this repo.
+followed by
 
+`pip install --user ansible==2.9.4`
+
+(the recommended Ansible version will keep changing, so check with the team which one is relevant)
+
+Getting started (Scala services)
+===
+
+To develop/build/deploy Scala-based services, install Java with
+
+`sudo apt install openjdk-11-jdk`
+
+and SBT by following the instructions on https://www.scala-sbt.org/
+
+---
+rdflog
+-------
+Needed by the `meta` service to be run locally on developer's machine. First, obtain the latest rdflog backup from `fsicos.lunarc.lu.se`.
+
+`borg list /disk/data/bbserver/repos/fsicos.lunarc.lu.se/pgrep_rdflog/default/ | tail`
+
+`borg extract /disk/data/bbserver/repos/fsicos.lunarc.lu.se/pgrep_rdflog/default/::2020-03-24T04:43:20`
+
+`tar cvfz rdflog_volumes.tar.gz volumes/ && rm -rf volumes/`
+
+`docker run --name rdflog_postgres -e POSTGRES_PASSWORD=password -d postgres:10.7`
 
 Useful commands
 ===============
