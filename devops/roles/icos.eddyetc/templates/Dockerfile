@@ -1,11 +1,11 @@
 # Lock down the r-base version, remember to bump this every now and then.
-FROM r-base:3.6.2
+FROM r-base:3.6.3
 
 # Install utilities and build dependencies.
-RUN apt-get update -q && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -qy \
-        make git tree mg file \
-        gfortran libcurl4-openssl-dev libxml2-dev libssl-dev
+RUN apt-get update -q && DEBIAN_FRONTEND=noninteractive apt-get install -qy \
+        make git tree mg file nano gfortran \
+        libcurl4-openssl-dev libxml2-dev libssl-dev \
+    && apt-get clean && rm -rf /var/lib/apt
 
 # Install additional R packages, some of these takes a long time.
 RUN R -e "install.packages(c('xts'))"
@@ -17,7 +17,7 @@ RUN R -e "install.packages(c('dygraphs'))"
 RUN R -e "install.packages(c('robfilter'))"
 RUN R -e "install.packages(c('gplots'))"
 RUN R -e "install.packages(c('devtools'))"
-RUN R -e "devtools::install_github('icos-etc/RFlux', force = TRUE)"
+RUN R -e "install.packages(c('pbapply'))"
 
 # Clone and compile eddypro.
 WORKDIR /compile
@@ -27,7 +27,13 @@ RUN make -C eddypro-engine/prj -f Makefile_rp_linux
 RUN make -C eddypro-engine/prj -f Makefile_fcc_linux
 RUN ln -s /compile/eddypro-engine/bin/linux/* /usr/local/bin/
 
-# Now setup the actual code we're going to ru.n
+# This R package comes after the other since it's ICOS ETC code and might
+# change more frequently.
+# First bust the cache if anything has changed.
+ADD https://api.github.com/repos/icos-etc/RFlux/commits /dev/null
+RUN R -e "devtools::install_github('icos-etc/RFlux', force = TRUE)"
+
+# Now setup the actual code we're going to run.
 WORKDIR /workdir
 
 # This ADD will bust the build cache if the repo has changed.
@@ -38,8 +44,3 @@ WORKDIR /workdir
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
-
-# Add the nano editor
-RUN apt-get update -q && DEBIAN_FRONTEND=noninteractive apt-get install -qy \
-        nano \
-    && apt-get clean && rm -rf /var/lib/apt
