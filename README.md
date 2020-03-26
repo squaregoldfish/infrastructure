@@ -48,7 +48,17 @@ Needed by the `meta` service to be run locally on developer's machine. First, ob
 
 `tar cvfz rdflog_volumes.tar.gz volumes/ && rm -rf volumes/`
 
-`docker run --name rdflog_postgres -e POSTGRES_PASSWORD=password -d postgres:10.7`
+Copy `rdflog_volumes.tar.gz` to a folder on your machine, for example with
+
+`scp fsicos2.lunarc.lu.se:/root/rdflog_volumes.tar.gz .`
+
+(Delete the archive from the server afterwards)
+
+Extract the rdflog Postgres data with `tar xfz rdflog_volumes.tar.gz`
+
+Disable Postgres replication-slave behavior by `rm volumes/data/recovery.conf`
+
+`docker run --name rdflog -v <abs_path_to_here>/volumes/data:/var/lib/postgresql/data -p 127.0.0.1:5433:5432 -d postgres:10.7`
 
 Useful commands
 ===============
