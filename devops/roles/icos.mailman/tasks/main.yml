@@ -11,9 +11,11 @@
     src: docker-compose.yml
     mode: 0600
 
-- include_tasks: mailman_build.yml
+- import_tasks: build.yml
+  tags: mailman_build
 
-- include_tasks: mailman_run.yml
+- import_tasks: run.yml
+  tags: mailman_run
 
 - import_role: name=icos.certbot
   tags: mailman_certbot

@@ -1,3 +1,5 @@
+# Build mainman images
+#   deploy mailman mailman_build
 - hosts: icosprod2
   become: true
   vars:
