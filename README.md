@@ -11,7 +11,7 @@ Other folders in this Git repository mostly contain legacy Docker files (used be
 Getting started (common)
 ===============
 To get started, one needs:
-- Ubuntu 20.04 LTS or an equivalent Linux distribution
+- Ubuntu 20.04 LTS (if installing after it is released) or an equivalent Linux distribution
 - Git
 - Docker
 - docker-compose
@@ -42,24 +42,84 @@ rdflog
 -------
 Needed by the `meta` service to be run locally on developer's machine. First, obtain the latest rdflog backup from `fsicos.lunarc.lu.se`.
 
+The following approach does not require installation of BorgBackup client.
+
+Login to fsicos and run the following to see the available snapshots of `rdflog` backup:<br/>
 `borg list /disk/data/bbserver/repos/fsicos.lunarc.lu.se/pgrep_rdflog/default/ | tail`
 
+Choose the snapshot to reconstruct your local environment from, and extract it to currecnt directory by running e.g. the following (last part is the snapshot timestamp):<br/>
 `borg extract /disk/data/bbserver/repos/fsicos.lunarc.lu.se/pgrep_rdflog/default/::2020-03-24T04:43:20`
 
+Archive the backup to a file:<br/>
 `tar cvfz rdflog_volumes.tar.gz volumes/ && rm -rf volumes/`
 
-Copy `rdflog_volumes.tar.gz` to a folder on your machine, for example with
-
-`scp fsicos2.lunarc.lu.se:/root/rdflog_volumes.tar.gz .`
-
+Copy `rdflog_volumes.tar.gz` to a folder on your machine, for example with<br/>
+`scp fsicos.lunarc.lu.se:/root/rdflog_volumes.tar.gz .`<br/>
 (Delete the archive from the server afterwards)
 
 Extract the rdflog Postgres data with `tar xfz rdflog_volumes.tar.gz`
 
 Disable Postgres replication-slave behavior by `rm volumes/data/recovery.conf`
 
-`docker run --name rdflog -v <abs_path_to_here>/volumes/data:/var/lib/postgresql/data -p 127.0.0.1:5433:5432 -d postgres:10.7`
+Create a Postgres containser with the rdflog database:<br>
+`docker run --name rdflog -v <abs_path_to_here>/volumes/data:/var/lib/postgresql/data -p 127.0.0.1:5433:5432 -d postgres:10`
 
+----
+restheart
+--------
+Needed by `data` and `cpauth` to run locally.
+
+First, fetch `docker-compose.yml` and `security.yml` files:<br>
+<!---`wget https://raw.githubusercontent.com/SoftInstigate/restheart/3.10.1/docker-compose.yml` --->
+`curl -o docker-compose.yml https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose-dev.yml`<br>
+`wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/security.yml`
+
+Create and start RestHeart and MongoDB containers with<br>
+`docker-compose up -d`
+
+Recover RestHeart's MongoDB backup from BorgBackup in the same way as for rdflog.<br>
+`borg list /disk/data/bbserver/repos/fsicos2.lunarc.lu.se/restheart/default/`
+
+Copy the backup file `server.archive` to your machine and restore it into your MongoDB with<br>
+`docker exec -i restheart-mongo mongorestore --archive --drop < server.archive`
+
+-----
+meta
+----
+Deploy rdflog on your development machine. Clone the repository from GitHub. Copy `application.conf` from your old machine, or from your fellow developer. Alternatively, create `application.conf` from scratch, and then look at `meta`'s default `application.conf` in `src/main/resources` to determine what settings need to be overridden. At a minimum, the following is needed:<br>
+```json
+cpmeta{
+	rdfLog{
+		server.port: 5433
+		credentials{
+			db: "rdflog"
+			user: "rdflog"
+			password: "look up in fsicos2:/home/cpmeta/application.conf"
+		}
+	}
+	citations.eagerWarmUp = false
+}
+```
+
+
+----
+
+Getting started (front end apps)
+=======
+
+Nodejs and npm
+------
+Needed for running the front-end build tools.
+
+Install Node.js according to [NodeSource](https://github.com/nodesource/distributions#debinstall) (choose Node.js v12.x), it will include npm (Ubuntu 20.04 will be supported only after its official release).
+
+---
+
+Nginx
+-----
+Move `/etc/nginx` folder and `/etc/hosts` file from your previous machine.
+
+----
 Useful commands
 ===============
 
