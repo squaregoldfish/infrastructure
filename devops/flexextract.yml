@@ -1,0 +1,67 @@
+- hosts: flexextract_host
+  become: true
+  vars_files:
+    - vault.yml
+  pre_tasks:
+    - name: Create flexextract storage pool
+      tags: pool
+      command: lxc storage create flexextract btrfs size=50GB
+      register: _r
+      failed_when:
+        - _r.rc != 0
+        - '"Error: The storage pool already exists" not in _r.stderr'
+      changed_when:
+        - '"Storage pool flexextract created" in _r.stdout'
+
+    - name: Create flexextract LXD profile
+      tags: profile
+      lxd_profile:
+        name: flexextract
+        config:
+          security.nesting: "true"
+        devices:
+          root:
+            path: /
+            type: disk
+            pool: flexextract
+            size: "50GB"
+
+          flexpart:
+            path: /data/flexpart
+            source: /data/flexpart
+            type: disk
+            readonly: "true"
+            recursive: "true"
+
+  roles:
+    - role: icos.lxd_host
+      tags: lxd
+      lxd_host_name: flexextract
+      lxd_host_port: "{{ hostvars['flexextract'].ansible_port }}"
+      lxd_host_profiles:
+        - default
+        - flexextract
+                
+            
+- hosts: flexextract
+  become: true
+  vars:
+    flexextract_sudo: true
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.docker
+      tags: docker
+      
+    - role: icos.flexextract
+      tags: flexextract
+      flexextract_src_dir: /tmp/docker_flexextract_7.1.0
+
+  tasks:
+    - name: Install additional ssh keys
+      tags: keys
+      authorized_key:
+        user: flexextract
+        state: present
+        key: "{{ vault_flexextract_ssh_keys }}"

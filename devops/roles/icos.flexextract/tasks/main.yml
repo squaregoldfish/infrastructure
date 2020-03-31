@@ -5,7 +5,6 @@
   loop:
     - flexextract_src_dir
 
-
 - name: Create flexextract user
   user:
     name: "{{ flexextract_user }}"
@@ -13,6 +12,23 @@
     shell: /bin/bash
     groups: docker
     append: yes
+
+
+- when: "flexextract_sudo | default(false)"
+  tags: flexextract_sudo
+  block:
+    - name: Add flexextract to the sudo group
+      user:
+        name: "{{ flexextract_user }}"
+        groups: sudo
+        append: yes
+
+    - name: Add passwordless sudo for flexextract
+      copy:
+        dest: /etc/sudoers.d/flexextract
+        content: |
+          flexextract ALL = NOPASSWD: ALL
+
 
 - import_tasks: flexextract.yml
   become: yes

@@ -1,15 +1,11 @@
-- name: Create {{ flexextract_home }}/build directory
-  file:
-    path: "{{ flexextract_home }}/build"
-    state: directory
-  register: _build
-
 - name: Copy {{ flexextract_src_dir }} directory
-  copy:
+  tags: flexextract_sync
+  synchronize:
     src: "{{ flexextract_src_dir }}/"
-    dest: "{{ _build.path }}"
+    dest: "{{ flexextract_home }}/build"
 
 - name: Build flexextract image
+  tags: flexextract_build
   shell: |
     set -o pipefail
     ( echo -n '=== starting build '; date; \
@@ -33,7 +29,7 @@
     owner: "{{ flexextract_user }}"
     group: "{{ flexextract_user }}"
 
-# If the download directory is located outside the download directory then it's
+# If the download directory is located outside the home directory then it's
 # nice to have a link to it.
 - name: Create a link to the download directory in home directory
   file:
@@ -42,25 +38,5 @@
     state: link
   when: flexextract_download_host  != (flexextract_home+"/download")
 
-- name: Create {{ flexextract_bin_dir }} directory
-  file:
-    path: "{{ flexextract_bin_dir }}"
-    state: directory
-
-- name: Copy flexextract script
-  copy:
-    src: flexextract.sh
-    dest: "{{ flexextract_bin_dir }}/"
-    mode: -x
-  register: _script
-
-- name: Create flexextract wrapper
-  copy:
-    dest: "{{ flexextract_bin_dir }}/flexextract"
-    mode: +x
-    content: |
-      #!/bin/bash
-      TAG="{{ flexextract_tag }}"
-      HOST_DIR="{{ flexextract_download_host }}"
-      CONT_DIR="{{ flexextract_download_cont }}"
-      source "{{ _script.dest }}"
+- import_tasks: script.yml
+  tags: flexextract_script

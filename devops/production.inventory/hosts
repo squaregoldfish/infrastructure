@@ -19,6 +19,9 @@ climbeco ansible_host=fsicos2.lunarc.lu.se ansible_port=60524 ansible_user=root
 eddyetc_host ansible_host=fsicos2.lunarc.lu.se
 eddyetc ansible_host=fsicos2.lunarc.lu.se ansible_port=60523 ansible_user=root
 
+flexextract_host ansible_host=fsicos2.lunarc.lu.se
+flexextract ansible_host=fsicos2.lunarc.lu.se ansible_port=60526 ansible_user=root
+
 [icosprod]
 fsicos.lunarc.lu.se
 
