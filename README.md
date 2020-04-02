@@ -100,7 +100,11 @@ cpmeta{
 	citations.eagerWarmUp = false
 }
 ```
-
+When starting `meta` for the first time, if you don't have RDF storage folder preserved from another machine/drive, the service will go into a "fresh init" mode of initialization from RDF logs, with no indices created, neither RDF4J nor CP ones. The service will issue a warning. This mode can also be triggered by a local config:
+```json
+cpmeta.rdfStorage.recreateAtStartup = true
+```
+You'll need to restart the service after the "fresh init". Initialization may take long time (~1 hour)
 
 ----
 
