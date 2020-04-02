@@ -1,0 +1,30 @@
+version: '2'
+
+networks:
+   restheartnet:
+
+volumes:
+   restheart-datadb:
+
+services:
+   restheart:
+      image: softinstigate/restheart:3.10.1
+      container_name: restheart
+      depends_on:
+         - mongodb
+      networks:
+         - restheartnet
+      ports:
+         - "127.0.0.1:8088:8080"
+      volumes:
+         - "./security.yml:/opt/restheart/etc/security.yml:ro"
+
+   mongodb:
+      image: mongo:3.6
+      container_name: restheart-mongo
+      command: --bind_ip_all
+      volumes:
+         - restheart-datadb:/data/db
+      networks:
+         - restheartnet
+
