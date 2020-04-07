@@ -1,0 +1,44 @@
+- hosts: thredds_host
+  become: true
+  vars_files:
+    - vault.yml
+  pre_tasks:
+    - name: Create thredds storage pool
+      tags: pool
+      command: lxc storage create thredds btrfs size=50GB
+      register: _r
+      failed_when:
+        - _r.rc != 0
+        - '"Error: The storage pool already exists" not in _r.stderr'
+      changed_when:
+        - '"Storage pool thredds created" in _r.stdout'
+
+    - name: Create thredds LXD profile
+      tags: profile
+      lxd_profile:
+        name: thredds
+        config:
+          limits.cpu: "4"
+          limits.memory: "8GB"
+        devices:
+          root:
+            path: /
+            type: disk
+            pool: thredds
+            size: "50GB"
+
+  roles:
+    - role: icos.lxd_host
+      tags: lxd
+      lxd_host_name: thredds
+      lxd_host_port: "{{ hostvars['thredds'].ansible_port }}"
+      lxd_host_extra_keys: "{{ vault_thredds_extra_keys.splitlines() }}"
+      lxd_host_profiles:
+        - default
+        - thredds
+
+- hosts: thredds
+  become: true
+  roles:
+    - role: icos.lxd_guest
+      tags: guest

@@ -22,6 +22,9 @@ eddyetc ansible_host=fsicos2.lunarc.lu.se ansible_port=60523 ansible_user=root
 flexextract_host ansible_host=fsicos2.lunarc.lu.se
 flexextract ansible_host=fsicos2.lunarc.lu.se ansible_port=60526 ansible_user=root
 
+thredds_host ansible_host=fsicos2.lunarc.lu.se
+thredds ansible_host=fsicos2.lunarc.lu.se ansible_port=60527 ansible_user=root
+
 [icosprod]
 fsicos.lunarc.lu.se
 
