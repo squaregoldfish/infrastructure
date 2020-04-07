@@ -44,10 +44,9 @@
         - profile
       lxd_profile:
         config:
-          # Allow docker
           security.nesting: "true"
-          # Restrict CPU usage
           limits.cpu: "4"
+          limits.memory: "50GB"
         description: "Configuration for exploredata"
         devices:
           root:
