@@ -55,22 +55,6 @@
             type: disk
             # named ed for historical reasens
             pool: ed
-          # Mount stilt data inside LXD for later mounting inside docker.
-          stilt:
-            path: /disk/data/stiltweb
-            source: /disk/data/stiltweb
-            type: disk
-            readonly: "true"
-          ringo:
-            path: /opt/stiltdata/RINGO
-            source: /disk/data/fsicos-stilt/RINGO
-            type: disk
-            readonly: "true"
-          footprints:
-            path: /opt/stiltdata/fsicos2/stilt/Footprints
-            source: /disk/data/stilt/Footprints
-            type: disk
-            readonly: "true"
           data:
             path: /data
             source: /data
