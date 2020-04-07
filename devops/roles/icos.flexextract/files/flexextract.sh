@@ -8,9 +8,9 @@
 
 set -Eueo pipefail
 
-if [[ $# -lt 1 ]]
+if [[ $# -lt 3 ]]
 then
-    >&2 printf "usage: flexextract startdate (i.e 20171107)\n"
+    >&2 printf "usage: flexextract startdate enddate controlfile \n"
     exit 1
 fi
 
@@ -22,7 +22,9 @@ then
     echo -n "=== starting flexextract "; date
 fi
 
-DATE="$1"
+SDATE="$1"
+EDATE="$2"
+CFILE="$3"
 TAG="${TAG:-flexextract}"
 HOST_DIR="${HOST_DIR:-/tmp/flexextract_download}"
 CONT_DIR="${CONT_DIR:-/usr/local/Flexpart_9.0.3/download/}"
@@ -39,9 +41,13 @@ set -x
 time docker run --rm -t --init            \
        -v/etc/localtime:/etc/localtime:ro \
        -v"$HOST_DIR":"$CONT_DIR"          \
-       -eDATE="$DATE"                     \
+       -eSDATE="$SDATE"			          \
+       -eEDATE="$EDATE"                   \
+       -eCFILE="$CFILE"			          \
        -eDOWNLOADPATH="$CONT_DIR"         \
-       "$TAG" bash -c 'python $FLEXECTRACTPATH/submit.py --start_date=$DATE \
-                              --controlfile=$FLEXECTRACTPATH/CONTROL_EI     \
+       "$TAG" bash -c 'python3 $FLEXEXTRACTPATH/submit.py       \
+							  --start_date=$SDATE               \
+							  --end_date=$EDATE                 \
+                              --controlfile=$CONTROLPATH/$CFILE \
                               --inputdir="$DOWNLOADPATH"'
 
