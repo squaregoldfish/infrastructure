@@ -30,6 +30,7 @@
         name: eddyetc
         config:
           security.nesting: "true"
+          limits.memory: "100GB"
         devices:
           root:
             path: /
