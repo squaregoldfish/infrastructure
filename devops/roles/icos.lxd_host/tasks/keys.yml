@@ -33,4 +33,4 @@
   register: r
   # Each merged key is echoed, thus we know if any were added.
   changed_when: r.stdout != ""
-  loop: "{{ lxd_host_extra_keys.splitlines() }}"
+  loop: "{{ lxd_host_extra_keys }}"

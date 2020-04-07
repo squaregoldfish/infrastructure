@@ -33,7 +33,7 @@
       tags: lxd
       lxd_host_name: wordpress
       lxd_host_port: "{{ hostvars['wordpress'].ansible_port }}"
-      lxd_host_extra_keys: "{{ vault_wordpress_extra_keys }}"
+      lxd_host_extra_keys: "{{ vault_wordpress_extra_keys.splitlins() }}"
       lxd_host_profiles:
         - default
         - wordpress
