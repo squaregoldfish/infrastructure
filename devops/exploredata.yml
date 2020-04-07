@@ -61,8 +61,7 @@
             type: disk
             readonly: "true"
             recursive: "true"
-        # named ed for historical reasens
-        name: ed
+        name: exploredata
 
     - import_role: name=icos.lxd_host
       tags: lxd
