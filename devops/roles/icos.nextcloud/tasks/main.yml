@@ -11,9 +11,6 @@
     - file: "{{ nextcloud_home }}/.pg-nextcloud-pass"
       set_fact: nextcloud_db_pass
       file_var: NEXTCLOUD_PASSWORD
-    - file: "{{ nextcloud_home }}/.nextcloud-admin-pass"
-      set_fact: nextcloud_admin_password
-      file_var: NEXTCLOUD_ADMIN_PASSWORD
 
 - name: Copy runtime files
   template:
