@@ -1,4 +1,5 @@
 cdb.nateko.lu.se ansible_user=root
+icosprod3 ansible_host=fsicos3.lunarc.lu.se ansible_user=root
 
 [aliases]
 exploredata_host ansible_host=fsicos2.lunarc.lu.se
