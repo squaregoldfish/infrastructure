@@ -19,6 +19,8 @@
         name: flexextract
         config:
           security.nesting: "true"
+          limits.cpu: "4"
+          limits.memory: "10GB"
         devices:
           root:
             path: /
