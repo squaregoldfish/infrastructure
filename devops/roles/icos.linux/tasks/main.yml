@@ -33,6 +33,13 @@
     port: ssh
     comment: ssh
 
+- name: Allowing inbound mosh
+  ufw:
+    rule: allow
+    port: 60000:61000
+    proto: udp
+    comment: mosh
+
 - name: Enabling UFW with default deny policy
   ufw:
     state: enabled
