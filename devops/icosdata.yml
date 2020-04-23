@@ -1,6 +1,6 @@
 # Try to set up /data so that it looks the same on all our servers.
 # The LXD "icosdata" profile will make the following paths available.
-# 
+#
 # Update LXD profile
 #   deploy icosdata -licosprod2 profile
 #
@@ -34,7 +34,7 @@
           /disk/data/STILT/ObsPack            194.47.223.139(ro)
           /disk/data/flexpart                 194.47.223.139(ro)
           /disk/data/common/netcdf/gcp_models 194.47.223.139(ro)
-          /disk/data/eurocom		      194.47.223.139(ro)          
+          /disk/data/eurocom		      194.47.223.139(ro)
       register: _exports
 
     - name: Reload NFS server
@@ -70,14 +70,14 @@
         - path: /data/stiltweb
           src: /disk/data/stiltweb
           opts: ",ro"
-          
+
         - path: /data/project
           src: /disk/data/project
 
         - path: /data/dataAppStorage
           src: /disk/data/dataAppStorage
           opts: ",ro"
-          
+
     - name: Mount "{{ item.path }}" from icosprod
       tags: nfs
       mount:
@@ -118,13 +118,39 @@
             readonly: "true"
             source: /disk/data/fsicos-stilt/
             type: disk
-          data:
-            path: /data
-            source: /data
+
+          dataAppStorage:
+            path: /data/dataAppStorage
+            source: /data/dataAppStorage
             type: disk
             readonly: "true"
-            recursive: "true"
-          project:
-            path: /data/project
-            source: /data/project
+          eurocom:
+            path: /data/eurocom
+            source: /data/eurocom
             type: disk
+            readonly: "true"
+          flexextract:
+            path: /data/flexextract
+            source: /data/flexextract
+            type: disk
+            readonly: "true"
+          flexpart:
+            path: /data/flexpart
+            source: /data/flexpart
+            type: disk
+            readonly: "true"
+          obspack:
+            path: /data/obspack
+            source: /data/obspack
+            type: disk
+            readonly: "true"
+          stilt:
+            path: /data/stilt
+            source: /data/stilt
+            type: disk
+            readonly: "true"
+          stiltweb:
+            path: /data/stiltweb
+            source: /data/stiltweb
+            type: disk
+            readonly: "true"

@@ -51,13 +51,16 @@
       lxd_profile:
         name: jupyter
         config:
-          # Allow docker
           security.nesting: "true"
         devices:
           root:
             path: /
             type: disk
             pool: jupyter
+          project:
+            path: /data/project
+            source: /data/project
+            type: disk
 
   roles:
     - role: icos.lxd_host
@@ -66,9 +69,9 @@
       lxd_host_port: "{{ hostvars['jupyter'].ansible_port }}"
       lxd_host_profiles:
         - default
+        - icosdata
         - jupyter
         - jupyter_home
-        - icosdata # created by icosdata.yml
 
     - role: icos.nginxsite
       tags: nginx
