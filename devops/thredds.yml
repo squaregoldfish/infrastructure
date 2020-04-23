@@ -35,6 +35,7 @@
       lxd_host_extra_keys: "{{ vault_thredds_extra_keys.splitlines() }}"
       lxd_host_profiles:
         - default
+        - icosdata
         - thredds
 
 - hosts: thredds
@@ -42,3 +43,6 @@
   roles:
     - role: icos.lxd_guest
       tags: guest
+
+    - role: icos.docker
+      tags: docker
