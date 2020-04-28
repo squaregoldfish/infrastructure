@@ -43,7 +43,13 @@
         - icosdata
         - flexextract
                 
-            
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: flexextract
+      certbot_domains:
+        - flexextract.icos-cp.eu
+
+    
 - hosts: flexextract
   become: true
   vars:
