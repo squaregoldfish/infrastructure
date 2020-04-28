@@ -19,7 +19,7 @@
         name: flexextract
         config:
           security.nesting: "true"
-          limits.cpu: "4"
+          limits.cpu: "10"
           limits.memory: "10GB"
         devices:
           root:
