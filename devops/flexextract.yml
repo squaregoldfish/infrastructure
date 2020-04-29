@@ -49,6 +49,11 @@
       certbot_domains:
         - flexextract.icos-cp.eu
 
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: flexextract
+      nginxsite_file: files/flexextract.conf
+
     
 - hosts: flexextract
   become: true
