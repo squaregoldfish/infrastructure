@@ -20,11 +20,11 @@ To get started, one needs:
 
 To install all of the above, run
 
-`sudo apt install git docker-io docker-compose python-pip`
+`sudo apt install git docker-io docker-compose python3-pip`
 
 followed by
 
-`pip install --user ansible==2.9.4`
+`pip3 install --user ansible==2.9.4`
 
 (the recommended Ansible version will keep changing, so check with the team which one is relevant)
 
