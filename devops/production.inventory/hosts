@@ -1,5 +1,8 @@
 cdb.nateko.lu.se ansible_user=root
+icosprod ansible_host=fsicos.lunarc.lu.se ansible_user=root
+icosprod2 ansible_host=fsicos2.lunarc.lu.se ansible_user=root
 icosprod3 ansible_host=fsicos3.lunarc.lu.se ansible_user=root
+stiltmaster ansible_host=fsicos2.lunarc.lu.se ansible_user=root
 
 [fsicos2-vms]
 exploredata_host
@@ -30,16 +33,15 @@ thredds ansible_port=60527
 ansible_host=fsicos2.lunarc.lu.se
 ansible_user=root
 
-[icosprod]
-fsicos.lunarc.lu.se
 
-[icosprod2]
-fsicos2.lunarc.lu.se
+[fsicos3-vms]
+ute_host
+ute ansible_port=60510
 
-[stiltmaster]
-fsicos2.lunarc.lu.se
+[fsicos3-vms:vars]
+ansible_host=fsicos3.lunarc.lu.se
+ansible_user=root
 
-[stiltcluster]
 
 [bbservers]
 fsicos.lunarc.lu.se
