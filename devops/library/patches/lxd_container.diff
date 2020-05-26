@@ -1,5 +1,5 @@
---- /home/andre/.local/lib/python2.7/site-packages/ansible/modules/cloud/lxd/lxd_container.py	2019-09-26 14:23:06.199094576 +0200
-+++ ../lxd_container.py	2019-09-26 22:17:03.268161546 +0200
+--- /home/andre/.local/lib/python3.8/site-packages/ansible/modules/cloud/lxd/lxd_container.py	2020-05-22 07:29:15.958235979 +0200
++++ ../lxd_container.py	2020-02-26 12:27:55.934413272 +0100
 @@ -94,6 +94,15 @@
          required: false
          default: false
@@ -24,21 +24,21 @@
          self.force_stop = self.module.params['force_stop']
          self.addresses = None
  
-@@ -416,9 +426,10 @@
+@@ -412,7 +422,12 @@
+ 
+         resp_json = self._get_container_state_json()
+         network = resp_json['metadata']['network'] or {}
+-        network = dict((k, v) for k, v in network.items() if k not in ignore_devices) or {}
++        if self.wait_for_ipv4_interfaces:
++            network = dict((k, v) for k, v in network.items()
++                           if k in self.wait_for_ipv4_interfaces) or {}
++        else:
++            network = dict((k, v) for k, v in network.items()
++                           if k not in ignore_devices) or {}
          addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
          return addresses
  
--    @staticmethod
--    def _has_all_ipv4_addresses(addresses):
--        return len(addresses) > 0 and all(len(v) > 0 for v in addresses.values())
-+    def _has_all_ipv4_addresses(self, addresses):
-+        interfaces = self.wait_for_ipv4_interfaces
-+        return len(addresses) > 0 and all(len(v) > 0 for v in addresses.values()
-+                                          if not interfaces or v in interfaces)
- 
-     def _get_addresses(self):
-         try:
-@@ -615,6 +626,9 @@
+@@ -615,6 +630,9 @@
                  type='bool',
                  default=False
              ),
