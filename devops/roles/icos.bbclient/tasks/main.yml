@@ -3,6 +3,9 @@
   # other tasks we want to run.
   tags: always
 
+- import_tasks: install.yml
+  tags: bbclient_install
+
 - import_tasks: ssh.yml
   become: yes
   become_user: "{{ bbclient_user }}"

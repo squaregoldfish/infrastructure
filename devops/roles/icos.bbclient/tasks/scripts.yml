@@ -1,11 +1,3 @@
-- name: Download borg binary
-  get_url:
-    url: "{{ bbclient_url }}"
-    dest: "{{ bbclient_bin }}"
-    checksum: "{{ bbclient_checksum }}"
-    mode: +x
-  notify: Test downloaded borg binary
-
 - name: Create scripts directory
   file:
     path: "{{ bbclient_script_dir }}"
