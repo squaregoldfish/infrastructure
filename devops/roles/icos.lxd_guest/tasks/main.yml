@@ -16,3 +16,12 @@
       - tree
       - tcpdump
     update_cache: yes
+
+- name: Install public keys
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ item.strip() }}"
+  loop: "{{ lxd_guest_ssh_keys }}"
+
+
