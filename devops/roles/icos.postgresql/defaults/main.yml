@@ -1,3 +1,13 @@
 postgresql_version: 12
+postgresql_etc_dir: "/etc/postgresql/{{ postgresql_version }}/main"
+postgresql_confd_dir: "{{ postgresql_etc_dir }}/conf.d"
+postgresql_hba_file: "{{ postgresql_etc_dir }}/pg_hba.conf"
+
 postgresql_postgis_version: 3
 postgresql_postgis_enable: false
+postgresql_postgis_package: |
+  {% if postgresql_postgis_enable -%}
+  postgresql-{{ postgresql_version }}-postgis-{{ postgresql_postgis_version -}}
+  {% else -%}
+  omit
+  {% endif -%}
