@@ -4,7 +4,7 @@ icosprod2 ansible_host=fsicos2.lunarc.lu.se ansible_user=root
 icosprod3 ansible_host=fsicos3.lunarc.lu.se ansible_user=root
 stiltmaster ansible_host=fsicos2.lunarc.lu.se ansible_user=root
 
-[fsicos2-vms]
+[fsicos2_vms]
 exploredata_host
 exploredata ansible_port=60532
 
@@ -29,16 +29,19 @@ flexextract ansible_port=60526
 thredds_host
 thredds ansible_port=60527
 
-[fsicos2-vms:vars]
+postgis_host
+postgis ansible_port=60590
+
+[fsicos2_vms:vars]
 ansible_host=fsicos2.lunarc.lu.se
 ansible_user=root
 
 
-[fsicos3-vms]
+[fsicos3_vms]
 ute_host
 ute ansible_port=60510
 
-[fsicos3-vms:vars]
+[fsicos3_vms:vars]
 ansible_host=fsicos3.lunarc.lu.se
 ansible_user=root
 
