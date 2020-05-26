@@ -1,5 +1,4 @@
 - hosts: postgis_host
-  become: true
   vars_files:
     - vault.yml
   pre_tasks:
@@ -24,16 +23,25 @@
       lxd_host_port: "{{ hostvars['postgis'].ansible_port }}"
       lxd_host_profile: postgis
 
+        
 - hosts: postgis
-  become: true
+  vars_files:
+    - vault.yml
   roles:
     - role: icos.lxd_guest
       tags: guest
+      lxd_guest_ssh_keys: "{{ vault_postgis_extra_keys }}"
         
     - role: icos.postgresql
       tags: postgresql
       postgresql_postgis_enable: true
 
+    - role: icos.bbclient
+      tags: bbclient
+      bbclient_user: postgres
+      bbclient_coldbackup_enable: no
+      bbclient_remotes:
+        - cdb.nateko.lu.se
 
   tasks:
     - name: Modify ~/.profile
