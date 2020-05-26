@@ -25,7 +25,7 @@
         state: present
         key: "{{ bbclient_key_data }}"
         key_options: >-
-          command="{{ bbclient_remote_bin }} serve --restrict-to-path {{ bbclient_remote_repo }}",from="{{ bbclient_ip }}",{% if bbclient_remote_has_restrict %}restrict{% else %}no-agent-forwarding,no-port-forwarding,no-user-rc,no-X11-forwarding{% endif %}
+          command="{{ bbclient_remote_bin }} serve --restrict-to-path {{ bbclient_remote_repo }}",{% if bbclient_remote_has_restrict %}restrict{% else %}no-agent-forwarding,no-port-forwarding,no-user-rc,no-X11-forwarding{% endif %}
 
 
 - import_tasks: single_repo_local.yml
