@@ -1,3 +1,23 @@
-- import_tasks: postgresql.yml
-  tags:
-    - postgresql_only
+- name: Adding the apt key for postgresql
+  apt_key:
+    id: ACCC4CF8
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Adding the postgresql repo
+  apt_repository:
+    repo: >-
+      deb http://apt.postgresql.org/pub/repos/apt/
+      {{ansible_distribution_release}}-pgdg main
+    filename: pgdg
+
+- name: Install postgresql {{ postgresql_version }}
+  package:
+    name: "postgresql-{{ postgresql_version }}"
+    state: present
+
+- name: Installing PostGIS {{ postgresql_postgis_version }}
+  package:
+    name: "postgresql-{{ postgresql_version }}-postgis-{{ postgresql_postgis_version }}"
+    state: present
+  when: postgresql_postgis_enable
