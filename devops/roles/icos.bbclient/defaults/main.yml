@@ -22,3 +22,5 @@ bbclient_remote_has_restrict: "{{ hostvars[bbclient_remote].bbserver_has_restric
 bbclient_repo_url: "{{ bbclient_remote }}:{{ bbclient_remote_repo_home | basename }}/{{ inventory_hostname }}/{{ bbclient_name }}/default"
 bbclient_repo_file: "{{ bbclient_home }}/.bbclient/repos"
 bbclient_wrapper: "{{ bbclient_script_dir }}/borg"
+
+bbclient_coldbackup_enable: true

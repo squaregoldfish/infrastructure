@@ -17,3 +17,4 @@
   become: yes
   become_user: "{{ bbclient_user }}"
   tags: bbclient_coldbackup
+  when: bbclient_coldbackup_enable
