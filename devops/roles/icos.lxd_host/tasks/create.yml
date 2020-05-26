@@ -8,7 +8,10 @@
       protocol: simplestreams
       alias: "{{ lxd_host_ubuntu_release }}"
     config: "{{ lxd_host_config | default(omit) }}"
-    profiles: "{{ lxd_host_profiles | default(omit) }}"
+    profiles:
+      - default
+      - "{{ lxd_host_ssh_profile }}"
+      - "{{ lxd_host_profile | default(omit) }}"
     wait_for_ipv4_addresses: true
     wait_for_ipv4_interfaces: eth0
     timeout: 30

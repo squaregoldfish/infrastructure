@@ -11,6 +11,3 @@
 
 - import_tasks: forward.yml
   tags: lxd_host_forward
-
-- import_tasks: keys.yml
-  tags: lxd_host_keys
