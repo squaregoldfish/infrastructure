@@ -19,3 +19,10 @@
 
 - set_fact:
     lxd_host_ip: "{{ _lxd.addresses.eth0 | first }}"
+
+- name: Modify /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regex: '(?:^{{ lxd_host_ip | regex_escape}}.*)|(?:.*{{ lxd_host_name }})\.lxd$'
+    line: "{{ lxd_host_ip }}\t{{ lxd_host_name }}.lxd"
+    state: present
