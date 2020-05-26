@@ -3,3 +3,4 @@ lxd_host_key_file: /root/.ssh/authorized_keys
 
 # Extra keys to be added to the authorized_keys file.
 lxd_host_extra_keys: []
+lxd_host_ubuntu_release: "20.04"

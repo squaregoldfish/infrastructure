@@ -6,7 +6,7 @@
       mode: pull
       server: https://cloud-images.ubuntu.com/releases
       protocol: simplestreams
-      alias: "18.04"
+      alias: "{{ lxd_host_ubuntu_release }}"
     config: "{{ lxd_host_config | default(omit) }}"
     profiles: "{{ lxd_host_profiles | default(omit) }}"
     wait_for_ipv4_addresses: true
