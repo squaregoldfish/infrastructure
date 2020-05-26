@@ -29,34 +29,19 @@
   roles:
     - role: icos.lxd_guest
       tags: guest
+        
+    - role: icos.postgresql
+      tags: postgresql
+      postgresql_postgis_enable: true
+
 
   tasks:
-     - name: Adding the apt key for postgresql
-       apt_key:
-         id: ACCC4CF8
-         url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-         state: present
-           
-     - name: Adding the postgresql repo
-       apt_repository:
-         repo: >-
-           deb http://apt.postgresql.org/pub/repos/apt/
-           {{ansible_distribution_release}}-pgdg main
-         filename: pgdg
-
-     - name: Updating apt to fetch list of postgresql packages
-       apt:
-         update_cache: yes
-         cache_valid_time: 3600
-         force_apt_get: true
-
-     - name: Installing Postgresql 12
-       package:
-         name: postgresql-12
-         state: present
-
-     - name: Installing PostGIS 3
-       package:
-         name: postgresql-12-postgis-3
-         state: present
-    
+    - name: Modify ~/.profile
+      become: yes
+      become_user: postgres
+      lineinfile:
+        create: yes
+        path: /var/lib/postgresql/.profile
+        regex: '^PATH='
+        line: 'PATH=$HOME/bin:$PATH'
+        state: present
