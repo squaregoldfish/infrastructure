@@ -1,3 +1,18 @@
 - hosts: icosprod2
+  vars_files:
+    - vault.yml
   roles:
     - role: icos.lxd
+
+  tasks:
+    - name: Create ssh_key LXD profile
+      tags: ssh_profile
+      lxd_profile:
+        name: ssh_root
+        config:
+          user.user-data: |
+            #cloud-config
+            users:
+              - name: root
+                ssh_authorized_keys:
+                  - {{ vault_lxd_ssh_pub }}
