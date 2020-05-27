@@ -1,0 +1,11 @@
+#!/bin/bash
+# This script is basically a copy of `bbclient_all` but we can't use that one
+# since we want to read from standard input.
+
+set -eu
+
+while read repo; do
+    export BORG_REPO="$repo"
+    pg_dumpall | "{{ bbclient_wrapper }}" create '::{now}' -;
+    "{{ bbclient_wrapper }}" prune --keep-within=7d --keep-daily=30 --keep-weekly=150
+done < "{{ bbclient_repo_file }}"

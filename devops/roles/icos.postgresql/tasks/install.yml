@@ -1,0 +1,44 @@
+- name: Adding the apt key for postgresql
+  apt_key:
+    id: ACCC4CF8
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Adding the postgresql repo
+  apt_repository:
+    repo: >-
+      deb http://apt.postgresql.org/pub/repos/apt/
+      {{ansible_distribution_release}}-pgdg main
+    filename: pgdg
+
+- name: Install postgresql {{ postgresql_version }}
+  apt:
+    name:
+      - "postgresql-{{ postgresql_version }}"
+      - "{{ postgresql_postgis_package }}"
+      - python3-pip
+
+# Needed for ansible's postgresql_* modules
+- name: Install python3 psycopg2-binary library
+  pip:
+    name: psycopg2-binary
+    state: present
+    executable: pip3
+
+# We'll keep various script in $HOME/bin
+- name: Create {{ postgresql_bin_dir }} directory
+  file:
+    path: "{{ postgresql_bin_dir }}"
+    state: directory
+    owner: postgres
+    group: postgres
+
+- name: Modify ~/.profile
+  lineinfile:
+    owner: postgres
+    group: postgres
+    create: yes
+    path: "{{ postgresql_home_dir }}/.profile"
+    regex: '^PATH='
+    line: 'PATH=$HOME/bin:$PATH'
+    state: present

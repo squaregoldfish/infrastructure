@@ -1,46 +1,9 @@
-- name: Adding the apt key for postgresql
-  apt_key:
-    id: ACCC4CF8
-    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-    state: present
+- import_tasks: install.yml
+  tags: postgresql_install
 
-- name: Adding the postgresql repo
-  apt_repository:
-    repo: >-
-      deb http://apt.postgresql.org/pub/repos/apt/
-      {{ansible_distribution_release}}-pgdg main
-    filename: pgdg
+- import_tasks: config.yml
+  tags: postgresql_config
 
-- name: Install postgresql {{ postgresql_version }}
-  apt:
-    name:
-      - "postgresql-{{ postgresql_version }}"
-      - "{{ postgresql_postgis_package }}"
-      - python3-pip
-
-# Needed for ansible's postgresql_* modules
-- name: Install python3 psycopg2-binary library
-  pip:
-    name: psycopg2-binary
-    state: present
-    executable: pip3
-
-- name: Change postgres user password
-  # We're relying on 'peer' (unix socket) authentication for this to work.
-  become: yes
-  become_user: postgres
-  postgresql_user:
-    name: postgres
-    password: "{{ postgresql_postgres_password }}"
-    login_unix_socket: /var/run/postgresql
-  when:
-    - postgresql_postgres_password is defined
-
-- name: Change with addresses postgresql listens to
-  copy:
-    dest: "{{ postgresql_confd_dir }}/listen.conf"
-    content: |
-      listen_addresses = {{ postgresql_listen_addresses }}
-  notify: restart postgresql
-  when:
-    - postgresql_listen_addresses is defined
+- import_tasks: backup.yml
+  tags: postgresql_backup
+  when: postgresql_backup_script != ""

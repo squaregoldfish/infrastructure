@@ -1,10 +1,19 @@
+# Set any of these to enable optional features.
+postgresql_postgis_enable: false
+postgresql_backup_script:
+postgresql_postgres_password:
+postgresql_listen_addresses:
+
+# Control which versions are being installed
 postgresql_version: 12
+postgresql_postgis_version: 3
+
 postgresql_etc_dir: "/etc/postgresql/{{ postgresql_version }}/main"
 postgresql_confd_dir: "{{ postgresql_etc_dir }}/conf.d"
 postgresql_hba_file: "{{ postgresql_etc_dir }}/pg_hba.conf"
+postgresql_home_dir: /var/lib/postgresql/
+postgresql_bin_dir: "{{ postgresql_home_dir }}/bin"
 
-postgresql_postgis_version: 3
-postgresql_postgis_enable: false
 postgresql_postgis_package: |
   {% if postgresql_postgis_enable -%}
   postgresql-{{ postgresql_version }}-postgis-{{ postgresql_postgis_version -}}

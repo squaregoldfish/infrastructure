@@ -1,0 +1,16 @@
+- name: Copy backup script
+  template:
+    src: "{{ postgresql_backup_script }}"
+    dest: "{{ postgresql_bin_dir }}"
+    mode: +x
+    owner: postgres
+    group: postgres
+
+- name: Add postgres backup to crontab
+  tags: cron
+  cron:
+    user: postgres
+    job: "{{ postgresql_backup_script }}"
+    special_time: daily
+    state: present
+    name: "postgis_backup"

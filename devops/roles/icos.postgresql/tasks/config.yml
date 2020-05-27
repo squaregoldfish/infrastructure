@@ -1,0 +1,19 @@
+- name: Change postgres user password
+  # We're relying on 'peer' (unix socket) authentication for this to work.
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: postgres
+    password: "{{ postgresql_postgres_password }}"
+    login_unix_socket: /var/run/postgresql
+  when:
+    - postgresql_postgres_password != ""
+
+- name: Change with addresses postgresql listens to
+  copy:
+    dest: "{{ postgresql_confd_dir }}/listen.conf"
+    content: |
+      listen_addresses = {{ postgresql_listen_addresses }}
+  notify: restart postgresql
+  when:
+    - postgresql_listen_addresses != ""
