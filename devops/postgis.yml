@@ -36,35 +36,15 @@
       tags: bbclient
       bbclient_user: postgres
       bbclient_coldbackup_enable: no
-      bbclient_remotes:
-        - cdb.nateko.lu.se
 
     - role: icos.postgresql
       tags: postgresql
       postgresql_postgis_enable: true
       postgresql_postgres_password: "{{ vault_postgis_postgres_password }}"
       postgresql_listen_addresses: "'*'"
+      postgresql_backup_script: backup-dumpall-bbclient
 
   tasks:
-    - name: Modify ~/.profile
-      become: yes
-      become_user: postgres
-      lineinfile:
-        create: yes
-        path: /var/lib/postgresql/.profile
-        regex: '^PATH='
-        line: 'PATH=$HOME/bin:$PATH'
-        state: present
-
-    - name: Add postgres backup to crontab
-      tags: cron
-      cron:
-        user: postgres
-        job: "pg_dumpall | $HOME/bin/bbclient-all create '::{now}' -"
-        special_time: daily
-        state: present
-        name: "postgis_backup"
-
     - name: Install public keys for postgres user
       tags: keys
       authorized_key:
