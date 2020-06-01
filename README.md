@@ -71,7 +71,7 @@ Needed by `data` and `cpauth` to run locally.
 
 First, fetch `docker-compose.yml` and `security.yml` files:<br>
 <!---`wget https://raw.githubusercontent.com/SoftInstigate/restheart/3.10.1/docker-compose.yml` --->
-`curl -o docker-compose.yml https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose-dev.yml`<br>
+`curl -oL docker-compose.yml https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/docker-compose-dev.yml`<br>
 `wget https://github.com/ICOS-Carbon-Portal/infrastructure/raw/master/devops/roles/icos.restheart/templates/security.yml`
 
 Create and start RestHeart and MongoDB containers with<br>
@@ -82,6 +82,25 @@ Recover RestHeart's MongoDB backup from BorgBackup in the same way as for rdflog
 
 Copy the backup file `server.archive` to your machine and restore it into your MongoDB with<br>
 `docker exec -i restheart-mongo mongorestore --archive --drop < server.archive`
+
+----
+postgis
+----
+Used by `data` service to log object downloads and query for download stats.
+
+Creating Docker container and installing PostGIS in it:<br>
+`docker run -e POSTGRES_PASSWORD=blabla --name postgis -p 127.0.0.1:5438:5432 -d postgres:12.3`
+
+`docker exec -ti postgis /bin/bash`
+
+`apt-get update && apt-get install postgresql-12-postgis-3`
+
+Recover postgis' backup from BorgBackup (as for rdflog). The backup is expected to be an SQL cluster dump of Postgres in a file named `stdin`. 
+
+Restoring from the cluster dump made with `pg_dumpall`:<br>
+`egrep -v '^(CREATE|DROP) ROLE postgres;' ./stdin | docker exec -i postgis psql -v ON_ERROR_STOP=1 -f - -U postgres`
+
+
 
 -----
 meta
