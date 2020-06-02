@@ -5,12 +5,13 @@
     mode: +x
     owner: postgres
     group: postgres
+  register: _r
 
 - name: Add postgres backup to crontab
   tags: cron
   cron:
     user: postgres
-    job: "{{ postgresql_backup_script }}"
+    job: "{{ _r.dest }}"
     special_time: daily
     state: present
     name: "postgis_backup"
