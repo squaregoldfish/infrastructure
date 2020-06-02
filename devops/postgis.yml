@@ -7,8 +7,8 @@
       lxd_profile:
         name: postgis
         config:
-          limits.cpu: "2"
-          limits.memory: "4GB"
+          limits.cpu: "4"
+          limits.memory: "10GB"
         devices:
           root:
             path: /
