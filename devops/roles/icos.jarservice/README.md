@@ -23,7 +23,7 @@ To use it you must first set up some variables and then use ansibles
 
 To skip deploying a new jar file and only update the config, use:
 
-	- hosts: icosprod
+	- hosts: fsicos
 	  become: true
 	  vars:
 		jarservice_conf_only: True
@@ -33,7 +33,7 @@ To skip deploying a new jar file and only update the config, use:
 
 To further skip updating the nginx config (which relies on certbot), use:
 
-	- hosts: icosprod
+	- hosts: fsicos
 	  become: true
 	  vars:
 		jarservice_conf_only: True
