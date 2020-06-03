@@ -1,6 +1,6 @@
 # deploy restheart restheart_backup
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars_files:
     - vars.yml

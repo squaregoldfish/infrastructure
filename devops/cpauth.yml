@@ -12,7 +12,7 @@
 # Full redeploy
 #   $ deploy cpauth cpauth -ecpauth_jar_file=/tmp/cpauth.jar
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars_files:
     - vars.yml

@@ -1,8 +1,8 @@
-# bbserver on icosprod2
-#   deploy base bbserver -licosprod2
+# bbserver on fsicos2
+#   deploy base bbserver -lfsicos2*
 #
-# borgmon script on icosprod2
-#   deploy base bbserver_monitor -licosprod2
+# borgmon script on fsicos2
+#   deploy base bbserver_monitor -lfsicos2*
 
 - hosts: all
   become: true
@@ -10,7 +10,7 @@
     - role: icos.linux
       tags: linux
 
-- hosts: icosprod icosprod2
+- hosts: fsicos.lunarc.lu.se fsicos2.lunarc.lu.se
   roles:
     - role: icos.docker
       tags: docker

@@ -9,7 +9,7 @@ sbt. It installs version 2 of Nexus, running as a docker container.
 
 Run a simple ansible playbook that looks like this:
 
-	- hosts: icosprod2
+	- hosts: myhost
 	  become: true
 	  roles:
 		- icos.nexus

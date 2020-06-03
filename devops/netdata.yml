@@ -2,7 +2,7 @@
 # deploy netdata certbot
 # deploy netdata nginx
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   vars_files:
     - vault.yml
   vars:

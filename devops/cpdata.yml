@@ -3,7 +3,7 @@
 #
 # Everything that mentions "netcdf" has to do with https://data.icos-cp.eu/netcdf/
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars_files:
     - vars.yml
@@ -45,9 +45,9 @@
       tags: netcdf
 
 
-- hosts: icosprod
+- hosts: fsicos.lunarc.lu.se
   tasks:
-    - name: Export netcdf to icosprod2
+    - name: Export netcdf to fsicos2
       lineinfile:
         path: /etc/exports
         line: "/disk/data/common/netcdf/dataDemo	194.47.223.139(ro)"

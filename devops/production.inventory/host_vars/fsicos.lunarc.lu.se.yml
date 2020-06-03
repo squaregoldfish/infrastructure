@@ -2,12 +2,12 @@ cpmeta_filestorage_target: /disk/data/metaAppStorage
 cpdata_filestorage_target: /disk/data/dataAppStorage
 docker_compose_link: /disk/data/docker-compose-projects
 
-stilt_nfs_icosprod2_host: fsicos2.lunarc.lu.se
+stilt_nfs_fsicos2_host: fsicos2.lunarc.lu.se
 stilt_nfs_mounts:
   - path: "/disk/data/STILT/fsicos2/stiltweb"
-    src: "{{ stilt_nfs_icosprod2_host }}:/disk/data/stiltweb"
+    src: "{{ stilt_nfs_fsicos2_host }}:/disk/data/stiltweb"
   - path: "/disk/data/STILT/fsicos2/stilt"
-    src: "{{ stilt_nfs_icosprod2_host }}:/disk/data/stilt"
+    src: "{{ stilt_nfs_fsicos2_host }}:/disk/data/stilt"
 
 flexpart_ssh_users: ['andre', 'atverm']
 flexpart_ssh_remote_host: "fsicos2.lunarc.lu.se"

@@ -6,7 +6,7 @@
   tasks:
     - debug: msg="Collecting host key from {{ inventory_hostname }}"
 
-- hosts: stiltmaster stiltcluster
+- hosts: fsicos2.lunarc.lu.se stiltcluster
   become: true
   vars_files:
     - vault.yml
@@ -24,7 +24,7 @@
       tags: python3
 
 
-- hosts: stiltmaster
+- hosts: fsicos2.lunarc.lu.se
   name: Install stilt along with its web frontend and cluster control
   become: true
   vars_files:
@@ -52,8 +52,8 @@
       tags: stiltcluster
 
 
-- hosts: icosprod2
-  name: Export stiltdata to icosprod1
+- hosts: fsicos2.lunarc.lu.se
+  name: Export stiltdata to fsicos
   become: true
   tags: stilt_export
   tasks:
@@ -68,15 +68,15 @@
       service: name=nfs-server state=reloaded enabled=yes
       when: _exports.changed
 
-    - name: Completely open firewall to {{ stilt_nfs_icosprod1_ip }}
+    - name: Completely open firewall to fsicos
       ufw:
         rule: allow
-        src: "{{ stilt_nfs_icosprod1_ip }}"
+        src: "{{ fsicos1_ip }}"
         comment: fsicos1
 
 
-- hosts: icosprod
-  name: Mount stiltdata from icosprod2
+- hosts: fsicos.lunarc.lu.se
+  name: Mount stiltdata from fsicos2
   become: true
   tags: stilt_export
   tasks:
@@ -84,7 +84,7 @@
       file: path="{{ item.path }}" state=directory
       loop: "{{ stilt_nfs_mounts }}"
 
-    - name: Mount "{{ item.path }}" from icosprod2
+    - name: Mount "{{ item.path }}" from fsicos2
       loop: "{{ stilt_nfs_mounts }}"
       mount:
         path: "{{ item.path }}"

@@ -1,10 +1,10 @@
-- hosts: icosprod
+- hosts: fsicos.lunarc.lu.se
   roles:
     - role: icos.pgrep,
       tags: pgrep,
       arg: "{{ pgrep_rdflog_instance }}"
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   roles:
     - role: icos.rdflog
       tags: rdflog

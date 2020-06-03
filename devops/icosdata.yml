@@ -2,10 +2,10 @@
 # The LXD "icosdata" profile will make the following paths available.
 #
 # Update LXD profile
-#   deploy icosdata -licosprod2 profile
+#   deploy icosdata -lfsicos2* profile
 #
-# Update the bind-mounts on icosprod2
-#   deploy icosdata -licosprod2 bind
+# Update the bind-mounts on fsicos2
+#   deploy icosdata -lfsicos2* bind
 #
 # /data/stiltweb              fsicos2:/disk/data/stiltweb
 # /data/project               fsicos2:/disk/data/project
@@ -19,7 +19,7 @@
 # /opt/stiltdata              fsicos:/disk/data/STILT
 
 
-- hosts: icosprod
+- hosts: fsicos.lunarc.lu.se
   tasks:
     - name: Create /etc/exports.d directory
       file:
@@ -30,11 +30,11 @@
       copy:
         dest: /etc/exports.d/icosdata.exports
         content: |
-          /disk/data/STILT/RINGO/T1.3/STILT   194.47.223.139(ro)
-          /disk/data/STILT/ObsPack            194.47.223.139(ro)
-          /disk/data/flexpart                 194.47.223.139(ro)
-          /disk/data/common/netcdf/gcp_models 194.47.223.139(ro)
-          /disk/data/eurocom		      194.47.223.139(ro)
+          /disk/data/STILT/RINGO/T1.3/STILT   {{ fsicos2_ip }}(ro)
+          /disk/data/STILT/ObsPack            {{ fsicos2_ip }}(ro)
+          /disk/data/flexpart                 {{ fsicos2_ip }}(ro)
+          /disk/data/common/netcdf/gcp_models {{ fsicos2_ip }}(ro)
+          /disk/data/eurocom		      {{ fsicos2_ip }}(ro)
       register: _exports
 
     - name: Reload NFS server
@@ -44,7 +44,7 @@
       when: _exports.changed
 
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   tasks:
     - name: Create mount points
       tags: mkdir
@@ -78,7 +78,7 @@
           src: /disk/data/dataAppStorage
           opts: ",ro"
 
-    - name: Mount "{{ item.path }}" from icosprod
+    - name: Mount "{{ item.path }}" from fsicos1
       tags: nfs
       mount:
         path: "{{ item.path }}"

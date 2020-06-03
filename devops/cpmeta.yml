@@ -8,7 +8,7 @@
 #  $ deploy cpmeta bbclient
 #  $ deploy cpmeta cpmeta_backup
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars_files:
     - vault.yml

@@ -10,7 +10,7 @@
 
 - import_playbook: setup.yml
   
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: yes
   vars_files:
     - vars.yml

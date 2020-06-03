@@ -41,6 +41,6 @@ if [[ "$NEW" == "$OLD" ]]; then
 else
 	update_defaults "$NEW"
 	echo "Updated $DEFAULTS from $OLD to $NEW"
-	scp "$FILE" "icosprod:/usr/share/nginx/static/share/docker/stilt/stiltcustom-$NEW.tgz"
+	scp "$FILE" "fsicos.lunarc.lu.se:/usr/share/nginx/static/share/docker/stilt/stiltcustom-$NEW.tgz"
 fi
 

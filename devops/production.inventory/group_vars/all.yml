@@ -3,3 +3,7 @@ ansible_python_interpreter: /usr/bin/python3
 bbclient_remotes:
   - fsicos2.lunarc.lu.se
   - cdb.nateko.lu.se
+
+fsicos1_ip: 194.47.223.133
+fsicos2_ip: 194.47.223.139
+fsicos3_ip: 194.47.223.137

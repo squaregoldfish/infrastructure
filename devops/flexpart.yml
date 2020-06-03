@@ -1,10 +1,10 @@
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: true
   roles:
     - role: icos.flexpart
       tags: flexpart
 
-- hosts: icosprod
+- hosts: fsicos.lunarc.lu.se
   become: true
   roles:
     - role: icos.flexpart

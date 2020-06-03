@@ -1,6 +1,6 @@
 # Build mainman images
 #   deploy mailman mailman_build
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars:
     mailman_username: mailman

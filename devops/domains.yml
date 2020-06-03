@@ -7,7 +7,7 @@
 #   $ deploy domains nordspec
 
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: yes
   vars_files:
     - vault.yml
@@ -24,7 +24,7 @@
         nginxsite_name: nordspec
         nginxsite_file: files/domains/nordspec.conf
 
-    # BROKEN (these mostly lives on icosprod)
+    # BROKEN (these mostly lives on fsicos1)
     # - role: icos.nginxsite
     #   vars:
     #     nginxsite_name: eurocom

@@ -5,7 +5,7 @@
 #   deploy nextcloud bbclient_coldbackup
 #
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars_files:
     - vault.yml
