@@ -16,10 +16,7 @@
 # Show tasks for cpmeta:
 # $ deploy cpmeta --list-tasks
 #
-# Run entire cpmeta playbook using test inventory:
-# $ deploy test cpmeta
-#
-# Run only the backup tasks using production inventory:
+# Run only the backup tasks.
 # $ deploy cpmeta backup
 #
 # Deploy new version of cpmeta to production.
@@ -29,6 +26,7 @@
 import sys
 import os
 
+INVENTORY = "production.inventory"
 
 def die(msg):
     print(msg, file=sys.stderr)
@@ -43,15 +41,7 @@ DEVOPS = os.path.dirname(os.path.realpath(sys.argv.pop(0)))
 os.chdir(DEVOPS)
 
 if len(sys.argv) < 1:
-    die("usage: deploy [prod|test] name(.yml) {tags}")
-elif sys.argv[0] == 'prod':
-    INVENTORY = "production.inventory"
-    del sys.argv[0]
-elif sys.argv[0] == 'test':
-    INVENTORY = "test.inventory"
-    del sys.argv[0]
-else:
-    INVENTORY = "production.inventory"
+    die("usage: deploy name(.yml) {tags}")
 
 if not os.path.exists(INVENTORY):
     die("Cannot find %s in %s" % (INVENTORY, DEVOPS))

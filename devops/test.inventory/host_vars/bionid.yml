@@ -1,5 +1,0 @@
-bbclient_remotes: "{{ groups.bbservers }}"
-bbserver_user: bbserver
-bbserver_home: /home/bbserver
-bbserver_bin: "/usr/local/bin/borg"
-bbserver_repo_home: "{{ bbserver_home }}/repos"
