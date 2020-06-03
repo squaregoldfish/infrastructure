@@ -2,7 +2,7 @@
 
 - import_playbook: setup.yml
 
-- hosts: icosprod
+- hosts: fsicos.lunarc.lu.se
   become: true
   vars_files:
     - vault.yml
@@ -11,7 +11,7 @@
     - role: icos.filedrop
       tags: filedrop
 
-- hosts: icosprod2
+- hosts: fsicos2.lunarc.lu.se
   become: true
   vars_files:
     - vault.yml

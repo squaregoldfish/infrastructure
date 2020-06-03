@@ -1,8 +1,7 @@
 cdb.nateko.lu.se ansible_user=root
-icosprod ansible_host=fsicos.lunarc.lu.se ansible_user=root
-icosprod2 ansible_host=fsicos2.lunarc.lu.se ansible_user=root
-icosprod3 ansible_host=fsicos3.lunarc.lu.se ansible_user=root
-stiltmaster ansible_host=fsicos2.lunarc.lu.se ansible_user=root
+fsicos.lunarc.lu.se ansible_user=root
+fsicos2.lunarc.lu.se ansible_user=root
+fsicos3.lunarc.lu.se ansible_user=root
 
 [fsicos2_vms]
 exploredata_host
