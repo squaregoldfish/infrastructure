@@ -1,34 +1,35 @@
+[physical_servers]
 cdb.nateko.lu.se ansible_user=root
 fsicos.lunarc.lu.se ansible_user=root
 fsicos2.lunarc.lu.se ansible_user=root
 fsicos3.lunarc.lu.se ansible_user=root
 
-[fsicos2_vms]
+
+
+[fsicos2_aliases]
 exploredata_host
-exploredata ansible_port=60532
-
 quince_host
-quince
-
 jupyter_host
-jupyter ansible_port=60542
-
 wordpress_host
-wordpress ansible_port=60552
-
 climbeco_host
-climbeco ansible_port=60524
-
 eddyetc_host
-eddyetc ansible_port=60523
-
 flexextract_host
-flexextract ansible_port=60526
-
 thredds_host
-thredds ansible_port=60527
-
 postgis_host
+
+[fsicos2_aliases:vars]
+ansible_host=fsicos2.lunarc.lu.se
+ansible_user=root
+
+[fsicos2_vms]
+exploredata ansible_port=60532
+quince ansible_port=60522
+jupyter ansible_port=60542
+wordpress ansible_port=60552
+climbeco ansible_port=60524
+eddyetc ansible_port=60523
+flexextract ansible_port=60526
+thredds ansible_port=60527
 postgis ansible_port=60590
 
 [fsicos2_vms:vars]
@@ -36,13 +37,21 @@ ansible_host=fsicos2.lunarc.lu.se
 ansible_user=root
 
 
-[fsicos3_vms]
+
+[fsicos3_aliases]
 ute_host
+
+[fsicos3_aliases:vars]
+ansible_host=fsicos3.lunarc.lu.se
+ansible_user=root
+
+[fsicos3_vms]
 ute ansible_port=60510
 
 [fsicos3_vms:vars]
 ansible_host=fsicos3.lunarc.lu.se
 ansible_user=root
+
 
 
 [bbservers]
