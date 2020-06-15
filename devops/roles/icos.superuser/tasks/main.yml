@@ -1,0 +1,13 @@
+- include_tasks: user.yml
+  loop: "{{ superuser_list }}"
+
+
+# A workaround for certain versions of sudo.
+# https://github.com/sudo-project/sudo/issues/42#issuecomment-609079906
+- name: Modify sudo.conf
+  lineinfile:
+    path: /etc/sudo.conf
+    line: "Set disable_coredump false"
+    state: present
+    create: yes
+  when: superuser_disable_coredump
