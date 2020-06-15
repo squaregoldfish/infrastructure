@@ -50,6 +50,13 @@
       superuser_list: "{{ vault_ute_superusers }}"
       superuser_disable_coredump: true
 
+    - role: icos.sshlogin
+      tags: sshlogin
+
+      sshlogin_dst: fsicos.lunarc.lu.se
+      sshlogin_user: "{{ vault_ute_sshlogin_user_1 }}"
+
+
   tasks:
     - name: Install docker
       tags: docker
