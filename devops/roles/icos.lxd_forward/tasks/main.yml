@@ -1,0 +1,49 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - lxd_forward_ip
+    - lxd_forward_name
+
+# Make sure that we don't lock ourselves out of the remote machine.
+- name: Allowing inbound SSH
+  ufw:
+    rule: allow
+    port: ssh
+    comment: ssh
+    state: enabled
+
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+
+- name: Add port forward for {{ lxd_forward_name }} ssh
+  blockinfile:
+    marker: "# {mark} ansible / ssh to lxd {{ lxd_forward_name }}"
+    backup: yes
+    create: no
+    insertafter: EOF
+    path: /etc/ufw/before.rules
+    block: |
+      *nat
+      :PREROUTING ACCEPT [0:0]
+      -A PREROUTING -p tcp --dport {{ lxd_forward_port }} -j DNAT --to-destination {{ lxd_forward_ip }}:22
+      COMMIT
+  notify: Reload UFW
+
+- name: Allow traffic on containers external ssh port
+  ufw:
+    route: true
+    rule: allow
+    port: "'{{ lxd_forward_port }}'"
+    comment: "ssh to lxd {{ lxd_forward_name }}"
+  notify: Reload UFW
+
+- name: Modify /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regex: '(?:^{{ lxd_host_ip | regex_escape}}.*)|(?:.*{{ lxd_host_name }})\.lxd$'
+    line: "{{ lxd_host_ip }}\t{{ lxd_host_name }}.lxd"
+    state: present
