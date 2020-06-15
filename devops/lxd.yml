@@ -1,8 +1,8 @@
-- hosts: fsicos2.lunarc.lu.se
+- hosts: fsicos2.lunarc.lu.se fsicos3.lunarc.lu.se
   vars_files:
     - vault.yml
   roles:
-    - role: icos.lxd
+    - role: icos.lxd_server
 
   tasks:
     - name: Create ssh_key LXD profile
