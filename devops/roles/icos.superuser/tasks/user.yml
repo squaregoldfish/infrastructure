@@ -2,6 +2,8 @@
   user:
     name: "{{ item.name }}"
     home: "{{ item.home | default(omit) }}"
+    groups: "{{ item.groups | default(omit) }}"
+    append: true
     shell: /bin/bash
 
 - name: Install public key
