@@ -1,0 +1,52 @@
+- hosts: ute_host
+  vars_files:
+    - vault.yml
+  pre_tasks:
+    - name: Create the ute container
+      tags: create
+      lxd_container:
+        name: ute
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "20.04"
+        devices:
+          root:
+            path: "/"
+            pool: "default"
+            type: "disk"
+            size: "50GB"
+        config:
+          security.nesting: "true"
+          limits.cpu.allowance: "20%"
+          limits.memory: "100GB"
+          snapshots.schedule: "0 2 * * *"
+          snapshots.expiry: "1m"
+        wait_for_ipv4_addresses: true
+        wait_for_ipv4_interfaces: eth0
+        timeout: 600
+      register: _lxd
+
+  roles:
+    - role: icos.lxd_forward
+      lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
+      lxd_forward_name: ute
+
+
+- hosts: ute
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.superuser
+      tags: superuser
+      superuser_list: "{{ vault_ute_superusers }}"
+      superuser_disable_coredump: true
