@@ -1,3 +1,16 @@
+- name: Check that enough parameters are provided
+  fail:
+    msg: "Must set either sshlogin_user or both of sshlogin_src_user and sshlogin_dst_user"
+  when: >-
+    not (sshlogin_user is defined or
+        (sshlogin_src_user is defined and sshlogin_dst_user is defined))
+
+- name: Use sshlogin_user to derive sshlogin_{src,dst}_user
+  when: sshlogin_user is defined
+  set_fact:
+    sshlogin_src_user: "{{ sshlogin_user }}"
+    sshlogin_dst_user: "{{ sshlogin_user }}"
+
 - name: Check that all parameters are defined
   fail:
     msg: "{{ item }} needs to be defined"
@@ -13,38 +26,16 @@
   user:
     name: "{{ sshlogin_src_user }}"
     home: "{{ sshlogin_src_home }}"
+    generate_ssh_key: yes
   register: _src_user
-
-- name: Retrieve source SSH IP
-  become: no # without this, the env disappear
-  shellfact:
-    exec: echo $SSH_CONNECTION | cut -d ' ' -f 3
-    fact: sshlogin_src_ip
-  when: sshlogin_dst_from == 'srcip'
-
-- become: yes
-  become_user: "{{ sshlogin_src_user }}"
-  block:
-    - name: Create ~/.ssh directory
-      file:
-        path: "{{ sshlogin_src_ssh_dir }}"
-        state: directory
-        mode: 0700
 
 
 # DST - Retrieve IP and host keys
 - delegate_to: "{{ sshlogin_dst }}"
-  block:
-    - name: Retrieve destination SSH IP
-      become: no # without this, the env disappear
-      shellfact:
-        exec: echo $SSH_CONNECTION | cut -d ' ' -f 3
-        fact: sshlogin_dst_ip
-
-    - name: Retrieve destination host keys
-      shellfact:
-        exec: ssh-keyscan localhost | sed "s/^localhost/{{ sshlogin_dst }}/"
-        fact: sshlogin_dst_host_keys
+  name: Retrieve destination host keys
+  shellfact:
+    exec: ssh-keyscan localhost | sed "s/^localhost/{{ sshlogin_dst }}/"
+    fact: sshlogin_dst_host_keys
 
 
 # SRC - Add known_hosts and generate key
@@ -59,10 +50,16 @@
       loop: |-
         {{ sshlogin_dst_host_keys.strip().split('\n') }}
 
-    - name: Generate key
-      openssh_keypair:
-        path: "{{ sshlogin_src_key_file }}"
-      register: _src_key
+    - name: Add ssh config
+      blockinfile:
+        marker: "# {mark} ansible / sshlogin {{ sshlogin_dst }}"
+        create: yes
+        path: "{{ sshlogin_src_ssh_config }}"
+        block: |
+          Host {{ sshlogin_dst }}
+            Hostname {{ hostvars[sshlogin_dst].ansible_host | default(sshlogin_dst) }}
+            Port {{ hostvars[sshlogin_dst].ansible_port | default(22) }}
+            User {{ sshlogin_dst_user }}
 
 
 # DST - Add key
@@ -71,11 +68,12 @@
     - name: Create destination user
       user:
         name: "{{ sshlogin_dst_user }}"
+        home: "{{ sshlogin_dst_home }}"
       register: _dst_user
 
     - name: Install public key
       authorized_key:
         user: "{{ sshlogin_dst_user }}"
         state: present
-        key: "{{ _src_key.public_key }}"
+        key: "{{ _src_user.ssh_public_key }}"
         key_options: "{{ sshlogin_dst_key_options }}"
