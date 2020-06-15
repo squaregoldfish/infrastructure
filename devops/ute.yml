@@ -3,7 +3,6 @@
     - vault.yml
   pre_tasks:
     - name: Create the ute container
-      tags: create
       lxd_container:
         name: ute
         state: started
@@ -30,7 +29,7 @@
           snapshots.expiry: "1m"
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0
-        timeout: 600
+        timeout: 60
       register: _lxd
 
   roles:
@@ -47,7 +46,7 @@
       tags: guest
 
     - role: icos.superuser
-      tags: superuser
+      tags: users
       superuser_list: "{{ vault_ute_superusers }}"
       superuser_disable_coredump: true
 
