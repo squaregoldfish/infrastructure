@@ -50,3 +50,19 @@
       tags: superuser
       superuser_list: "{{ vault_ute_superusers }}"
       superuser_disable_coredump: true
+
+  tasks:
+    - name: Install docker
+      tags: docker
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: present
+
+    - name: Enable docker service
+      tags: docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
