@@ -1,5 +1,5 @@
 --- /home/andre/.local/lib/python3.8/site-packages/ansible/modules/cloud/lxd/lxd_container.py	2020-05-22 07:29:15.958235979 +0200
-+++ ../lxd_container.py	2020-02-26 12:27:55.934413272 +0100
++++ ../lxd_container.py	2020-06-15 07:50:07.704094668 +0200
 @@ -94,6 +94,15 @@
          required: false
          default: false
@@ -38,6 +38,15 @@
          addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
          return addresses
  
+@@ -502,7 +517,7 @@
+         if key == 'config':
+             old_configs = dict((k, v) for k, v in self.old_container_json['metadata'][key].items() if not k.startswith('volatile.'))
+             for k, v in self.config['config'].items():
+-                if old_configs[k] != v:
++                if k not in old_configs or old_configs[k] != v:
+                     return True
+             return False
+         else:
 @@ -615,6 +630,9 @@
                  type='bool',
                  default=False
