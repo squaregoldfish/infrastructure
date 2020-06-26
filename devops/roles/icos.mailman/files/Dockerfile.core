@@ -1,4 +1,4 @@
-FROM maxking/mailman-core:0.3.2
+FROM maxking/mailman-core:0.3.3
 
 # Install groupmod/usermod.
 RUN apk --no-cache add shadow

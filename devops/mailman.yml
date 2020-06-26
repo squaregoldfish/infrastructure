@@ -1,11 +1,15 @@
 # Build mainman images
 #   deploy mailman mailman_build
+#
+# Copy build files but do not build nor start containers.
+#   deploy mailman mailman_build -edocker_do_build=False
 - hosts: fsicos2.lunarc.lu.se
   become: true
   vars:
     mailman_username: mailman
   roles:
     - role: icos.mailman
+      tags: mailman
 
     - role: icos.bbclient
       tags: bbclient

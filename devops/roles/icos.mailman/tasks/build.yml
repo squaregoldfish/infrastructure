@@ -28,4 +28,4 @@
     executable: /bin/bash
   register: _output
   changed_when: '" ---> Running in " in _output.stdout'
-  when: docker_do_build | default(True)
+  when: docker_do_build | default(True) | bool
