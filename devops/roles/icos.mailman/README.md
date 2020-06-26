@@ -2,8 +2,9 @@
 This role will install [GNU Mailman](https://www.gnu.org/software/mailman/)
 
 It installs Mailman using three separate Docker images, as described by the
-[official mailman
-documentation](http://docs.mailman3.org/en/latest/prodsetup.html#mailman-3-in-docker).
+[official mailman documentation](http://docs.mailman3.org/en/latest/prodsetup.html#mailman-3-in-docker).
+
+The project that bundles mailman together for use with docker, lives [here](https://github.com/maxking/docker-mailman/)
 
 Dependencies:
 * Postfix is required on the host. Use the icos.postfix role.
@@ -47,6 +48,8 @@ Mailman core
 * Source code - https://gitlab.com/mailman/mailman.git
 + CLI - https://mailman-cli.readthedocs.io/en/latest/src/mailmanclient/cli/docs/using_cli_shell.html
 
+
+
 # The 'web' container
 * This is the main user-facing container.
 * Runs two Django web frontends - postorius and hyperkitty.
@@ -64,6 +67,12 @@ Mailman core
 + Copies settings_local.py from /opt/mailman-web-data to/ opt/mailman/web
 + Start uwsgi which will start hyperkitty using django
 + django reads settings.py and settings_local.py
+
+
+## Logfiles
+
++ /opt/mailman-web-data/logs
++ which is a docker bind-mount
 
 
 ## Postorious resources
