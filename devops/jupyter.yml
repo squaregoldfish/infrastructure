@@ -1,5 +1,5 @@
 # Update nginx config (need lxd_host_create to get lxd_host_ip)
-#   deploy jupyter -ljupyter_host lxd_host_create nginx
+#   deploy jupyter -ljupyter_host lxd nginx
 #
 # Deploy the hub.
 #   deploy jupyter -ljupyter jupyter
@@ -24,6 +24,7 @@
   become: true
   vars:
     jupyter_data: /disk/data/jupyter
+    jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
   vars_files:
     - vault.yml
   pre_tasks:
@@ -62,16 +63,33 @@
             source: /data/project
             type: disk
 
+    - name: Create the jupyter container
+      tags: lxd
+      lxd_container:
+        name: jupyter
+        state: started
+        profiles:
+          - default
+          - icosdata
+          - jupyter
+          - jupyter_home
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "18.04"
+        wait_for_ipv4_addresses: true
+        wait_for_ipv4_interfaces: eth0
+        timeout: 60
+      register: _lxd
+
+
   roles:
-    - role: icos.lxd_host
-      tags: container
-      lxd_host_name: jupyter
-      lxd_host_port: "{{ hostvars['jupyter'].ansible_port }}"
-      lxd_host_profiles:
-        - default
-        - icosdata
-        - jupyter
-        - jupyter_home
+    - role: icos.lxd_forward
+      tags: forward
+      lxd_forward_ip: "{{ jupyter_ip }}"
+      lxd_forward_name: jupyter
 
     - role: icos.nginxsite
       tags: nginx
