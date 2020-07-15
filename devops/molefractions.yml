@@ -3,6 +3,7 @@
     - vault.yml
   pre_tasks:
     - name: Create the molefractions container
+      tags: lxd
       lxd_container:
         name: molefractions
         state: started
@@ -21,9 +22,19 @@
             pool: "default"
             type: "disk"
             size: "20GB"
-          data:
+          molefractions:
             path: /data/molefractions/CTE_CO2_3D_molefractions
             source: /disk/common/netcdf/CTE_CO2_3D_molefractions
+            type: disk
+            readonly: "true"
+          ct2018:
+            path: /data/flexpart/CT2018
+            source: /data/flexpart/CT2018
+            type: disk
+            readonly: "true"
+          cams:
+            path: /data/common/CAMS
+            source: /data/common/CAMS
             type: disk
             readonly: "true"
         config:
@@ -42,7 +53,6 @@
 
 - hosts: molefractions
   vars:
-    datadir: /data/molefractions
     username: anonymous
   vars_files:
     - vault.yml
@@ -64,18 +74,13 @@
         create_home: no
         password_lock: yes
 
-    - name: Create {{ datadir }} directory
-      file:
-        path: "{{ datadir }}"
-        state: directory
-
     - name: set sshd sftp chroot
       blockinfile:
         marker: "# {mark} ansible sftp chroot"
         path: /etc/ssh/sshd_config
         block: |
           Match User {{ username }}
-            ChrootDirectory {{ datadir }}
+            ChrootDirectory /data
             ForceCommand internal-sftp
             DisableForwarding yes
             PasswordAuthentication yes
