@@ -1,6 +1,7 @@
 quince_user: quince
 quince_home: /opt/quince
 quince_filestore: /opt/quince_filestore
+quince_log_file: /var/log/quince.log
 
 quince_git_repo: https://github.com/BjerknesClimateDataCentre/QuinCe.git
 # The default branch is 'next_release' which is not what we want.

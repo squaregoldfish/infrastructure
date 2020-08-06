@@ -6,3 +6,8 @@
   systemd:
     name: quince
     state: restarted
+
+- name: restart rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
