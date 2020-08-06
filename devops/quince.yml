@@ -22,14 +22,61 @@
 # To provision backups
 #   $ deploy quince -lquince backup
 #
-# Note that new versions of quince are supposed to be deployd using quince's
+# To redeploy only the nginx config.
+#   $ deploy quince nginx
+#
+# Note that new versions of quince are supposed to be deployed using quince's
 # own scripts, run interactively, from inside the container.
+
 - import_playbook: setup.yml
 
 - hosts: quince_host
   become: true
+  vars:
+    quince_ip: "{{ _lxd.addresses.eth0 | first }}"
+    certbot_name: quince
+    certbot_domains: ["quince.bcdc.no"]
+  pre_tasks:
+    - name: Create the QuinCe container
+      tags:
+        - lxd
+        - forward
+        - nginx
+      lxd_container:
+        name: quince
+        state: started
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "18.04"
+        devices:
+          root:
+            path: "/"
+            pool: "quince2"
+            type: "disk"
+            size: "100GB"
+        config:
+          security.nesting: "true"
+        wait_for_ipv4_addresses: true
+        timeout: 600
+      register: _lxd
+
   roles:
-    - role: icos.quince_host
+    - role: icos.lxd_forward
+      tags: forward
+      lxd_forward_ip: "{{ quince_ip }}"
+      lxd_forward_name: quince
+
+    - role: icos.certbot2
+      tags: cert
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: quince
+      nginxsite_file: files/quince.conf
+
   tasks:
     # The ships sends data to quince using attachments. These are sometimes
     # larger than the postfix default of 10Mb.
@@ -40,17 +87,18 @@
         # default was 10240000
         value: "20480000"
         reload: yes
-      
+
 - hosts: quince
   become: true
   vars:
     quince_username: quince
   roles:
-    - role: icos.linux
-      tags: quince_linux
+    - role: icos.lxd_guest
+      tags: guest
 
     - role: icos.quince
-        
+      tags: quince
+
     - role: icos.bbclient
       tags: backup
       bbclient_user: "{{ quince_username }}"
@@ -60,4 +108,3 @@
         name: icos.quince
         tasks_from: quince-backup
       tags: backup
-      
