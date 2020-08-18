@@ -107,8 +107,7 @@
       lxd_profile:
         name: icosdata
         description: "ICOS Data"
-        devices:
-          old_eurocom:
+        devices:          old_eurocom:
             path: /opt/eurocom
             readonly: "true"
             source: /data/project/eurocom
@@ -154,3 +153,27 @@
             source: /data/stiltweb
             type: disk
             readonly: "true"
+
+    - name: Create LXD project profile
+      tags: profile
+      lxd_profile:
+        name: icosproject
+        description: "ICOS Project Data"
+        devices:
+          project:
+            path: /data/project
+            source: /data/project
+            type: disk
+          # Even though eurocom and interpolation lives below /data/project,
+          # they are mounted from fsicos1 using nfs and won't show up unless
+          # explicitly mounted
+          eurocom:
+            path: /data/project/eurocom
+            readonly: "true"
+            source: /data/project/eurocom
+            type: disk
+          interpolation:
+            path: /data/project/interpolation
+            readonly: "true"
+            source: /data/project/interpolation
+            type: disk

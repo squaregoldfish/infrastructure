@@ -47,10 +47,14 @@
             source: "{{ jupyter_data }}/jupyter/old_jupyter_from_fsicos1/jupyter3/storage"
             type: disk
 
-    - name: Create jupyter LXD profile
-      tags: profile
-      lxd_profile:
+    - name: Create the jupyter container
+      tags:
+        - lxd
+        - forward
+        - nginx
+      lxd_container:
         name: jupyter
+        state: started
         config:
           security.nesting: "true"
         devices:
@@ -58,20 +62,10 @@
             path: /
             type: disk
             pool: jupyter
-          project:
-            path: /data/project
-            source: /data/project
-            type: disk
-
-    - name: Create the jupyter container
-      tags: lxd
-      lxd_container:
-        name: jupyter
-        state: started
         profiles:
           - default
           - icosdata
-          - jupyter
+          - icosproject
           - jupyter_home
         source:
           type: image
