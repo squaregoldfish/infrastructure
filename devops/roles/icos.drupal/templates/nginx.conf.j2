@@ -4,11 +4,7 @@ server {
 
   {{ certbot_nginx_conf | indent(2) }}
 
-{% if website == "ri" %}
-  location =/science-conference {
-    return 301 https://conference.icos-ri.eu/;
-  }
-{% elif website == "cp" %}
+{% if website == "cp" %}
   location = /license {
     return 301 https://data.icos-cp.eu/licence;
   }
@@ -22,7 +18,7 @@ server {
   }
 {% endif %}
 
-  client_max_body_size 100M;
+  client_max_body_size 256M;
 
   location ~ /.well-known {
     root /usr/share/nginx/html;

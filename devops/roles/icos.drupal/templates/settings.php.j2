@@ -12,7 +12,7 @@ $databases['default']['default'] = array (
 );
 
 $settings['reverse_proxy'] = true;
-$settings['reverse_proxy_addresses'] = array('172.17.42.1', '127.0.0.1');
+$settings['reverse_proxy_addresses'] = array($_SERVER['REMOTE_ADDR']);
 
 $settings['trusted_host_patterns'] = array(
         '{{ trusted_host }}',
