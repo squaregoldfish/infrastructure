@@ -107,7 +107,8 @@
       lxd_profile:
         name: icosdata
         description: "ICOS Data"
-        devices:          old_eurocom:
+        devices:
+          old_eurocom:
             path: /opt/eurocom
             readonly: "true"
             source: /data/project/eurocom
