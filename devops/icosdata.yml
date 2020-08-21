@@ -78,7 +78,7 @@
           src: /disk/data/dataAppStorage
           opts: ",ro"
 
-    - name: Mount "{{ item.path }}" from fsicos1
+    - name: Mount directory from fsicos1
       tags: nfs
       mount:
         path: "{{ item.path }}"
@@ -178,3 +178,51 @@
             readonly: "true"
             source: /data/project/interpolation
             type: disk
+
+
+- hosts: fsicos3.lunarc.lu.se
+  tasks:
+    - name: Install nfs-kernel-server
+      apt:
+        name: nfs-kernel-server
+        state: present
+
+    - name: Create /incoming
+      zfs:
+        name: pool/incoming
+        state: present
+        extra_zfs_properties:
+          mountpoint: /incoming
+
+    - name: Create /etc/exports.d directory
+      file:
+        path: "/etc/exports.d"
+        state: directory
+
+    - name: Add /incoming as nfs export
+      copy:
+        dest: /etc/exports.d/incoming.exports
+        content: |
+          /incoming	fsicos*.lunarc.lu.se(rw,no_root_squash)
+      register: _exports
+
+    - name: Reload NFS server
+      service:
+        name: nfs-server
+        state: reloaded
+      when: _exports.changed
+
+
+- hosts: fsicos2.lunarc.lu.se
+  tasks:
+    - name: Create /share/fsicos3 directory
+      file:
+        path: "/share/fsicos3"
+        state: directory
+
+    - name: Mount fsicos3:/incoming at /share/fsicos3
+      mount:
+        src: "fsicos3.lunarc.lu.se:/incoming"
+        path: /share/fsicos3
+        state: mounted
+        fstype: nfs
