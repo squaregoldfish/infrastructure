@@ -4,6 +4,8 @@
 # Install coldbackup script:
 #   deploy nextcloud bbclient_coldbackup
 #
+# Deploy new version of onlyoffic
+#   deploy nextcloud onlyoffice
 
 - hosts: fsicos2.lunarc.lu.se
   become: true
