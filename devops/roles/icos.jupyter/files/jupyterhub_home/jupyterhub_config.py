@@ -57,7 +57,8 @@ c.DockerSpawner.read_only_volumes = {
 c.DockerSpawner.volumes = {'/home_jupyter/{username}': '/home_jupyter/{username}',
                            '/home_jupyter3/{username}': '/home_jupyter3/{username}'}
 
+c.DockerSpawner.allowed_images = ['notebook']
 
-c.DockerSpawner.image_whitelist = {
-    '1. 20200217 - py2/py3 - added bqplot' : 'notebook',
-}
+# The override configuration file doesn't have to exist.
+load_subconfig(os.path.join(os.path.dirname(__file__),
+                            'jupyterhub_config_override.py'))

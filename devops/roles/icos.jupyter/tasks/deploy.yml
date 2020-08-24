@@ -7,7 +7,11 @@
     - build.notebook
     - Makefile
     - docker-compose.yml
-    - jupyterhub_home
+
+- name: Synchronize source
+  synchronize:
+    src: jupyterhub_home
+    dest: "{{ jupyter_home }}"
 
 - name: Start the proxy
   docker_compose:
