@@ -44,6 +44,10 @@ c.DockerSpawner.use_internal_hostname = True
 c.DockerSpawner.image = os.environ.get("NOTEBOOK_IMAGE", "notebook")
 c.DockerSpawner.notebook_dir = '/home/{username}'
 c.DockerSpawner.read_only_volumes = {
+    '/etc/shadow'    : '/etc/shadow',
+    '/etc/group'     : '/etc/group',
+    '/etc/gshadow'   : '/etc/gshadow',
+    '/etc/passwd'    : '/etc/passwd',
     '/etc/localtime' : '/etc/localtime',
     '/opt/stiltdata' : '/opt/stiltdata',
     '/opt/eurocom'   : '/opt/eurocom',
