@@ -1,42 +1,24 @@
 global:
   css:
     theme:
-      //static.icos-cp.eu/constant/bootstrap/3.3.5/css/bootstrap.min.css: { type: external, minified: true }
-      css/cp_theme_d8.css: {}
-{% if cp_theme_d8 | default(false) %}
-      css/{{ cp_theme_d8 }}.css: {}
+      //stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css: { type: external, minified: true }
+      //use.fontawesome.com/releases/v5.0.7/css/all.css: { type: external, minified: true }
+      css/main.css: {}
+{% if extra_css | default(false) %}
+      css/{{ extra_css }}.css: {}
 {% endif %}
       css/menu.css: {}
+      css/print.css: { media: print }
 
   js:
-    //static.icos-cp.eu/constant/bootstrap/3.3.5/js/bootstrap.min.js: { type: external, minified: true }
-    js/cp_theme_d8.js: {}
+    //cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js: { type: external, minified: true }
+    //stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js: { type: external, minified: true }
+    js/main.js: {}
+    js/menu.js: {}
     js/cookie-notice.js: {}
-{% if cp_theme_d8 | default(false) %}
-    js/{{ cp_theme_d8 }}.js: {}
+{% if extra_js | default(false) %}
+    js/{{ extra_js }}.js: {}
 {% endif %}
-
-  dependencies:
-    - core/drupal
-    - core/drupalSettings
-    - core/jquery
-    - core/jquery.once
-
-menu-hover:
-  css:
-    theme:
-      css/menu-hover.css: {}
-
-  js:
-    js/menu-hover.js: {}
-
-menu-click:
-  css:
-    theme:
-      css/menu-click.css: {}
-
-  js:
-    js/menu-click.js: {}
 
   dependencies:
     - core/drupal
@@ -47,36 +29,6 @@ menu-click:
 menu-login:
   js:
     js/menu-login.js: {}
-
-  dependencies:
-    - core/drupal
-    - core/drupalSettings
-    - core/jquery
-    - core/jquery.once
-
-station-map:
-  js:
-    js/station-map.js: {}
-
-  dependencies:
-    - core/drupal
-    - core/drupalSettings
-    - core/jquery
-    - core/jquery.once
-
-product-page:
-  js:
-    js/product-page.js: {}
-
-  dependencies:
-    - core/drupal
-    - core/drupalSettings
-    - core/jquery
-    - core/jquery.once
-
-dashboard:
-  js:
-    js/dashboard.js: {}
 
   dependencies:
     - core/drupal
