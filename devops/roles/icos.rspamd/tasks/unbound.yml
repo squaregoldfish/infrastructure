@@ -1,0 +1,10 @@
+# Resolvconf is used as an intermediate between resolvers and /etc/resolv.conf.
+- name: Install resolvconf
+  apt:
+    name: resolvconf
+    state: present
+
+- name: Install unbound
+  apt:
+    name: unbound
+    state: present

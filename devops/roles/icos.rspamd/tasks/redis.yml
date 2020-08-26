@@ -1,0 +1,7 @@
+- name: Install redis
+  apt:
+    name: redis
+    state: present
+
+# https://rspamd.com/doc/quickstart.html#preparation-steps
+# By default the ubuntu redis only listens to localhost.

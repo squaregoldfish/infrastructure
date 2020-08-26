@@ -1,0 +1,98 @@
+# * Create LXD VM
+# * Install rspamd
+# * Configure rspamd webui (certificate, nginx, etc)
+# * Setup host postfix to use rspamd as milter.
+#
+# The rspamd web UI is protected both by rspamd's own administrator password
+# and also by nginx through basic http auth. I added basic auth because - even
+# though it works very well - rspamd is written in C and it segfaults every now
+# and then.
+
+- hosts: rspamd_host
+  become: true
+  vars:
+    rspamd_domain: rspamd.icos-cp.eu
+    rspamd_user_file: /etc/nginx/auth/rspamd
+    rspamd_admin_password: "{{ vault_rspamd_admin_password }}"
+  vars_files:
+    - vault.yml
+  pre_tasks:
+    - name: Create rspamd storage pool
+      tags: pool
+      shell: >-
+        /snap/bin/lxc storage show rspamd > /dev/null 2>&1 ||
+        /snap/bin/lxc storage create rspamd btrfs size=50GB
+      register: _r
+      changed_when:
+        - '"Storage pool rspamd created" in _r.stdout'
+
+    - name: Create the rspamd container
+      lxd_container:
+        name: rspamd
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "20.04"
+        devices:
+          root:
+            path: /
+            type: disk
+            pool: rspamd
+            size: "50GB"
+        wait_for_ipv4_addresses: true
+        timeout: 600
+      register: _lxd
+
+  roles:
+    - role: icos.lxd_forward
+      lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
+      lxd_forward_name: rspamd
+
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: rspamd
+      certbot_domains:
+        - "{{ rspamd_domain }}"
+
+    - role: icos.htpasswd
+      tags:
+        - nginx
+        - htpasswd
+      htpasswd_file: "{{ rspamd_user_file }}"
+      htpasswd_users:
+        - name: secret
+          password: "{{ rspamd_admin_password }}"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: rspamd
+      nginxsite_file: files/rspamd.conf
+
+  tasks:
+    # https://rspamd.com/doc/integration.html#configuring-postfix
+    - name: Configure postfix to use rspamd as a milter
+      tags: postconf
+      postconf:
+        param: smtpd_milters
+        value: "inet:rspamd.lxd:11332"
+        reload: yes
+
+
+- hosts: rspamd
+  vars_files:
+    - vault.yml
+  vars:
+    rspamd_admin_password_hashed: "{{ vault_rspamd_admin_password_hashed }}"
+  become: true
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.rspamd
+      tags: rspamd

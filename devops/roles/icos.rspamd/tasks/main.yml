@@ -1,0 +1,11 @@
+- import_tasks: install.yml
+  tags: rspamd_install
+
+- import_tasks: redis.yml
+  tags: rspamd_redis
+
+- import_tasks: unbound.yml
+  tags: rspamd_unbound
+
+- import_tasks: config.yml
+  tags: rspamd_config

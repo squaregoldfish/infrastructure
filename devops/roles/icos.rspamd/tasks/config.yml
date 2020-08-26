@@ -1,0 +1,31 @@
+# https://thomas-leister.de/en/mailserver-debian-stretch/#basic-configuration
+
+- name: Install milter configuration for rspamd
+  copy:
+    dest: /etc/rspamd/local.d/worker-proxy.inc
+    mode: 0644
+    content: |
+      # This will make the milter listen to all interfaces. Since we're in an
+      # LXD container, this will only enable connections from the LXD host.
+      bind_socket = "*:11332";
+      milter = yes;
+      timeout = 120s;
+      upstream "local" {
+          default = yes;
+          self_scan = yes;
+      }
+  notify: restart rspamd
+
+
+# https://www.rspamd.com/webui/
+# https://www.rspamd.com/doc/quickstart.html#setting-the-controller-password
+- name: Install web ui configuration for rspamd
+  copy:
+    dest: /etc/rspamd/local.d/worker-controller.inc
+    mode: 0644
+    content: |
+      # This will make the Web UI listen to all interfaces. Since we're in an
+      # LXD container, this will only enable connections from the LXD host.
+      bind_socket = "*:11334";
+      password = "{{ rspamd_admin_password_hashed }}"
+  notify: restart rspamd
