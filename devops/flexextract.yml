@@ -5,18 +5,26 @@
   pre_tasks:
     - name: Create flexextract storage pool
       tags: pool
-      command: lxc storage create flexextract btrfs size=50GB
+      shell: >-
+        /snap/bin/lxc storage show flexextract > /dev/null 2>&1 ||
+        /snap/bin/lxc storage create flexextract btrfs size=50GB
       register: _r
-      failed_when:
-        - _r.rc != 0
-        - '"Error: The storage pool already exists" not in _r.stderr'
       changed_when:
         - '"Storage pool flexextract created" in _r.stdout'
 
-    - name: Create flexextract LXD profile
-      tags: profile
-      lxd_profile:
+    - name: Create the flexextract container
+      lxd_container:
         name: flexextract
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "18.04"
         config:
           security.nesting: "true"
           limits.cpu: "10"
@@ -27,22 +35,20 @@
             type: disk
             pool: flexextract
             size: "50GB"
-
-          flexpart:
+          flexextract:
             path: /data/flexextract
-            source: /data/flexextract
+            source: /disk/data/flexextract
             type: disk
+            readonly: "False"
+        wait_for_ipv4_addresses: true
+        timeout: 600
+      register: _lxd
 
   roles:
-    - role: icos.lxd_host
-      tags: lxd
-      lxd_host_name: flexextract
-      lxd_host_port: "{{ hostvars['flexextract'].ansible_port }}"
-      lxd_host_profiles:
-        - default
-        - icosdata
-        - flexextract
-                
+    - role: icos.lxd_forward
+      lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
+      lxd_forward_name: flexextract
+    
     - role: icos.certbot2
       tags: cert
       certbot_name: flexextract
