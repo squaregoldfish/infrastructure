@@ -1,9 +1,6 @@
 - name: Install nginx
   apt:
     name: nginx
-    state: present
-    cache_valid_time: 3600
-    force_apt_get: yes
 
 - name: Add mitigation for systemd/nginx race-condition
   block:
@@ -19,6 +16,7 @@
           ExecStartPost=/bin/sleep 0.1
         dest: /etc/systemd/system/nginx.service.d/override.conf
       notify: reload systemd config
+  when: nginx_enable_1581864
 
 - name: Install nginx.conf
   template:
