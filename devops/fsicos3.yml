@@ -1,0 +1,7 @@
+- hosts: fsicos3.lunarc.lu.se
+  roles:
+    - role: icos.python3
+      tags: python3
+
+    - role: icos.nginx
+      tags: nginx
