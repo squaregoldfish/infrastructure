@@ -10,6 +10,7 @@ ExecStart=/usr/bin/java -jar "{{ jarservice_jar }}"
 Restart=always
 RestartSec=30
 WorkingDirectory=/home/stiltcluster
+LimitNOFILE=65536
 
 [Install]
 WantedBy=multi-user.target
