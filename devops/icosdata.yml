@@ -19,7 +19,15 @@
 # /opt/stiltdata              fsicos:/disk/data/STILT
 
 
+
+## FSICOS 1 ##
+
 - hosts: fsicos.lunarc.lu.se
+  handlers:
+    - name: Reload NFS server
+      service:
+        name: nfs-server
+        state: reloaded
   tasks:
     - name: Create /etc/exports.d directory
       file:
@@ -35,16 +43,18 @@
           /disk/data/flexpart                 {{ fsicos2_ip }}(ro)
           /disk/data/common/netcdf/gcp_models {{ fsicos2_ip }}(ro)
           /disk/data/eurocom		      {{ fsicos2_ip }}(ro)
-      register: _exports
+      notify: Reload NFS server
 
+
+
+## FSICOS2 ##
+
+- hosts: fsicos2.lunarc.lu.se
+  handlers:
     - name: Reload NFS server
       service:
         name: nfs-server
         state: reloaded
-      when: _exports.changed
-
-
-- hosts: fsicos2.lunarc.lu.se
   tasks:
     - name: Create mount points
       tags: mkdir
@@ -118,7 +128,6 @@
             readonly: "true"
             source: /disk/data/fsicos-stilt/
             type: disk
-
           dataAppStorage:
             path: /data/dataAppStorage
             source: /data/dataAppStorage
@@ -179,8 +188,37 @@
             source: /data/project/interpolation
             type: disk
 
+    - name: Create /share/fsicos3 directory
+      tags: incoming
+      file:
+        path: "/share/fsicos3"
+        state: directory
+
+    - name: Mount fsicos3:/incoming at /share/fsicos3
+      tags: incoming
+      mount:
+        src: "fsicos3.lunarc.lu.se:/incoming"
+        path: /share/fsicos3
+        state: mounted
+        fstype: nfs
+
+    - name: Export flexextract data via nfs
+      tags: flexextract
+      copy:
+        dest: /etc/exports.d/flexextract.exports
+        content: |
+          /data/flexextract fsicos*.lunarc.lu.se(ro)
+      notify: Reload NFS server
+
+
+## FSICOS3 ##
 
 - hosts: fsicos3.lunarc.lu.se
+  handlers:
+    - name: Reload NFS server
+      service:
+        name: nfs-server
+        state: reloaded
   tasks:
     - name: Install nfs-kernel-server
       apt:
@@ -188,6 +226,7 @@
         state: present
 
     - name: Create /incoming
+      tags: incoming
       zfs:
         name: pool/incoming
         state: present
@@ -200,29 +239,17 @@
         state: directory
 
     - name: Add /incoming as nfs export
+      tags: incoming
       copy:
         dest: /etc/exports.d/incoming.exports
         content: |
           /incoming	fsicos*.lunarc.lu.se(rw,no_root_squash)
-      register: _exports
+      notify: Reload NFS server
 
-    - name: Reload NFS server
-      service:
-        name: nfs-server
-        state: reloaded
-      when: _exports.changed
-
-
-- hosts: fsicos2.lunarc.lu.se
-  tasks:
-    - name: Create /share/fsicos3 directory
-      file:
-        path: "/share/fsicos3"
-        state: directory
-
-    - name: Mount fsicos3:/incoming at /share/fsicos3
+    - name: Mount fsicos2.lunarc.lu.se:/data/flexextract at /data/flexextract
+      tags: flexextract
       mount:
-        src: "fsicos3.lunarc.lu.se:/incoming"
-        path: /share/fsicos3
+        src: "fsicos2.lunarc.lu.se:/data/flexextract"
+        path: "/data/flexextract"
         state: mounted
         fstype: nfs
