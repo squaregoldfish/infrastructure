@@ -48,7 +48,7 @@
     - role: icos.lxd_forward
       lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
       lxd_forward_name: flexextract
-    
+
     - role: icos.certbot2
       tags: cert
       certbot_name: flexextract
@@ -60,7 +60,7 @@
       nginxsite_name: flexextract
       nginxsite_file: files/flexextract.conf
 
-    
+
 - hosts: flexextract
   become: true
   vars:
@@ -71,10 +71,16 @@
 
     - role: icos.docker
       tags: docker
-      
+
     - role: icos.flexextract
       tags: flexextract
       flexextract_src_dir: /tmp/docker_flexextract_7.1.0
+
+    - role: icos.sshlogin
+      tags: sshlogin
+      sshlogin_dst: flexpart
+      sshlogin_src_user: root
+      sshlogin_dst_user: ubuntu
 
   tasks:
     - name: Install additional ssh keys
