@@ -44,6 +44,7 @@ ansible_user=root
 ute_host
 molefractions_host
 erddap_host
+flexpart_host
 
 [fsicos3_aliases:vars]
 ansible_host=fsicos3.lunarc.lu.se
@@ -53,6 +54,7 @@ ansible_user=root
 ute ansible_port=60510
 molefractions ansible_port=60515
 erddap ansible_port=60520
+flexpart ansible_port=60530
 
 [fsicos3_vms:vars]
 ansible_host=fsicos3.lunarc.lu.se
