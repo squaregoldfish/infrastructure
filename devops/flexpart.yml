@@ -1,11 +1,74 @@
-- hosts: fsicos2.lunarc.lu.se
-  become: true
-  roles:
-    - role: icos.flexpart
-      tags: flexpart
+- hosts: flexpart_host
+  vars_files:
+    - vault.yml
+  pre_tasks:
+    - name: Create flexpart docker storage volume
+      tags: pool
+      shell: /snap/bin/lxc storage volume create docker flexpart_docker
+      register: _r
+      changed_when:
+        - '"Storage volume flexpart_docker created" in _r.stdout'
+      failed_when:
+        - _r.rc != 0
+        - '"Error: Volume by that name already exists" not in _r.stderr'
 
-- hosts: fsicos.lunarc.lu.se
-  become: true
+    - name: Create the flexpart container
+      tags: lxd
+      lxd_container:
+        name: flexpart
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "20.04"
+        devices:
+          root:
+            path: "/"
+            pool: "default"
+            type: "disk"
+            size: "50GB"
+          docker:
+            path: /var/lib/docker
+            pool: docker
+            source: flexpart_docker
+            type: disk
+          flexextract:
+            path: /data/flexextract
+            source: /data/flexextract
+            type: disk
+            readonly: "True"
+        config:
+          security.nesting: "true"
+        wait_for_ipv4_addresses: true
+        wait_for_ipv4_interfaces: eth0
+        timeout: 60
+      register: _lxd
+
   roles:
-    - role: icos.flexpart
-      tags: flexpart
+    - role: icos.lxd_forward
+      lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
+      lxd_forward_name: flexpart
+
+
+- hosts: flexpart
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.docker
+      tags: docker
+
+    - role: icos.superuser
+      tags: superuser
+      superuser_disable_coredump: true
+      superuser_list:
+        - name: ubuntu
+          groups: docker
+          key: "{{ vault_flexpart_ssh_keys }}"
