@@ -72,3 +72,7 @@
         - name: ubuntu
           groups: docker
           key: "{{ vault_flexpart_ssh_keys }}"
+
+    - role: icos.flexpart
+      tags: flexpart
+      flexpart_install_run: true
