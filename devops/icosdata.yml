@@ -9,11 +9,12 @@
 #
 # /data/stiltweb              fsicos2:/disk/data/stiltweb
 # /data/project               fsicos2:/disk/data/project
+# /data/flexpart              fsicos2:/disk/data/flexpart
+
 # /data/project/eurocom       fsicos:/disk/data/eurocom
 # /data/project/interpolation fsicos:/disk/data/common/netcdf/gcp_models
 # /data/stilt                 fsicos:/disk/data/STILT/RINGO/T1.3/STILT
 # /data/obspack               fsicos:/disk/data/STILT/ObsPack
-# /data/flexpart              fsicos:/disk/data/flexpart
 #
 # /opt/eurocom                fsicos:/disk/data/eurocom
 # /opt/stiltdata              fsicos:/disk/data/STILT
@@ -40,7 +41,6 @@
         content: |
           /disk/data/STILT/RINGO/T1.3/STILT   {{ fsicos2_ip }}(ro)
           /disk/data/STILT/ObsPack            {{ fsicos2_ip }}(ro)
-          /disk/data/flexpart                 {{ fsicos2_ip }}(ro)
           /disk/data/common/netcdf/gcp_models {{ fsicos2_ip }}(ro)
           /disk/data/eurocom		      {{ fsicos2_ip }}(ro)
       notify: Reload NFS server
@@ -210,6 +210,14 @@
           /data/flexextract fsicos*.lunarc.lu.se(ro)
       notify: Reload NFS server
 
+    - name: Export flexpart/meteo data via nfs
+      tags: flexpart
+      copy:
+        dest: /etc/exports.d/flexpart.exports
+        content: |
+          /disk/data/flexpart/meteo fsicos*.lunarc.lu.se(ro)
+      notify: Reload NFS server
+
 
 ## FSICOS3 ##
 
@@ -251,5 +259,13 @@
       mount:
         src: "fsicos2.lunarc.lu.se:/data/flexextract"
         path: "/data/flexextract"
+        state: mounted
+        fstype: nfs
+
+    - name: Mount fsicos3:/disk/data/flexpart/meteo at /data/flexpart/meteo
+      tags: flexpart
+      mount:
+        src: "fsicos2.lunarc.lu.se:/disk/data/flexpart/meteo"
+        path: "/data/flexpart/meteo"
         state: mounted
         fstype: nfs

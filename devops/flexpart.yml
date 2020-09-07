@@ -41,6 +41,10 @@
             path: /data/flexextract
             source: /data/flexextract
             type: disk
+          meteo:
+            path: /data/flexpart/meteo
+            source: /data/flexpart/meteo
+            type: disk
             readonly: "True"
         config:
           security.nesting: "true"
