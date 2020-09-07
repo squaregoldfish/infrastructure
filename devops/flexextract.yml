@@ -63,6 +63,8 @@
 
 - hosts: flexextract
   become: true
+  vars_files:
+    - vault.yml
   vars:
     flexextract_sudo: true
   roles:
@@ -81,6 +83,14 @@
       sshlogin_dst: flexpart
       sshlogin_src_user: root
       sshlogin_dst_user: ubuntu
+
+    - role: icos.superuser
+      tags: superuser
+      superuser_disable_coredump: true
+      superuser_list:
+        - name: ubuntu
+          groups: docker
+          key: "{{ vault_flexpart_ssh_keys }}"
 
   tasks:
     - name: Install additional ssh keys
