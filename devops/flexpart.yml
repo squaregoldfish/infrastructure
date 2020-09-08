@@ -12,6 +12,14 @@
         - _r.rc != 0
         - '"Error: Volume by that name already exists" not in _r.stderr'
 
+    - name: Create /data/flexpart/output directory
+      tags: mkdir
+      file:
+        path: "/data/flexpart/output"
+        state: directory
+        owner: "{{ 1001000 }}"
+        group: "{{ 1001000 }}"
+
     - name: Create the flexpart container
       tags: lxd
       lxd_container:
@@ -41,6 +49,11 @@
             path: /data/flexextract
             source: /data/flexextract
             type: disk
+          output:
+            path: /data/flexpart/output
+            source: /data/flexpart/output
+            type: disk
+            readonly: "False"
           meteo:
             path: /data/flexpart/meteo
             source: /data/flexpart/meteo
