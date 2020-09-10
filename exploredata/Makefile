@@ -16,7 +16,7 @@ notebook: build.notebook
 
 build.notebook: force
 	mkdir -p build.notebook
-	rsync -a --delete $(JUPYTER)/introduction $(JUPYTER)/education $(JUPYTER)/icos_jupyter_notebooks $(JUPYTER)/project_jupyter_notebooks $@
+	rsync -a --delete $(JUPYTER)/introduction $(JUPYTER)/education $(JUPYTER)/icos_jupyter_notebooks $(JUPYTER)/project_jupyter_notebooks $(JUPYTER)/pylib_examples $@
 
 hub:
 	docker-compose build
