@@ -13,6 +13,8 @@ RUN conda install -y ipyleaflet netcdf-fortran     && conda clean -afy
 RUN conda install -y sparqlwrapper xarray          && conda clean -afy
 RUN conda install -y shapely folium                && conda clean -afy
 
+RUN pip install pangaeapy
+
 WORKDIR /home/jovyan
 
 # This directory is added by jupyter/base-notebook, "for backwards
