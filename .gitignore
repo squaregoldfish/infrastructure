@@ -56,3 +56,12 @@ devops/ubuntu-xenial-16.04-cloudimg-console.log
 .cache-main
 /devops/ubuntu-bionic-18.04-cloudimg-console.log
 .mypy_cache/
+
+
+exploredata/build.notebook/education
+exploredata/build.notebook/icos_jupyter_notebooks
+exploredata/build.notebook/introduction
+exploredata/build.notebook/project_jupyter_notebooks
+exploredata/build.notebook/pylib_examples
+
+
