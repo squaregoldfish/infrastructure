@@ -1,14 +1,3 @@
-
-# Local Drupal configuration and files etc. #
-#############################################
-drupal/drupal/builds
-drupal/drupal/current
-drupal/drupal/_build
-drupal/drupal/files
-drupal/drupal/conf/docker.settings.php
-drupal/docker/docker-compose.yml
-drupal/docker/name-prefix.txt
-
 # Concrete local Docker configuration for Alfresco. #
 #############################################
 alfresco/docker-compose.yml
@@ -21,11 +10,6 @@ rdflogdb/master/.env
 rdflogdb/master/postgrestunnel.service
 rdflogdb/slave/build/recovery.conf
 rdflogdb/slave/.env
-
-# Concrete local Docker configuration for Sonatype Nexus. #
-#############################################
-nexus/docker-compose.yml
-nexus/storage
 
 # Concrete local Docker configuration for Kanboard. #
 #############################################
