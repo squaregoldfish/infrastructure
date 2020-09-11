@@ -11,7 +11,7 @@ Other folders in this Git repository mostly contain legacy Docker files (used be
 Getting started (common)
 ===============
 To get started, one needs:
-- Ubuntu 20.04 LTS (if installing after it is released) or an equivalent Linux distribution
+- Ubuntu 20.04 LTS or an equivalent Linux distribution (e.g. Linux Mint 20)
 - Git
 - Docker
 - docker-compose
@@ -20,7 +20,7 @@ To get started, one needs:
 
 To install all of the above, run
 
-`sudo apt install git docker-io docker-compose python3-pip`
+`sudo apt install git docker.io docker-compose python3-pip`
 
 followed by
 
@@ -47,7 +47,7 @@ The following approach does not require installation of BorgBackup client.
 Login to fsicos and run the following to see the available snapshots of `rdflog` backup:<br/>
 `borg list /disk/data/bbserver/repos/fsicos.lunarc.lu.se/pgrep_rdflog/default/ | tail`
 
-Choose the snapshot to reconstruct your local environment from, and extract it to currecnt directory by running e.g. the following (last part is the snapshot timestamp):<br/>
+Choose the snapshot to reconstruct your local environment from, and extract it to current directory by running e.g. the following (last part is the snapshot timestamp):<br/>
 `borg extract /disk/data/bbserver/repos/fsicos.lunarc.lu.se/pgrep_rdflog/default/::2020-03-24T04:43:20`
 
 Archive the backup to a file:<br/>
