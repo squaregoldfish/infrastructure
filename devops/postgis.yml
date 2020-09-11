@@ -1,3 +1,6 @@
+# Create users for the cplog database:
+#   deploy postgis cplog
+
 - hosts: postgis_host
   vars_files:
     - vault.yml
@@ -61,3 +64,23 @@
         source: samenet
         method: md5
         contype: hostssl
+
+    - become: true
+      become_user: postgres
+      tags: cplog
+      block:
+        - name: Create postgres cplog users
+          postgresql_user:
+            db: cplog
+            name: "{{ item.username }}"
+            password: "{{ item.password }}"
+          loop: "{{ vault_postgis_cplog_users }}"
+
+        - name: Allow users to connect from same subnet
+          postgresql_pg_hba:
+            dest: "{{ postgresql_hba_file }}"
+            users: "{{ item.username }}"
+            source: samenet
+            method: md5
+            contype: hostssl
+          loop: "{{ vault_postgis_cplog_users }}"
