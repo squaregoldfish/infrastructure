@@ -28,7 +28,11 @@ c.JupyterHub.hub_connect_ip = 'hub'
 # USER MANAGEMENT
 c.JupyterHub.spawner_class = 'dockerspawner.SystemUserSpawner'
 c.JupyterHub.admin_access = True
-c.Authenticator.admin_users = admin = set(['ute', 'karolina'])
+c.Authenticator.admin_users = set([{%- for u in jupyter_admins -%}
+                                     '{{- u }}'
+                                     {%- if not loop.last %},
+                                   {%- endif %}{% endfor %}])
+
 
 
 # CONFIGURATION OF THE NOTEBOOK CONTAINERS
@@ -49,13 +53,10 @@ c.DockerSpawner.read_only_volumes = {
     '/etc/gshadow'   : '/etc/gshadow',
     '/etc/passwd'    : '/etc/passwd',
     '/etc/localtime' : '/etc/localtime',
-    '/opt/stiltdata' : '/opt/stiltdata',
-    '/opt/eurocom'   : '/opt/eurocom',
     '/data'          : '/data'
 }
 
-c.DockerSpawner.volumes = {'/home_jupyter/{username}': '/home_jupyter/{username}',
-                           '/home_jupyter3/{username}': '/home_jupyter3/{username}'}
+c.DockerSpawner.volumes = {'/project': '/project'}
 
 c.DockerSpawner.allowed_images = ['notebook']
 

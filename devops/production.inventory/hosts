@@ -9,7 +9,6 @@ fsicos3.lunarc.lu.se ansible_user=root
 [fsicos2_aliases]
 exploredata_host
 quince_host
-jupyter_host
 wordpress_host
 climbeco_host
 eddyetc_host
@@ -25,7 +24,6 @@ ansible_user=root
 [fsicos2_vms]
 exploredata ansible_port=60532
 quince ansible_port=60522
-jupyter ansible_port=60542
 wordpress ansible_port=60552
 climbeco ansible_port=60524
 eddyetc ansible_port=60523
@@ -45,6 +43,7 @@ ute_host
 molefractions_host
 erddap_host
 flexpart_host
+jupyter_host
 
 [fsicos3_aliases:vars]
 ansible_host=fsicos3.lunarc.lu.se
@@ -55,12 +54,11 @@ ute ansible_port=60510
 molefractions ansible_port=60515
 erddap ansible_port=60520
 flexpart ansible_port=60530
+jupyter ansible_port=60535
 
 [fsicos3_vms:vars]
 ansible_host=fsicos3.lunarc.lu.se
 ansible_user=root
-
-
 
 [bbservers]
 fsicos.lunarc.lu.se

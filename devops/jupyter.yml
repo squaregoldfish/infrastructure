@@ -1,51 +1,68 @@
-# Update nginx config (need lxd_host_create to get lxd_host_ip)
-#   deploy jupyter -ljupyter_host lxd nginx
-#
-# Deploy the hub.
-#   deploy jupyter -ljupyter jupyter
-#
-# Create authentication token
-#   deploy jupyter -ljupyter jupyter_token
-#
-# Update the home profile
-#   deploy jupyter -ljupyter_host home_profile container
-#
-# Install additional ssh keys
-#   deploy jupyter -ljupyter keys
-#
-# Backup stuff
-#   deploy jupyter -ljupyter_host backup
-#
-# Only backup script
-#   deploy jupyter -ljupyter_host backup_script
-
-
 - hosts: jupyter_host
-  become: true
   vars:
-    jupyter_data: /disk/data/jupyter
     jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
+    zvol_docker: /dev/zvol/pool/docker/jupyter
+    jupyter_domains:
+      - jupyter.icos-cp.eu
   vars_files:
     - vault.yml
   pre_tasks:
-    - name: Create LXD home profile
-      tags: home_profile
-      lxd_profile:
-        name: jupyter_home
-        description: "Jupyter home directories"
-        devices:
-          home:
-            path: /home
-            source: "{{ jupyter_data }}/jupyter/home"
-            type: disk
-          homejupyter:
-            path: /home_jupyter
-            source: "{{ jupyter_data }}/jupyter/old_jupyter_from_fsicos1/jupyter/storage"
-            type: disk
-          homejupyter3:
-            path: /home_jupyter3
-            source: "{{ jupyter_data }}/jupyter/old_jupyter_from_fsicos1/jupyter3/storage"
-            type: disk
+    - name: Create zfs filesystem for jupyter home directories
+      tags:
+        - zfs
+        - zfshome
+      zfs:
+          name: pool/jupyter
+          state: present
+          extra_zfs_properties:
+            refquota: "5T"
+
+    - name: Create jupyter directories for home and project
+      tags:
+        - zfs
+        - zfshome
+      file:
+        name: "/pool/jupyter/{{ item }}"
+        state: directory
+        owner: "1000000"
+        group: "1000000"
+      loop:
+        - home
+        - project
+
+    - name: Create docker storage volume
+      tags:
+        - zfs
+        - zfsdocker
+      zfs:
+        name: pool/docker/jupyter
+        state: present
+        extra_zfs_properties:
+          volsize: "100G"
+
+    - name: Create a btrfs filesystem on {{ zvol_docker }}
+      tags:
+        - zfs
+        - zfsdocker
+      filesystem:
+        dev: "{{ zvol_docker }}"
+        fstype: btrfs
+        # Label the filesystem, this makes the output from 'btrfs filesystem
+        # show' easier to understand.
+        opts: "-L docker_jupyter"
+
+    - name: Change owner of btrfs filesystem
+      tags:
+        - zfs
+        - btrfs
+        - zfsdocker
+      command: >-
+        unshare -m bash -c 'mount {{ zvol_docker }} /tmp;
+        stat -c '%u:%g' /tmp;
+        chown 1000000:1000000 /tmp'
+      register: r
+      changed_when: r.stdout != '1000000:1000000'
+      failed_when: r.rc != 0
 
     - name: Create the jupyter container
       tags:
@@ -55,29 +72,50 @@
       lxd_container:
         name: jupyter
         state: started
-        config:
-          security.nesting: "true"
-        devices:
-          root:
-            path: /
-            type: disk
-            pool: jupyter
         profiles:
           - default
+          - ssh_root
           - icosdata
-          - icosproject
-          - jupyter_home
         source:
           type: image
           mode: pull
           server: https://cloud-images.ubuntu.com/releases
           protocol: simplestreams
-          alias: "18.04"
+          alias: "20.04"
+        devices:
+          root:
+            path: "/"
+            pool: "default"
+            type: "disk"
+            size: "50GB"
+          docker:
+            path: /var/lib/docker
+            source: "{{ zvol_docker }}"
+            type: disk
+            raw.mount.options: user_subvol_rm_allowed
+          home:
+            path: /home
+            source: /pool/jupyter/home
+            type: "disk"
+          jupyterproject:
+            path: /project
+            source: /pool/jupyter/project
+            type: "disk"
+          dataproject:
+            path: /data/project
+            source: /data/project
+            type: "disk"
+          interpolation:
+            path: /data/project/interpolation
+            readonly: "true"
+            source: /data/project/interpolation
+            type: disk
+        config:
+          security.nesting: "true"
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0
         timeout: 60
       register: _lxd
-
 
   roles:
     - role: icos.lxd_forward
@@ -85,58 +123,30 @@
       lxd_forward_ip: "{{ jupyter_ip }}"
       lxd_forward_name: jupyter
 
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: jupyter
+      certbot_domains: "{{ jupyter_domains }}"
+
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: jupyter
       nginxsite_file: files/jupyter.conf
-      jupyter_domain: test.icos-cp.eu
-      jupyter_cert_name: test.icos-cp.eu
+      jupyter_domain: "{{ jupyter_domains | first }}"
+      jupyter_cert_name: jupyter
       jupyter_port: 8000
 
-    - role: icos.bbclient
-      tags:
-        - backup
-        - bbclient
-      bbclient_home: "{{ jupyter_data }}"
-      bbclient_name: jupyter
 
-  tasks:
-    - name: Create backup script
-      tags:
-        - backup
-        - backup_script
-      copy:
-        mode: +x
-        dest: "{{ jupyter_data }}/bin/backup.sh"
-        content: |
-          #!/bin/bash
-          PATH={{ jupyter_data }}/bin:$PATH
-          set -eu
-          cd {{ jupyter_data }}
-          bbclient-all create "::{now}" home old_jupyter_from_fsicos1
-          bbclient-all prune --keep-within 2w --keep-daily=30 --keep-weekly=150
-      register: _backup_script
-
-    - name: Add backup script to crontab
-      tags:
-        - backup
-        - backup_script
-      cron:
-        job: "{{ _backup_script.dest }}"
-        special_time: hourly
-        state: present
-        name: "jupyter_backup"
-
-    - name: Copy sync-old-jupyter-single-user.sh
-      tags: sync_script
-      copy:
-        src: sync-old-jupyter-single-user.sh
-        dest: "{{ jupyter_data }}/bin"
-        mode: +x
 
 - hosts: jupyter
   vars_files:
     - vault.yml
+  handlers:
+    - name: reload sshd
+      systemd:
+        name: sshd
+        state: reloaded
+        
   roles:
     - role: icos.lxd_guest
       tags: guest
@@ -144,13 +154,38 @@
     - role: icos.docker
       tags: docker
 
+    - role: icos.sshlogin
+      tags: sshlogin_exploredata
+      sshlogin_dst: exploredata
+      sshlogin_src_user: root
+      sshlogin_dst_user: root
+      sshlogin_src_dst_name: exploredata
+      
     - role: icos.jupyter
       tags: jupyter
+      jupyter_admins: "{{ vault_jupyter_admins }}"
 
   tasks:
+    - name: Create project user
+      tags: project
+      user:
+        name: project
+        create_home: no
+        home: /data/project
+        shell: /usr/bin/bash
+        password: '*'
+
     - name: Install additional ssh keys
-      tags: keys
+      tags: ssh
       authorized_key:
         user: root
         state: present
         key: "{{ vault_jupyter_ssh_keys }}"
+
+    - name: Deny ssh login to most users
+      tags: ssh
+      copy:
+        dest: /etc/ssh/sshd_config.d/allowusers.conf
+        content: |
+          AllowUsers {{ vault_jupyter_allow_users | join(" ") }}
+      notify: reload sshd
