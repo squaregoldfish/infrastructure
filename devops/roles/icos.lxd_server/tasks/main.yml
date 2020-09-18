@@ -4,10 +4,23 @@
 - import_tasks: utils.yml
   tags: lxd_utils
 
+- name: Create ssh_key LXD profile
+  tags: ssh_profile
+  lxd_profile:
+    name: ssh_root
+    config:
+      user.user-data: |
+        #cloud-config
+        users:
+          - name: root
+            ssh_authorized_keys:
+              - {{ vault_lxd_ssh_pub }}
+
 - name: Modify /etc/security/limits.conf
   tags: lxd_limits
   copy:
     dest: /etc/security/limits.conf
+    backup: yes
     content: |
       *         soft    nofile  1048576         unset   # maximum number of open files
       *         hard    nofile  1048576         unset   # maximum number of open files
