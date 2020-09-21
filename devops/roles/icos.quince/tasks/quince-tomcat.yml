@@ -2,7 +2,7 @@
   get_url:
     url: "{{ quince_tomcat_url }}"
     dest: /opt/tomcat.tgz
-    checksum: "sha1:{{ quince_tomcat_sha }}"
+    checksum: "{{ quince_tomcat_sha }}"
 
 - name: Unarchive /opt/tomcat.tgz
   unarchive:
