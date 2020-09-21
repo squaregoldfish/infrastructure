@@ -19,7 +19,7 @@
     force_apt_get: true
   loop:
     - mysql-server
-    - openjdk-8-jdk
+    - openjdk-11-jdk
     - git
     - patch
 
