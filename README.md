@@ -28,6 +28,8 @@ followed by
 
 (the recommended Ansible version will keep changing, so check with the team which one is relevant)
 
+Make sure `ansible-playbook` is on your path. Get the ansible-vault password from a colleague and place it in file `~/.vault_password`.
+
 Getting started (Scala services)
 ===
 
@@ -36,6 +38,8 @@ To develop/build/deploy Scala-based services, install Java with
 `sudo apt install openjdk-11-jdk`
 
 and SBT by following the instructions on https://www.scala-sbt.org/
+
+To be able to publish JAR artefacts to CP's Nexus repo, get the `.credentials` file from a colleague and place it into `~/.ivy2/` folder.
 
 ---
 rdflog
@@ -95,7 +99,8 @@ Creating Docker container and installing PostGIS in it:<br>
 
 `apt-get update && apt-get install postgresql-12-postgis-3`
 
-Recover postgis' backup from BorgBackup (as for rdflog). The backup is expected to be an SQL cluster dump of Postgres in a file named `stdin`. 
+Recover postgis' backup from BorgBackup on fsicos2 (same way as for rdflog). The backup is expected to be an SQL cluster dump of Postgres in a file named `stdin`.<br>
+`borg list /disk/data/bbserver/repos/postgis/postgres/default/ | tail`
 
 Restoring from the cluster dump made with `pg_dumpall`:<br>
 `egrep -v '^(CREATE|DROP) ROLE postgres;' ./stdin | docker exec -i postgis psql -v ON_ERROR_STOP=1 -f - -U postgres`
