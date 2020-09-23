@@ -6,22 +6,10 @@
 #
 # Update the bind-mounts on fsicos2
 #   deploy icosdata -lfsicos2* bind
-#
-# /data/stiltweb              fsicos2:/disk/data/stiltweb
-# /data/project               fsicos2:/disk/data/project
-# /data/flexpart              fsicos2:/disk/data/flexpart
-
-# /data/project/eurocom       fsicos:/disk/data/eurocom
-# /data/project/interpolation fsicos:/disk/data/common/netcdf/gcp_models
-# /data/stilt                 fsicos:/disk/data/STILT/RINGO/T1.3/STILT
-# /data/obspack               fsicos:/disk/data/STILT/ObsPack
-#
-# /opt/eurocom                fsicos:/disk/data/eurocom
-# /opt/stiltdata              fsicos:/disk/data/STILT
 
 
 
-## FSICOS 1 ##
+# FSICOS 1
 
 - hosts: fsicos.lunarc.lu.se
   handlers:
@@ -31,23 +19,26 @@
         state: reloaded
   tasks:
     - name: Create /etc/exports.d directory
+      tags: exports
       file:
         path: "/etc/exports.d"
         state: directory
 
     - name: Add icosdata exports
+      tags: exports
       copy:
         dest: /etc/exports.d/icosdata.exports
         content: |
-          /disk/data/STILT/RINGO/T1.3/STILT   {{ fsicos2_ip }}(ro)
-          /disk/data/STILT/ObsPack            {{ fsicos2_ip }}(ro)
-          /disk/data/common/netcdf/gcp_models {{ fsicos2_ip }}(ro)
-          /disk/data/eurocom		      {{ fsicos2_ip }}(ro)
+          /disk/data/STILT/RINGO/T1.3/STILT   fsicos*.lunarc.lu.se(ro)
+          /disk/data/STILT/ObsPack            fsicos*.lunarc.lu.se(ro)
+          /disk/data/common/netcdf/gcp_models fsicos*.lunarc.lu.se(ro)
+          /disk/data/eurocom		      fsicos*.lunarc.lu.se(ro)
+          /disk/data/flexpart		      fsicos*.lunarc.lu.se(ro)
       notify: Reload NFS server
 
 
 
-## FSICOS2 ##
+# FSICOS2
 
 - hosts: fsicos2.lunarc.lu.se
   handlers:
@@ -56,20 +47,7 @@
         name: nfs-server
         state: reloaded
   tasks:
-    - name: Create mount points
-      tags: mkdir
-      file:
-        path: "{{ item }}"
-        state: directory
-      loop:
-        - /data/stilt
-        - /data/obspack
-        - /data/flexpart
-        - /disk/data/project/interpolation
-        - /disk/data/project/eurocom
-
     - name: Do bind-mount local data
-      tags: bind
       mount:
         path: "{{ item.path }}"
         src:  "{{ item.src }}"
@@ -88,138 +66,67 @@
           src: /disk/data/dataAppStorage
           opts: ",ro"
 
-    - name: Mount directory from fsicos1
-      tags: nfs
+    - name: Create nfs mount points
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /data/stilt
+        - /data/obspack
+        - /data/flexpart
+        - /disk/data/project/interpolation
+        - /disk/data/project/eurocom
+        - /share/fsicos3
+
+    - name: Mount nfs data
       mount:
         path: "{{ item.path }}"
         src: "{{ item.src }}"
         fstype: nfs
-        opts: ro
+        opts: "{{ item.opts | default('ro') }}"
         state: mounted
       loop:
-        - path: /data/stilt
-          src: 194.47.223.133:/disk/data/STILT/RINGO/T1.3/STILT
-
-        - path: /data/obspack
-          src: 194.47.223.133:/disk/data/STILT/ObsPack
-
-        - path: /data/flexpart
-          src: 194.47.223.133:/disk/data/flexpart
-
-        - path: /data/project/interpolation
-          src: 194.47.223.133:/disk/data/common/netcdf/gcp_models
+        - path: /share/fsicos3
+          src: fsicos3.lunarc.lu.se:/incoming
+          opts: rw
 
         - path: /data/project/eurocom
-          src: 194.47.223.133:/disk/data/eurocom
+          src: fsicos.lunarc.lu.se:/disk/data/eurocom
 
-    - name: Create LXD data profile
-      tags: profile
-      lxd_profile:
-        name: icosdata
-        description: "ICOS Data"
-        devices:
-          old_eurocom:
-            path: /opt/eurocom
-            readonly: "true"
-            source: /data/project/eurocom
-            type: disk
-          old_stilt:
-            path: /opt/stiltdata
-            readonly: "true"
-            source: /disk/data/fsicos-stilt/
-            type: disk
-          dataAppStorage:
-            path: /data/dataAppStorage
-            source: /data/dataAppStorage
-            type: disk
-            readonly: "true"
-          eurocom:
-            path: /data/eurocom
-            source: /data/eurocom
-            type: disk
-            readonly: "true"
-          flexextract:
-            path: /data/flexextract
-            source: /data/flexextract
-            type: disk
-            readonly: "true"
-          flexpart:
-            path: /data/flexpart
-            source: /data/flexpart
-            type: disk
-            readonly: "true"
-          obspack:
-            path: /data/obspack
-            source: /data/obspack
-            type: disk
-            readonly: "true"
-          stilt:
-            path: /data/stilt
-            source: /data/stilt
-            type: disk
-            readonly: "true"
-          stiltweb:
-            path: /data/stiltweb
-            source: /data/stiltweb
-            type: disk
-            readonly: "true"
+        - path: /data/obspack
+          src: fsicos.lunarc.lu.se:/disk/data/STILT/ObsPack
 
-    - name: Create LXD project profile
-      tags: profile
-      lxd_profile:
-        name: icosproject
-        description: "ICOS Project Data"
-        devices:
-          project:
-            path: /data/project
-            source: /data/project
-            type: disk
-          # Even though eurocom and interpolation lives below /data/project,
-          # they are mounted from fsicos1 using nfs and won't show up unless
-          # explicitly mounted
-          eurocom:
-            path: /data/project/eurocom
-            readonly: "true"
-            source: /data/project/eurocom
-            type: disk
-          interpolation:
-            path: /data/project/interpolation
-            readonly: "true"
-            source: /data/project/interpolation
-            type: disk
+        - path: /data/stilt
+          src: fsicos.lunarc.lu.se:/disk/data/STILT/RINGO/T1.3/STILT
 
-    - name: Create /share/fsicos3 directory
-      tags: incoming
-      file:
-        path: "/share/fsicos3"
-        state: directory
+        - path: /data/flexpart
+          src: fsicos.lunarc.lu.se:/disk/data/flexpart
 
-    - name: Mount fsicos3:/incoming at /share/fsicos3
-      tags: incoming
-      mount:
-        src: "fsicos3.lunarc.lu.se:/incoming"
-        path: /share/fsicos3
-        state: mounted
-        fstype: nfs
+        - path: /data/project/interpolation
+          src: fsicos.lunarc.lu.se:/disk/data/common/netcdf/gcp_models
 
-    - name: Export flexextract data via nfs
-      tags: flexextract
+    - import_tasks: tasks/icosdata_profile.yml
+
+    - name: Export data via nfs
+      tags: export
       copy:
-        dest: /etc/exports.d/flexextract.exports
+        dest: "/etc/exports.d/{{ item.name }}.exports"
         content: |
-          /data/flexextract fsicos*.lunarc.lu.se(ro)
-      notify: Reload NFS server
-
-    - name: Export flexpart/meteo data via nfs
-      tags: flexpart
-      copy:
-        dest: /etc/exports.d/flexpart.exports
-        content: |
-          /disk/data/flexpart/meteo fsicos*.lunarc.lu.se(ro)
+          {{ item.path }} fsicos*.lunarc.lu.se(ro)
+      loop:
+        - name: flexextract
+          path: /data/flexextract
+        - name: flexpart
+          path: /disk/data/flexpart/meteo
+        - name: dataAppStorage
+          path: /disk/data/dataAppStorage
+        - name: stiltweb
+          path: /disk/data/stiltweb
       notify: Reload NFS server
 
 
-## FSICOS3 ##
+
+# FSICOS3
 
 - hosts: fsicos3.lunarc.lu.se
   handlers:
@@ -246,26 +153,48 @@
         path: "/etc/exports.d"
         state: directory
 
-    - name: Add /incoming as nfs export
-      tags: incoming
+    - name: Mount nfs data
+      tags: nfs
+      mount:
+        src: "{{ item.src }}"
+        path: "{{ item.path }}"
+        state: mounted
+        fstype: nfs
+      loop:
+        - path: /data/flexextract
+          src: fsicos2.lunarc.lu.se:/data/flexextract
+
+        - path: /data/flexpart/meteo
+          src: fsicos2.lunarc.lu.se:/disk/data/flexpart/meteo
+
+        - path: /data/dataAppStorage
+          src: fsicos2.lunarc.lu.se:/disk/data/dataAppStorage
+
+        - path: /data/stiltweb
+          src: fsicos2.lunarc.lu.se:/disk/data/stiltweb
+
+        - path: /data/project/eurocom
+          src: fsicos.lunarc.lu.se:/disk/data/eurocom
+
+        - path: /data/obspack
+          src: fsicos.lunarc.lu.se:/disk/data/STILT/ObsPack
+
+        - path: /data/stilt
+          src: fsicos.lunarc.lu.se:/disk/data/STILT/RINGO/T1.3/STILT
+
+        - path: /data/project/interpolation
+          src: fsicos.lunarc.lu.se:/disk/data/common/netcdf/gcp_models
+
+    - import_tasks: tasks/icosdata_profile.yml
+
+    - name: Export data via nfs
+      tags: export
       copy:
-        dest: /etc/exports.d/incoming.exports
+        dest: "/etc/exports.d/{{ item.name }}.exports"
         content: |
-          /incoming	fsicos*.lunarc.lu.se(rw,no_root_squash)
+          {{ item.path }} fsicos*.lunarc.lu.se({{ item.opts | default('ro') }})
+      loop:
+        - name: incoming
+          path: /incoming
+          opts: "rw,no_root_squash"
       notify: Reload NFS server
-
-    - name: Mount fsicos2.lunarc.lu.se:/data/flexextract at /data/flexextract
-      tags: flexextract
-      mount:
-        src: "fsicos2.lunarc.lu.se:/data/flexextract"
-        path: "/data/flexextract"
-        state: mounted
-        fstype: nfs
-
-    - name: Mount fsicos3:/disk/data/flexpart/meteo at /data/flexpart/meteo
-      tags: flexpart
-      mount:
-        src: "fsicos2.lunarc.lu.se:/disk/data/flexpart/meteo"
-        path: "/data/flexpart/meteo"
-        state: mounted
-        fstype: nfs

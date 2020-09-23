@@ -1,0 +1,58 @@
+- name: Create LXD data profile
+  lxd_profile:
+    name: icosdata
+    description: "ICOS Data"
+    devices:
+      dataAppStorage:
+        path: /data/dataAppStorage
+        source: /data/dataAppStorage
+        type: disk
+        readonly: "true"
+      flexextract:
+        path: /data/flexextract
+        source: /data/flexextract
+        type: disk
+        readonly: "true"
+      flexpart:
+        path: /data/flexpart
+        source: /data/flexpart
+        type: disk
+        readonly: "true"
+      obspack:
+        path: /data/obspack
+        source: /data/obspack
+        type: disk
+        readonly: "true"
+      stilt:
+        path: /data/stilt
+        source: /data/stilt
+        type: disk
+        readonly: "true"
+      stiltweb:
+        path: /data/stiltweb
+        source: /data/stiltweb
+        type: disk
+        readonly: "true"
+
+- name: Create LXD project profile
+  lxd_profile:
+    name: icosproject
+    description: "ICOS Project Data"
+    devices:
+      project:
+        path: /data/project
+        source: /data/project
+        type: disk
+      # Even though eurocom and interpolation lives below /data/project,
+      # they are mounted from fsicos1 using nfs and won't show up unless
+      # explicitly mounted
+      eurocom:
+        path: /data/project/eurocom
+        readonly: "true"
+        source: /data/project/eurocom
+        type: disk
+      interpolation:
+        path: /data/project/interpolation
+        readonly: "true"
+        source: /data/project/interpolation
+        type: disk
