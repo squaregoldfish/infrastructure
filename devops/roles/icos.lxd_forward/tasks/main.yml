@@ -6,14 +6,6 @@
     - lxd_forward_ip
     - lxd_forward_name
 
-# Make sure that we don't lock ourselves out of the remote machine.
-- name: Allowing inbound SSH
-  ufw:
-    rule: allow
-    port: ssh
-    comment: ssh
-    state: enabled
-
 - name: Enable IP forwarding
   sysctl:
     name: net.ipv4.ip_forward
