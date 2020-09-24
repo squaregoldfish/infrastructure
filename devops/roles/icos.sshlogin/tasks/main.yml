@@ -56,7 +56,7 @@
         create: yes
         path: "{{ sshlogin_src_ssh_config }}"
         block: |
-          Host {{ sshlogin_dst }}
+          Host {{ sshlogin_src_dst_name }}
             Hostname {{ hostvars[sshlogin_dst].ansible_host | default(sshlogin_dst) }}
             Port {{ hostvars[sshlogin_dst].ansible_port | default(22) }}
             User {{ sshlogin_dst_user }}

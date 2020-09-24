@@ -29,3 +29,5 @@ sshlogin_src_ssh_dir     : "{{ sshlogin_src_home }}/.ssh"
 sshlogin_src_ssh_config  : "{{ sshlogin_src_ssh_dir }}/config"
 sshlogin_src_known_hosts : "{{ sshlogin_src_ssh_dir }}/known_hosts"
 sshlogin_src_key_file    : "{{ sshlogin_src_ssh_dir }}/id_rsa"
+# The name of the entry in the ssh config.
+sshlogin_src_dst_name    : "{{ sshlogin_dst }}"
