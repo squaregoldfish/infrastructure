@@ -173,9 +173,6 @@
         - path: /data/stiltweb
           src: fsicos2.lunarc.lu.se:/disk/data/stiltweb
 
-        - path: /data/project/eurocom
-          src: fsicos.lunarc.lu.se:/disk/data/eurocom
-
         - path: /data/obspack
           src: fsicos.lunarc.lu.se:/disk/data/STILT/ObsPack
 
