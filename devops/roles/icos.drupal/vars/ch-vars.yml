@@ -3,4 +3,4 @@ drupal_docker_port: 8120
 mysql_docker_port: 3342
 domain: www.icos-switzerland.ch
 trusted_host: ^www\.icos-switzerland\.ch$
-ssl_domains: [icos-switzerland.ch,www.icos-switzerland.ch,switzerland.icos-cp.eu]
+ssl_domains: [switzerland.icos-cp.eu,www.icos-switzerland.ch]
