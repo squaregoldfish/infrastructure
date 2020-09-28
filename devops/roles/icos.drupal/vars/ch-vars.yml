@@ -1,5 +1,6 @@
 nginx_conf_name: icosch
 drupal_docker_port: 8120
 mysql_docker_port: 3342
-domain: switzerland.icos-cp.eu
-trusted_host: ^switzerland\.icos-cp\.eu$
+domain: www.icos-switzerland.ch
+trusted_host: ^www\.icos-switzerland\.ch$
+ssl_domains: [icos-switzerland.ch,www.icos-switzerland.ch,switzerland.icos-cp.eu]
