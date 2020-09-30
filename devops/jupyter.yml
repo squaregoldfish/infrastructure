@@ -137,7 +137,6 @@
       jupyter_port: 8000
 
 
-
 - hosts: jupyter
   vars_files:
     - vault.yml
@@ -151,6 +150,9 @@
     - role: icos.lxd_guest
       tags: guest
 
+    - role: icos.python3
+      tags: python3
+      
     - role: icos.docker
       tags: docker
 

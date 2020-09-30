@@ -1,0 +1,20 @@
+- name: Create virtual env
+  pip:
+    virtualenv: /opt/jusers/venv
+    name:
+      - ruamel.yaml
+      - click
+    state: present
+
+- name: Copy jusers.py
+  tags: jupyter_jusers_deploy
+  copy:
+    src: jusers.py
+    dest: /opt/jusers/jusers.py
+    mode: +x
+
+- name: Create /usr/local/sbin/jusers symlink
+  file:
+    dest: "/usr/local/sbin/jusers"
+    src: /opt/jusers/jusers.py
+    state: link

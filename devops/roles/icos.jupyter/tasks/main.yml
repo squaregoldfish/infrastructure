@@ -43,3 +43,7 @@
     services:
       - hub
     state: present
+    build: yes
+
+- import_tasks: jusers.yml
+  tags: jupyter_jusers
