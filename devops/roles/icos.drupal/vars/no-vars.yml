@@ -3,5 +3,4 @@ drupal_docker_port: 8108
 mysql_docker_port: 3335
 domain: no.icos-cp.eu
 trusted_host: ^no\.icos-cp\.eu$
-cp_events: cp_events-no
 cp_files: cp_files-no

@@ -2,7 +2,6 @@ nginx_conf_name: icoscp
 drupal_docker_port: 8107
 mysql_docker_port: 3334
 trusted_host: ^www\.icos-cp\.eu$
-cp_theme_d8: cp_theme_d8-cp
 domain: www.icos-cp.eu
 ssl_domains: [icos-cp.eu,www.icos-cp.eu]
 redirect_to_www: true
