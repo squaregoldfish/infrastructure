@@ -1,3 +1,5 @@
+# deploy jupyter jupyter_jusers_deploy 
+
 - hosts: jupyter_host
   vars:
     jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
