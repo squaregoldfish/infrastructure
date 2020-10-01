@@ -32,40 +32,15 @@
         - home
         - project
 
-    - name: Create docker storage volume
-      tags:
-        - zfs
-        - zfsdocker
-      zfs:
-        name: pool/docker/jupyter
-        state: present
-        extra_zfs_properties:
-          volsize: "100G"
-
-    - name: Create a btrfs filesystem on {{ zvol_docker }}
-      tags:
-        - zfs
-        - zfsdocker
-      filesystem:
-        dev: "{{ zvol_docker }}"
-        fstype: btrfs
-        # Label the filesystem, this makes the output from 'btrfs filesystem
-        # show' easier to understand.
-        opts: "-L docker_jupyter"
-
-    - name: Change owner of btrfs filesystem
-      tags:
-        - zfs
-        - btrfs
-        - zfsdocker
-      command: >-
-        unshare -m bash -c 'mount {{ zvol_docker }} /tmp;
-        stat -c '%u:%g' /tmp;
-        chown 1000000:1000000 /tmp'
-      register: r
-      changed_when: r.stdout != '1000000:1000000'
-      failed_when: r.rc != 0
-
+    - import_role:
+        name: icos.zfsdocker
+        tags:
+          - zfs
+          - zfsdocker
+        vars:
+          zfsdocker_name: jupyter
+          zfsdocker_size: "100G"
+          
     - name: Create the jupyter container
       tags:
         - lxd
