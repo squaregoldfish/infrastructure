@@ -6,7 +6,9 @@
     - python3
     - python3-pip
     - python3-venv
+    - python3-virtualenv
     - python3-click
+
 
 - name: Check that python3 version is >= 3.6
   shell: "python3 --version 2>&1 | grep -q '^Python 3.[6789]'"
