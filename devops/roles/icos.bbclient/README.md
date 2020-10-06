@@ -1,8 +1,8 @@
 Username.
 
     - role: icos.bbclient
-          tags: backup
-          bbclient_user: "{{ myrole_username }}"
+      tags: backup
+      bbclient_user: "{{ myrole_username }}"
 
 
 Username and coldbackup schedule.
