@@ -1,2 +1,44 @@
-- import_tasks: docker.yml
-  tags: docker_only
+- name: Install docker and pip3
+  apt:
+    name:
+      - docker.io
+      - python3-pip
+
+- name: Install docker-compose
+  pip:
+    name: docker-compose
+
+- name: Install docker configuration
+  copy:
+    src: daemon.json
+    dest: /etc/docker/
+  notify: reload docker
+
+- name: Start docker
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Copy docker helper scripts
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/sbin/{{ item }}"
+    mode: +x
+  loop:
+    - docker-unpack-image
+    - docker-lineage
+    - docker-list-ips
+    - docker-entrypoint
+    - docker-extract
+    - docker-builds
+
+- name: Create /docker directory
+  file:
+    path: /docker
+    state: directory
+
+- name: Copy Makefile for docker-compose projects
+  copy:
+    src: Makefile
+    dest: /docker/Makefile

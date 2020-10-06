@@ -28,7 +28,7 @@
 - name: Copy jupyterhub_config.py
   template:
     src: jupyterhub_config.py
-    dest: "{{ jupyter_home }}/jupyterhub_home"
+    dest: "{{ jupyter_home }}/jupyterhub_home/"
 
 - name: Start the proxy
   docker_compose:
