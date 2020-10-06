@@ -1,4 +1,4 @@
-# deploy jupyter jupyter_jusers_deploy 
+# deploy jupyter jupyter_jusers_deploy
 
 - hosts: jupyter_host
   vars:
@@ -39,7 +39,7 @@
       vars:
         zfsdocker_name: jupyter
         zfsdocker_size: "100G"
-          
+
     - name: Create the jupyter container
       tags:
         - lxd
@@ -121,14 +121,14 @@
       systemd:
         name: sshd
         state: reloaded
-        
+
   roles:
     - role: icos.lxd_guest
       tags: guest
 
     - role: icos.python3
       tags: python3
-      
+
     - role: icos.docker
       tags: docker
 
@@ -138,10 +138,16 @@
       sshlogin_src_user: root
       sshlogin_dst_user: root
       sshlogin_src_dst_name: exploredata
-      
+
     - role: icos.jupyter
       tags: jupyter
       jupyter_admins: "{{ vault_jupyter_admins }}"
+
+    - role: icos.bbclient
+      tags: bbclient
+      bbclient_name: jupyter
+      bbclient_user: root
+
 
   tasks:
     - name: Create project user
@@ -167,3 +173,24 @@
         content: |
           AllowUsers {{ vault_jupyter_allow_users | join(" ") }}
       notify: reload sshd
+
+    - name: Create backup script
+      tags: backup
+      copy:
+        mode: +x
+        dest: /root/bin/backup.sh
+        content: |
+          #!/bin/bash
+          PATH=/root/bin:$PATH
+          set -eu
+          bbclient-all create "::{now}" /home /project /root/jusers.yml
+          bbclient-all prune --keep-within 2w --keep-daily=30 --keep-weekly=150
+      register: _backup_script
+
+    - name: Add backup script to crontab
+      tags: backup
+      cron:
+        job: "{{ _backup_script.dest }}"
+        special_time: hourly
+        state: present
+        name: "bbclient_backup"
