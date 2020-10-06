@@ -32,14 +32,13 @@
         - home
         - project
 
-    - import_role:
-        name: icos.zfsdocker
-        tags:
-          - zfs
-          - zfsdocker
-        vars:
-          zfsdocker_name: jupyter
-          zfsdocker_size: "100G"
+    - import_role: name=icos.zfsdocker
+      tags:
+        - zfs
+        - zfsdocker
+      vars:
+        zfsdocker_name: jupyter
+        zfsdocker_size: "100G"
           
     - name: Create the jupyter container
       tags:
