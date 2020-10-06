@@ -44,6 +44,7 @@ molefractions_host
 erddap_host
 flexpart_host
 jupyter_host
+ganymede_host
 
 [fsicos3_aliases:vars]
 ansible_host=fsicos3.lunarc.lu.se
@@ -55,6 +56,7 @@ molefractions ansible_port=60515
 erddap ansible_port=60520
 flexpart ansible_port=60530
 jupyter ansible_port=60535
+ganymede ansible_port=60540
 
 [fsicos3_vms:vars]
 ansible_host=fsicos3.lunarc.lu.se

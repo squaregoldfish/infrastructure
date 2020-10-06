@@ -1,0 +1,101 @@
+- hosts: ganymede_host
+  vars:
+    # These variable are prefixed with 'jupyter_' instead of 'ganymede_' so
+    # that we can reuse files/jupyter.conf without change.
+    jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
+    jupyter_domains:
+      - ganymede.icos-cp.eu
+  vars_files:
+    - vault.yml
+  pre_tasks:
+    - import_role: name=icos.zfsdocker
+      tags:
+        - zfs
+        - zfsdocker
+      vars:
+        zfsdocker_name: ganymede
+        zfsdocker_size: "100G"
+
+    - name: Create the ganymede container
+      tags:
+        - lxd
+        - forward
+        - nginx
+      lxd_container:
+        name: ganymede
+        state: started
+        profiles:
+          - default
+          - ssh_root
+          - icosdata
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "20.04"
+        devices:
+          root:
+            path: "/"
+            pool: "default"
+            type: "disk"
+            size: "50GB"
+          docker:
+            path: /var/lib/docker
+            source: "{{ zfsdocker_zvol }}"
+            type: disk
+            raw.mount.options: user_subvol_rm_allowed
+        config:
+          security.nesting: "true"
+        wait_for_ipv4_addresses: true
+        wait_for_ipv4_interfaces: eth0
+        timeout: 60
+      register: _lxd
+
+  roles:
+    - role: icos.lxd_forward
+      tags: forward
+      lxd_forward_ip: "{{ jupyter_ip }}"
+      lxd_forward_name: ganymede
+
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: ganymede
+      certbot_domains: "{{ jupyter_domains }}"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: ganymede
+      nginxsite_file: files/jupyter.conf
+      jupyter_domain: "{{ jupyter_domains | first }}"
+      jupyter_cert_name: ganymede
+      jupyter_port: 8000
+
+
+- hosts: ganymede
+  vars_files:
+    - vault.yml
+  handlers:
+    - name: reload sshd
+      systemd:
+        name: sshd
+        state: reloaded
+
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.python3
+      tags: python3
+
+    - role: icos.docker
+      tags: docker
+
+    - role: icos.superuser
+      tags: users
+      superuser_list: "{{ vault_ganymede_superusers }}"
+      superuser_disable_coredump: true
+
+    - role: icos.jupyter
+      tags: jupyter
+      jupyter_admins: "{{ vault_ganymede_admins }}"
