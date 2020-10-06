@@ -6,29 +6,18 @@
 # Create user and install nginx config
 #   $ deploy cpauth cpauth_setup
 #
-# Setup borg backup for cpauth
-#   $ deploy cpauth bblient
-#
 # Full redeploy
 #   $ deploy cpauth cpauth -ecpauth_jar_file=/tmp/cpauth.jar
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   vars_files:
     - vars.yml
     - vault.yml
   roles:
-    # CERT
-    - { role: icos.certbot2,
-        tags: [cert],
-        certbot_name: "{{ cpauth_cert_name }}",
-        certbot_domains: "{{ cpauth_domains }}" }
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: "{{ cpauth_cert_name }}",
+      certbot_domains: "{{ cpauth_domains }}"
 
-    # APP
     - role: icos.cpauth
       tags: cpauth
-
-    # BBCLIENT
-    - { role: icos.bbclient,
-        tags: [backup, bbclient],
-        bbclient_user: cpauth }
