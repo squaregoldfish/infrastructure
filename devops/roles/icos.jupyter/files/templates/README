@@ -1,0 +1,2 @@
+Any templates in this directory will override the built-in ones.
+https://jupyterhub.readthedocs.io/en/stable/reference/templates.html

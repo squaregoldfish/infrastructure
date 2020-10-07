@@ -15,5 +15,12 @@
     src: docker-compose.yml
     dest: "{{ exploredata_home }}/"
 
-- import_tasks: hub.yml
-  tags: exploredata_hub
+- name: Copy build.hub directory
+  copy:
+    src: build.hub
+    dest: "{{ exploredata_home }}/"
+
+- name: Build and start the hub image
+  docker_compose:
+    project_src: "{{ exploredata_home }}"
+    build: yes

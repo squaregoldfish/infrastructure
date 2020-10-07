@@ -25,7 +25,7 @@ c.JupyterHub.services = [{'name': 'cull_idle','admin': True,
 
 # The DummyAuthenticator allows any username along with a hardcoded password.
 c.JupyterHub.authenticator_class = 'jupyterhub.auth.DummyAuthenticator'
-c.DummyAuthenticator.password = os.environ.get("PASSWORD", "password")
+c.DummyAuthenticator.password = os.environ["PASSWORD"]
 
 # This tells jupyterhub that "root" is an admin user. That's supposed to give
 # the root user an admin panel, which I didn't get to work (because of
@@ -42,13 +42,20 @@ c.Authenticator.blacklist = ['root']
 # https://github.com/jupyterhub/dockerspawner/blob/master/dockerspawner/dockerspawner.py
 
 c.JupyterHub.spawner_class = 'docker'
-c.DockerSpawner.image = os.environ.get("NOTEBOOK_IMAGE", "notebook")
-c.DockerSpawner.network_name = os.environ.get("NETWORK_NAME", "exploredata")
+c.DockerSpawner.image = os.environ["NOTEBOOK_IMAGE"]
+c.DockerSpawner.network_name = os.environ["NETWORK_NAME"]
 c.DockerSpawner.notebook_dir = '/home/jovyan'
 c.DockerSpawner.remove_containers = True
 c.DockerSpawner.debug = True
-.DockerSpawner.read_only_volumes = { '/etc/localtime': '/etc/localtime' }
-# c.DockerSpawner.read_only_volumes = { '/disk/data/STILT': "/opt/stiltdata" }
+c.DockerSpawner.read_only_volumes = {
+    '/etc/localtime'                          : '/etc/localtime',
+    '/disk/data/stiltweb/stations'            : "/data/stiltweb/stations",
+    '/disk/data/stiltweb/slots'               : "/data/stiltweb/slots",
+    '/opt/stiltdata/RINGO'                    : '/opt/stiltdata/RINGO',
+    '/opt/stiltdata/fsicos2/stilt/Footprints' : '/opt/stiltdata/fsicos2/stilt/Footprints',
+    '/data'                                   : '/data'
+}
+
 
 
 # RESTRICTIONS ON THE NOTEBOOKS

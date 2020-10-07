@@ -12,6 +12,8 @@ import os
 # The ip address for the Hub process to *bind* to.
 c.JupyterHub.hub_ip = '0.0.0.0'
 c.JupyterHub.cleanup_servers = False
+c.JupyterHub.template_paths = ["/srv/jupyterhub/templates"]
+
 # c.JupyterHub.allow_named_servers = True
 # c.JupyterHub.named_server_limit_per_user = 5
 
@@ -32,7 +34,6 @@ c.Authenticator.admin_users = set([{%- for u in jupyter_admins -%}
                                      '{{- u }}'
                                      {%- if not loop.last %},
                                    {%- endif %}{% endfor %}])
-
 
 
 # CONFIGURATION OF THE NOTEBOOK CONTAINERS
@@ -59,6 +60,7 @@ c.DockerSpawner.read_only_volumes = {
 c.DockerSpawner.volumes = {'/project': '/project'}
 
 c.DockerSpawner.allowed_images = ['notebook']
+
 
 # The override configuration file doesn't have to exist.
 load_subconfig(os.path.join(os.path.dirname(__file__),
