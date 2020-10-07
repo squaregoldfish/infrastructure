@@ -36,7 +36,6 @@
 
 # Create the LXD container
 - hosts: exploredata_host
-  become: true
   tasks:
     - name: Create exploredata LXD configuration
       tags:
@@ -107,9 +106,12 @@
     # Reading the vault as a task (instead of a vars_files) allows people
     # who don't have the password to use the other tasks.
     - name: Include vault.yml
+      tags:
+        - setup-prod
+        - setup-test
+        - guest
       include_vars:
         file: vault.yml
-      tags: always
   tasks:
     - tags: setup
       block:

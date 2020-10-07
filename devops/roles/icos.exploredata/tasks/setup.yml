@@ -1,24 +1,28 @@
-- import_tasks: check-vars.yml
+- name: Check type of deployment
+  assert:
+    that: exploredata_type in ('prod', 'test')
+    quiet: true
 
-- name: Create {{ exploredata_home }} directory
-  file:
-    path: "{{ exploredata_home }}"
-    state: directory
-
-- name: Copy exploredata.env
-  template:
-    src: exploredata.env
-    dest: "{{ exploredata_home }}/.env"
-
-- name: Copy docker-compose.yml
-  template:
-    src: docker-compose.yml
-    dest: "{{ exploredata_home }}/"
-
-- name: Copy build.hub directory
+- name: Copy files
   copy:
-    src: build.hub
     dest: "{{ exploredata_home }}/"
+    src: "{{ item }}"
+  loop:
+    - build.hub
+    - jupyterhub_home
+    - docker-compose.yml
+
+- name: Install runtime environment file
+  copy:
+    dest: "{{ exploredata_home }}/.env"
+    content: |
+      NETWORK_NAME={{ exploredata_network }}
+      HUB_PORT={{ exploredata_port }}
+      HUB_RESTART=always
+      HUB_IMAGE={{ exploredata_hub_image }}
+      HUB_CONTAINER_NAME={{ exploredata_hub_container }}
+      NOTEBOOK_IMAGE={{ exploredata_notebook_image }}
+      PASSWORD={{ exploredata_password }}
 
 - name: Build and start the hub image
   docker_compose:

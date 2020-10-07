@@ -14,6 +14,9 @@ c.JupyterHub.hub_connect_ip = 'hub'
 # Shuts down all user servers on logout
 c.JupyterHub.shutdown_on_logout = True
 
+# https://jupyterhub.readthedocs.io/en/stable/reference/templates.html
+c.JupyterHub.template_paths = ["/srv/jupyterhub/templates"]
+
 # https://github.com/jupyterhub/jupyterhub/blob/master/examples/cull-idle/cull_idle_servers.py
 c.JupyterHub.services = [{'name': 'cull_idle','admin': True,
                           'command': [sys.executable,
@@ -55,7 +58,6 @@ c.DockerSpawner.read_only_volumes = {
     '/opt/stiltdata/fsicos2/stilt/Footprints' : '/opt/stiltdata/fsicos2/stilt/Footprints',
     '/data'                                   : '/data'
 }
-
 
 
 # RESTRICTIONS ON THE NOTEBOOKS

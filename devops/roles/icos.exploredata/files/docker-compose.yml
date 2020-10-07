@@ -18,6 +18,7 @@ services:
       # within the container
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
       - "/etc/localtime:/etc/localtime:ro"
+      - "./jupyterhub_home:/srv/jupyterhub:rw"
     ports:
       - "${HUB_PORT-4567}:8000"
     command: >

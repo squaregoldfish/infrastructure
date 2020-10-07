@@ -5,4 +5,3 @@ exploredata_network: "{{ exploredata_name }}"
 exploredata_hub_image: "{{ exploredata_name }}.hub"
 exploredata_hub_container: "{{ exploredata_name }}.hub"
 exploredata_notebook_image : "{{ exploredata_name }}.notebook"
-exploredata_password: password

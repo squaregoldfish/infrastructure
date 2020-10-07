@@ -1,15 +1,13 @@
-- import_tasks: check-vars.yml
+- name: Check type of deployment
+  assert:
+    that: exploredata_type in ('prod', 'test')
+    quiet: true
 
 - name: Synchronize source
   synchronize:
     src: "{{ exploredata_src }}/"
-    dest: "{{ exploredata_home }}"
+    dest: "{{ exploredata_home }}/build.notebook/"
     delete: yes
-    rsync_opts:
-      - "--exclude=/docker-compose.yml"
-      - "--exclude=/.env"
-      - "--exclude=/build.hub/jupyterhub_config.py"
-  register: rsync
 
 - name: Build the notebook image
   docker_image:
@@ -17,5 +15,6 @@
     source: build
     force_source: yes
     build:
+      dockerfile: "{{ exploredata_home }}/build.notebook/exploredata/Dockerfile"
       path: "{{ exploredata_home }}/build.notebook"
       pull: yes
