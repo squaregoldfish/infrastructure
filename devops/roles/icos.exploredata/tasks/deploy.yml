@@ -3,7 +3,7 @@
     that: exploredata_type in ('prod', 'test')
     quiet: true
 
-- name: Synchronize source
+- name: Synchronize notebooks
   synchronize:
     src: "{{ exploredata_src }}/"
     dest: "{{ exploredata_home }}/build.notebook/"

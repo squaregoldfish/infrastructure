@@ -19,6 +19,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
       - "/etc/localtime:/etc/localtime:ro"
       - "./jupyterhub_home:/srv/jupyterhub:rw"
+      - "./build.notebook/exploredata/templates:/srv/jupyterhub/templates:ro"
     ports:
       - "${HUB_PORT-4567}:8000"
     command: >
