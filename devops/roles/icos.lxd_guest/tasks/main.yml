@@ -22,4 +22,4 @@
     user: root
     state: present
     key: "{{ lxd_guest_ssh_keys }}"
-  when: lxd_guest_ssh_keys != ""
+  when: lxd_guest_ssh_keys | bool
