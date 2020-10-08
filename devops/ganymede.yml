@@ -99,3 +99,13 @@
     - role: icos.jupyter
       tags: jupyter
       jupyter_admins: "{{ vault_ganymede_admins }}"
+
+  tasks:
+    - tags: sshlogin
+      include_role:
+        name: icos.sshlogin
+      vars:
+        sshlogin_dst: "{{ item.dst }}"
+        sshlogin_src_user: "{{ item.src_user }}"
+        sshlogin_dst_user: "{{ item.dst_user }}"
+      loop: "{{ vault_ganymede_sshlogins }}"
