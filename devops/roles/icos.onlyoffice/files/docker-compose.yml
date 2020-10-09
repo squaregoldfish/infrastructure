@@ -6,7 +6,11 @@ networks:
 
 services:
   app:
-    image: onlyoffice/documentserver:$ONLYOFFICE_VERSION
+    build:
+      context: ./build
+      args:
+        - ONLYOFFICE_VERSION
+    image: onlyoffice
     container_name: onlyoffice
     restart: unless-stopped
     ports:
@@ -14,6 +18,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./volumes/logs:/var/log/onlyoffice
+      - ./volumes/data:/var/www/onlyoffice/Data
+      - ./volumes/lib:/var/lib/onlyoffice
+      - ./volumes/db:/var/lib/postgresql
     networks:
       - onlyoffice
     env_file:

@@ -1,5 +1,5 @@
-# https://hub.docker.com/r/onlyoffice/documentserver/
-onlyoffice_version: 5.6.3.2
+# https://hub.docker.com/r/onlyoffice/documentserver-ie/
+onlyoffice_version: 5.6.5.3
 onlyoffice_port: 8201
 
 onlyoffice_home: /docker/onlyoffice
@@ -8,8 +8,3 @@ onlyoffice_build_dir: "{{ onlyoffice_home }}/build"
 onlyoffice_domain: onlyoffice.icos-cp.eu
 onlyoffice_cert_name: onlyoffice
 onlyoffice_site_name: onlyoffice
-
-# By default OnlyOffice will reject outgoing https connections that has an
-# invalid certificate. But when running in testing - where we use self-signed
-# certificates - we want to disable that check by setting this to false.
-onlyoffice_reject_unauthorized: true

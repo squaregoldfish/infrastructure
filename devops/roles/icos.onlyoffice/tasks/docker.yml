@@ -1,29 +1,34 @@
-- name: Create build directory
-  file:
-    path: "{{ onlyoffice_build_dir }}"
-    state: directory
-    mode: o-r
-
-- name: Copy build files
+- name: Copy build directory
   copy:
-    dest: "{{ onlyoffice_build_dir }}"
-    src: "{{ item }}"
-  loop:
-    - Dockerfile
-    - droidserif.tgz
+    dest: "{{ onlyoffice_home }}/"
+    src: build
 
-- name: Copy runtime environment file
-  template:
-    src: onlyoffice.env
-    dest: "{{ onlyoffice_home }}"
+- name: Install runtime environment file
+  copy:
     mode: "o-r"
+    dest: "{{ onlyoffice_home }}/onlyoffice.env"
+    content: |
+      # JWT == JSON Web Tokens. This is how Nextcloud authenticates
+      # itself to OnlyOffice.
+      JWT_ENABLED=true
+      JWT_SECRET={{ onlyoffice_secret | mandatory }}
+
+      # Setting this to false will make the documentserver's entrypoint
+      # script allow unauthorized HTTPS connections. Use only for testing.
+      JWT_REJECT_UNAUTHORIZED=true
+
+# https://helpcenter.onlyoffice.com/server/integration-edition/docker/docker-installation.aspx#Registering
+- name: Copy license.lic
+  copy:
+    src: license.lic
+    dest: "{{ onlyoffice_home }}/volumes/data/"
 
 - name: Copy docker-compose.yml
   copy:
     src: docker-compose.yml
     dest: "{{ onlyoffice_home }}"
 
-- name: Copy parsetime environment file
+- name: Install parsetime environment file
   copy:
     dest: "{{ onlyoffice_home }}/.env"
     content: |
