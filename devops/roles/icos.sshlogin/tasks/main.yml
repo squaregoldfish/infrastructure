@@ -57,8 +57,8 @@
         path: "{{ sshlogin_src_ssh_config }}"
         block: |
           Host {{ sshlogin_src_dst_name }}
-            Hostname {{ hostvars[sshlogin_dst].ansible_host | default(sshlogin_dst) }}
-            Port {{ hostvars[sshlogin_dst].ansible_port | default(22) }}
+            Hostname {{ sshlogin_src_dst_host }}
+            Port {{ sshlogin_src_dst_port }}
             User {{ sshlogin_dst_user }}
 
 
@@ -68,7 +68,7 @@
     - name: Create destination user
       user:
         name: "{{ sshlogin_dst_user }}"
-        home: "{{ sshlogin_dst_home }}"
+        home: "{{ sshlogin_dst_home | default(omit) }}"
       register: _dst_user
 
     - name: Install public key

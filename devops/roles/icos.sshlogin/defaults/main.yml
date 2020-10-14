@@ -2,8 +2,7 @@ sshlogin_dst_from:
 sshlogin_dst_command:
 sshlogin_dst_restrict:
 
-sshlogin_dst_home        : "{{ _dst_user.home | default(omit) }}"
-sshlogin_dst_ssh_dir     : "{{ sshlogin_dst_home }}/.ssh"
+sshlogin_dst_ssh_dir     : "{{ _dst_user.home }}/.ssh"
 sshlogin_dst_known_hosts : "{{ sshlogin_dst_ssh_dir }}/known_hosts"
 sshlogin_dst_key_file    : "{{ sshlogin_dst_ssh_dir }}/id_rsa"
 sshlogin_dst_key_options : "{{ _sshlogin_opt_list | select('ne', '') | join(',') }}"
@@ -29,5 +28,12 @@ sshlogin_src_ssh_dir     : "{{ sshlogin_src_home }}/.ssh"
 sshlogin_src_ssh_config  : "{{ sshlogin_src_ssh_dir }}/config"
 sshlogin_src_known_hosts : "{{ sshlogin_src_ssh_dir }}/known_hosts"
 sshlogin_src_key_file    : "{{ sshlogin_src_ssh_dir }}/id_rsa"
+
 # The name of the entry in the ssh config.
-sshlogin_src_dst_name    : "{{ sshlogin_dst }}"
+sshlogin_src_dst_name: "{{ sshlogin_dst }}"
+
+# The destination host for the config entry. Usually the host used when
+# connecting from the outside - i.e the one used by ansible - but in the case
+# of co-hosted LXD VMs it could be the lxd hostname.
+sshlogin_src_dst_host: "{{ hostvars[sshlogin_dst].ansible_host | default(sshlogin_dst) }}"
+sshlogin_src_dst_port: "{{ hostvars[sshlogin_dst].ansible_port | default(22) }}"
