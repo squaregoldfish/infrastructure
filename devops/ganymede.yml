@@ -104,8 +104,14 @@
     - tags: sshlogin
       include_role:
         name: icos.sshlogin
+        apply:
+          tags: sshlogin
       vars:
-        sshlogin_dst: "{{ item.dst }}"
-        sshlogin_src_user: "{{ item.src_user }}"
-        sshlogin_dst_user: "{{ item.dst_user }}"
+        sshlogin_dst: "{{ login.dst }}"
+        sshlogin_src_user: "{{ login.src_user }}"
+        sshlogin_dst_user: "{{ login.dst_user }}"
+        sshlogin_src_dst_host: "{{ login.dst_host }}"
+        sshlogin_src_dst_port: "{{ login.dst_port }}"
       loop: "{{ vault_ganymede_sshlogins }}"
+      loop_control:
+        loop_var: login
