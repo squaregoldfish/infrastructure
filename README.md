@@ -95,11 +95,21 @@ Used by `data` service to log object downloads and query for download stats.
 Creating Docker container and installing PostGIS in it:<br>
 `docker run -e POSTGRES_PASSWORD=blabla --name postgis -p 127.0.0.1:5438:5432 -d postgres:12.3`
 
+Specify the password in `data` application.conf `cpdata.downloads.admin.password`
+
 `docker exec -ti postgis /bin/bash`
 
 `apt-get update && apt-get install postgresql-12-postgis-3`
 
-Recover postgis' backup from BorgBackup on fsicos2 (same way as for rdflog). The backup is expected to be an SQL cluster dump of Postgres in a file named `stdin`.<br>
+Either create a new database or restore a backup
+
+### Create the database
+- Login to postgres inside the container `psql -U postgres`
+- Create the two databases `CREATE DATABASE cplog; CREATE DATABASE siteslog;`
+- Create two roles `CREATE ROLE reader; CREATE ROLE writer;`
+
+### OR Recover postgis' backup from BorgBackup on fsicos2 (same way as for rdflog).
+The backup is expected to be an SQL cluster dump of Postgres in a file named `stdin`.<br>
 `borg list /disk/data/bbserver/repos/postgis/postgres/default/ | tail`
 
 Restoring from the cluster dump made with `pg_dumpall`:<br>
