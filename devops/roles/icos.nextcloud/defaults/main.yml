@@ -13,7 +13,7 @@ nextcloud_domain: fileshare.icos-cp.eu
 certbot_domains: ["{{ nextcloud_domain }}"]
 certbot_conf_name: nextcloud
 
-nextcloud_volume_nextcloud: "{{ nextcloud_home }}/volumes/nextcloud"
+nextcloud_volume_nextcloud: "/disk/data/nextcloud"
 nextcloud_volume_postgres: "{{ nextcloud_home }}/volumes/postgres"
 
 nextcloud_build_nextcloud: "{{ nextcloud_home }}/build/nextcloud"
