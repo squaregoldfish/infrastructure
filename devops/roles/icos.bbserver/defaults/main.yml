@@ -2,9 +2,9 @@ bbserver_user: bbserver
 bbserver_home: /home/bbserver
 
 bbserver_bin: "/usr/local/bin/borg"
-bbserver_ver: 1.1.13
+bbserver_ver: 1.1.14
 bbserver_url: "https://github.com/borgbackup/borg/releases/download/{{ bbserver_ver }}/borg-linux64"
-bbserver_checksum: "sha1:4121b5340075e731d98780d7dbdc9badc56115e0"
+bbserver_checksum: "sha1:5ba96a927cea8f3a91e0dca157f518e277588f33"
 
 bbserver_repo_home: "{{ bbserver_home }}/repos"
 
