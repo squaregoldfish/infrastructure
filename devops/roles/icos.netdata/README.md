@@ -1,7 +1,7 @@
 # Installation
 
 
-## How does netdatas' own 'curl | bash" script work?
+## How does netdatas' own "curl | bash" script work?
 
 Installing via deb packages, went through the following pages.
 
