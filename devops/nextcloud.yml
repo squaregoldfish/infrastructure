@@ -30,4 +30,7 @@
       # manual recommends putting nextcloud into "maintenance" mode before
       # backup up. Since maintenance mode prohibits anyone from actually using
       # nextcloud, we might as well bring it down.
-      bbclient_coldbackup_crontab: { hour: 3, minute: 0 }
+      bbclient_coldbackup_crontab: { hour: 1, minute: 0 }
+      bbclient_coldbackup_patterns: |
+        R /disk/data/nextcloud
+        R /docker/nextcloud/volumes
