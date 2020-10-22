@@ -58,6 +58,10 @@ def prune():
 
 
 def backup():
+    if exists('.bbclient/patterns.lst'):
+        patterns = '--patterns-from .bbclient/patterns.lst'
+    else:
+        patterns = 'volumes'
     try:
         # If our docker-builds script is available then dump information about
         # currently running images. Don't care if it fails.
@@ -66,12 +70,12 @@ def backup():
         # Dirty means that we'll take a backup while the service is still
         # running. The idea is that the cold backup will go much faster.
         bbclient('dirty backup',
-                 'create --verbose --stats "::dirty-{now}" volumes')
+                 'create --verbose --stats "::dirty-{now}" %s' % patterns)
 
         run(['docker-compose', 'down'], stderr=DEVNULL, check=1)
 
         bbclient('cold backup',
-                 'create --verbose --stats "::{now}" volumes')
+                 'create --verbose --stats "::{now}" %s' % patterns)
     finally:
         run(['docker-compose', 'up', '-d'], stderr=DEVNULL)
 

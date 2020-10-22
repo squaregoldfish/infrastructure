@@ -27,3 +27,9 @@
   when: bbclient_repo_url not in bbclient_repos
   loop_control:
     loop_var: bbclient_remote
+
+- name: Create patterns.lst
+  copy:
+    dest: "{{ bbclient_home }}/.bbclient/patterns.lst"
+    content: "{{ bbclient_coldbackup_patterns }}"
+  when: bbclient_coldbackup_patterns is defined
