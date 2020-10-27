@@ -1,5 +1,0 @@
-filedrop_username: filedrop
-filedrop_servicename: filedrop
-
-certbot_domains: [filedrop.icos-cp.eu]
-certbot_conf_name: filedrop

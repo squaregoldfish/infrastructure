@@ -1,3 +1,15 @@
-- import_tasks: filedrop.yml
-  tags:
-    - filedrop_only
+- name: Create filedrop user
+  user:
+    name: filedrop
+    home: /home/filedrop
+    shell: /usr/sbin/nologin
+  register: _user
+
+- name: Deploy filedrop jarfile as a service
+  include_role:
+  name: icos.jarservice2
+  vars:
+    jarservice_name : filedrop
+    jarservice_home : "{{ _user.home }}"
+    jarservice_local: "{{ filedrop_jar_file }}"
+    jarservice_unit : "{{ lookup('template', 'filedrop.service') }}"
