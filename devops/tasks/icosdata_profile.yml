@@ -28,6 +28,11 @@
         source: /data/stilt
         type: disk
         readonly: "true"
+      stilt_legacy:
+        path: /data/stilt_legacy
+        source: /data/stilt_legacy
+        type: disk
+        readonly: "true"
       stiltweb:
         path: /data/stiltweb
         source: /data/stiltweb
