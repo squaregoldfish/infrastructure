@@ -1,29 +1,22 @@
-# Having this simple test speeds up execution of the playbook quite a bit.
-- name: Check whether sbt is present
-  stat: path=/usr/bin/sbt
-  register: sbt_present
+- name: Add bintray apt key
+  apt_key:
+    keyserver: hkp://keyserver.ubuntu.com:80
+    id: 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+    state: present
 
-- block:
-    - name: add official sbt RPM repository
-      yum_repository:
-        name: bintray-sbt
-        description: Official Scala RPM repository
-        baseurl: https://dl.bintray.com/sbt/rpm
-        gpgcheck: no
-        repo_gpgcheck: no
-    - name: installing sbt using yum
-      yum: name=sbt state=present
-  when: ansible_distribution == 'CentOS' and not sbt_present.stat.exists
+- name: Add bintray apt repository
+  apt_repository:
+    repo: deb https://dl.bintray.com/sbt/debian /
 
-- block:
-  - name: add bintray apt key
-    apt_key:
-      keyserver: hkp://keyserver.ubuntu.com:80
-      id: 2EE0EA64E40A89B84B2DF73499E82A75642AC823
-      state: present
-  - name: add bintray apt repository
-    apt_repository:
-        repo: deb https://dl.bintray.com/sbt/debian /
-  - name: install sbt using apt
-    apt: name=sbt state=present
-  when: ansible_distribution == "Ubuntu"
+- name: Install sbt using apt
+  apt:
+    name:
+      # needed to run sbt
+      - default-jdk
+      - sbt
+
+
+# When first installed, 'sbt' is just a wrapper that run will download all it's
+# depenencies. We run this command to get that out of the way.
+- name: Trigger bootstrap of sbt
+  command: sbt -version
