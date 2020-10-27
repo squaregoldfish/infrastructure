@@ -40,10 +40,8 @@ bbserver_bin: /usr/local/bin/borg
 bbserver_repo_home: "{{ bbserver_home }}/repos"
 
 bbclient_remotes:
-  - fsicos.lunarc.lu.se
   - fsicos2.lunarc.lu.se
   - cdb.nateko.lu.se
-
 
 dovecot_domains:
   - test.icos-cp.eu

@@ -63,6 +63,5 @@ ansible_host=fsicos3.lunarc.lu.se
 ansible_user=root
 
 [bbservers]
-fsicos.lunarc.lu.se
 fsicos2.lunarc.lu.se
 cdb.nateko.lu.se
