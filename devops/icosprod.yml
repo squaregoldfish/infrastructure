@@ -8,8 +8,6 @@
     - vault.yml
     - vars.yml
   roles:
-    - role: icos.filedrop
-      tags: filedrop
 
 - hosts: fsicos2.lunarc.lu.se
   become: true

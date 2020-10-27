@@ -1,0 +1,16 @@
+- hosts: ute_host
+  vars:
+    filedrop_domain: filedrop.icos-cp.eu
+    filedrop_cert_name: filedrop
+
+  roles:
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: "{{ filedrop_cert_name }}"
+      certbot_domain: "{{ filedrop_domain }}"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: filedrop
+      nginxsite_file: roles/icos.filedrop/templates/filedrop.conf
+      filedrop_addr: http://filedrop.lxd:8039;
