@@ -1,21 +1,23 @@
-- hosts: ute_host
+- hosts: callisto_host
   pre_tasks:
     - name: Create storage for docker
       tags: zfs
       import_role:
         name: icos.zfsdocker
       vars:
-        zfsdocker_name: ute
+        zfsdocker_name: callisto
         zfsdocker_size: "50G"
 
-    - name: Create the ute container
+    - name: Create the callisto container
       tags: lxd
       lxd_container:
-        name: ute
+        name: callisto
         state: started
         profiles:
           - default
           - ssh_root
+          - icosdata
+          - icosproject
         source:
           type: image
           mode: pull
@@ -33,6 +35,14 @@
             source: "{{ zfsdocker_zvol }}"
             type: disk
             raw.mount.options: user_subvol_rm_allowed
+          stilt:
+            path: "/ute/stilt"
+            source: "/pool/ute/stilt"
+            type: disk
+          eurocom:
+            path: "/ute/eurocom"
+            source: "/data/project/eurocom"
+            type: disk
         config:
           security.nesting: "true"
         wait_for_ipv4_addresses: true
@@ -44,9 +54,10 @@
     - role: icos.lxd_forward
       tags: forward
       lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
-      lxd_forward_name: ute
+      lxd_forward_name: callisto
 
-- hosts: ute
+
+- hosts: callisto
   vars_files:
     - vault.yml
   roles:
@@ -58,5 +69,5 @@
 
     - role: icos.superuser
       tags: users
-      superuser_list: "{{ vault_ute_superusers }}"
+      superuser_list: "{{ vault_callisto_superusers }}"
       superuser_disable_coredump: true

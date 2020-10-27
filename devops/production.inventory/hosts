@@ -39,7 +39,7 @@ ansible_user=root
 
 
 [fsicos3_aliases]
-ute_host
+callisto_host
 molefractions_host
 erddap_host
 flexpart_host
@@ -51,7 +51,7 @@ ansible_host=fsicos3.lunarc.lu.se
 ansible_user=root
 
 [fsicos3_vms]
-ute ansible_port=60510
+callisto ansible_port=60510
 molefractions ansible_port=60515
 erddap ansible_port=60520
 flexpart ansible_port=60530
