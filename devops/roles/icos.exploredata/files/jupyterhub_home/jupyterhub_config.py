@@ -77,3 +77,7 @@ c.JupyterHub.active_server_limit = 20
 # This is set much more aggressively than in the default configuration so that
 # we quickly can shut down idle servers.
 c.JupyterHub.last_activity_interval = 300
+
+# The override configuration file doesn't have to exist.
+load_subconfig(os.path.join(os.path.dirname(__file__),
+                            'jupyterhub_config_override.py'))
