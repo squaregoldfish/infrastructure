@@ -27,9 +27,6 @@
 # Recreate the lxd container
 #   deploy exploredata lxd
 #
-# Redeploy hub configs and restart hub
-#   deploy exploredata exploredata_hub
-#
 # For details about how to push jupyter to testing/production, look in
 # ../exploredata.
 
@@ -71,10 +68,9 @@
           - exploredata
 
     - import_role: name=icos.certbot2
-      tags:
-        - cert
+      tags: cert
       vars:
-        certbot_name: exploredata-test
+        certbot_name: exploredata
         certbot_domains:
           - exploretest.icos-cp.eu
           - exploredata.icos-cp.eu
@@ -102,6 +98,8 @@
 
 # Setup the LXD container
 - hosts: exploredata
+  vars_files:
+    - vault.yml
   pre_tasks:
     # Reading the vault as a task (instead of a vars_files) allows people
     # who don't have the password to use the other tasks.
