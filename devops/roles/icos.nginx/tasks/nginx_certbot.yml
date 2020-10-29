@@ -3,7 +3,7 @@
     name:
       - certbot
       - certbot-nginx
-    state: present
+    state: "{{ certbot_state | default('present') }}"
     executable: pip3
 
 - name: Add job to renew certificates
