@@ -15,6 +15,11 @@
   pip:
     name: passlib
 
+- name: Create directory for auth file
+  file:
+    path: "{{ nginxauth_file | dirname }}"
+    state: directory
+
 - name: Add basic auth users
   htpasswd:
     path: "{{ nginxauth_file }}"
