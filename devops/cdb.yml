@@ -1,0 +1,8 @@
+- hosts: cdb.nateko.lu.se
+  become: true
+  roles:
+    - role: icos.rrsync
+      tags: rrsync
+
+    - role: icos.bbserver
+      tags: bbserver
