@@ -97,8 +97,6 @@
 
 # Setup the LXD container
 - hosts: exploredata
-  vars_files:
-    - vault.yml
   pre_tasks:
     # Reading the vault as a task (instead of a vars_files) allows people
     # who don't have the password to use the other tasks.
