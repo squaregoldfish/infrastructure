@@ -54,7 +54,7 @@
             path: /data
             source: /data
             type: disk
-              recursive: "true"
+            recursive: "true"
         name: exploredata
 
     - import_role: name=icos.lxd_host
