@@ -1,0 +1,20 @@
+# Upgrade certbot
+# deploy fsicos2 nginx_certbot -ecertbot_state=latest
+
+- hosts: fsicos2.lunarc.lu.se
+  become: true
+  roles:
+    - role: icos.linux
+      tags: linux
+
+    - role: icos.docker
+      tags: docker
+
+    - role: icos.nginx
+      togs: nginx
+
+    - role: icos.java
+      tags: java
+
+    - role: icos.bbserver
+      tags: bbserver
