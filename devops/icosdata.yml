@@ -99,9 +99,6 @@
         - path: /data/project/interpolation
           src: fsicos3.lunarc.lu.se:/data/project/interpolation
 
-    - import_tasks: tasks/icosdata_profile.yml
-      tags: profile
-
     - name: Export data via nfs
       tags: export
       blockinfile:
@@ -148,6 +145,7 @@
         path: "{{ item.path }}"
         state: mounted
         fstype: nfs
+        opts: "{{ item.opts | default('ro') }}"
       loop:
         - path: /data/flexextract
           src: fsicos2.lunarc.lu.se:/data/flexextract
@@ -169,9 +167,6 @@
 
         - path: /data/project/climbeco
           src: fsicos2.lunarc.lu.se:/disk/data/project/climbeco
-
-    - import_tasks: tasks/icosdata_profile.yml
-      tags: profile
 
     - name: Export data via nfs
       tags: export

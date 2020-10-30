@@ -51,7 +51,6 @@
         profiles:
           - default
           - ssh_root
-          - icosdata
         source:
           type: image
           mode: pull
@@ -69,6 +68,11 @@
             source: "{{ zvol_docker }}"
             type: disk
             raw.mount.options: user_subvol_rm_allowed
+          data:
+            path: /data
+            source: /data
+            type: disk
+            recursive: "yes"
           home:
             path: /home
             source: /pool/jupyter/home
@@ -77,15 +81,6 @@
             path: /project
             source: /pool/jupyter/project
             type: "disk"
-          dataproject:
-            path: /data/project
-            source: /data/project
-            type: "disk"
-          interpolation:
-            path: /data/project/interpolation
-            readonly: "true"
-            source: /data/project/interpolation
-            type: disk
         config:
           security.nesting: "true"
         wait_for_ipv4_addresses: true

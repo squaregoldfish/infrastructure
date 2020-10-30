@@ -35,7 +35,6 @@
       lxd_host_extra_keys: "{{ vault_thredds_extra_keys.splitlines() }}"
       lxd_host_profiles:
         - default
-        - icosdata
         - thredds
 
 - hosts: thredds

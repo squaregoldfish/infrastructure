@@ -27,7 +27,6 @@
         profiles:
           - default
           - ssh_root
-          - icosdata
         source:
           type: image
           mode: pull
@@ -45,6 +44,11 @@
             source: "{{ zfsdocker_zvol }}"
             type: disk
             raw.mount.options: user_subvol_rm_allowed
+          data:
+            path: /data
+            source: /data
+            type: disk
+            recursive: "yes"
         config:
           security.nesting: "true"
         wait_for_ipv4_addresses: true
