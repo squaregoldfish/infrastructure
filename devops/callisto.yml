@@ -1,4 +1,10 @@
+# Deploy eurocom website
+#   deploy callisto eurocom
+
+
 - hosts: callisto_host
+  vars_files:
+    - vault.yml
   pre_tasks:
     - name: Create storage for docker
       tags: zfs
@@ -46,6 +52,10 @@
             path: "/ute/eurocom"
             source: "/data/project/eurocom"
             type: disk
+          eurocom_web_root:
+            path: "/ute/eurocom_web_root"
+            source: "/pool/ute/eurocom_web_root"
+            type: disk
         config:
           security.nesting: "true"
         wait_for_ipv4_addresses: true
@@ -59,6 +69,10 @@
       lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
       lxd_forward_name: callisto
 
+    - role: icos.eurocom
+      tags: eurocom
+      eurocom_users: "{{ vault_eurocom_users }}"
+      eurocom_web_root: /pool/ute/eurocom_web_root
 
 - hosts: callisto
   vars_files:
