@@ -25,7 +25,7 @@
 - name: Create {{ sshlogin_src_user }} user
   user:
     name: "{{ sshlogin_src_user }}"
-    home: "{{ sshlogin_src_home }}"
+    home: "{{ sshlogin_src_home | default(omit) }}"
     generate_ssh_key: yes
   register: _src_user
 
