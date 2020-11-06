@@ -22,7 +22,9 @@
         zfsdocker_size: "50G"
 
     - name: Create the callisto container
-      tags: lxd
+      tags:
+        - lxd
+        - forward
       lxd_container:
         name: callisto
         state: started
@@ -80,6 +82,8 @@
       tags: eurocom
       eurocom_users: "{{ vault_eurocom_users }}"
       eurocom_web_root: /pool/ute/eurocom_web_root
+      eurocom_data_home: /data/project/eurocom
+
     - role: icos.certbot2
       tags:
         - cert
