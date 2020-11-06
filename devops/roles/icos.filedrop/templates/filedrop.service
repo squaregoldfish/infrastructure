@@ -4,11 +4,11 @@ After=network.target
 
 [Service]
 Type=simple
-User={{ username }}
+User={{ _user.name }}
 ExecStart=/usr/bin/java -jar "{{ jarservice_jar }}"
 Restart=always
 RestartSec=30
-WorkingDirectory=/home/{{ username }}
+WorkingDirectory=/home/{{ _user.name }}
 
 [Install]
 WantedBy=multi-user.target

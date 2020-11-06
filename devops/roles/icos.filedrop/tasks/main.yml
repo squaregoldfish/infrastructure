@@ -5,9 +5,13 @@
     shell: /usr/sbin/nologin
   register: _user
 
+- name: Install Java
+  apt:
+    name: default-jdk
+
 - name: Deploy filedrop jarfile as a service
   include_role:
-  name: icos.jarservice2
+    name: icos.jarservice2
   vars:
     jarservice_name : filedrop
     jarservice_home : "{{ _user.home }}"
