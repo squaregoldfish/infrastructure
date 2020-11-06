@@ -12,9 +12,9 @@
     name: net.ipv4.ip_forward
     value: "1"
 
-- name: Enable IP routing to localhost
+- name: Enable IP routing to localnet
   sysctl:
-    name: net.ipv4.conf.all.route_localhost
+    name: net.ipv4.route_localnet
     value: "1"
   when: port_forward_dhost in ('localhost', '127.0.0.1')
 
