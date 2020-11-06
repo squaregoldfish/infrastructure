@@ -1,0 +1,41 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - port_forward_sport
+    - port_forward_dport
+    - port_forward_dhost
+
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+
+- name: Enable IP routing to localhost
+  sysctl:
+    name: net.ipv4.conf.all.route_localhost
+    value: "1"
+  when: port_forward_dhost in ('localhost', '127.0.0.1')
+
+- name: Add port forward {{ port_forward_desc }}
+  blockinfile:
+    marker: "# {mark} ansible / {{ port_forward_desc }}"
+    backup: yes
+    create: no
+    insertafter: EOF
+    path: /etc/ufw/before.rules
+    block: |
+      *nat
+      :PREROUTING ACCEPT [0:0]
+      -A PREROUTING -p tcp --dport {{ port_forward_sport }} -j DNAT --to-destination {{ port_forward_dhost }}:{{ port_forward_dport}}
+      COMMIT
+  notify: reload ufw
+
+- name: Allow traffic on container's external port
+  ufw:
+    route: true
+    rule: allow
+    port: "'{{ port_forward_sport }}'"
+    comment: "allow forward of {{ port_forward_desc }}"
+  notify: reload ufw
