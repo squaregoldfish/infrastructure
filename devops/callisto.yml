@@ -102,6 +102,8 @@
 
 
 - hosts: callisto
+  vars:
+    sftp_home: /ute/sftp_home
   vars_files:
     - vault.yml
   roles:
@@ -132,3 +134,51 @@
       ufw:
         policy: allow
         state: enabled
+
+    - name: Create sftp directory parent
+      tags: sftp
+      file:
+        path: "{{ sftp_home }}"
+        state: directory
+        owner: root
+        group: root
+
+    - name: Create sftp directory
+      tags: sftp
+      file:
+        path: "{{ sftp_home }}/data"
+        state: directory
+        owner: ute
+        group: ute
+
+    - name: Create sftp user
+      tags: sftp
+      user:
+        name: sftp
+        password: "{{ vault_callisto_sftp_password }}"
+        home: "{{ sftp_home }}"
+        create_home: no
+        shell: /usr/sbin/nologin
+
+    - name: Set sshd sftp chroot
+      tags: sftp
+      blockinfile:
+        marker: "# {mark} ansible callisto sftp chroot"
+        path: /etc/ssh/sshd_config
+        block: |
+          Match User sftp
+            ChrootDirectory %h
+            ForceCommand internal-sftp -d data
+            DisableForwarding yes
+            PasswordAuthentication yes
+      notify: reload sshd
+
+    - name: Print ssh config
+      tags: sftp
+      debug:
+        msg: |
+          Host {{ inventory_hostname }}
+            HostName {{ ansible_host }}
+            Port {{ ansible_port }}
+            User sftp
+            PreferredAuthentications password
