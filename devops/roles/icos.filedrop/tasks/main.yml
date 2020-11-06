@@ -17,3 +17,13 @@
     jarservice_home : "{{ _user.home }}"
     jarservice_local: "{{ filedrop_jar_file }}"
     jarservice_unit : "{{ lookup('template', 'filedrop.service') }}"
+  when: filedrop_jar_file is defined
+
+- name: Create filedrop config file
+  copy:
+    dest: "{{ _user.home }}/application.conf"
+    content: |
+      cpfiledrop{
+              folder = "{{ filedrop_data_home }}"
+      }
+  notify: restart filedrop
