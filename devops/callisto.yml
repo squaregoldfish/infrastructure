@@ -1,8 +1,15 @@
 # Deploy eurocom website
 #   deploy callisto eurocom
-
+#
+# Deploy a new filedrop jar file
+#  deploy callisto filedrop -lcallisto -efiledrop_jar_file=/tmp/filedrop.jar
+#
+# Deploy filedrop website
+#  deploy callisto filedrop -lcallisto_host
 
 - hosts: callisto_host
+  vars:
+    filedrop_domain: filedrop.icos-cp.eu
   vars_files:
     - vault.yml
   pre_tasks:
@@ -73,6 +80,18 @@
       tags: eurocom
       eurocom_users: "{{ vault_eurocom_users }}"
       eurocom_web_root: /pool/ute/eurocom_web_root
+    - role: icos.certbot2
+      tags:
+        - cert
+        - filedrop
+      certbot_domain: "{{ filedrop_domain }}"
+
+    - role: icos.nginxsite
+      tags: filedrop
+      nginxsite_name: filedrop
+      nginxsite_file: roles/icos.filedrop/templates/filedrop.conf
+      filedrop_addr: "http://callisto.lxd:8039"
+
 
 - hosts: callisto
   vars_files:
@@ -88,3 +107,19 @@
       tags: users
       superuser_list: "{{ vault_callisto_superusers }}"
       superuser_disable_coredump: true
+
+    - role: icos.filedrop
+      tags: filedrop
+
+    - role: icos.port_forward
+      tags: forward
+      port_forward_sport: 8039
+      port_forward_dport: 8039
+      port_forward_dhost: 127.0.0.1
+
+  tasks:
+    - name: enable ufw
+      tags: forward
+      ufw:
+        policy: allow
+        state: enabled
