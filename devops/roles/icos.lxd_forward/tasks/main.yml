@@ -6,32 +6,12 @@
     - lxd_forward_ip
     - lxd_forward_name
 
-- name: Enable IP forwarding
-  sysctl:
-    name: net.ipv4.ip_forward
-    value: "1"
-
-- name: Add port forward for {{ lxd_forward_name }} ssh
-  blockinfile:
-    marker: "# {mark} ansible / ssh to lxd {{ lxd_forward_name }}"
-    backup: yes
-    create: no
-    insertafter: EOF
-    path: /etc/ufw/before.rules
-    block: |
-      *nat
-      :PREROUTING ACCEPT [0:0]
-      -A PREROUTING -p tcp --dport {{ lxd_forward_port }} -j DNAT --to-destination {{ lxd_forward_ip }}:22
-      COMMIT
-  notify: Reload UFW
-
-- name: Allow traffic on containers external ssh port
-  ufw:
-    route: true
-    rule: allow
-    port: "'{{ lxd_forward_port }}'"
-    comment: "ssh to lxd {{ lxd_forward_name }}"
-  notify: Reload UFW
+- import_role: name=icos.port_forward
+  vars:
+    port_forward_dhost: "{{ lxd_forward_ip }}"
+    port_forward_dport: "{{ lxd_forward_dport }}"
+    port_forward_sport: "{{ lxd_forward_port }}"
+    port_forward_desc: "{{ lxd_forward_desc }}"
 
 - name: Modify /etc/hosts
   lineinfile:
