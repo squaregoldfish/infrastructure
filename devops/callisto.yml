@@ -65,6 +65,10 @@
             path: "/ute/eurocom_web_root"
             source: "/pool/ute/eurocom_web_root"
             type: disk
+          filedrop:
+            path: "/ute/filedrop"
+            source: "/pool/ute/filedrop"
+            type: disk
         config:
           security.nesting: "true"
         wait_for_ipv4_addresses: true
@@ -114,6 +118,7 @@
 
     - role: icos.filedrop
       tags: filedrop
+      filedrop_data_home: /ute/filedrop
 
     - role: icos.port_forward
       tags: forward
