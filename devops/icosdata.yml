@@ -175,10 +175,11 @@
         create: yes
         path: /etc/exports
         block: |
-          /incoming                        fsicos*.lunarc.lu.se(rw,no_root_squash)
-          /data/project/interpolation      fsicos*.lunarc.lu.se(ro)
-          /data/project/eurocom            fsicos*.lunarc.lu.se(ro)
-          /pool/ute/stilt/RINGO/T1.3/STILT fsicos*.lunarc.lu.se(ro)
+          # The 'no_subtree_check' is to avoid warnings about the default behaviour having changed.
+          /incoming                        fsicos*.lunarc.lu.se(rw,no_root_squash,no_subtree_check)
+          /data/project/interpolation      fsicos*.lunarc.lu.se(ro,no_subtree_check)
+          /data/project/eurocom            fsicos*.lunarc.lu.se(ro,no_subtree_check)
+          /pool/ute/stilt/RINGO/T1.3/STILT fsicos*.lunarc.lu.se(ro,no_subtree_check)
       notify: Reload NFS server
 
     - name: Do bind-mount local data
