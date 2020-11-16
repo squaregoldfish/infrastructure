@@ -17,4 +17,3 @@
     build:
       dockerfile: "{{ exploredata_home }}/build.notebook/exploredata/Dockerfile"
       path: "{{ exploredata_home }}/build.notebook"
-      pull: yes
