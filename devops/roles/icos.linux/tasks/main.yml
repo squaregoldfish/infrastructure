@@ -13,6 +13,8 @@
       - make # party like it's 1976
       - netcat-openbsd
       - tree
+      - mailutils
+      - mutt
 
 - name: Install bash aliases
   lineinfile:
@@ -23,6 +25,7 @@
   loop:
     - "alias sc='systemctl'"
     - "alias jc='journalctl'"
+    - "alias df='df -h -x tmpfs -x overlay -x devtmpfs'"
 
 - name: Copy utilities
   tags: linux_utils
