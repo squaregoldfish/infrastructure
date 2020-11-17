@@ -24,7 +24,7 @@
             size: "20GB"
           molefractions:
             path: /data/molefractions/CTE_CO2_3D_molefractions
-            source: /disk/common/netcdf/CTE_CO2_3D_molefractions
+            source: /data/common/netcdf/CTE_CO2_3D_molefractions
             type: disk
             readonly: "true"
           ct2018:
