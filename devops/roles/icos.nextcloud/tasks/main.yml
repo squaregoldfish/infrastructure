@@ -81,3 +81,6 @@
     - nextcloud.conf
     - nextcloud-nextcloud.inc
   notify: reload nginx config
+
+- import_tasks: cli.yml
+  tags: nextcloud_cli
