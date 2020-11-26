@@ -1,5 +1,0 @@
-- hosts: callisto_host
-  vars:
-    filedrop_domain: filedrop.icos-cp.eu
-
-  roles:
