@@ -19,15 +19,26 @@
   vars_files:
     - vault.yml
   vars:
+    eddyetc_ip: "{{ _lxd.addresses.eth0 | first }}"
     eddyetc_domains:
       - eddyetc.icos-cp.eu
     eddyetc_cert_name: eddyetc
     eddyetc_user_file: /etc/nginx/auth/eddyetc
   pre_tasks:
-    - name: Create eddyetc LXD profile
-      tags: profile
-      lxd_profile:
+    - name: Create eddyetc LXD container
+      tags: lxd
+      lxd_container:
         name: eddyetc
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "18.04"
         config:
           security.nesting: "true"
           limits.memory: "100GB"
@@ -36,26 +47,25 @@
             path: /
             type: disk
             pool: eddyetc
-
           ringo:
             path: /input
             source: "/disk/data/nextcloud/data/__groupfolders/10/raw data for Deliverable 4.2"
             readonly: "1"
             type: disk
-
           project:
             path: /eddyetc
             source: "/data/project/eddyetc"
             type: disk
+        wait_for_ipv4_addresses: true
+        wait_for_ipv4_interfaces: eth0
+        timeout: 60
+      register: _lxd
 
   roles:
-    - role: icos.lxd_host
-      tags: container
-      lxd_host_name: eddyetc
-      lxd_host_port: "{{ hostvars['eddyetc'].ansible_port }}"
-      lxd_host_profiles:
-        - default
-        - eddyetc
+    - role: icos.lxd_forward
+      tags: forward
+      lxd_forward_ip: "{{ eddyetc_ip }}"
+      lxd_forward_name: eddyetc
 
     - role: icos.certbot2
       tags: cert
