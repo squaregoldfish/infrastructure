@@ -11,7 +11,7 @@
       tags: docker
 
     - role: icos.nginx
-      togs: nginx
+      tags: nginx
 
     - role: icos.java
       tags: java
