@@ -39,7 +39,7 @@
 
           ringo:
             path: /input
-            source: "/disk/data/docker-compose-projects/nextcloud/volumes/nextcloud/data/__groupfolders/10/raw data for Deliverable 4.2"
+            source: "/disk/data/nextcloud/data/__groupfolders/10/raw data for Deliverable 4.2"
             readonly: "1"
             type: disk
 
