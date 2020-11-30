@@ -34,7 +34,6 @@
             path: /data
             source: /data
             type: disk
-            readonly: "true"
             recursive: "true"
   roles:
     - role: icos.lxd_host
