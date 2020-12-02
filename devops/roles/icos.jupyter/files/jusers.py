@@ -6,12 +6,16 @@ import random
 import spwd
 import subprocess
 import sys
+import requests
+import pandas as pd
 
 import click
 from ruamel.yaml import YAML
 
 
 PROJECT = '/project'
+PRTEMPL = '/root/readme_template.html'
+PR_URL  = 'https://fileshare.icos-cp.eu/s/JWncSTWTFKyFZ3t/download'
 DRY_RUN = False
 VERBOSE = False
 USERSDB = '/root/jusers.yml'
@@ -363,6 +367,84 @@ def set_passwords(users):
     else:
         reset_passwords(users)
         run(maybe_restart_hub())
+        
+        
+@cli.command()
+@click.option('-p', '--project', default='', help='project folder name')
+@click.option('-f', '--force', is_flag=True, help='force replace existing README.html')
+def project_readme(project, force):
+    """Create a README.html page for projects.
+    
+    Based on a template (/root/readme_template.html) a customized project
+    README.html is created and copied to /project/...../store/README.html
+    
+    The contact information, description, PI etc. is read from the cp fileshare
+    'elaboroated products/jupyter/projectgroups/jupyterhub_projectgroup_info.xlsx'
+    https://fileshare.icos-cp.eu/s/JWncSTWTFKyFZ3t/download'
+
+    Running this command without an argument will create a new README.html
+    for all projects listed in the excel file. Existing README.html files
+    are NOT replaced.
+    
+    You can create a new README.html for a specific project by providing
+    the project name.
+    
+    By default --force is set to false, hence existing files are NOT overwritten
+
+    Examples:
+    
+    \b
+      $ jusers project_readme inverse
+             creates a new README.html file IF the file does NOT exist
+      $ jusers project_readme inverse --force
+             creates a new README.html overwrite existing file
+      $ jusers project_readme -f
+             replace or create new README.html files for ALL projects
+
+    """
+    
+    # read excel file from fileshare or use provided project name
+    try:
+       re = requests.get(PR_URL)
+       df = pd.read_excel(re.content)
+    except:
+        print('reading fileshare document failed')
+
+    if not project:
+        project = list(df.folder.values)
+    else:
+        project = project.split()
+    
+    # read template
+    with open(PRTEMPL) as f:
+        template = f.read()
+
+    for p in project:    
+        # check if the actual project folder exists..
+        pfolder = PROJECT+ '/' + p
+        if not os.path.exists(pfolder):
+            print(pfolder, ' not found')
+            continue
+
+        # path to project readme
+        fn = pfolder + '/store/README.html'
+        
+        write = False
+        if (not os.path.exists(fn)) or (os.path.exists(fn) & force):
+            write = True        
+        if not write:
+            print(p, 'skip')
+        else:
+            try:
+                info = df.loc[df.folder==p].values[0]
+                f = open(fn, "w")
+                f.write(template%(info[0], info[1], info[2], info[2], info[3]))
+                f.close()
+                print(p, 'create or replace readme.html')
+            except Exception as e:
+                print(e)
+                print(p, 'create or replace readme.html FAILED')
+                print(fn)
 
 
 # MAIN

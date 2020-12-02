@@ -4,6 +4,8 @@
     name:
       - ruamel.yaml
       - click
+      - pandas
+      - requests
     state: present
 
 - name: Copy jusers.py
@@ -12,6 +14,13 @@
     src: jusers.py
     dest: /opt/jusers/jusers.py
     mode: +x
+
+- name: Copy readme_template.html
+  tags: jupyter_jusers_deploy
+  copy:
+    src: readme_template.html
+    dest: /root/jusers/readme_template.html
+    mode: +r
 
 - name: Create /usr/local/sbin/jusers symlink
   file:
