@@ -18,6 +18,29 @@ USERSDB = '/root/jusers.yml'
 PWDLENG = 10
 
 
+# PLUGINS
+# https://click.palletsprojects.com/en/7.x/commands/?highlight=plug#custom-multi-commands
+class Plugins(click.MultiCommand):
+
+    folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                          'plugins')
+
+    def list_commands(self, ctx):
+        rv = []
+        for filename in os.listdir(self.folder):
+            if filename.endswith('.py'):
+                rv.append(filename[:-3])
+        rv.sort()
+        return rv
+
+    def get_command(self, ctx, name):
+        fn = os.path.join(self.folder, name + '.py')
+        ns = {'__file__': fn}
+        with open(fn) as f:
+            code = compile(f.read(), fn, 'exec')
+            eval(code, ns, ns)
+        return ns['cli']
+
 # UTIL
 def join(*args):
     return os.path.join(*args)
@@ -367,4 +390,5 @@ def set_passwords(users):
 
 # MAIN
 if __name__ == '__main__':
+    cli = click.CommandCollection(sources=[cli, Plugins()])
     cli()
