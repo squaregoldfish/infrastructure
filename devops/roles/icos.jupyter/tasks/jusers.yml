@@ -9,18 +9,20 @@
     state: present
 
 - name: Copy jusers.py
-  tags: jupyter_jusers_deploy
   copy:
     src: jusers.py
     dest: /opt/jusers/jusers.py
     mode: +x
 
+- name: Copy plugins
+  copy:
+    src: plugins
+    dest: /opt/jusers/
+
 - name: Copy readme_template.html
-  tags: jupyter_jusers_deploy
   copy:
     src: readme_template.html
-    dest: /root/jusers/readme_template.html
-    mode: +r
+    dest: /root/readme_template.html
 
 - name: Create /usr/local/sbin/jusers symlink
   file:
