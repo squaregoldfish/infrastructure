@@ -367,17 +367,17 @@ def set_passwords(users):
     else:
         reset_passwords(users)
         run(maybe_restart_hub())
-        
-        
+
+
 @cli.command()
 @click.option('-p', '--project', default='', help='project folder name')
 @click.option('-f', '--force', is_flag=True, help='force replace existing README.html')
 def project_readme(project, force):
     """Create a README.html page for projects.
-    
+
     Based on a template (/root/readme_template.html) a customized project
     README.html is created and copied to /project/...../store/README.html
-    
+
     The contact information, description, PI etc. is read from the cp fileshare
     'elaboroated products/jupyter/projectgroups/jupyterhub_projectgroup_info.xlsx'
     https://fileshare.icos-cp.eu/s/JWncSTWTFKyFZ3t/download'
@@ -385,14 +385,14 @@ def project_readme(project, force):
     Running this command without an argument will create a new README.html
     for all projects listed in the excel file. Existing README.html files
     are NOT replaced.
-    
+
     You can create a new README.html for a specific project by providing
     the project name.
-    
+
     By default --force is set to false, hence existing files are NOT overwritten
 
     Examples:
-    
+
     \b
       $ jusers project_readme inverse
              creates a new README.html file IF the file does NOT exist
@@ -402,7 +402,7 @@ def project_readme(project, force):
              replace or create new README.html files for ALL projects
 
     """
-    
+
     # read excel file from fileshare or use provided project name
     try:
        re = requests.get(PR_URL)
@@ -414,12 +414,12 @@ def project_readme(project, force):
         project = list(df.folder.values)
     else:
         project = project.split()
-    
+
     # read template
     with open(PRTEMPL) as f:
         template = f.read()
 
-    for p in project:    
+    for p in project:
         # check if the actual project folder exists..
         pfolder = PROJECT+ '/' + p
         if not os.path.exists(pfolder):
@@ -428,10 +428,10 @@ def project_readme(project, force):
 
         # path to project readme
         fn = pfolder + '/store/README.html'
-        
+
         write = False
         if (not os.path.exists(fn)) or (os.path.exists(fn) & force):
-            write = True        
+            write = True
         if not write:
             print(p, 'skip')
         else:
