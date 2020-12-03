@@ -1,7 +1,9 @@
 - import_tasks: user_name_home.yml
   # These task only sets facts, and those facts are required no matter what
   # other tasks we want to run.
-  tags: always
+  tags:
+    - bbclient_install
+    - bbclient-coldbackup
 
 - import_tasks: install.yml
   tags: bbclient_install
