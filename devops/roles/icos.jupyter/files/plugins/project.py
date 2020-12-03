@@ -8,10 +8,16 @@ PROJECT = '/project'
 PRTEMPL = '/root/readme_template.html'
 PR_URL  = 'https://fileshare.icos-cp.eu/s/JWncSTWTFKyFZ3t/download'
 
+
+@click.group()
+def cli():
+    pass
+
+
 @cli.command()
 @click.option('-p', '--project', default='', help='project folder name')
 @click.option('-f', '--force', is_flag=True, help='force replace existing README.html')
-def project_readme(project, force):
+def readme(project, force):
     """Create a README.html page for projects.
 
     Based on a template (/root/readme_template.html) a customized project
