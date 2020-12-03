@@ -415,36 +415,26 @@ def project_readme(project, force):
     else:
         project = project.split()
 
-    # read template
-    with open(PRTEMPL) as f:
-        template = f.read()
+    template = open(PRTEMPL).read()
 
     for p in project:
         # check if the actual project folder exists..
-        pfolder = PROJECT+ '/' + p
+        pfolder = join(PROJECT, p)
         if not os.path.exists(pfolder):
             print(pfolder, ' not found')
             continue
 
         # path to project readme
-        fn = pfolder + '/store/README.html'
+        fn = join(pfolder, '/store/README.html')
 
-        write = False
-        if (not os.path.exists(fn)) or (os.path.exists(fn) & force):
-            write = True
-        if not write:
+        if os.path.exists(fn) and not force:
             print(p, 'skip')
-        else:
-            try:
-                info = df.loc[df.folder==p].values[0]
-                f = open(fn, "w")
-                f.write(template%(info[0], info[1], info[2], info[2], info[3]))
-                f.close()
-                print(p, 'create or replace readme.html')
-            except Exception as e:
-                print(e)
-                print(p, 'create or replace readme.html FAILED')
-                print(fn)
+            continue
+
+        with open(fn, "w") as f:
+            info = df.loc[df.folder==p].values[0]
+            f.write(template%(info[0], info[1], info[2], info[2], info[3]))
+            print(p, 'create or replace readme.html')
 
 
 # MAIN
