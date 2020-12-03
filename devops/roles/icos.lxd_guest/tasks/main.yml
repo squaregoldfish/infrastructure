@@ -23,3 +23,10 @@
     state: present
     key: "{{ lxd_guest_ssh_keys }}"
   when: lxd_guest_ssh_keys is truthy
+
+- name: Add default gateway as host
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ ansible_default_ipv4.gateway }} gateway.lxd"
+    regex: "gateway.lxd$"
+    state: present
