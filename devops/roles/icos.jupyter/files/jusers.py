@@ -403,17 +403,16 @@ def project_readme(project, force):
 
     """
 
-    # read excel file from fileshare or use provided project name
-    try:
-       re = requests.get(PR_URL)
-       df = pd.read_excel(re.content)
-    except:
-        print('reading fileshare document failed')
-
-    if not project:
-        project = list(df.folder.values)
-    else:
+    if project:
         project = project.split()
+    else:
+        try:
+            re = requests.get(PR_URL)
+            df = pd.read_excel(re.content)
+        except:
+            print('reading fileshare document failed')
+            sys.exit(1)
+        project = list(df.folder.values)
 
     template = open(PRTEMPL).read()
 
