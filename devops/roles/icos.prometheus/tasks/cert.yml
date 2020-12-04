@@ -1,0 +1,10 @@
+- import_role: name=icos.certbot2
+  tags:
+    - cert
+  vars:
+    certbot_name: prometheus
+    certbot_domains:
+      - "{{ prometheus_prom_domain }}"
+      - "{{ prometheus_graf_domain }}"
+      - "{{ prometheus_bbox_domain }}"
+      - "{{ prometheus_alrt_domain }}"

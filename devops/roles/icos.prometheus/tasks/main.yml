@@ -1,8 +1,0 @@
-- import_tasks: docker.yml
-  tags: prometheus_docker
-
-- import_tasks: auth.yml
-  tags: prometheus_auth
-
-- import_tasks: nginx.yml
-  tags: prometheus_nginx

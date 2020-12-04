@@ -10,7 +10,6 @@ The stack has five separate parts, running in five different containers:
 5. alertmanager - sends out alerts
 
 
-
 ## Promethus
 
 The prometheus container will scrape remote targets for metrics and then write
@@ -29,18 +28,15 @@ TODO - explain how to add scrape targets.
   > $ docker run --rm -it prom/prometheus --help
 
 
-
 ## Victoriametrics
 
 A time-series database. It also presents a prometheus-lookalike interface for
 use by grafana.
 
-
 + [Official documentation](https://victoriametrics.github.io/)
 + [Latest tags on docker hub](https://hub.docker.com/r/victoriametrics/victoria-metrics/tags)
 + [How to upgrade](https://victoriametrics.github.io/#how-to-upgrade-victoriametrics)
 + [Sample docker-compose setup](https://github.com/VictoriaMetrics/VictoriaMetrics/tree/master/deployment/docker)
-
 
 
 ## Grafana
@@ -59,7 +55,6 @@ directly from victoriametrics.
 Prometheus default way of collecting metrics is to pull it from remote targets. Pushgateway instead receives metrics by way of push and sends them on to prometheus.
 
 
-
 ## Alertmanager
 
 Sends alerts through email, slack etc.
@@ -70,3 +65,18 @@ Reloading config.
 is not well-formed, the changes will not be applied and an error is logged. A
 configuration reload is triggered by sending a SIGHUP to the process or sending
 a HTTP POST request to the /-/reload endpoint."
+
+
+## Blackbox exporter
+
+https://github.com/prometheus/blackbox_exporter
+
++ Probes using HTTP, ICMP etc.
++ Blackbox defines the probes, but not the actual targets (hosts), those are
+  then supplied by prometheus.
+
+Reloading config: "Blackbox exporter can reload its configuration file at
+runtime. If the new configuration is not well-formed, the changes will not be
+applied. A configuration reload is triggered by sending a SIGHUP to the
+Blackbox exporter process or by sending a HTTP POST request to the /-/reload
+endpoint."

@@ -1,7 +1,8 @@
-- name: Install nginx
+- name: Install nginx and pip
   apt:
     name:
       - nginx
+      - python3-pip
       - python3-cryptography
 
 - name: Add mitigation for systemd/nginx race-condition

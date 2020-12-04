@@ -1,5 +1,0 @@
-- import_role: name=icos.htpasswd
-  tags: prometheus_htpasswd
-  vars:
-    htpasswd_users: "{{ prometheus_users }}"
-    htpasswd_file: "{{ prometheus_user_file }}"

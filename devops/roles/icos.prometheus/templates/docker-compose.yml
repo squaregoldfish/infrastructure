@@ -1,0 +1,115 @@
+version: '3.5'
+
+networks:
+  prometheus:
+    name: prometheus
+
+services:
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    # https://github.com/prometheus/prometheus/issues/5976
+    # This should've been handled by their entrypoint.
+    user: "65534"
+    depends_on:
+      - victoriametrics
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/prometheus_data:/prometheus
+      - ./volumes/prometheus_conf:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      {% for opt in prometheus_options -%}
+      - '{{ opt }}'
+      {% endfor %}
+
+    networks:
+      - prometheus
+    ports:
+      - "{{ prometheus_prom_port }}:{{ prometheus_prom_port }}"
+    restart: unless-stopped
+
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics
+    volumes:
+      - ./volumes/victoriametrics_data:/storage
+    command:
+      - '-storageDataPath=/storage'
+      # This is the port used by prometheus when it writes data to vm.
+      - '-httpListenAddr=:8428'
+      # Keep data around for this many months, the default is 1.
+      - '-retentionPeriod=24'
+    networks:
+      - prometheus
+    expose:
+      - "8428"
+    restart: unless-stopped
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    depends_on:
+      - victoriametrics
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/grafana_data:/var/lib/grafana
+      - ./volumes/grafana_conf:/etc/grafana/provisioning/
+    networks:
+      - prometheus
+    ports:
+      - "{{ prometheus_graf_port }}:{{ prometheus_graf_port }}"
+    environment:
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ prometheus_graf_pass }}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    restart: unless-stopped
+
+  pushgateway:
+    container_name: pushgateway
+    image: prom/pushgateway
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - prometheus
+    expose:
+      - "9091"
+    restart: unless-stopped
+
+  blackbox:
+    container_name: blackbox
+    image: prom/blackbox-exporter
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/blackbox_conf:/config
+    command:
+      - '--config.file=/config/blackbox.yml'
+    networks:
+      - prometheus
+    ports:
+      - "{{ prometheus_bbox_port }}:{{ prometheus_bbox_port }}"
+    expose:
+      - "{{ prometheus_bbox_port }}"
+    restart: unless-stopped
+
+  # Before enabling - add a route :
+  #   msg="Loading configuration file failed" file=/etc/alertmanager/config.yml
+  #   err="no route provided in config"
+  alertmanager:
+    container_name: alertmanager
+    image: prom/alertmanager
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/alertmanager_conf:/etc/alertmanager/
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - prometheus
+    ports:
+      - "{{ prometheus_alrt_port }}:{{ prometheus_alrt_port }}"
+    restart: unless-stopped

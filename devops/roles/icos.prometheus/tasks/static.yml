@@ -1,0 +1,26 @@
+- name: Copy prometheus config
+  tags: prometheus_config
+  copy:
+    src: "{{ prometheus_prom_cf }}"
+    dest: "{{ prometheus_home }}/volumes/prometheus_conf/prometheus.yml"
+  notify:
+    - check prom config
+    - reload prom config
+
+- name: Copy blackbox config
+  tags: prometheus_config
+  copy:
+    src: "{{ prometheus_bbox_cf }}"
+    dest: "{{ prometheus_home }}/volumes/blackbox_conf/blackbox.yml"
+  notify:
+    - check bbox config
+    - reload bbox config
+
+- name: Copy alertmanager config
+  tags: prometheus_config
+  template:
+    src: "{{ prometheus_alrt_cf }}"
+    dest: "{{ prometheus_home }}/volumes/alertmanager_conf/config.yml"
+  notify:
+    - check alrt config
+    - reload alrt config

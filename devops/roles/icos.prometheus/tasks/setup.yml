@@ -1,0 +1,28 @@
+- name: Create volume directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    # The prometheus and grafana images won't change uid/gid in their
+    # entrypoint, and require uid/gid to already match.
+    owner: "{{ item.owner | default(omit) }}"
+    group: "{{ item.owner | default(omit) }}"
+  loop:
+    - path: "{{ prometheus_home }}/volumes/prometheus_conf/"
+    - path: "{{ prometheus_home }}/volumes/prometheus_conf/dynamic"
+    - path: "{{ prometheus_home }}/volumes/prometheus_data"
+      owner: "65534"
+    - path: "{{ prometheus_home }}/volumes/grafana_data"
+      owner: "472"
+    - path: "{{ prometheus_home }}/volumes/grafana_conf"
+      owner: "472"
+    - path: "{{ prometheus_home }}/volumes/alertmanager_conf"
+    - path: "{{ prometheus_home }}/volumes/blackbox_conf"
+
+- name: Install docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: "{{ prometheus_home }}"
+  register: _compose
+
+- import_tasks: promtool.yml
+  tags: prometheus_promtool

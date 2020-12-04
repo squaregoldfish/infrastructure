@@ -1,11 +1,25 @@
-- import_role: name=icos.nginxsite
-  tags: prometheus_nginx
+- import_role: name=icos.htpasswd
+  tags: prometheus_auth
   vars:
-    nginxsite_name: prometheus
-    nginxsite_file: prometheus.conf
+    htpasswd_users: "{{ prometheus_users }}"
+    htpasswd_file: "{{ prometheus_user_file }}"
 
 - import_role: name=icos.nginxsite
-  tags: prometheus_nginx
+  vars:
+    nginxsite_name: prometheus
+    nginxsite_file: prometheus-nginx.conf
+
+- import_role: name=icos.nginxsite
   vars:
     nginxsite_name: grafana
-    nginxsite_file: grafana.conf
+    nginxsite_file: grafana-nginx.conf
+
+- import_role: name=icos.nginxsite
+  vars:
+    nginxsite_name: blackbox
+    nginxsite_file: blackbox-nginx.conf
+
+- import_role: name=icos.nginxsite
+  vars:
+    nginxsite_name: alertmanager
+    nginxsite_file: alertmanager-nginx.conf

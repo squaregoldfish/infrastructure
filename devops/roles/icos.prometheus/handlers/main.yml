@@ -1,0 +1,43 @@
+# PROMETHEUS
+- name: check prom config
+  command: promtool check config {{ prometheus_host_conf }}
+  changed_when: no
+
+- name: reload prom config
+  command: docker-compose kill -s SIGHUP prometheus
+  args:
+    chdir: "{{ prometheus_home }}"
+
+
+# BLACKBOX EXPORTER
+- name: check bbox config
+  tags: prometheus_config
+  command: >-
+    docker-compose run --rm -T blackbox
+    --config.file /config/blackbox.yml --config.check
+  args:
+    chdir: "{{ prometheus_home }}"
+  changed_when: no
+
+- name: reload bbox config
+  tags: prometheus_config
+  command: docker-compose kill -s SIGHUP blackbox
+  args:
+    chdir: "{{ prometheus_home }}"
+
+
+# ALERTMANAGER
+- name: check alrt config
+  tags: prometheus_config
+  command: >-
+    docker-compose run --rm -T --entrypoint=amtool alertmanager
+    check-config /etc/alertmanager/config.yml
+  args:
+    chdir: "{{ prometheus_home }}"
+  changed_when: no
+
+- name: reload alrt config
+  tags: prometheus_config
+  command: docker-compose kill -s SIGHUP alertmanager
+  args:
+    chdir: "{{ prometheus_home }}"

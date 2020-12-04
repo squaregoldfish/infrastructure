@@ -1,3 +1,4 @@
+# PHYSICAL
 [physical_servers]
 cdb.nateko.lu.se ansible_user=root
 fsicos.lunarc.lu.se ansible_user=root
@@ -6,6 +7,14 @@ fsicos3.lunarc.lu.se ansible_user=root
 
 
 
+# OTHER
+[bbservers]
+fsicos2.lunarc.lu.se
+cdb.nateko.lu.se
+
+
+
+# FSICOS2
 [fsicos2_aliases]
 exploredata_host
 quince_host
@@ -38,6 +47,7 @@ ansible_user=root
 
 
 
+# FSICOS3
 [fsicos3_aliases]
 callisto_host
 molefractions_host
@@ -64,6 +74,23 @@ ansible_user=root
 
 
 
-[bbservers]
+# CDB
+[cdb_aliases]
+prometheus_host
+
+[cdb_aliases:vars]
+ansible_host=cdb.nateko.lu.se
+ansible_user=root
+
+[cdb_vms]
+prometheus ansible_port=60545
+
+[cdb_vms:vars]
+ansible_host=cdb.nateko.lu.se
+ansible_user=root
+
+
+# PROMETHEUS
+[node_exporters]
 fsicos2.lunarc.lu.se
-cdb.nateko.lu.se
+fsicos3.lunarc.lu.se

@@ -1,0 +1,28 @@
+# We download the prometheus tarball and symlink promtool so that we can use it
+# when syntaxchecking the prometheus configuration without invoking docker.
+
+- name: Create /opt/downloads directory
+  file:
+    path: "/opt/downloads"
+    state: directory
+
+- name: Download prometheus binary
+  get_url:
+    url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_promtool_ver }}/prometheus-{{ prometheus_promtool_ver }}.linux-amd64.tar.gz"
+    checksum: "sha1:b17aade56d79b60d1bd2ce7c6bc4edbd0dbe5758"
+    dest: "/opt/downloads"
+    mode: +x
+  register: _down
+
+- name: Unarchive promtool
+  unarchive:
+    src: "{{ _down.dest }}"
+    dest: /opt/downloads
+    remote_src: true
+  register: _unar
+
+- name: Create /usr/local/sbin/promtool symlink
+  file:
+    dest: "/usr/local/sbin/promtool"
+    src: "/opt/downloads/prometheus-{{ prometheus_promtool_ver }}.linux-amd64/promtool"
+    state: link

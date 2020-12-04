@@ -1,16 +1,21 @@
 prometheus_prom_domain: prom.icos-cp.eu
 prometheus_graf_domain: graf.icos-cp.eu
+prometheus_bbox_domain: bbox.icos-cp.eu
+prometheus_alrt_domain: alrt.icos-cp.eu
 
 prometheus_home: /docker/prometheus
-prometheus_data: "{{ prometheus_home }}/prometheus_data"
-
-# File SD Config - i.e a drop-in directory for scrape targets.
-prometheus_fsdc: "{{ prometheus_home }}/prometheus_fsdc"
 
 prometheus_prom_port: 9090
 prometheus_graf_port: 3000
+prometheus_bbox_port: 9115
+prometheus_alrt_port: 9093
 
 prometheus_user_file: /etc/nginx/auth/prometheus
 prometheus_users:
   - name: admin
     password: "{{ prometheus_admin_password }}"
+
+prometheus_options: []
+
+prometheus_promtool_ver: 2.25.0
+prometheus_host_conf: "{{ prometheus_home }}/volumes/prometheus_conf/prometheus.yml"

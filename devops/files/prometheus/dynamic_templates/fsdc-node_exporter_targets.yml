@@ -1,0 +1,4 @@
+- targets:
+  {% for host in groups['node_exporters'] %}
+  - "{{ host }}:60910"
+  {% endfor %}

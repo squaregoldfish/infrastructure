@@ -1,0 +1,24 @@
+global:
+  # smtp_smarthost: '{{ fsicos2_ip }}:25'
+  # smtp_from: 'carbon.admin@nateko.lu.se'
+  # smtp_require_tls: false
+  slack_api_url: "{{ prometheus_alrt_slack_url }}"
+
+templates:
+  - '/etc/alertmanager/template/*.tmpl'
+
+route:
+  receiver: 'slack-notifications'
+
+# route:
+#   receiver: admin
+  
+receivers:
+  # - name: 'admin-email'
+  #   email_configs:
+  #     - to: 'andre.bjarby@nateko.lu.se'
+
+  - name: 'slack-notifications'
+    slack_configs:
+    - channel: '#opsa'
+      send_resolved: true        

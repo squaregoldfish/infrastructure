@@ -1,0 +1,12 @@
+- name: Save information about current images
+  shell: |
+    (echo "# $(date -Iseconds) about to pull/restart";
+     docker-compose images) >> images.log
+  args:
+    chdir: "{{ prometheus_home }}"
+  changed_when: false
+
+- name: Build and start
+  docker_compose:
+    project_src: "{{ prometheus_home }}"
+    pull: "{{ prometheus_pull_latest | default(false) | bool }}"

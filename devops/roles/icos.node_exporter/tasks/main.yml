@@ -55,6 +55,7 @@
     dest: "{{ node_exporter_environ }}"
     content: |
       OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}
+      OPTIONS=--web.listen-address=":{{ node_exporter_port }}"
 
 - name: Restart node_exporter service
   systemd:
@@ -68,4 +69,4 @@
     port: "{{ node_exporter_port }}"
     src: "{{ node_exporter_allow_from }}"
     state: enabled
-    comment: prometheus docker to host node_exporter
+    comment: allow access to node_exporter from prometheus
