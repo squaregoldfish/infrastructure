@@ -106,7 +106,8 @@ Either create a new database or restore a backup
 ### Create the database
 - Login to postgres inside the container `psql -U postgres`
 - Create the two databases `CREATE DATABASE cplog; CREATE DATABASE siteslog;`
-- Create two roles `CREATE ROLE reader; CREATE ROLE writer;`
+- Create two roles `CREATE USER reader WITH PASSWORD 'blabla'; CREATE USER writer WITH PASSWORD 'blabla';`
+- Specify the passwords in `data` application.conf `cpdata.downloads.reader.password` and `cpdata.downloads.writer.password`
 
 ### OR Recover postgis' backup from BorgBackup on fsicos2 (same way as for rdflog).
 The backup is expected to be an SQL cluster dump of Postgres in a file named `stdin`.<br>
