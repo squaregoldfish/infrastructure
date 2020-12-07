@@ -51,10 +51,10 @@ c.DockerSpawner.notebook_dir = '/home/jovyan'
 c.DockerSpawner.remove_containers = True
 c.DockerSpawner.debug = True
 c.DockerSpawner.read_only_volumes = {
-    '/etc/localtime'                          : '/etc/localtime',
-    '/disk/data/stiltweb/stations'            : "/data/stiltweb/stations",
-    '/disk/data/stiltweb/slots'               : "/data/stiltweb/slots",
-    '/data'                                   : '/data'
+    '/etc/localtime'          : '/etc/localtime',
+    '/data/stiltweb/stations' : "/data/stiltweb/stations",
+    '/data/stiltweb/slots'    : "/data/stiltweb/slots",
+    '/data'                   : '/data'
 }
 
 
