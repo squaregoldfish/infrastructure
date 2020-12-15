@@ -1,0 +1,20 @@
+- name: Create bin directory
+  file:
+    path: "{{ cpauth_home }}/bin"
+    state: directory
+  register: _bin
+
+- name: Copy backup.sh
+  tags: cpauth_backup
+  template:
+    src: backup.sh
+    dest: "{{ _bin.path }}/"
+    mode: +x
+  register: _backup
+
+- name: Add backup to crontab
+  tags: cpauth_backup
+  cron:
+    job: "{{ _backup.dest }}"
+    special_time: daily
+    name: "cpauth_backup"

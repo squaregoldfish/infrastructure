@@ -8,6 +8,9 @@
 #
 # Full redeploy
 #   $ deploy cpauth cpauth -ecpauth_jar_file=/tmp/cpauth.jar
+#
+# Deploy bbclient and cpauth's backup script
+#   $ deploy cpauth bbclient cpauth_backup
 
 - hosts: fsicos2.lunarc.lu.se
   vars_files:
@@ -16,8 +19,14 @@
   roles:
     - role: icos.certbot2
       tags: cert
-      certbot_name: "{{ cpauth_cert_name }}",
+      certbot_name: "{{ cpauth_cert_name }}"
       certbot_domains: "{{ cpauth_domains }}"
 
     - role: icos.cpauth
       tags: cpauth
+
+    - role: icos.bbclient
+      tags: bbclient
+      vars:
+        bbclient_user: "{{ cpauth_user }}"
+        bbclient_coldbackup_enable: no

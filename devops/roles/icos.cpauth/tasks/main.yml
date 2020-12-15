@@ -3,3 +3,6 @@
 
 - import_tasks: deploy.yml
   tags: cpauth_deploy
+
+- import_tasks: backup.yml
+  tags: cpauth_backup
