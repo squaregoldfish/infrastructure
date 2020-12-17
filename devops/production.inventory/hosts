@@ -13,7 +13,6 @@ wordpress_host
 climbeco_host
 eddyetc_host
 flexextract_host
-thredds_host
 postgis_host
 rspamd_host
 
@@ -28,7 +27,6 @@ wordpress ansible_port=60552
 climbeco ansible_port=60524
 eddyetc ansible_port=60523
 flexextract ansible_port=60526
-thredds ansible_port=60527
 rspamd ansible_port=60585
 postgis ansible_port=60590
 
