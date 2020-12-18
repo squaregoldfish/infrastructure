@@ -1,0 +1,78 @@
+- hosts: erddap_host
+  become: true
+  vars_files:
+    - vault.yml
+  pre_tasks:
+    - name: Create erddap storage pool
+      tags: pool
+      shell: >-
+        /snap/bin/lxc storage show erddap > /dev/null 2>&1 ||
+        /snap/bin/lxc storage create erddap btrfs size=50GB
+      register: _r
+      changed_when:
+        - '"Storage pool erddap created" in _r.stdout'
+
+    - name: Create the erddap container
+      lxd_container:
+        name: erddap
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        config:
+          security.nesting: "true"
+          limits.cpu: "2"
+          limits.memory: "20GB"
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "20.04"
+        devices:
+          root:
+            path: /
+            type: disk
+            pool: erddap
+            size: "50GB"
+          dataAppStorage:
+            path: /data/dataAppStorage
+            source: /disk/data/dataAppStorage
+            readonly: "1"
+            type: disk
+        wait_for_ipv4_addresses: true
+        timeout: 600
+      register: _lxd
+
+  roles:
+    - role: icos.lxd_forward
+      lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
+      lxd_forward_name: erddap
+
+
+- hosts: erddap
+  become: true
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.superuser
+      tags: superuser
+      superuser_disable_coredump: true
+      superuser_list:
+        - name: ubuntu
+          key: "{{ vault_erddap_ssh_keys }}"
+  tasks:
+    - name: Print ssh config
+      debug:
+        msg: |
+          # Put this in $HOME/.ssh/config,
+          # then execute "ssh {{ inventory_hostname }}"
+          Host {{ inventory_hostname }}
+            HostName {{ ansible_host }}
+            Port {{ ansible_port }}
+            User ubuntu
+          # Or execute the following command:
+          # ssh -p {{ ansible_port }} ubuntu@{{ ansible_host }}
