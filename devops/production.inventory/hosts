@@ -15,6 +15,7 @@ eddyetc_host
 flexextract_host
 postgis_host
 rspamd_host
+erddap_host
 
 [fsicos2_aliases:vars]
 ansible_host=fsicos2.lunarc.lu.se
@@ -27,6 +28,7 @@ wordpress ansible_port=60552
 climbeco ansible_port=60524
 eddyetc ansible_port=60523
 flexextract ansible_port=60526
+erddap ansible_port=60580
 rspamd ansible_port=60585
 postgis ansible_port=60590
 
@@ -39,7 +41,6 @@ ansible_user=root
 [fsicos3_aliases]
 callisto_host
 molefractions_host
-erddap_host
 flexpart_host
 jupyter_host
 ganymede_host
@@ -51,7 +52,6 @@ ansible_user=root
 [fsicos3_vms]
 callisto ansible_port=60510
 molefractions ansible_port=60515
-erddap ansible_port=60520
 flexpart ansible_port=60530
 jupyter ansible_port=60535
 ganymede ansible_port=60540
