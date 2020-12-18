@@ -3,7 +3,7 @@
     name: "{{ item.name }}"
     home: "{{ item.home | default(omit) }}"
     groups: "{{ item.groups | default(omit) }}"
-    append: true
+    append: "{{ item.groups | default(false) | bool }}"
     shell: /bin/bash
 
 - name: Install public key
