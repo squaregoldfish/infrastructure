@@ -31,11 +31,3 @@
       -A PREROUTING -p tcp --dport {{ port_forward_sport }} -j DNAT --to-destination {{ port_forward_dhost }}:{{ port_forward_dport}}
       COMMIT
   notify: reload ufw
-
-- name: Allow traffic on container's external port
-  ufw:
-    route: true
-    rule: allow
-    port: "'{{ port_forward_sport }}'"
-    comment: "allow forward of {{ port_forward_desc }}"
-  notify: reload ufw

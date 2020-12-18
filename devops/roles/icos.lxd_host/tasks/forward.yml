@@ -27,11 +27,3 @@
       -A PREROUTING -p tcp --dport {{ lxd_host_port }} -j DNAT --to-destination {{ lxd_host_ip }}:22
       COMMIT
   notify: Reload UFW
-
-- name: Allow traffic on containers external ssh port
-  ufw:
-    route: true
-    rule: allow
-    port: "'{{ lxd_host_port }}'"
-    comment: "ssh to lxd {{ lxd_host_name }}"
-  notify: Reload UFW
