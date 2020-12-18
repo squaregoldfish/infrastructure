@@ -28,6 +28,6 @@
     block: |
       *nat
       :PREROUTING ACCEPT [0:0]
-      -A PREROUTING -p tcp --dport {{ port_forward_sport }} -j DNAT --to-destination {{ port_forward_dhost }}:{{ port_forward_dport}}
+      -A PREROUTING -p tcp --dport {{ port_forward_sport }} -j DNAT --to-destination {{ port_forward_dhost }}:{{ port_forward_dport }} -m comment --comment "{{ port_forward_desc }}"
       COMMIT
   notify: reload ufw
