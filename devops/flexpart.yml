@@ -34,6 +34,10 @@
           server: https://cloud-images.ubuntu.com/releases
           protocol: simplestreams
           alias: "20.04"
+        config:
+          security.nesting: "true"
+          limits.cpu: "20"
+          limits.memory: "200GB"
         devices:
           root:
             path: "/"
@@ -59,8 +63,6 @@
             source: /data/flexpart/meteo
             type: disk
             readonly: "True"
-        config:
-          security.nesting: "true"
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0
         timeout: 60
