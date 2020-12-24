@@ -1,5 +1,9 @@
 - hosts: erddap_host
   become: true
+  vars:
+    certbot_name: erddap
+    certbot_domains:
+      - erddap.icos-cp.eu
   vars_files:
     - vault.yml
   pre_tasks:
@@ -48,6 +52,14 @@
     - role: icos.lxd_forward
       lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
       lxd_forward_name: erddap
+
+    - role: icos.certbot2
+      tags: cert
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: erddap
+      nginxsite_file: files/erddap.conf
 
 
 - hosts: erddap
