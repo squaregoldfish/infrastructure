@@ -71,3 +71,4 @@
     state: enabled
     policy: deny
     direction: incoming
+    logging: no
