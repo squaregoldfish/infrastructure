@@ -1,10 +1,12 @@
 # Lock down the r-base version, remember to bump this every now and then.
-FROM r-base:3.6.3
+# https://hub.docker.com/_/r-base/
+FROM r-base:4.0.3
 
 # Install utilities and build dependencies.
 RUN apt-get update -q && DEBIAN_FRONTEND=noninteractive apt-get install -qy \
-        make git tree mg file nano gfortran \
+        make git tree mg file nano gfortran-9 \
         libcurl4-openssl-dev libxml2-dev libssl-dev \
+        libgit2-dev \
     && apt-get clean && rm -rf /var/lib/apt
 
 # Install additional R packages, some of these takes a long time.
@@ -19,12 +21,17 @@ RUN R -e "install.packages(c('gplots'))"
 RUN R -e "install.packages(c('devtools'))"
 RUN R -e "install.packages(c('pbapply'))"
 
+RUN ln -s /usr/bin/gfortran-9 /usr/local/bin/gfortran
+
 # Clone and compile eddypro.
 WORKDIR /compile
 RUN git clone https://github.com/LI-COR/eddypro-engine.git
-RUN git -C eddypro-engine checkout v6.1.0
-RUN make -C eddypro-engine/prj -f Makefile_rp_linux
-RUN make -C eddypro-engine/prj -f Makefile_fcc_linux
+RUN git -C eddypro-engine checkout v7.0.6
+RUN make -C eddypro-engine/prj rp fcc
+# <2021-01-11> Eddypro v7.0.6 did not build with the latest gfortran (version
+# 10) out of the box, it had compilation errors. Building it with gfortran
+# version 9 worked, hence this workaround. That's why gfortran-9 is installed
+# explicitly (instead of just gfortran)
 RUN ln -s /compile/eddypro-engine/bin/linux/* /usr/local/bin/
 
 # This R package comes after the other since it's ICOS ETC code and might
