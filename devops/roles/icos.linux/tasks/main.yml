@@ -51,6 +51,7 @@
           exec /bin/ss "$@" | column -t
       else
           exec /bin/ss "$@"
+      fi
 
 - name: Allowing inbound SSH
   ufw:
