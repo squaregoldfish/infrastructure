@@ -17,11 +17,17 @@ c.JupyterHub.shutdown_on_logout = True
 # https://jupyterhub.readthedocs.io/en/stable/reference/templates.html
 c.JupyterHub.template_paths = ["/srv/jupyterhub/templates"]
 
-# https://github.com/jupyterhub/jupyterhub/blob/master/examples/cull-idle/cull_idle_servers.py
-c.JupyterHub.services = [{'name': 'cull_idle','admin': True,
-                          'command': [sys.executable,
-                                      '/srv/jupyterhub/cull_idle_servers.py',
-                                      '--timeout=3660', '--cull-users']}]
+# https://github.com/jupyterhub/jupyterhub-idle-culler
+c.JupyterHub.services = [
+    {
+        'name': 'idle-culler',
+        'admin': True,
+        'command': [
+            sys.executable,
+            '-m', 'jupyterhub_idle_culler',
+            '--timeout=3660'
+        ],
+    }]
 
 
 # AUTHENTICATION
