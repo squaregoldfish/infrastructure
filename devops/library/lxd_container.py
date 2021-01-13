@@ -8,16 +8,10 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'community'}
-
-
 DOCUMENTATION = '''
 ---
 module: lxd_container
 short_description: Manage LXD Containers
-version_added: "2.2"
 description:
   - Management of LXD containers
 author: "Hiroaki Nakamura (@hnakamur)"
@@ -78,6 +72,14 @@ options:
           - Define the state of a container.
         required: false
         default: started
+    target:
+        description:
+          - For cluster deployments. Will attempt to create a container on a target node.
+            If container exists elsewhere in a cluster, then container will not be replaced or moved.
+            The name should respond to same name of the node you see in C(lxc cluster list).
+        type: str
+        required: false
+        version_added: 1.0.0
     timeout:
         description:
           - A timeout for changing the state of the container.
@@ -120,7 +122,6 @@ options:
           - The unix domain socket path when LXD is installed by snap package manager.
         required: false
         default: unix:/var/snap/lxd/common/lxd/unix.socket
-        version_added: '2.8'
     client_key:
         description:
           - The client certificate key file path.
@@ -152,7 +153,7 @@ notes:
     2.1, the later requires python to be installed in the container which can
     be done with the command module.
   - You can copy a file from the host to the container
-    with the Ansible M(copy) and M(template) module and the `lxd` connection plugin.
+    with the Ansible M(ansible.builtin.copy) and M(ansible.builtin.template) module and the `lxd` connection plugin.
     See the example below.
   - You can copy a file in the created container to the localhost
     with `command=lxc file pull container_name/dir/filename filename`.
@@ -165,7 +166,7 @@ EXAMPLES = '''
   connection: local
   tasks:
     - name: Create a started container
-      lxd_container:
+      community.general.lxd_container:
         name: mycontainer
         state: started
         source:
@@ -178,16 +179,16 @@ EXAMPLES = '''
         wait_for_ipv4_addresses: true
         timeout: 600
 
-    - name: check python is installed in container
+    - name: Check python is installed in container
       delegate_to: mycontainer
-      raw: dpkg -s python
+      ansible.builtin.raw: dpkg -s python
       register: python_install_check
       failed_when: python_install_check.rc not in [0, 1]
       changed_when: false
 
-    - name: install python in container
+    - name: Install python in container
       delegate_to: mycontainer
-      raw: apt-get install -y python
+      ansible.builtin.raw: apt-get install -y python
       when: python_install_check.rc == 1
 
 # An example for creating an Ubuntu 14.04 container using an image fingerprint.
@@ -198,7 +199,7 @@ EXAMPLES = '''
   connection: local
   tasks:
     - name: Create a started container
-      lxd_container:
+      community.general.lxd_container:
         name: mycontainer
         state: started
         source:
@@ -219,7 +220,7 @@ EXAMPLES = '''
   connection: local
   tasks:
     - name: Delete a container
-      lxd_container:
+      community.general.lxd_container:
         name: mycontainer
         state: absent
 
@@ -228,7 +229,7 @@ EXAMPLES = '''
   connection: local
   tasks:
     - name: Restart a container
-      lxd_container:
+      community.general.lxd_container:
         name: mycontainer
         state: restarted
 
@@ -237,7 +238,7 @@ EXAMPLES = '''
   connection: local
   tasks:
     - name: Restart a container
-      lxd_container:
+      community.general.lxd_container:
         url: https://127.0.0.1:8443
         # These client_cert and client_key values are equal to the default values.
         #client_cert: "{{ lookup('env', 'HOME') }}/.config/lxc/client.crt"
@@ -254,11 +255,38 @@ EXAMPLES = '''
 - hosts:
     - mycontainer
   tasks:
-    - name: copy /etc/hosts in the created container to localhost with name "mycontainer-hosts"
-      fetch:
+    - name: Copy /etc/hosts in the created container to localhost with name "mycontainer-hosts"
+      ansible.builtin.fetch:
         src: /etc/hosts
         dest: /tmp/mycontainer-hosts
         flat: true
+
+# An example for LXD cluster deployments. This example will create two new container on specific
+# nodes - 'node01' and 'node02'. In 'target:', 'node01' and 'node02' are names of LXD cluster
+# members that LXD cluster recognizes, not ansible inventory names, see: 'lxc cluster list'.
+# LXD API calls can be made to any LXD member, in this example, we send API requests to
+#'node01.example.com', which matches ansible inventory name.
+- hosts: node01.example.com
+  tasks:
+    - name: Create LXD container
+      community.general.lxd_container:
+        name: new-container-1
+        state: started
+        source:
+          type: image
+          mode: pull
+          alias: ubuntu/xenial/amd64
+        target: node01
+
+    - name: Create container on another node
+      community.general.lxd_container:
+        name: new-container-2
+        state: started
+        source:
+          type: image
+          mode: pull
+          alias: ubuntu/xenial/amd64
+        target: node02
 '''
 
 RETURN = '''
@@ -288,8 +316,8 @@ import os
 import time
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.lxd import LXDClient, LXDClientException
-
+from ansible_collections.community.general.plugins.module_utils.lxd import LXDClient, LXDClientException
+from ansible.module_utils.six.moves.urllib.parse import urlencode
 
 # LXD_ANSIBLE_STATES is a map of states that contain values of methods used
 # when a particular state is evoked.
@@ -308,6 +336,9 @@ ANSIBLE_LXD_STATES = {
     'Stopped': 'stopped',
     'Frozen': 'frozen',
 }
+
+# ANSIBLE_LXD_DEFAULT_URL is a default value of the lxd endpoint
+ANSIBLE_LXD_DEFAULT_URL = 'unix:/var/lib/lxd/unix.socket'
 
 # CONFIG_PARAMS is a list of config attribute names.
 CONFIG_PARAMS = [
@@ -333,13 +364,16 @@ class LXDContainerManagement(object):
         self.wait_for_ipv4_interfaces = self.module.params['wait_for_ipv4_interfaces']
         self.force_stop = self.module.params['force_stop']
         self.addresses = None
+        self.target = self.module.params['target']
 
         self.key_file = self.module.params.get('client_key', None)
         self.cert_file = self.module.params.get('client_cert', None)
         self.debug = self.module._verbosity >= 4
 
         try:
-            if os.path.exists(self.module.params['snap_url'].replace('unix:', '')):
+            if self.module.params['url'] != ANSIBLE_LXD_DEFAULT_URL:
+                self.url = self.module.params['url']
+            elif os.path.exists(self.module.params['snap_url'].replace('unix:', '')):
                 self.url = self.module.params['snap_url']
             else:
                 self.url = self.module.params['url']
@@ -390,7 +424,10 @@ class LXDContainerManagement(object):
     def _create_container(self):
         config = self.config.copy()
         config['name'] = self.name
-        self.client.do('POST', '/1.0/containers', config)
+        if self.target:
+            self.client.do('POST', '/1.0/containers?' + urlencode(dict(target=self.target)), config)
+        else:
+            self.client.do('POST', '/1.0/containers', config)
         self.actions.append('create')
 
     def _start_container(self):
@@ -422,12 +459,9 @@ class LXDContainerManagement(object):
 
         resp_json = self._get_container_state_json()
         network = resp_json['metadata']['network'] or {}
+        network = dict((k, v) for k, v in network.items() if k not in ignore_devices) or {}
         if self.wait_for_ipv4_interfaces:
-            network = dict((k, v) for k, v in network.items()
-                           if k in self.wait_for_ipv4_interfaces) or {}
-        else:
-            network = dict((k, v) for k, v in network.items()
-                           if k not in ignore_devices) or {}
+            network = dict((k, v) for k, v in network.items() if k in self.wait_for_ipv4_interfaces)
         addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
         return addresses
 
@@ -517,7 +551,9 @@ class LXDContainerManagement(object):
         if key == 'config':
             old_configs = dict((k, v) for k, v in self.old_container_json['metadata'][key].items() if not k.startswith('volatile.'))
             for k, v in self.config['config'].items():
-                if k not in old_configs or old_configs[k] != v:
+                if k not in old_configs:
+                    return True
+                if old_configs[k] != v:
                     return True
             return False
         else:
@@ -622,6 +658,9 @@ def main():
                 choices=LXD_ANSIBLE_STATES.keys(),
                 default='started'
             ),
+            target=dict(
+                type='str',
+            ),
             timeout=dict(
                 type='int',
                 default=30
@@ -639,7 +678,7 @@ def main():
             ),
             url=dict(
                 type='str',
-                default='unix:/var/lib/lxd/unix.socket'
+                default=ANSIBLE_LXD_DEFAULT_URL
             ),
             snap_url=dict(
                 type='str',
