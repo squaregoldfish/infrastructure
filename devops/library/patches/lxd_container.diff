@@ -1,6 +1,6 @@
---- /home/andre/.local/lib/python3.8/site-packages/ansible/modules/cloud/lxd/lxd_container.py	2020-05-22 07:29:15.958235979 +0200
-+++ ../lxd_container.py	2020-06-15 07:50:07.704094668 +0200
-@@ -94,6 +94,15 @@
+--- /home/andre/.local/lib/python3.8/site-packages/ansible/../ansible_collections/community/general/plugins/modules/cloud/lxd/lxd_container.py	2020-12-15 07:21:36.066863059 +0100
++++ ../lxd_container.py	2021-01-13 10:42:15.264123337 +0100
+@@ -96,6 +96,15 @@
          required: false
          default: false
          type: bool
@@ -16,38 +16,24 @@
      force_stop:
          description:
            - If this is true, the C(lxd_container) forces to stop the container
-@@ -321,6 +330,7 @@
+@@ -352,6 +361,7 @@
  
          self.timeout = self.module.params['timeout']
          self.wait_for_ipv4_addresses = self.module.params['wait_for_ipv4_addresses']
 +        self.wait_for_ipv4_interfaces = self.module.params['wait_for_ipv4_interfaces']
          self.force_stop = self.module.params['force_stop']
          self.addresses = None
- 
-@@ -412,7 +422,12 @@
- 
+         self.target = self.module.params['target']
+@@ -450,6 +460,8 @@
          resp_json = self._get_container_state_json()
          network = resp_json['metadata']['network'] or {}
--        network = dict((k, v) for k, v in network.items() if k not in ignore_devices) or {}
+         network = dict((k, v) for k, v in network.items() if k not in ignore_devices) or {}
 +        if self.wait_for_ipv4_interfaces:
-+            network = dict((k, v) for k, v in network.items()
-+                           if k in self.wait_for_ipv4_interfaces) or {}
-+        else:
-+            network = dict((k, v) for k, v in network.items()
-+                           if k not in ignore_devices) or {}
++            network = dict((k, v) for k, v in network.items() if k in self.wait_for_ipv4_interfaces)
          addresses = dict((k, [a['address'] for a in v['addresses'] if a['family'] == 'inet']) for k, v in network.items()) or {}
          return addresses
  
-@@ -502,7 +517,7 @@
-         if key == 'config':
-             old_configs = dict((k, v) for k, v in self.old_container_json['metadata'][key].items() if not k.startswith('volatile.'))
-             for k, v in self.config['config'].items():
--                if old_configs[k] != v:
-+                if k not in old_configs or old_configs[k] != v:
-                     return True
-             return False
-         else:
-@@ -615,6 +630,9 @@
+@@ -657,6 +669,9 @@
                  type='bool',
                  default=False
              ),
