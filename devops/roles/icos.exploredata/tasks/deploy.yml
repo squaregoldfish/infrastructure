@@ -17,3 +17,6 @@
     build:
       dockerfile: "{{ exploredata_home }}/build.notebook/exploredata/Dockerfile"
       path: "{{ exploredata_home }}/build.notebook"
+      # Since we use a specific sha256 tag when building exploredata, docker
+      # will pull anyway.
+      pull: no
