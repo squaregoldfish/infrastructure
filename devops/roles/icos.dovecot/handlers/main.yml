@@ -6,3 +6,9 @@
   command: |
     rsyslogd -N 1 && systemctl restart rsyslog
   changed_when: false
+
+- name: fail2ban reload
+  command: fail2ban-client reload
+  register: _r
+  failed_when: _r.rc != 0 or "OK" not in _r.stdout
+  changed_when: false

@@ -1,0 +1,12 @@
+- name: Enable fail2ban dovecot jail
+  copy:
+    dest: /etc/fail2ban/jail.d/dovecot.local
+    content: |
+      [dovecot]
+      enabled = true
+      findtime = 30m
+      maxretry = 5
+      bantime = 12h
+      filter = dovecot[mode=aggressive]
+      dovecot_log = /var/log/dovecot.log
+  notify: fail2ban reload

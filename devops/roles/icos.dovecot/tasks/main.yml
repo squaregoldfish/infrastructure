@@ -5,6 +5,8 @@
 - import_tasks: dovecot_ssl.yml
   tags: dovecot_ssl
 - import_tasks: dovecot_postfix.yml
+- import_tasks: dovecot_fail2ban.yml
+  tags: dovecot_fail2ban
 
 # Instead of cluttering the role with 'notify: reload dovecot' we do
 # it unconditionally - it's fast.
