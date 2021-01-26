@@ -2,9 +2,26 @@
   copy:
     dest: /etc/rsyslog.d/20-dovecot.conf
     content: |
-      :programname,isequal,"dovecot"          /var/log/dovecot.log
+      :programname,isequal,"dovecot"          {{ dovecot_log_file }}
       & stop
   notify: Restart rsyslog
+
+
+- name: Create logrotate config
+  copy:
+    dest: /etc/logrotate.d/dovecot
+    content: |
+      {{ dovecot_log_file }}
+      {
+              rotate 6
+              monthly
+              missingok
+              notifempty
+              compress
+              postrotate
+                      /usr/lib/rsyslog/rsyslog-rotate
+              endscript
+      }
 
 - name: Enable more logging
   lineinfile:

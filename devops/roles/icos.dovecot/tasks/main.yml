@@ -1,10 +1,17 @@
 - import_tasks: dovecot_install.yml
+
 - import_tasks: dovecot_listen.yml
+
 - import_tasks: dovecot_logging.yml
+  tags: dovecot_logging
+
 - import_tasks: dovecot_auth.yml
+
 - import_tasks: dovecot_ssl.yml
   tags: dovecot_ssl
+
 - import_tasks: dovecot_postfix.yml
+
 - import_tasks: dovecot_fail2ban.yml
   tags: dovecot_fail2ban
 

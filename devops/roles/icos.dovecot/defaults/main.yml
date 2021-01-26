@@ -9,3 +9,5 @@ dovecot_cert_file: icos-certs.conf.ext
 
 dovecot_vmail_name: vmail
 dovecot_vmail_home: /var/vmail
+
+dovecot_log_file: /var/log/dovecot.log
