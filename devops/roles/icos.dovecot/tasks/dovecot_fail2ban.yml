@@ -7,6 +7,8 @@
       findtime = 30m
       maxretry = 5
       bantime = 12h
+      # We must enable aggressive mode in order to match "(no auth attempts in
+      # 0 secs)", which are the current source of logspam.
       filter = dovecot[mode=aggressive]
       dovecot_log = /var/log/dovecot.log
   notify: fail2ban reload
