@@ -5,10 +5,12 @@
       [dovecot]
       enabled = true
       findtime = 30m
-      maxretry = 5
-      bantime = 12h
+      maxretry = 3
+      bantime = 24h
       # We must enable aggressive mode in order to match "(no auth attempts in
       # 0 secs)", which are the current source of logspam.
       filter = dovecot[mode=aggressive]
+      # This is a copy of the port definition from jail.conf, plus dovecot_port
+      port = pop3,pop3s,imap,imaps,submission,465,sieve,{{ dovecot_port }}
       dovecot_log = /var/log/dovecot.log
   notify: fail2ban reload
