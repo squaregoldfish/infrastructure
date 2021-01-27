@@ -1,9 +1,13 @@
+# update domains
+#   deploy erddap cert nginx
+
 - hosts: erddap_host
   become: true
   vars:
     certbot_name: erddap
     certbot_domains:
       - erddap.icos-cp.eu
+      - bluecloud.icos-cp.eu
   vars_files:
     - vault.yml
   pre_tasks:
