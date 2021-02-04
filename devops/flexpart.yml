@@ -63,6 +63,11 @@
             source: /data/flexpart/meteo
             type: disk
             readonly: "True"
+          vprm:
+            path: "/data/VPRM2007n"
+            source: "/pool/ute/stilt/VPRM/VPRM_ECMWF/VPRM2007n"
+            readonly: "True"
+            type: disk
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0
         timeout: 60
