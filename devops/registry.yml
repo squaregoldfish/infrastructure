@@ -1,0 +1,96 @@
+- hosts: registry_host
+  vars_files:
+    - vault.yml
+  vars:
+    registry_domain: registry.icos-cp.eu
+  pre_tasks:
+    # This storage pool will be used for the docker registry container.
+    - name: Create storage for registry volumes
+      zfs:
+        name: pool/registry
+        state: present
+        extra_zfs_properties:
+          quota: "500G"
+
+    # Give the registry VM ownership.
+    - name: Change owner of /pool/registry
+      file:
+        path: /pool/registry
+        owner: 1000000
+        group: 1000000
+
+    - name: Create the registry container
+      lxd_container:
+        name: registry
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "20.04"
+        devices:
+          registry:
+            path: "/docker/registry/volumes/registry"
+            source: "/pool/registry"
+            type: disk
+          root:
+            path: "/"
+            pool: "default"
+            type: "disk"
+            size: "50GB"
+        config:
+          security.nesting: "true"
+        wait_for_ipv4_addresses: true
+        wait_for_ipv4_interfaces: eth0
+        timeout: 60
+      register: _lxd
+
+  roles:
+    - role: icos.lxd_forward
+      lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
+      lxd_forward_name: registry
+
+    - role: icos.certbot2
+      tags:
+        - cert
+        - registry
+      certbot_name: registry
+      certbot_domains: ["{{ registry_domain }}"]
+
+    - role: icos.nginxsite
+      tags:
+        - registry
+        - nginx
+      nginxsite_name: registry
+      nginxsite_file: roles/icos.registry/templates/registry-nginx.conf
+      registry_host: registry.lxd
+      registry_cert: registry
+      registry_allow: "{{ vault_nginx_allow_internal_only }}"
+
+
+- hosts: registry
+  vars:
+    registry_domain: registry.icos-cp.eu
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.docker
+      tags: docker
+
+    - role: icos.registry
+      tags: registry
+      registry_users: "{{ vault_registry_users }}"
+
+  tasks:
+    - name: Login to registry
+      community.general.docker_login:
+        registry_url: "{{ registry_domain }}"
+        username: docker
+        password: "{{ vault_registry_pass }}"
