@@ -1,0 +1,14 @@
+jbuild_registry:
+  url: registry.icos-cp.eu
+  username: docker
+  password: "{{ vault_registry_pass }}"
+
+jbuild_edctl_host_name: "{{ hostvars[jbuild_edctl_host].ansible_host }}"
+jbuild_edctl_host_port: "{{ hostvars[jbuild_edctl_host].ansible_port }}"
+
+jbuild_jyctl_host_name: "{{ hostvars[jbuild_jyctl_host].ansible_host }}"
+jbuild_jyctl_host_port: "{{ hostvars[jbuild_jyctl_host].ansible_port }}"
+
+jbuild_rsync_host_name: "{{ hostvars[jbuild_rsync_host].ansible_host }}"
+jbuild_rsync_host_port: "{{ hostvars[jbuild_rsync_host].ansible_port }}"
+jbuild_rsync_user: project

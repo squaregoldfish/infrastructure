@@ -1,0 +1,59 @@
+- name: Generate keys for jbuild
+  openssh_keypair:
+    path: "/home/{{ item }}/.ssh/jbuild"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  loop: "{{ jbuild_users }}"
+  register: _jbuild_user_keys
+
+- name: Generate jbuild ssh config
+  blockinfile:
+    path: "/home/{{ item }}/.ssh/config"
+    marker: "# {mark} ansible / jbuild"
+    create: yes
+    insertafter: EOF
+    block: |
+      Host edctl
+        Hostname {{ jbuild_edctl_host_name }}
+        Port {{ jbuild_edctl_host_port }}
+        User edctl
+        IdentityFile ~/.ssh/jbuild
+
+      Host jyctl
+        Hostname {{ jbuild_jyctl_host_name }}
+        Port {{ jbuild_jyctl_host_port }}
+        User jyctl
+        IdentityFile ~/.ssh/jbuild
+
+      Host projectcommon
+        Hostname {{ jbuild_rsync_host_name }}
+        Port {{ jbuild_rsync_host_port }}
+        User project
+        IdentityFile ~/.ssh/jbuild
+  loop: "{{ jbuild_users }}"
+
+- name: Create $HOME/bin directory
+  file:
+    path: "/home/{{ item }}/bin"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  loop: "{{ jbuild_users }}"
+
+- name: Create wrappers for edctl
+  copy:
+    dest: "/home/{{ item }}/bin/edctl"
+    mode: +x
+    content: |
+      #!/bin/bash
+      ssh edctl /opt/edctl/edctl.py "$@"
+  loop: "{{ jbuild_users }}"
+
+- name: Create wrappers for jyctl
+  copy:
+    dest: "/home/{{ item }}/bin/jyctl"
+    mode: +x
+    content: |
+      #!/bin/bash
+      ssh jyctl /opt/jyctl/jyctl.py "$@"
+  loop: "{{ jbuild_users }}"

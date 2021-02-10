@@ -1,0 +1,22 @@
+- name: Create virtual env
+  pip:
+    virtualenv: /opt/jbuild/venv
+    name:
+      - click
+      - GitPython
+      - docker
+    state: present
+
+- name: Copy jbuild.py
+  copy:
+    src: jbuild.py
+    dest: /opt/jbuild/jbuild.py
+    mode: +x
+    # This is useful when developing jbuild.py directly on a server.
+    force: "{{ jbuild_force | default(True) | bool }}"
+
+- name: Create /usr/local/sbin/jbuild symlink
+  file:
+    dest: "/usr/local/sbin/jbuild"
+    src: /opt/jbuild/jbuild.py
+    state: link

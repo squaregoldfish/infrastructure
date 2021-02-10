@@ -1,0 +1,47 @@
+- import_role: name=icos.python3
+  
+- name: Create edctl user
+  user:
+    name: edctl
+    home: /opt/edctl
+    groups: docker
+    append: yes
+  register: _user
+
+- name: Change access rights on /opt/edctl
+  file:
+    path: /opt/edctl
+    mode: "0700"
+  
+- name: Login to registry
+  become: yes
+  become_user: edctl
+  community.general.docker_login:
+    registry_url: "{{ jbuild_registry.url }}"
+    username: "{{ jbuild_registry.username }}"
+    password: "{{ jbuild_registry.password }}"
+
+- name: Create virtual env
+  pip:
+    virtualenv_python: python3.8
+    virtualenv: /opt/edctl/venv
+    name:
+      - click
+      - docker
+
+- name: Copy edctl.py
+  copy:
+    src: edctl.py
+    dest: /opt/edctl/edctl.py
+    mode: +x
+    # This is useful when developing edctl.py directly on a server.
+    force: "{{ jbuild_force | default(True) | bool }}"
+
+- name: Add keys to authorized_keys
+  authorized_key:
+    user: edctl
+    key_options: 'command="/opt/edctl/edctl.py"'
+    key: |
+      {% for elt in _jbuild_user_keys.results -%}
+      {{ elt.public_key }}
+      {% endfor %}

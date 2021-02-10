@@ -1,0 +1,12 @@
+- import_role: name=icos.rrsync
+
+- name: Add keys to authorized_keys
+  authorized_key:
+    user: "{{ jbuild_rsync_user }}"
+    key_options: 'command="{{ rrsync_bin }} /project/common"'
+    key: |
+      {% for elt in _jbuild_user_keys.results -%}
+      {{ elt.public_key }}
+      {% endfor %}
+  
+  
