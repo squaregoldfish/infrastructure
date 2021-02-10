@@ -17,6 +17,8 @@
       - tcpdump
     update_cache: yes
 
+- import_role: name=icos.python3
+
 - name: Install public keys
   authorized_key:
     user: root
