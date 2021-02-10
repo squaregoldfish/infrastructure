@@ -4,6 +4,12 @@
 
 Installed into a LXD VM and used by the host's postfix as a milter.
 
+### Upgrade
+This will upgrade rspamd (if any new versions are available) and restart it.
+
+    apt update && apt upgrade -y
+
+
 ### Parts
 + It has a CLI called rspamadm(1).
 + TCP ports are used by several rspamd processes, among them:

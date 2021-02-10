@@ -3,5 +3,15 @@
     name: redis
     state: present
 
+# Depending on how you read the configuration/documentation, the default is for
+# rspamd to use redis if available. But in versions 2.5 and 2.7 it won't
+# actually work without this configuration.
+- name: Configure rspamd to use redis
+  copy:
+    dest: /etc/rspamd/local.d/redis.conf
+    content: |
+      servers = "127.0.0.1";
+  notify: restart rspamd
+
 # https://rspamd.com/doc/quickstart.html#preparation-steps
 # By default the ubuntu redis only listens to localhost.
