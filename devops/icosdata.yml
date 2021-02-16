@@ -76,6 +76,7 @@
         - /share/fsicos3
 
     - name: Mount nfs data
+      tags: mount
       mount:
         path: "{{ item.path }}"
         src: "{{ item.src }}"
@@ -93,11 +94,14 @@
         - path: /data/stilt
           src: fsicos3.lunarc.lu.se:/pool/ute/stilt/RINGO/T1.3/STILT
 
-        - path: /data/flexpart
-          src: fsicos.lunarc.lu.se:/disk/data/flexpart
+        # - path: /data/flexpart
+        #   src: fsicos.lunarc.lu.se:/disk/data/flexpart
 
-        - path: /data/project/interpolation
-          src: fsicos3.lunarc.lu.se:/data/project/interpolation
+        # - path: /data/project/interpolation
+        #   src: fsicos3.lunarc.lu.se:/data/project/interpolation
+
+        - path: /data/project/stc
+          src: fsicos3.lunarc.lu.se:/data/project/stc
 
     - name: Export data via nfs
       tags: export
@@ -177,6 +181,7 @@
         block: |
           # The 'no_subtree_check' is to avoid warnings about the default behaviour having changed.
           /incoming                        fsicos*.lunarc.lu.se(rw,no_root_squash,no_subtree_check)
+          /data/project/stc                fsicos*.lunarc.lu.se(ro,no_subtree_check)
           /data/project/interpolation      fsicos*.lunarc.lu.se(ro,no_subtree_check)
           /data/project/eurocom            fsicos*.lunarc.lu.se(ro,no_subtree_check)
           /pool/ute/stilt/RINGO/T1.3/STILT fsicos*.lunarc.lu.se(ro,no_subtree_check)
