@@ -1,3 +1,10 @@
+# Deploy everything except the jbuild.py and edctl.py scripts, useful when
+# developing.
+#   icos ganymede jbuild -ejbuild_force=false
+#
+# Deploy new users, keys, edctl and rsync.
+#   icos ganymede jbuild_users jbuild_rsync
+
 - hosts: ganymede_host
   vars:
     # These variable are prefixed with 'jupyter_' instead of 'ganymede_' so
@@ -78,6 +85,7 @@
 
 - hosts: ganymede
   vars_files:
+    - vars.yml
     - vault.yml
   handlers:
     - name: reload sshd
@@ -104,6 +112,17 @@
       tags: jupyter
       jupyter_admins: "{{ vault_ganymede_admins }}"
 
+    - role: icos.jbuild
+      tags: jbuild
+      jbuild_users: "{{ vault_ganymede_jbuild_users }}"
+      jbuild_edctl_host: exploredata
+      jbuild_rsync_host: jupyter
+      jbuild_jyctl_host: jupyter
+      jbuild_rsync_host_name: jupyter.lxd
+      jbuild_rsync_host_port: 22
+      jbuild_jyctl_host_name: jupyter.lxd
+      jbuild_jyctl_host_port: 22
+
   tasks:
     - tags: sshlogin
       include_role:
@@ -119,3 +138,10 @@
       loop: "{{ vault_ganymede_sshlogins }}"
       loop_control:
         loop_var: login
+
+    - name: Login to registry
+      tags: docker_login
+      community.general.docker_login:
+        registry_url: "{{ registry_domain }}"
+        username: docker
+        password: "{{ vault_registry_pass }}"
