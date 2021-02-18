@@ -164,7 +164,7 @@
     - name: Deny ssh login to most users
       tags: ssh
       copy:
-        dest: /etc/ssh/sshd_config.d/allowusers.conf
+        dest: /etc/ssh/sshd_config.d/jupyter_allow_users.conf
         content: |
           AllowUsers {{ vault_jupyter_allow_users | join(" ") }}
       notify: reload sshd
