@@ -46,7 +46,7 @@ c.DockerSpawner.network_name = os.environ.get("NETWORK_NAME", "jupyter")
 c.DockerSpawner.remove = True
 
 c.DockerSpawner.use_internal_hostname = True
-c.DockerSpawner.image = os.environ.get("NOTEBOOK_IMAGE", "notebook")
+c.DockerSpawner.image = os.environ.get("NOTEBOOK_IMAGE", "{{ jupyter_notebook_image }}")
 c.DockerSpawner.notebook_dir = '/home/{username}'
 c.DockerSpawner.read_only_volumes = {
     '/etc/shadow'    : '/etc/shadow',

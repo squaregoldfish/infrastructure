@@ -13,6 +13,7 @@
     src: jusers.py
     dest: /opt/jusers/jusers.py
     mode: +x
+    backup: true
 
 - name: Copy plugins
   copy:
@@ -23,6 +24,7 @@
   copy:
     src: readme_template.html
     dest: /root/readme_template.html
+    backup: true
 
 - name: Create /usr/local/sbin/jusers symlink
   file:

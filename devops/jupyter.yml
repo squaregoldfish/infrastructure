@@ -1,4 +1,9 @@
-# deploy jupyter jupyter_jusers_deploy
+# Deploy the jusers script:
+#   deploy jupyter jupyter_jusers_deploy
+#
+# Redeploy/restart the hub:
+#   deploy jupyter jupyter
+
 
 - hosts: jupyter_host
   vars:
