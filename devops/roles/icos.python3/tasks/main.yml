@@ -9,12 +9,15 @@
       # On some targets, this is required for the ansible 'pip' module.
       - virtualenv
 
-- name: Make python3.8 the default python3
-  community.general.alternatives:
-    name: python3
-    link: /usr/bin/python3
-    path: /usr/bin/python3.8
+# Making python3.8 the default python means that system utilities - like apt(1)
+# - will use it. That will not always work. In the case of apt it'll crash
+# which render the ansible apt module inoperable.
+#
+# - name: Make python3.8 the default python3
+#   community.general.alternatives:
+#     name: python3
+#     link: /usr/bin/python3
 
-- name: Check that python3 version is >= 3.8
-  shell: "python3 --version 2>&1 | grep -q '^Python 3.[89]'"
+- name: Check that python3.8 version is available
+  shell: "python3.8 --version 2>&1 | grep -q '^Python 3.8'"
   changed_when: false
