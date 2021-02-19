@@ -43,7 +43,6 @@
     - cp_blogs
     - cp_cmis
     - cp_documents
-    - cp_events
     - cp_files
   notify: reload nginx config
 
