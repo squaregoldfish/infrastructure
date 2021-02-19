@@ -22,7 +22,7 @@
       HUB_IMAGE={{ exploredata_hub_image }}
       HUB_CONTAINER_NAME={{ exploredata_hub_container }}
       NOTEBOOK_IMAGE={{ exploredata_notebook_image }}
-      PASSWORD={{ exploredata_password }}
+      PASSWORD={{ exploredata_password[exploredata_type] }}
 
 - name: Build and start the hub image
   docker_compose:
