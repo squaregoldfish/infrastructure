@@ -82,14 +82,15 @@ def main(remove):
             continue
         assert r.num not in rules_by_num
         rules_by_num[r.num] = r
-        rules_by_dpt.setdefault(r.dnat.dpt, []).append(r)
+        # Group the rules by incoming interface and destination port.
+        rules_by_dpt.setdefault((r.in_, r.dnat.dpt), []).append(r)
 
     deletable = set()
-    for n, (dpt, rules) in enumerate(sorted(rules_by_dpt.items())):
+    for n, (key, rules) in enumerate(sorted(rules_by_dpt.items())):
         dests = {}
         if n > 0:
             log("#")
-        log('# ==> %-5s <===' % dpt)
+        log('# ==> %-5s <===' % str(key))
         for r in rules:
             d = (r.dnat.to_ip, r.dnat.to_port)
             if not reachable(r.dnat.to_ip):
