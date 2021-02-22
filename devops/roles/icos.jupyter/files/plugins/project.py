@@ -68,7 +68,7 @@ def readme(project, force):
             continue
 
         # path to project readme
-        fn = os.path.join(pfolder, '/store/README.html')
+        fn = os.path.join(pfolder, 'store/README.html')
 
         if os.path.exists(fn) and not force:
             print(p, 'skip')
