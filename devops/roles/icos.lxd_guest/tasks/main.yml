@@ -10,11 +10,12 @@
       - htop     # a better top(1)
       - jq       # like sed for json
       - make     # party like it's 1976
-      - fail2ban # stop ssh drive-by
       - netcat-openbsd
       - git
       - tree
       - tcpdump
+      # If the ssh ports aren't publicly exposed, we don't need fail2ban.
+      - "{{ 'fail2ban' if lxd_guest_fail2ban else 'git' }}"
     update_cache: yes
 
 - import_role: name=icos.python3

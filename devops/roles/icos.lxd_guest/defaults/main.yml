@@ -1,1 +1,2 @@
 lxd_guest_ssh_keys:
+lxd_guest_fail2ban: True
