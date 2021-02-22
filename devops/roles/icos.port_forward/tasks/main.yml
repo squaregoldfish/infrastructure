@@ -26,6 +26,14 @@
     block: |
       *nat
       :PREROUTING ACCEPT [0:0]
-      -A PREROUTING -p tcp --dport {{ port_forward_sport }} -j DNAT --to-destination {{ port_forward_dhost }}:{{ port_forward_dport }} -m comment --comment "{{ port_forward_desc }}"
+      {# if no interface is specified, leave out the "-i intf" #}
+      {% if not port_forward_intfs  %}
+      -A PREROUTING -p tcp --dport {{ port_forward_sport }} -j DNAT --to-destination {{ port_forward_dhost }}:{{ port_forward_dport }}  {{- port_forward_extra }} -m comment --comment "{{ port_forward_desc }}"
+      {% else %}
+      {# otherwise add one rule for each interface #}
+      {% for intf in port_forward_intfs %}
+      -A PREROUTING -p tcp --dport {{ port_forward_sport }} -j DNAT --to-destination {{ port_forward_dhost }}:{{ port_forward_dport }} {{- port_forward_extra }} -i {{ intf }} -m comment --comment "{{ port_forward_desc }}"
+      {% endfor %}
+      {% endif %}
       COMMIT
   notify: reload ufw
