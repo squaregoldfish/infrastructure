@@ -1,11 +1,9 @@
 - name: Check that all parameters are defined
-  fail:
-    msg: "{{ item }} needs to be defined"
-  when: vars[item] is undefined
-  loop:
-    - port_forward_sport
-    - port_forward_dport
-    - port_forward_dhost
+  assert:
+    that:
+      - port_forward_sport is defined
+      - port_forward_dport is defined
+      - port_forward_dhost is defined
 
 - name: Enable IP forwarding
   sysctl:
