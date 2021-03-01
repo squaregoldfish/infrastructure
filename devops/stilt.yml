@@ -12,16 +12,14 @@
     - vault.yml
     - vars.yml
   roles:
-    - role: icos.linux
-      tags: linux
+    - role: icos.server
+      tags: server
     - role: icos.docker
       tags: docker
     - role: icos.nginx
       tags: nginx
     - role: icos.java
       tags: java
-    - role: icos.python3
-      tags: python3
 
 
 - hosts: fsicos2.lunarc.lu.se

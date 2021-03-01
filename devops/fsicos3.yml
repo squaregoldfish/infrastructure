@@ -4,11 +4,8 @@
   vars_files:
     - vault.yml
   roles:
-    - role: icos.linux
-      tags: linux
-
-    - role: icos.python3
-      tags: python3
+    - role: icos.server
+      tags: server
 
     - role: icos.lxd_server
       tags: lxd

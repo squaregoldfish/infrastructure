@@ -7,8 +7,8 @@
 - hosts: all
   become: true
   roles:
-    - role: icos.linux
-      tags: linux
+    - role: icos.server
+      tags: server
 
 - hosts: fsicos.lunarc.lu.se fsicos2.lunarc.lu.se
   roles:

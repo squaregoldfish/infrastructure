@@ -1,8 +1,11 @@
 - hosts: cdb.nateko.lu.se
   become: true
   roles:
-    - role: icos.linux
-      tags: linux
+    - role: icos.server
+      tags: server
+
+    - role: icos.lxd_server
+      tags: lxd_server
 
     - role: icos.rrsync
       tags: rrsync

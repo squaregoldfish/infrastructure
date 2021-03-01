@@ -4,8 +4,8 @@
 - hosts: fsicos2.lunarc.lu.se
   become: true
   roles:
-    - role: icos.linux
-      tags: linux
+    - role: icos.server
+      tags: server
 
     - role: icos.docker
       tags: docker
