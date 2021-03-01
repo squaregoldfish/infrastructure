@@ -13,8 +13,5 @@
     - role: icos.nginx
       tags: nginx
 
-    - role: icos.java
-      tags: java
-
     - role: icos.bbserver
       tags: bbserver

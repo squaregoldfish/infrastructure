@@ -18,8 +18,6 @@
       tags: docker
     - role: icos.nginx
       tags: nginx
-    - role: icos.java
-      tags: java
 
 
 - hosts: fsicos2.lunarc.lu.se
