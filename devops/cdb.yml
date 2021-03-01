@@ -1,5 +1,6 @@
 - hosts: cdb.nateko.lu.se
-  become: true
+  vars_files:
+    - vault.yml
   roles:
     - role: icos.server
       tags: server
