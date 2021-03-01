@@ -2,9 +2,17 @@ bbserver_user: bbserver
 bbserver_home: /home/bbserver
 
 bbserver_bin: "/usr/local/bin/borg"
-bbserver_ver: 1.1.14
-bbserver_url: "https://github.com/borgbackup/borg/releases/download/{{ bbserver_ver }}/borg-linux64"
-bbserver_checksum: "sha1:5ba96a927cea8f3a91e0dca157f518e277588f33"
+bbserver_ver: 1.1.15
+bbserver_url: "{{ bbserver_borg_releases[bbserver_ver].url }}"
+bbserver_checksum: "{{ bbserver_borg_releases[bbserver_ver].checksum | default(None) }}"
+
+bbserver_borg_releases:
+  1.1.15:
+    url: "https://github.com/borgbackup/borg/releases/download/1.1.15/borg-linux64"
+    checksum: "sha1:41b9d5f1d83c94e79840db19b519e3b6a5e391d6"
+  1.1.14:
+    url: "https://github.com/borgbackup/borg/releases/download/1.1.14/borg-linux64"
+    checksum: "sha1:5ba96a927cea8f3a91e0dca157f518e277588f33"
 
 bbserver_repo_home: "{{ bbserver_home }}/repos"
 

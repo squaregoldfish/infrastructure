@@ -13,9 +13,14 @@
   get_url:
     url: "{{ bbserver_url }}"
     dest: "{{ bbserver_bin }}_{{ bbserver_ver }}"
-    checksum: "{{ bbserver_checksum }}"
+    checksum: "{{ bbserver_checksum | default(omit) }}"
     mode: +x
   register: _download
+
+- name: Display checksum of downloaded binary
+  debug:
+    msg: "Binary have checksum sha1:{{ _download.checksum_dest }}"
+  when: not bbserver_checksum
 
 - name: Test downloaded binary
   command: |
