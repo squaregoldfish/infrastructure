@@ -16,6 +16,7 @@
       - tcpdump
       # If the ssh ports aren't publicly exposed, we don't need fail2ban.
       - "{{ 'fail2ban' if lxd_guest_fail2ban else 'git' }}"
+      - iptables-persistent
     update_cache: yes
 
 - name: Install public keys
