@@ -4,3 +4,5 @@ nginx_certbot_bin: /usr/local/bin/certbot
 # https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1581864
 # This bug is fixed as of Ubuntu 19.10, the first LTS to carry the fix is 20.04
 nginx_enable_1581864: "{{ ansible_distribution_major_version | int < 20 }}"
+
+nginx_dhparam_path: /etc/nginx/ssl/dhparams.pem

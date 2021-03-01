@@ -1,6 +1,8 @@
 - name: Install nginx
   apt:
-    name: nginx
+    name:
+      - nginx
+      - python3-cryptography
 
 - name: Add mitigation for systemd/nginx race-condition
   block:
@@ -28,28 +30,25 @@
   tags: nginx_conf
   notify: reload nginx config
 
-- name: Copy nginx SSL files (this operation is slow)
-  copy:
-    src: files/ssl/
-    dest: /etc/nginx/ssl/
-    owner: root
-    group: root
-    mode: 0700
+- name: Create dhparams.pem
+  community.crypto.openssl_dhparam:
+    path: "{{ nginx_dhparam_path }}"
+    backup: true
+    force: no
   notify: reload nginx config
 
-- name: Allowing inbound HTTP/HTTPS
-  ufw:
-    rule: allow
-    port: "{{ item }}"
-    comment: nginx
-  loop:
-    - http
-    - https
+- name: Allow nginx through firewall
+  iptables_raw:
+    name: allow_nginx
+    rules: |
+      -A INPUT -p tcp --dport 80 -j ACCEPT -m comment --comment 'nginx'
+      -A INPUT -p tcp --dport 443 -j ACCEPT -m comment --comment 'nginx'
 
 - name: Start nginx
   service:
     name: nginx
     state: started
+    enabled: true
 
 - import_tasks: nginx_certbot.yml
   tags: nginx_certbot
