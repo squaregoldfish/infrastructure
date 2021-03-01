@@ -1,0 +1,21 @@
+- name: Install bash aliases
+  lineinfile:
+    path: /root/.bash_profile
+    line: "{{ item }}"
+    state: present
+    create: yes
+  loop:
+    - "alias sc='systemctl'"
+    - "alias jc='journalctl'"
+    - "alias df='df -h -x tmpfs -x overlay -x devtmpfs'"
+
+- name: Copy utilities
+  tags: linux_utils
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/sbin/{{ item }}"
+    mode: 0755
+  loop:
+    - retrieve-original
+    - iptables-remove-duplicates
+    - ss
