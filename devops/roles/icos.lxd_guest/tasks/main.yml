@@ -10,6 +10,7 @@
       - htop     # a better top(1)
       - jq       # like sed for json
       - make     # party like it's 1976
+      - ncdu     # graphical disk usage
       - netcat-openbsd
       - git
       - tree
