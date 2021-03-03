@@ -1,46 +1,38 @@
-- name: Check that all parameters are defined
-  fail:
-    msg: "{{ item }} needs to be defined"
-  when: vars[item] is undefined
-  loop:
-    - node_exporter_allow_from
-
 - name: Create node_exporter user
   user:
     name: "{{ node_exporter_user }}"
     home: "{{ node_exporter_home }}"
     shell: /usr/sbin/nologin
 
+- name: Create download directory
+  file:
+    path: "{{ node_exporter_download }}"
+    state: directory
+
 - name: Download node_exporter binary
   get_url:
     url: "{{ node_exporter_url }}"
-    dest: /tmp/
-    checksum: "{{ node_exporter_sha }}"
+    dest: "{{ node_exporter_download }}"
+    checksum: "{{ node_exporter_checksum or omit }}"
     mode: +x
   register: _download
+
+- name: Display checksum of downloaded binary
+  debug:
+    msg: "Binary have checksum sha1:{{ _download.checksum_dest }}"
+  when: not node_exporter_checksum
 
 - name: Unarchive {{ _download.dest }}
   unarchive:
     src: "{{ _download.dest }}"
-    dest: "{{ node_exporter_home }}"
+    dest: "{{ node_exporter_download }}"
     remote_src: yes
 
-- name: Find the unpacked node_exporter directory
-  find:
-    file_type: directory
-    recurse: no
-    paths: /opt/node_exporter
-    patterns: node_exporter-*.linux-amd64
-  register: _find
-
-- name: Set path to unpacked directory
-  set_fact:
-    node_exporter_version_home: "{{ (_find.files | sort(attribute='path') | last).path  }}"
-
-- name: Copy node_exporter
+- name: Copy node_exporter service file
   template:
     src: node_exporter.service
     dest: /etc/systemd/system/
+  register: _srv
 
 - name: Create the textfile collector directory
   file:
@@ -56,17 +48,20 @@
     content: |
       OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}
       OPTIONS=--web.listen-address=":{{ node_exporter_port }}"
+  register: _env
 
-- name: Restart node_exporter service
+- name: Start node_exporter service
   systemd:
     name: node_exporter
-    state: restarted
-    daemon_reload: yes
+    enabled: yes
+    state: "{{ 'restarted' if (_srv.changed or _env.changed) else 'started' }}"
+    daemon-reload: "{{ 'yes' if (_srv.changed or _env.changed) else 'no' }}"
 
-- name: Allowing traffic to node_exporter from prometheus
-  ufw:
-    rule: allow
-    port: "{{ node_exporter_port }}"
-    src: "{{ node_exporter_allow_from }}"
-    state: enabled
-    comment: allow access to node_exporter from prometheus
+- name: Allow node_exporter through firewall
+  iptables_raw:
+    name: allow_node_exporter
+    rules: >-
+      -A INPUT -p tcp --dport {{ node_exporter_port }}
+      -s {{ node_exporter_allow_from }}
+      -j ACCEPT -m comment --comment 'node_exporter'
+  when: node_exporter_allow_from is defined

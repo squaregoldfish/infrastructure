@@ -1,19 +1,25 @@
 node_exporter_user: node_exporter
 node_exporter_home: /opt/node_exporter
+node_exporter_download: /opt/node_exporter/download
 
 # https://github.com/prometheus/node_exporter#textfile-collector
 node_exporter_textfiles: /opt/node_exporter/textfiles
-
-# List of releases - https://github.com/prometheus/node_exporter/releases/
-node_exporter_ver: 1.0.1
-node_exporter_url: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_ver }}/node_exporter-{{ node_exporter_ver }}.linux-amd64.tar.gz
-node_exporter_sha: sha256:3369b76cd2b0ba678b6d618deab320e565c3d93ccb5c2a0d5db51a53857768ae
-node_exporter_bin: /opt/node_exporter/node_exporter
-
 node_exporter_environ: "{{ node_exporter_home }}/environ"
 
-# The ip range from which prometheus will contact us. We default to the ip
-# range we use for docker.
-node_exporter_prom_from: 10.10.0.0/16
+# List of releases - https://github.com/prometheus/node_exporter/releases/
+node_exporter_ver: 1.1.1
+node_exporter_bin: "{{ node_exporter_releases[node_exporter_ver].bin }}"
+node_exporter_url: "{{ node_exporter_releases[node_exporter_ver].url }}"
+node_exporter_checksum: "{{ node_exporter_releases[node_exporter_ver].checksum }}"
+
+node_exporter_releases:
+  1.1.1:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.1.1/node_exporter-1.1.1.linux-amd64.tar.gz
+    bin: "{{ node_exporter_download }}/node_exporter-1.1.1.linux-amd64/node_exporter"
+    checksum: "sha1:6a269236d6aa1bb858d1cbae31cf8f20e0a13529"
+  1.0.1:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
+    bin: "{{ node_exporter_download }}/node_exporter-1.0.1.linux-amd64/node_exporter"
+    checksum: "sha256:3369b76cd2b0ba678b6d618deab320e565c3d93ccb5c2a0d5db51a53857768ae"
 
 node_exporter_port: "9100"
