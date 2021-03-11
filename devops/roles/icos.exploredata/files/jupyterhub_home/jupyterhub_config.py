@@ -11,6 +11,9 @@ c.JupyterHub.hub_ip = '0.0.0.0'
 # this is assigned to the hub image by docker-compose.
 c.JupyterHub.hub_connect_ip = 'hub'
 
+# We handle authentication in the reverse proxy
+c.JupyterHub.authenticate_prometheus = False
+
 # Shuts down all user servers on logout
 c.JupyterHub.shutdown_on_logout = True
 
