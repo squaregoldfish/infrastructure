@@ -111,3 +111,6 @@
     - role: icos.exploredata
       tags: exploredata
       exploredata_password: "{{ vault_exploredata_password }}"
+
+    - role: icos.node_exporter
+      tags: node_exporter
