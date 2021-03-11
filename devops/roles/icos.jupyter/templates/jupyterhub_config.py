@@ -14,6 +14,9 @@ c.JupyterHub.hub_ip = '0.0.0.0'
 c.JupyterHub.cleanup_servers = False
 c.JupyterHub.template_paths = ["/srv/jupyterhub/templates"]
 
+# We handle authentication in the reverse proxy
+c.JupyterHub.authenticate_prometheus = False
+
 # c.JupyterHub.allow_named_servers = True
 # c.JupyterHub.named_server_limit_per_user = 5
 
@@ -58,8 +61,8 @@ c.DockerSpawner.read_only_volumes = {
 }
 
 c.DockerSpawner.volumes = {'/project': '/project'}
-
 c.DockerSpawner.allowed_images = ['notebook']
+
 
 
 # The override configuration file doesn't have to exist.
