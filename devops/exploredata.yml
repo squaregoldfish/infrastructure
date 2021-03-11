@@ -1,15 +1,7 @@
-# Setup the host
-#   deploy exploredata -lexploredata_host
-#
-# Update the profile
-#   deploy exploredata profile
-#
-# Recreate the lxd container
-#   deploy exploredata lxd
 - hosts: exploredata_host
   vars:
-    lxd_host_ip: "{{ _lxd.addresses.eth0 | first }}"
-  pre_tasks:
+    exploredata_ip: "{{ _lxd.addresses.eth0 | first }}"
+  tasks:
     - name: Create exploredata storage pool
       tags: pool
       # named ed for historical reasens
@@ -21,6 +13,10 @@
         - '"Storage pool ed created" in _r.stdout'
 
     - name: Create the exploredata container
+      tags:
+        - lxd
+        - nginx
+        - iptables
       lxd_container:
         name: exploredata
         state: started
@@ -52,38 +48,53 @@
         timeout: 600
       register: _lxd
 
-  roles:
-    - role: icos.lxd_forward
-      lxd_forward_ip: "{{ lxd_host_ip }}"
-      lxd_forward_name: exploredata
+    - name: SSH forward to exploredata
+      tags: iptables
+      iptables_raw:
+        name: ssh_forward_to_exploredata
+        table: nat
+        rules: >-
+          -A PREROUTING -p tcp
+          --dport {{ hostvars['exploredata'].ansible_port }}
+          -j DNAT --to-destination {{ exploredata_ip }}:22
 
-    - role: icos.certbot2
+    - name: Setup letsencrypt certificate
       tags: cert
+      import_role:
+        name: icos.certbot2
       vars:
         certbot_name: exploredata
         certbot_domains:
           - exploretest.icos-cp.eu
           - exploredata.icos-cp.eu
+          - exploredata2.icos-cp.eu
 
-    - role: icos.nginxsite
+    - name: Setup exploretest
       tags: nginx
+      import_role:
+        name: icos.nginxsite
       vars:
         nginxsite_name: exploredata-test
         nginxsite_file: roles/icos.exploredata/templates/exploredata-nginx.conf
         exploredata_name: test
         exploredata_port: 4567
-        exploredata_host: "{{ lxd_host_ip }}"
-        exploredata_domain: exploretest.icos-cp.eu
+        exploredata_host: "{{ exploredata_ip }}"
+        exploredata_domains:
+          - exploretest.icos-cp.eu
 
-    - role: icos.nginxsite
+    - name: Setup exploredata
       tags: nginx
+      import_role:
+        name: icos.nginxsite
       vars:
         nginxsite_name: exploredata-prod
         nginxsite_file: roles/icos.exploredata/templates/exploredata-nginx.conf
         exploredata_name: prod
         exploredata_port: 4566
-        exploredata_host: "{{ lxd_host_ip }}"
-        exploredata_domain: exploredata.icos-cp.eu
+        exploredata_host: "{{ exploredata_ip }}"
+        exploredata_domains:
+          - exploredata.icos-cp.eu
+          - exploredata2.icos-cp.eu
 
 
 - hosts: exploredata
