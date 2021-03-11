@@ -2,3 +2,12 @@
   {% for host in groups['node_exporters'] %}
   - "{{ host }}:60910"
   {% endfor %}
+
+- targets:
+    - exploredata.icos-cp.eu
+  labels:
+    __metrics_path__: /node_metrics
+    app: exploredata
+
+- targets:
+    - exploredata.icos-cp.eu
