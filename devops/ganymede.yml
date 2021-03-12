@@ -116,12 +116,14 @@
       tags: jbuild
       jbuild_users: "{{ vault_ganymede_jbuild_users }}"
       jbuild_edctl_host: exploredata
+      jbuild_edctl_host_name: exploredata.lxd
+      jbuild_edctl_host_port: 22
       jbuild_rsync_host: jupyter
-      jbuild_jyctl_host: jupyter
-      jbuild_rsync_host_name: jupyter.lxd
       jbuild_rsync_host_port: 22
-      jbuild_jyctl_host_name: jupyter.lxd
+      jbuild_rsync_host_name: jupyter.lxd
+      jbuild_jyctl_host: jupyter
       jbuild_jyctl_host_port: 22
+      jbuild_jyctl_host_name: jupyter.lxd
 
   tasks:
     - tags: sshlogin

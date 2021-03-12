@@ -16,7 +16,6 @@ cdb.nateko.lu.se
 
 # FSICOS2
 [fsicos2_aliases]
-exploredata_host
 quince_host
 wordpress_host
 climbeco_host
@@ -31,7 +30,6 @@ ansible_host=fsicos2.lunarc.lu.se
 ansible_user=root
 
 [fsicos2_vms]
-exploredata ansible_port=60532
 quince ansible_port=60522
 wordpress ansible_port=60552
 climbeco ansible_port=60524
@@ -49,6 +47,7 @@ ansible_user=root
 
 # FSICOS3
 [fsicos3_aliases]
+exploredata_host
 callisto_host
 molefractions_host
 flexpart_host
@@ -67,6 +66,7 @@ flexpart ansible_port=60530
 jupyter ansible_port=60535
 ganymede ansible_port=60540
 registry ansible_port=60545
+exploredata ansible_port=60555
 
 [fsicos3_vms:vars]
 ansible_host=fsicos3.lunarc.lu.se

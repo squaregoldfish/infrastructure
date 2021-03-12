@@ -1,16 +1,18 @@
 - hosts: exploredata_host
   vars:
     exploredata_ip: "{{ _lxd.addresses.eth0 | first }}"
+  vars_files:
+    - vault.yml
   tasks:
-    - name: Create exploredata storage pool
-      tags: pool
-      # named ed for historical reasens
-      shell: >-
-        /snap/bin/lxc storage show ed > /dev/null 2>&1 ||
-        /snap/bin/lxc storage create ed btrfs size=50GB
-      register: _r
-      changed_when:
-        - '"Storage pool ed created" in _r.stdout'
+    - name: Create storage for docker
+      tags:
+        - zfs
+        - lxd
+      import_role:
+        name: icos.zfsdocker
+      vars:
+        zfsdocker_name: exploredata
+        zfsdocker_size: "50G"
 
     - name: Create the exploredata container
       tags:
@@ -28,46 +30,51 @@
           mode: pull
           server: https://cloud-images.ubuntu.com/releases
           protocol: simplestreams
-          alias: "18.04"
-        config:
-          security.nesting: "true"
-          limits.cpu: "4"
-          limits.memory: "50GB"
+          alias: "20.04"
         devices:
           root:
-            path: /
+            path: "/"
+            pool: "default"
+            type: "disk"
+            size: "100GB"
+          docker:
+            path: /var/lib/docker
+            source: "{{ zfsdocker_zvol }}"
             type: disk
-            pool: ed  # named ed for historical reasens
+            raw.mount.options: user_subvol_rm_allowed
           data:
             path: /data
             source: /data
             type: disk
             recursive: "true"
+        config:
+          security.nesting: "true"
+          limits.cpu.allowance: "80%"
+          limits.memory: "300GB"
+          limits.memory.enforce: "soft"
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0
-        timeout: 600
+        timeout: 60
       register: _lxd
 
     - name: SSH forward to exploredata
       tags: iptables
       iptables_raw:
-        name: ssh_forward_to_exploredata
+        name: forward_ssh_to_exploredata
         table: nat
         rules: >-
           -A PREROUTING -p tcp
           --dport {{ hostvars['exploredata'].ansible_port }}
           -j DNAT --to-destination {{ exploredata_ip }}:22
 
-    - name: Setup letsencrypt certificate
-      tags: cert
-      import_role:
-        name: icos.certbot2
+    - import_role: name=icos.certbot2
+      tags:
+        - cert
       vars:
         certbot_name: exploredata
         certbot_domains:
-          - exploretest.icos-cp.eu
           - exploredata.icos-cp.eu
-          - exploredata2.icos-cp.eu
+          - exploretest.icos-cp.eu
 
     - name: Setup exploretest
       tags: nginx
@@ -94,16 +101,15 @@
         exploredata_host: "{{ exploredata_ip }}"
         exploredata_domains:
           - exploredata.icos-cp.eu
-          - exploredata2.icos-cp.eu
-
 
 - hosts: exploredata
+  become: true
   vars_files:
+    - vars.yml
     - vault.yml
   roles:
     - role: icos.lxd_guest
       tags: guest
-      lxd_guest_ssh_keys: "{{ vault_exploredata_ssh_keys }}"
 
     - role: icos.docker
       tags: docker
