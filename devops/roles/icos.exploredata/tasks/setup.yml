@@ -12,6 +12,11 @@
     - jupyterhub_home
     - docker-compose.yml
 
+- name: Copy jupyterhub_config.py
+  template:
+    src: jupyterhub_config.py
+    dest: "{{ exploredata_home }}/jupyterhub_home/"
+
 - name: Install runtime environment file
   copy:
     dest: "{{ exploredata_home }}/.env"

@@ -80,7 +80,7 @@ c.Spawner.mem_limit = '2G'
 c.Spawner.cpu_limit = 1
 
 # Maximum number of concurrent servers that can be active at a time.
-c.JupyterHub.active_server_limit = 20
+c.JupyterHub.active_server_limit = {{ exploredata_max_notebooks }}
 
 # Interval (in seconds) at which to update last-activity timestamps.
 # This is set much more aggressively than in the default configuration so that
