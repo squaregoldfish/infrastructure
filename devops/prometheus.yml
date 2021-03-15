@@ -70,11 +70,28 @@
         prometheus_bbox_host: prometheus.lxd
 
 
-- hosts: node_exporters
-  roles:
-    - role: icos.node_exporter
-      tags: node_exporter
-      node_exporter_port: "60910"
+- hosts: fsicos2.lunarc.lu.se fsicos3.lunarc.lu.se
+  tags: node_exporter_host
+  vars_files:
+    - vars.yml
+    - vault.yml
+  tasks:
+    - import_role: name=icos.certbot2
+      vars:
+        certbot_domain: "{{ inventory_hostname }}"
+
+    - import_role: name=icos.nginxsite
+      vars:
+        nginxsite_name: node-exporter
+        nginxsite_file: files/node-exporter-nginx.conf
+
+    - import_role: name=icos.node_exporter
+
+
+- hosts: flexpart
+  tags: node_exporter_vm
+  tasks:
+    - import_role: name=icos.node_exporter
 
 
 - hosts: localhost

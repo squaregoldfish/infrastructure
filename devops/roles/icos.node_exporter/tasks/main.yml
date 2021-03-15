@@ -47,7 +47,6 @@
     dest: "{{ node_exporter_environ }}"
     content: |
       OPTIONS=--collector.textfile.directory={{ node_exporter_textfiles }}
-      OPTIONS=--web.listen-address=":{{ node_exporter_port }}"
   register: _env
 
 - name: Start node_exporter service
@@ -56,12 +55,3 @@
     enabled: yes
     state: "{{ 'restarted' if (_srv.changed or _env.changed) else 'started' }}"
     daemon-reload: "{{ 'yes' if (_srv.changed or _env.changed) else 'no' }}"
-
-- name: Allow node_exporter through firewall
-  iptables_raw:
-    name: allow_node_exporter
-    rules: >-
-      -A INPUT -p tcp --dport {{ node_exporter_port }}
-      -s {{ node_exporter_allow_from }}
-      -j ACCEPT -m comment --comment 'node_exporter'
-  when: node_exporter_allow_from is defined

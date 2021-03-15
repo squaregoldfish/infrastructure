@@ -1,13 +1,29 @@
 - targets:
-  {% for host in groups['node_exporters'] %}
-  - "{{ host }}:60910"
-  {% endfor %}
+    - fsicos2.lunarc.lu.se
+  labels:
+    __metrics_path__: /node_exporter/host
+    instance: fsicos2
+
+- targets:
+    - fsicos3.lunarc.lu.se
+  labels:
+    __metrics_path__: /node_exporter/host
+    instance: fsicos3
+
+- targets:
+    - fsicos3.lunarc.lu.se
+  labels:
+    __metrics_path__: /node_exporter/flexpart
+    instance: flexpart
 
 - targets:
     - exploredata.icos-cp.eu
   labels:
     __metrics_path__: /node_metrics
-    app: exploredata
+    instance: exploredata
 
 - targets:
     - exploredata.icos-cp.eu
+  labels:
+    __metrics_path__: /hub/metrics
+    instance: exploredata
