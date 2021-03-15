@@ -29,6 +29,18 @@
       NOTEBOOK_IMAGE={{ exploredata_notebook_image }}
       PASSWORD={{ exploredata_password[exploredata_type] }}
 
+- name: Login to registry
+  tags: docker_login
+  community.general.docker_login:
+    registry_url: "{{ registry_domain }}"
+    username: docker
+    password: "{{ vault_registry_pass }}"
+
+- name: Make sure that the notebook images are present
+  community.docker.docker_image:
+    name: "{{ exploredata_notebook_image }}"
+    source: pull
+
 - name: Build and start the hub image
   docker_compose:
     project_src: "{{ exploredata_home }}"
