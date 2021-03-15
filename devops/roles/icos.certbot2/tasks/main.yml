@@ -1,4 +1,5 @@
-- set_fact:
+- name: Setting name and domains to the same value.
+  set_fact:
     certbot_name: "{{ certbot_domain }}"
     certbot_domains: ["{{ certbot_domain }}"]
   when:
