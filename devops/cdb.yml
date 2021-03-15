@@ -14,9 +14,6 @@
     - role: icos.bbserver
       tags: bbserver
 
-    - role: icos.lxd_server
-      tags: lxd_server
-
     - role: icos.nginx
       tags: nginx
 
