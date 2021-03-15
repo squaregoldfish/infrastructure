@@ -103,7 +103,10 @@
           - exploredata.icos-cp.eu
 
 - hosts: exploredata
-  become: true
+  vars:
+    lxd_guest_ssh_keys: "{{ vault_exploredata_ssh_keys }}"
+    exploredata_password: "{{ vault_exploredata_password }}"
+    exploredata_max_notebooks: 100
   vars_files:
     - vars.yml
     - vault.yml
@@ -116,7 +119,6 @@
 
     - role: icos.exploredata
       tags: exploredata
-      exploredata_password: "{{ vault_exploredata_password }}"
 
     - role: icos.node_exporter
       tags: node_exporter
