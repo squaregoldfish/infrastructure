@@ -3,22 +3,13 @@
     name: Europe/Stockholm
   notify: restart crond
 
-- name: Install utilities
+- import_role: name=icos.utils
+
+- name: Install packages
   apt:
     name:
-      - mg       # microemacs
-      - htop     # a better top(1)
-      - jq       # like sed for json
-      - make     # party like it's 1976
-      - ncdu     # graphical disk usage
-      - netcat-openbsd
-      - git
-      - tree
-      - tcpdump
-      # If the ssh ports aren't publicly exposed, we don't need fail2ban.
-      - "{{ 'fail2ban' if lxd_guest_fail2ban else 'git' }}"
       - iptables-persistent
-    update_cache: yes
+      - "{{ 'fail2ban' if lxd_guest_fail2ban else 'iptables-persistent' }}"
 
 - name: Install public keys
   authorized_key:

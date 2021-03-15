@@ -1,0 +1,4 @@
+- name: Copy broot shell function
+  copy:
+    src: br
+    dest: /root/.config/broot/launcher/bash/br

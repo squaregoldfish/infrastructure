@@ -3,22 +3,9 @@
     name: Europe/Stockholm
   notify: restart cron
 
-- name: Install packages
-  apt:
-    name:
-      - git
-      - mg   # microemacs
-      - htop # a better top(1)
-      - jq   # like sed for json
-      - make # party like it's 1976
-      - netcat-openbsd
-      - tree
-      - mailutils
-      - mutt
-      - unzip
-      - ncdu
-
 - import_role: name=icos.utils
+  tags: utils
+  
 - import_role: name=icos.iptables
 - import_role: name=icos.python3
 - import_role: name=icos.mosh

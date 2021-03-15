@@ -19,3 +19,33 @@
     - retrieve-original
     - iptables-remove-duplicates
     - ss
+
+- name: Install utilities
+  apt:
+    name:
+      - mg             # microemacs
+      - htop           # a better top(1)
+      - jq             # like sed for json
+      - make           # party like it's 1976
+      - ncdu           # graphical disk usage
+      - ripgrep        # better grep
+      - netcat-openbsd # nc(1)
+      - git            # useful
+      - tree           # directory overview
+      - tcpdump        # network troubleshooting
+    update_cache: yes
+
+- name: Install fd(1)
+  apt:
+    deb: https://github.com/sharkdp/fd/releases/download/v8.2.1/fd-musl_8.2.1_amd64.deb
+
+- name: Download broot binary
+  get_url:
+    url: https://dystroy.org/broot/download/x86_64-linux/broot
+    dest: /usr/local/bin/broot
+    mode: +x
+
+- name: Install broot shell function
+  command: /usr/local/bin/broot --install
+  args:
+    creates: /root/.config/broot/launcher/bash/br
