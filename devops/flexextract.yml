@@ -13,6 +13,7 @@
         - '"Storage pool flexextract created" in _r.stdout'
 
     - name: Create the flexextract container
+      tags: lxd
       lxd_container:
         name: flexextract
         state: started
@@ -28,7 +29,7 @@
         config:
           security.nesting: "true"
           limits.cpu: "10"
-          limits.memory: "10GB"
+          limits.memory: "55GB"
         devices:
           root:
             path: /
