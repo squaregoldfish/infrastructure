@@ -57,3 +57,12 @@
       #!/bin/bash
       ssh jyctl /opt/jyctl/jyctl.py "$@"
   loop: "{{ jbuild_users }}"
+
+- name: Login to registry
+  become: yes
+  become_user: "{{ item }}"
+  community.general.docker_login:
+    registry_url: "{{ registry_domain }}"
+    username: docker
+    password: "{{ jbuild_registry_pass }}"
+  loop: "{{ jbuild_users }}"
