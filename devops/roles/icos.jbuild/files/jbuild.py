@@ -143,6 +143,9 @@ def push(what, local_tag):
     img.tag(push_tag)
     hdr = f"Pushing {push_tag} - %s"
     for update in client.images.push(push_tag, stream=True, decode=True):
+        # This will detect e.g missing docker login credentials.
+        if error := update.get('error'):
+            die(f"Error while pushing '{push_tag}' to registry - {error}")
         print(hdr % update.get('id') + "\r", end='')
     print(hdr % "done")
 
