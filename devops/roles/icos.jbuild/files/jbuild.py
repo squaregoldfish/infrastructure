@@ -97,12 +97,10 @@ def build(ref, what):
     else:
         assert 0, what
 
-    # Get the "shortsha" of HEAD.
-    sha = ref.commit.hexsha[:7]
-    # The tag will look like 'icosbase-username:xed17e3'
-    tag = '%s-%s:%s' % (what, USER, sha)
+    # Tag the images as "exploredata-alice"
+    tag = '%s-%s' % (what, USER)
     if what == 'exploredata':
-        bldargs = ['--build-arg=BASE=icosbase-%s:%s' % (USER, sha)]
+        bldargs = ['--build-arg=BASE=icosbase-%s' % USER]
 
     logpath = WORKDIR.joinpath('%s.log' % what)
     print('Building %s - complete log in %s' % (tag, logpath))
@@ -123,10 +121,8 @@ def build(ref, what):
         if r.returncode != 0:
             die("docker build failed - see %s for details" % logpath)
 
-    usertag = "%s-%s:latest" % (what, USER)
-    subprocess.check_call(['docker', 'tag', tag, usertag])
-    print('Successfully built %s' % usertag)
-    return usertag
+    print('Successfully built %s' % tag)
+    return tag
 
 
 
@@ -222,7 +218,7 @@ def cli_info():
 @cli.command('run', help='Build, push images, sync notebooks.')
 @click.argument('branch', required=False)
 @click.option('--fetch/--no-fetch', default=True, help="Fetch from github")
-def cli_build(branch, fetch):
+def cli_run(branch, fetch):
     os.chdir(JUPYDIR)
 
     if fetch:
