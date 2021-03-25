@@ -4,9 +4,6 @@ global:
       //stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css: { type: external, minified: true }
       //use.fontawesome.com/releases/v5.15.1/css/all.css: { type: external, minified: true }
       css/main.css: {}
-{% if extra_css | default(false) %}
-      css/{{ extra_css }}.css: {}
-{% endif %}
       css/menu.css: {}
       css/breadcrumb.css: {}
       css/accordion.css: {}

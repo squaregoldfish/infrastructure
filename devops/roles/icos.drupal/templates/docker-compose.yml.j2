@@ -14,6 +14,7 @@ services:
       - ../files/private:/var/www/private/
       - ../config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
 {% if website == "cp" %}
+      - ../../RINGO:/var/www/html/sites/default/files/RINGO:ro
     external_links:
       - restheart_restheart_1:restheart
 {% endif %}

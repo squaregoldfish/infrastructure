@@ -35,22 +35,6 @@
     src: services.yml
     dest: "{{ project_dir }}/files/default/"
 
-- name: Copy modules library
-  template:
-    src: "{{ item }}.libraries.yml.j2"
-    dest: "{{ project_dir }}/modules/{{ item }}/{{ item }}.libraries.yml"
-  with_items:
-    - cp_blogs
-    - cp_cmis
-    - cp_documents
-    - cp_files
-  notify: reload nginx config
-
-- name: Download cmis_repository_wrapper.php
-  get_url:
-    url: https://raw.githubusercontent.com/TIU11/Basic-CMIS/6ac8fe940b9ebfa2c9419124fa5552ef972020c8/lib/cmis_repository_wrapper.php
-    dest: "{{ project_dir }}/modules/cp_cmis/src/CMIS/cmis_repository_wrapper.php"
-
 - name: Copy theme library
   template:
     src: cp_theme_d8.libraries.yml.j2
