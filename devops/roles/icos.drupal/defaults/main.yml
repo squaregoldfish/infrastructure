@@ -1,2 +1,2 @@
-drupal_websites: ["ac", "ch", "cp", "demo", "fi", "nl", "no", "ns", "otc", "ri", "se"]
+drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "ns", "otc", "se"]
 drupal_home: /disk/data/drupal

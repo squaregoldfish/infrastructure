@@ -58,7 +58,6 @@
     project_src: "{{ project_dir }}/docker"
     state: present
     pull: yes
-  notify: reload nginx config
 
 - name: Change private directory owner
   command: docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/private/
