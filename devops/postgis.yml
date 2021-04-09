@@ -2,38 +2,69 @@
 #   deploy postgis cplog
 
 - hosts: postgis_host
+  vars:
+    postgis_ip: "{{ _lxd.addresses.eth0 | first }}"
   vars_files:
     - vault.yml
-  pre_tasks:
-    - name: Create postgis LXD profile
-      tags: profile
-      lxd_profile:
+  tasks:
+    - name: Create postgis storage pool
+      tags: pool
+      shell: >-
+        /snap/bin/lxc storage show postgis > /dev/null 2>&1 ||
+        /snap/bin/lxc storage create postgis btrfs size=20GB
+      register: _r
+      changed_when:
+        - '"Storage pool postgis created" in _r.stdout'
+
+    - name: Create the postgis container
+      lxd_container:
         name: postgis
+        state: started
+        profiles:
+          - default
+          - ssh_root
         config:
           limits.cpu: "4"
           limits.memory: "10GB"
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "20.04"
         devices:
           root:
             path: /
             type: disk
             pool: postgis
             size: "20GB"
+        wait_for_ipv4_addresses: true
+      register: _lxd
 
-  roles:
-    - role: icos.lxd_host
-      tags: lxd
-      lxd_host_name: postgis
-      lxd_host_port: "{{ hostvars['postgis'].ansible_port }}"
-      lxd_host_profile: postgis
+    - name: SSH forward to postgis
+      iptables_raw:
+        name: forward_ssh_to_postgis
+        table: nat
+        rules: >-
+          -A PREROUTING -p tcp
+          --dport {{ hostvars['postgis'].ansible_port }}
+          -j DNAT --to-destination {{ postgis_ip }}:22
+
+    - name: Modify /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        regex: '(?:^{{ postgis_ip | regex_escape}}.*)|(?:.*postgis\.lxd)$'
+        line: "{{ postgis_ip }}\tpostgis.lxd"
+        state: present
 
 
 - hosts: postgis
+  become: true
   vars_files:
     - vault.yml
   roles:
     - role: icos.lxd_guest
       tags: guest
-      lxd_guest_root_keys: "{{ vault_postgis_root_keys }}"
 
     - role: icos.bbclient
       tags: bbclient
@@ -53,9 +84,8 @@
       authorized_key:
         user: postgres
         state: present
-        key: "{{ item.strip() }}"
-      loop: "{{ vault_postgis_extra_keys }}"
-
+        key: "{{ vault_postgis_extra_keys }}"
+    
     - name: Allow postgres user to connect from same subnet
       tags: hba
       postgresql_pg_hba:
@@ -84,3 +114,9 @@
             method: md5
             contype: hostssl
           loop: "{{ vault_postgis_cplog_users }}"
+
+        - name: Add the pg_stat_statements to cplog
+          community.postgresql.postgresql_ext:
+            name: pg_stat_statements
+            db: cplog
+            schema: public
