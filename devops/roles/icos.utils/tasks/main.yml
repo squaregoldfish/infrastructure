@@ -28,16 +28,20 @@
       - jq             # like sed for json
       - make           # party like it's 1976
       - ncdu           # graphical disk usage
-      - ripgrep        # better grep
       - netcat-openbsd # nc(1)
       - git            # useful
       - tree           # directory overview
       - tcpdump        # network troubleshooting
     update_cache: yes
 
+
+- name: Install ripgrep
+  apt:
+    deb: "{{ utils_ripgrep_url }}"
+    
 - name: Install fd(1)
   apt:
-    deb: https://github.com/sharkdp/fd/releases/download/v8.2.1/fd-musl_8.2.1_amd64.deb
+    deb: "{{ utils_fd_url }}"
 
 - name: Download broot binary
   get_url:
