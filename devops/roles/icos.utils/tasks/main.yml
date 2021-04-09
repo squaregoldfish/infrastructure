@@ -32,6 +32,8 @@
       - git            # useful
       - tree           # directory overview
       - tcpdump        # network troubleshooting
+      - mailutils
+      - mutt
     update_cache: yes
 
 
