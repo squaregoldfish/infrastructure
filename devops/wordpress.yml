@@ -17,6 +17,7 @@
       tags:
         - lxd
         - nginx
+        - hosts
       lxd_container:
         name: wordpress
         state: started
@@ -51,6 +52,14 @@
           -A PREROUTING -p tcp
           --dport {{ hostvars['wordpress'].ansible_port }}
           -j DNAT --to-destination {{ wordpress_ip }}:22
+
+    - name: Modify /etc/hosts
+      tags: hosts
+      lineinfile:
+        path: /etc/hosts
+        regex: '(?:^{{ wordpress_ip | regex_escape}}.*)|(?:.*wordpress\.lxd)$'
+        line: "{{ wordpress_ip }}\twordpress.lxd"
+        state: present
 
     - name: Create certificate
       tags: cert
