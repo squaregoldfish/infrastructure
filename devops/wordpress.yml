@@ -79,7 +79,8 @@
           - www.ingos-infrastructure.eu
           - www.eric-forum.eu
           - www.icos-summerschool.eu
-          # - www.envriplus.eu
+        wordpress_domains_http:
+          - www.envriplus.eu
 
           
 - hosts: wordpress
