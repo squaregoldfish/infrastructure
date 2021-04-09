@@ -72,7 +72,6 @@
         state: directory
       loop:
         - /data/stilt
-        - /data/flexpart
         - /share/fsicos3
 
     - name: Mount nfs data
@@ -94,8 +93,6 @@
         - path: /data/stilt
           src: fsicos3.lunarc.lu.se:/pool/ute/stilt/RINGO/T1.3/STILT
 
-        # - path: /data/flexpart
-        #   src: fsicos.lunarc.lu.se:/disk/data/flexpart
 
         # - path: /data/project/interpolation
         #   src: fsicos3.lunarc.lu.se:/data/project/interpolation
