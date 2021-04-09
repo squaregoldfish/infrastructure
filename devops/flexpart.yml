@@ -63,6 +63,11 @@
             source: /data/flexpart/meteo
             type: disk
             readonly: "True"
+          ct2018:
+            path: /data/flexpart/CT2018
+            source: /data/flexpart/CT2018
+            type: disk
+            readonly: "True"
           vprm:
             path: "/data/VPRM2007n"
             source: "/pool/ute/stilt/VPRM/VPRM_ECMWF/VPRM2007n"
