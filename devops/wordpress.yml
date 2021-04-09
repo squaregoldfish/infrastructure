@@ -1,61 +1,87 @@
-# Update nginx config (needs the lxd_host_ip)
-#   $ deploy wordpress -lwordpress_host lxd_host_create nginx
-
 - hosts: wordpress_host
-  become: true
+  vars:
+    wordpress_ip: "{{ _lxd.addresses.eth0 | first }}"
   vars_files:
     - vault.yml
-  pre_tasks:
-    - name: Create wordpress LXD profile
+  tasks:
+    - name: Create wordpress storage pool
+      tags: pool
+      shell: >-
+        /snap/bin/lxc storage show wordpress > /dev/null 2>&1 ||
+        /snap/bin/lxc storage create wordpress btrfs size=500GB
+      register: _r
+      changed_when:
+        - '"Storage pool wordpress created" in _r.stdout'
+
+    - name: Create the wordpress container
       tags:
         - lxd
-        - profile
-      lxd_profile:
+        - nginx
+      lxd_container:
         name: wordpress
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "18.04"
         config:
           limits.cpu: "2"
           limits.memory: "2GB"
         devices:
-          eth0:
-            name: eth0
-            nictype: bridged
-            parent: lxdbr0
-            type: nic
           root:
             path: /
             type: disk
-            # This pool was created manually.
             pool: wordpress
             size: "500GB"
+        wait_for_ipv4_addresses: true
+        timeout: 600
+      register: _lxd
 
-  roles:
-    - role: icos.lxd_host
-      tags: lxd
-      lxd_host_name: wordpress
-      lxd_host_port: "{{ hostvars['wordpress'].ansible_port }}"
-      lxd_host_extra_keys: "{{ vault_wordpress_extra_keys.splitlins() }}"
-      lxd_host_profile: wordpress
+    - name: SSH forward to wordpress
+      tags: iptables
+      iptables_raw:
+        name: forward_ssh_to_wordpress
+        table: nat
+        rules: >-
+          -A PREROUTING -p tcp
+          --dport {{ hostvars['wordpress'].ansible_port }}
+          -j DNAT --to-destination {{ wordpress_ip }}:22
 
-    - role: icos.certbot2
+    - name: Create certificate
       tags: cert
-      certbot_domain: www.icos-summerschool.eu
+      import_role:
+        name: icos.certbot2
+      vars:
+        certbot_domain: www.icos-summerschool.eu
 
-    - role: icos.nginxsite
+    - name: Install nginx configuration
       tags: nginx
-      nginxsite_name: wordpress
-      nginxsite_file: files/wordpress.conf
-      wordpress_domains:
-        - www.ingos-infrastructure.eu
-        - www.eric-forum.eu
-        - www.icos-summerschool.eu
+      import_role:
+        name: icos.nginxsite
+      vars:
+        nginxsite_name: wordpress
+        nginxsite_file: files/wordpress.conf
+        wordpress_domains:
+          - www.ingos-infrastructure.eu
+          - www.eric-forum.eu
+          - www.icos-summerschool.eu
+          # - www.envriplus.eu
 
-
+          
 - hosts: wordpress
-  roles:
-    - role: icos.lxd_guest
+  vars:
+    lxd_guest_root_keys: "{{ vault_wordpress_root_keys }}"
+  vars_files:
+    - vault.yml
+  tasks:
+    - import_role: name=icos.lxd_guest
       tags: guest
 
-  tasks:
     - debug:
         msg: |
           # Don't forget to add the following in your wp-config.php, after the
@@ -65,3 +91,4 @@
               $_SERVER['HTTPS']       = 'on';
               $_SERVER['SERVER_PORT'] = 443;
           }
+
