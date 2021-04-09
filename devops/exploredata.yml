@@ -104,7 +104,7 @@
 
 - hosts: exploredata
   vars:
-    lxd_guest_ssh_keys: "{{ vault_exploredata_ssh_keys }}"
+    lxd_guest_root_keys: "{{ vault_exploredata_root_keys }}"
     exploredata_password: "{{ vault_exploredata_password }}"
     exploredata_max_notebooks: 100
   vars_files:

@@ -33,7 +33,7 @@
   roles:
     - role: icos.lxd_guest
       tags: guest
-      lxd_guest_ssh_keys: "{{ vault_postgis_extra_keys }}"
+      lxd_guest_root_keys: "{{ vault_postgis_root_keys }}"
 
     - role: icos.bbclient
       tags: bbclient

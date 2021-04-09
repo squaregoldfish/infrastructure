@@ -15,8 +15,8 @@
   authorized_key:
     user: root
     state: present
-    key: "{{ lxd_guest_ssh_keys }}"
-  when: lxd_guest_ssh_keys is truthy
+    key: "{{ lxd_guest_root_keys }}"
+  when: lxd_guest_root_keys is truthy
 
 - name: Add default gateway as host
   lineinfile:
