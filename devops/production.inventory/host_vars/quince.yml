@@ -2,7 +2,6 @@ ansible_host: fsicos2.lunarc.lu.se
 ansible_port: "{{ quince_ext_port }}"
 ansible_user: root
 ansible_python_interpreter: /usr/bin/python3
-linux_timezone_path: /usr/share/zoneinfo/Europe/Stockholm
 
 bbclient_remotes:
   - fsicos.lunarc.lu.se
