@@ -49,8 +49,8 @@
             recursive: "true"
         config:
           security.nesting: "true"
-          limits.cpu.allowance: "80%"
-          limits.memory: "300GB"
+          limits.cpu: "10"
+          limits.memory: "100GB"
           limits.memory.enforce: "soft"
         wait_for_ipv4_addresses: true
         wait_for_ipv4_interfaces: eth0
