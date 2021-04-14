@@ -36,7 +36,6 @@ services:
       # Bind Docker socket on the host so we can connect to the daemon from
       # within the container
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
-      - "/etc/localtime:/etc/localtime:ro"
       - "./jupyterhub_home:/srv/jupyterhub:rw"
       - "/etc/passwd:/etc/passwd:ro"
       - "/etc/shadow:/etc/shadow:ro"

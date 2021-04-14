@@ -56,13 +56,11 @@ c.DockerSpawner.read_only_volumes = {
     '/etc/group'     : '/etc/group',
     '/etc/gshadow'   : '/etc/gshadow',
     '/etc/passwd'    : '/etc/passwd',
-    '/etc/localtime' : '/etc/localtime',
     '/data'          : '/data'
 }
 
 c.DockerSpawner.volumes = {'/project': '/project'}
 c.DockerSpawner.allowed_images = ['notebook']
-
 
 
 # The override configuration file doesn't have to exist.
