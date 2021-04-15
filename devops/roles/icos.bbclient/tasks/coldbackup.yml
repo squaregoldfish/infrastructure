@@ -22,3 +22,10 @@
     state: present
     name: "bbclient_{{ bbclient_name }}_coldbackup"
   when: bbclient_coldbackup_crontab is defined
+
+- name: Create patterns.lst
+  copy:
+    dest: "{{ bbclient_home }}/.bbclient/patterns.lst"
+    content: "{{ bbclient_coldbackup_patterns }}"
+  when: bbclient_coldbackup_patterns is defined
+  

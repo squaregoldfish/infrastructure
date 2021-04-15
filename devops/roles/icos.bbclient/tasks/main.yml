@@ -3,7 +3,7 @@
   # other tasks we want to run.
   tags:
     - bbclient_install
-    - bbclient-coldbackup
+    - bbclient_coldbackup
 
 - import_tasks: install.yml
   tags: bbclient_install
