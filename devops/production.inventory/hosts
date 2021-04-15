@@ -18,7 +18,6 @@ cdb.nateko.lu.se
 [fsicos2_aliases]
 quince_host
 wordpress_host
-climbeco_host
 eddyetc_host
 flexextract_host
 postgis_host
@@ -32,7 +31,6 @@ ansible_user=root
 [fsicos2_vms]
 quince ansible_port=60522
 wordpress ansible_port=60552
-climbeco ansible_port=60524
 eddyetc ansible_port=60523
 flexextract ansible_port=60526
 erddap ansible_port=60580
