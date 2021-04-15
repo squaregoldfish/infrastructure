@@ -50,3 +50,7 @@
     dest: "/usr/local/sbin/ctop"
     checksum: "sha256:e2949316cdfe360374b76d45ea512f603b42c0db693a70a6a4c11624aa200b8c"
     mode: +x
+
+- import_tasks: cleanup.yml
+  tags: docker_cleanup
+  when: docker_periodic_cleanup

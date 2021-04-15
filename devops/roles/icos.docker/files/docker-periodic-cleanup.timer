@@ -1,0 +1,9 @@
+[Unit]
+Description=Cleanup dangling images once a week
+
+[Timer]
+# Run once a week, at midnight
+OnCalendar=weekly
+
+[Install]
+WantedBy=timers.target

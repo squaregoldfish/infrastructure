@@ -1,0 +1,7 @@
+[Unit]
+Description=Clean old docker images
+
+[Service]
+Type=oneshot
+# Clean dangling docker images more than a week old
+ExecStart=/bin/sh -c 'docker image prune -f --filter "until=168"'
