@@ -13,12 +13,6 @@
     - vault.yml
   roles:
     - role: icos.nginxsite
-      tags: static
-      vars:
-        nginxsite_name: static
-        nginxsite_file: files/domains/static.conf
-
-    - role: icos.nginxsite
       tags: nordspec
       vars:
         nginxsite_name: nordspec

@@ -1,0 +1,32 @@
+- hosts: fsicos2.lunarc.lu.se
+  vars_files:
+    - vault.yml
+  vars:
+     bbclient_home: /opt/bbclient-nginx-static
+     backup_script: "{{ bbclient_home }}/backup.sh"
+  roles:
+    - role: icos.nginxsite
+      tags: static
+      vars:
+        nginxsite_name: static
+        nginxsite_file: files/domains/static.conf
+
+    - role: icos.bbclient2
+      tags: bbclient
+      bbclient_user: root
+      bbclient_name: nginx-static
+
+    - role: icos.timer
+      tags: timer
+      timer_home: "{{ bbclient_home }}/backup"
+      timer_name: bbclient-nginx-static
+      timer_conf: |
+        OnCalendar=daily
+        RandomizedDelaySec=2h
+      timer_content: |
+        #!/bin/bash
+        set -eu
+        echo "Creating"
+        {{ bbclient_home }}/bin/bbclient-all create --stats --verbose "::{now}" /usr/share/nginx/static
+        echo "Pruning"
+        {{ bbclient_home }}/bin/bbclient-all prune --stats --keep-within=100d --keep-weekly=-1
