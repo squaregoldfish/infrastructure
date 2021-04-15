@@ -32,6 +32,7 @@
     - docker-entrypoint
     - docker-extract
     - docker-builds
+    - docker-enter
 
 - name: Create /docker directory
   file:
