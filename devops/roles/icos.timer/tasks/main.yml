@@ -1,0 +1,45 @@
+- name: Create timer script
+  copy:
+    dest: "{{ timer_home }}/{{ timer_name }}.sh"
+    mode: +x
+    content: "{{ timer_content }}"
+  register: _script
+
+- name: Create systemd timer 
+  copy:
+    dest: "{{ timer_home }}/{{ timer_name }}.timer"
+    content: |
+      [Unit]
+      Description=Run {{ _script.dest }}
+
+      [Timer]
+      {{ timer_conf }}
+
+      [Install]
+      WantedBy=timers.target
+  register: _timer
+
+- name: Create systemd service
+  copy:
+    dest: "{{ timer_home }}/{{ timer_name }}.service"
+    content: |
+      [Unit]
+      Description=Run {{ _script.dest }}
+
+      [Service]
+      Type=oneshot
+      ExecStart={{ _script.dest }}
+  register: _service
+
+- name: Link systemd files
+  command:  systemctl link {{ _timer.dest }} {{ _service.dest }}
+  register: _r
+  failed_when: _r.rc != 0
+  changed_when: '"Created" in _r.stdout'
+
+- name: Start backup timer
+  systemd:
+    name: "{{ timer_name }}.timer"
+    enabled: yes
+    state: started
+    daemon_reload: yes
