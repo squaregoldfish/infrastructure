@@ -49,3 +49,4 @@ exploredata/build.notebook/project_jupyter_notebooks
 exploredata/build.notebook/pylib_examples
 
 
+/devops/files/prometheus/dynamic/node_exporter.yml

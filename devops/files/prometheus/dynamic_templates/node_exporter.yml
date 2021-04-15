@@ -1,0 +1,42 @@
+## SERVERS
+- targets:
+    - fsicos2.lunarc.lu.se
+  labels:
+    __metrics_path__: /node_exporter/host
+    instance: fsicos2
+
+- targets:
+    - fsicos3.lunarc.lu.se
+  labels:
+    __metrics_path__: /node_exporter/host
+    instance: fsicos3
+
+
+# FSICOS2 VMS
+{% for host in groups['fsicos2_vms'] %}
+{% if hostvars[host].node_exporter_enable | default(true) %}
+- targets:
+    - fsicos2.lunarc.lu.se
+  labels:
+    __metrics_path__: /node_exporter/{{ host }}
+    instance: {{ host }}
+    server: fsicos2
+{% endif %}    
+{% endfor %}
+
+
+# FSICOS3 VMs
+{% for host in groups['fsicos3_vms'] %}
+- targets:
+    - fsicos3.lunarc.lu.se
+  labels:
+    __metrics_path__: /node_exporter/{{ host }}
+    instance: {{ host }}
+    server: fsicos3
+{% endfor %}
+
+# - targets:
+#     - exploredata.icos-cp.eu
+#   labels:
+#     __metrics_path__: /hub/metrics
+#     instance: exploredata

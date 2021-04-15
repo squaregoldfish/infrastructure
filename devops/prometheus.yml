@@ -70,46 +70,6 @@
         prometheus_bbox_host: prometheus.lxd
 
 
-- hosts: fsicos2.lunarc.lu.se fsicos3.lunarc.lu.se
-  tags: node_exporter_host
-  vars_files:
-    - vars.yml
-    - vault.yml
-  tasks:
-    - import_role: name=icos.certbot2
-      vars:
-        certbot_domain: "{{ inventory_hostname }}"
-
-    - import_role: name=icos.nginxsite
-      vars:
-        nginxsite_name: node-exporter
-        nginxsite_file: files/node-exporter-nginx.conf
-
-    - import_role: name=icos.node_exporter
-
-
-- hosts: flexpart
-  tags: node_exporter_vm
-  tasks:
-    - import_role: name=icos.node_exporter
-
-
-- hosts: localhost
-  connection: local
-  gather_facts: no
-  tasks:
-    # This solves the problem that we want to synchronize an entire directory
-    # of config files using "delete: true" (to get rid of stale config files),
-    # while at the same time using templates. First do a local template, then
-    # synchronize the directory.
-    - name: Local template
-      tags: dynamic
-      template:
-        src: "{{ item }}"
-        dest: files/prometheus/dynamic
-      with_fileglob: files/prometheus/dynamic_templates/*
-
-
 - hosts: prometheus
   vars_files:
     - vault.yml

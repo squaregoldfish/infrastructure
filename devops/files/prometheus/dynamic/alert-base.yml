@@ -12,19 +12,28 @@ groups:
       summary: "Endpoint {{ $labels.instance }} down!"
 
   - alert: RootdiskFull
-    expr: (node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+    expr: >-
+      (node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes < 10
+      and ON (instance, device, mountpoint)
+        node_filesystem_readonly == 0
     for: 10s
     labels:
       severity: "critical"
     annotations:
       summary: "Endpoint {{ $labels.instance }} disk is full"
 
-
   - alert: HostDiskWillFillIn1Week
-    expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 7 * 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+    expr: >-
+      (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 30
+      and ON (instance, device, mountpoint)
+        predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 7 * 24 * 3600) < 0
+      and ON (instance, device, mountpoint)
+        node_filesystem_readonly == 0
     for: 2m
     labels:
       severity: warning
     annotations:
       summary: Host disk will fill in one week (instance {{ $labels.instance }})
-      description: "Filesystem is predicted to run out of space within the next 7*24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      description: >-
+        Filesystem is predicted to run out of space within the next 7*24 hours at
+        current write rate\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
