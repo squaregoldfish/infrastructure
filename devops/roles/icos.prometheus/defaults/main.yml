@@ -19,3 +19,5 @@ prometheus_options: []
 
 prometheus_promtool_ver: 2.25.0
 prometheus_host_conf: "{{ prometheus_home }}/volumes/prometheus_conf/prometheus.yml"
+
+prometheus_backup_script: "{{ prometheus_home }}/bin/prometheus-backup.py"

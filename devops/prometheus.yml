@@ -155,3 +155,11 @@
       import_role:
         name: icos.prometheus
         tasks_from: build
+
+    - name: Install backup
+      tags:
+        - setup
+        - backup
+      import_role:
+        name: icos.prometheus
+        tasks_from: backup

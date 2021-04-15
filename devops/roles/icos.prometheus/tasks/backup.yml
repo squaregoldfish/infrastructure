@@ -1,0 +1,17 @@
+- import_role: name=icos.bbclient
+  vars:
+    bbclient_home: "{{ prometheus_home }}"
+    bbclient_name: prometheus
+    bbclient_coldbackup_enable: false
+
+- name: Copy prometheus-backup.py
+  template:
+    src: prometheus-backup.py
+    dest: "{{ prometheus_backup_script }}"
+    mode: +x
+
+- name: Add backup script to crontab
+  cron:
+    job: "{{ prometheus_backup_script }}"
+    special_time: daily
+    name: "prometheus_backup"

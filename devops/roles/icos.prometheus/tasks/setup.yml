@@ -26,3 +26,6 @@
 
 - import_tasks: promtool.yml
   tags: prometheus_promtool
+
+- import_tasks: backup.yml
+  tags: prometheus_backup
