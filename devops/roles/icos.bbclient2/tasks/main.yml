@@ -1,0 +1,29 @@
+- name: Fail if not all parameters are provided
+  fail:
+    msg: "Failed to set all required parameters, this is a bug."
+  when: >-
+    bbclient_name is undefined or
+    bbclient_user is undefined or
+    bbclient_home is undefined
+
+- name: Install borg on local host
+  import_tasks: install.yml
+  tags: bbclient_install
+
+- name: Setup local ssh directory
+  import_tasks: ssh.yml
+  become: yes
+  become_user: "{{ bbclient_user }}"
+
+- name: Install bbclient shell-scripts
+  import_tasks: scripts.yml
+  become: yes
+  become_user: "{{ bbclient_user }}"
+
+- import_tasks: repos.yml
+
+- import_tasks: coldbackup.yml
+  become: yes
+  become_user: "{{ bbclient_user }}"
+  tags: bbclient_coldbackup
+  when: bbclient_coldbackup_enable

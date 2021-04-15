@@ -1,0 +1,10 @@
+.PHONE: coldbackup listbackup coldrestore
+
+coldbackup:
+	./bin/bbclient-coldbackup
+
+listbackup:
+	./bin/bbclient list --short
+
+coldrestore:
+	./bin/bbclient-coldrestore

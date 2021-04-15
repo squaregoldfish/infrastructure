@@ -1,0 +1,26 @@
+# PARAMS - These can be change by the user of this role.
+bbclient_coldbackup_enable: False
+
+# DEFAULTS - should not be changed
+bbclient_bin      : "/usr/local/bin/borg"
+bbclient_url      : https://github.com/borgbackup/borg/releases/download/1.1.13/borg-linux64
+bbclient_checksum : "sha1:4121b5340075e731d98780d7dbdc9badc56115e0"
+
+bbclient_ssh_dir    : "{{ bbclient_home }}/ssh"
+bbclient_script_dir : "{{ bbclient_home }}/bin"
+bbclient_borg_dir   : "{{ bbclient_home }}/borg"
+
+bbclient_ssh_config : "{{ bbclient_ssh_dir }}/config"
+bbclient_ssh_hosts  : "{{ bbclient_ssh_dir }}/known_hosts"
+bbclient_ssh_key    : "{{ bbclient_ssh_dir }}/bbclient.rsa"
+
+bbclient_repo_url  : "{{ bbclient_remote }}:{{ bbclient_remote_repo }}"
+bbclient_repo_file : "{{ bbclient_home }}/repos"
+bbclient_wrapper   : "{{ bbclient_script_dir }}/borg"
+
+# These are used when delegating to the remote host. There are all
+# based on the bbclient_remote variable which is set to the inventory
+# name of the remote.
+bbclient_remote_user : "{{ hostvars[bbclient_remote].bbserver_user }}"
+bbclient_remote_bin  : "{{ hostvars[bbclient_remote].bbserver_bin }}"
+bbclient_remote_repo : "{{ hostvars[bbclient_remote].bbserver_repo_home }}/{{ bbclient_name }}.repo"

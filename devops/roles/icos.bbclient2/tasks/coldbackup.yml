@@ -1,0 +1,23 @@
+- name: Create coldbackup helper scripts
+  template:
+    src: "{{ item }}"
+    dest: "{{ bbclient_script_dir }}"
+    mode: +x
+  loop:
+    - bbclient-coldbackup
+    - bbclient-coldrestore
+
+- name: Add coldbackup to crontab
+  cron:
+    job: "cd {{ bbclient_home }} && {{ bbclient_script_dir }}/bbclient-coldbackup"
+    hour: "{{ bbclient_coldbackup_crontab.hour | default('0') }}"
+    minute: "{{ bbclient_coldbackup_crontab.minute | default('0') }}"
+    state: present
+    name: "bbclient_{{ bbclient_name }}_coldbackup"
+  when: bbclient_coldbackup_crontab is defined
+
+- name: Create patterns.lst
+  copy:
+    dest: "{{ bbclient_home }}/.bbclient/patterns.lst"
+    content: "{{ bbclient_coldbackup_patterns }}"
+  when: bbclient_coldbackup_patterns is defined

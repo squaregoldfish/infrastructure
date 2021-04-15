@@ -1,0 +1,5 @@
+#!/bin/bash
+
+while read repo; do
+    BORG_REPO="$repo" "{{ bbclient_wrapper }}" "$@";
+done < "{{ bbclient_repo_file }}"

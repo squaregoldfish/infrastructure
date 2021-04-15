@@ -1,0 +1,30 @@
+- name: Create ssh directory
+  file:
+    path: "{{ bbclient_ssh_dir }}"
+    state: directory
+    mode: 0700
+
+- name: Generate RSA keys
+  args:
+    creates: "{{ bbclient_ssh_key }}"
+  command: >-
+    ssh-keygen -q -t rsa -f {{ bbclient_ssh_key }} -N ""
+      -C "bbclient_{{ bbclient_name }}@{{ inventory_hostname }}"
+
+- name: Read the public key
+  slurpfact:
+    path: "{{ bbclient_ssh_key }}.pub"
+    fact: bbclient_key_data
+
+- name: Add ssh config
+  blockinfile:
+    # It's important that this config appears first in the file, that
+    # way it applies to all following 'Host' configurations.
+    insertbefore: BOF
+    mode: 0644
+    path: "{{ bbclient_ssh_config }}"
+    block: |
+      UserKnownHostsFile {{ bbclient_ssh_hosts }}
+      Identityfile {{ bbclient_ssh_key }}
+    state: present
+    create: yes

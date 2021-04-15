@@ -1,0 +1,98 @@
+#!/usr/bin/python3
+# 1. Do (dirty) backup while service is running.
+# 2. Shut down service.
+# 3. Do backup again.
+# 4. Start service
+# 5. Prune backups.
+#
+# Designed to run from cron.
+
+import sys
+import shlex
+import datetime
+from contextlib import contextmanager
+from os import access, X_OK, environ
+from os.path import exists, isdir, getsize
+from subprocess import run, DEVNULL, CalledProcessError, STDOUT
+
+# The script relies on the current directory having a certain structure.
+assert exists('docker-compose.yml')
+assert isdir('volumes')
+assert access('bin/bbclient-all', X_OK)
+
+
+environ['BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK'] = 'yes'
+
+# Python < 3.7 workaround
+@contextmanager
+def nullcontext(result):
+    yield result
+
+
+def logfile():
+    if sys.stdin.isatty():
+        return nullcontext(sys.stdout)
+    else:
+        return open('backup.log', 'a')
+
+
+def logfmt(msg):
+    now = datetime.datetime.now().astimezone()
+    return "=== %s %s" % (msg, now.strftime('%a %b %d %H:%M:%S %Z %Y'))
+
+
+def bbclient(what, arg):
+    with logfile() as log:
+        print(logfmt(what), file=log, flush=True)
+        run(['bin/bbclient-all'] + shlex.split(arg),
+            check=1, stdout=log, stderr=STDOUT)
+
+
+def prune():
+    bbclient('prune', 'prune --verbose --stats '
+             '--keep-within 7d --keep-daily=30 --keep-weekly=150')
+    # borg(1) doesn't let us remove all archives with a given prefix, so we
+    # keep the last dirty one.
+    bbclient('prune dirty',
+             'prune -P dirty- --verbose --stats --keep-last 1')
+
+
+def backup():
+    if exists('.bbclient/patterns.lst'):
+        patterns = '--patterns-from .bbclient/patterns.lst'
+    else:
+        patterns = 'volumes'
+    try:
+        # If our docker-builds script is available then dump information about
+        # currently running images. Don't care if it fails.
+        run("docker-builds > volumes/build.info", shell=1, stderr=DEVNULL)
+
+        # Dirty means that we'll take a backup while the service is still
+        # running. The idea is that the cold backup will go much faster.
+        bbclient('dirty backup',
+                 'create --verbose --stats "::dirty-{now}" %s' % patterns)
+
+        run(['docker-compose', 'down'], stderr=DEVNULL, check=1)
+
+        bbclient('cold backup',
+                 'create --verbose --stats "::{now}" %s' % patterns)
+    finally:
+        run(['docker-compose', 'up', '-d'], stderr=DEVNULL)
+
+
+def main():
+    logsize = getsize('backup.log') if exists('backup.log') else 0
+
+    try:
+        backup()
+        prune()
+        with logfile() as log:
+            print(logfmt('done'), file=log)
+    except CalledProcessError:
+        # For the sake of cron.
+        if not sys.stdin.isatty():
+            # In case of error, print logs created since we started.
+            f = open('backup.log'); f.seek(logsize); print(f.read())  # noqa
+
+
+main()

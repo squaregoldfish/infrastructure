@@ -1,0 +1,13 @@
+- name: Download borg binary
+  get_url:
+    url: "{{ bbclient_url }}"
+    dest: "{{ bbclient_bin }}"
+    checksum: "{{ bbclient_checksum }}"
+    mode: +x
+
+- name: Test downloaded borg binary
+  command: |
+    {{ bbclient_bin }} --version
+  register: _r
+  failed_when: not _r.stdout.startswith('borg')
+  changed_when: no

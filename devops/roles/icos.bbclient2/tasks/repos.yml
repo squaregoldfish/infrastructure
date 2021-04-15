@@ -1,0 +1,29 @@
+- name: Check that remote is properly configured
+  fail:
+    msg: |
+      The host "{{ bbclient_remote }}" must set the following host variables:
+        bbserver_user
+        bbserver_home
+        bbserver_bin
+        bbserver_repo_home
+  when: |
+    hostvars[bbclient_remote].bbserver_user is undefined or
+    hostvars[bbclient_remote].bbserver_home is undefined or
+    hostvars[bbclient_remote].bbserver_bin is undefined or
+    hostvars[bbclient_remote].bbserver_repo_home is undefined
+  loop: "{{ bbclient_remotes }}"
+  loop_control:
+    loop_var: bbclient_remote
+
+- name: Read available repos
+  slurpfact:
+    path: "{{ bbclient_repo_file }}"
+    fact: bbclient_repos
+    list: true
+    fail: false
+
+- include_tasks: single_repo.yml
+  loop: "{{ bbclient_remotes }}"
+  when: bbclient_repo_url not in bbclient_repos
+  loop_control:
+    loop_var: bbclient_remote
