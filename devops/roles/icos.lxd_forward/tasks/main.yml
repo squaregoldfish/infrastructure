@@ -1,17 +1,18 @@
-- name: Check that all parameters are defined
-  fail:
-    msg: "{{ item }} needs to be defined"
-  when: vars[item] is undefined
-  loop:
-    - lxd_forward_ip
-    - lxd_forward_name
+- name: Remove old ufw configuration
+  blockinfile:
+    path: /etc/ufw/before.rules
+    marker: "# {mark} ansible / ssh to lxd {{ lxd_forward_name }}"
+    state: absent
 
-- import_role: name=icos.port_forward
-  vars:
-    port_forward_dhost: "{{ lxd_forward_ip }}"
-    port_forward_dport: "{{ lxd_forward_dport }}"
-    port_forward_sport: "{{ lxd_forward_port }}"
-    port_forward_desc: "{{ lxd_forward_desc }}"
+- name: SSH forward
+  tags: iptables
+  iptables_raw:
+    name: "forward_ssh_to_{{ lxd_forward_name }}"
+    table: nat
+    rules: >-
+      -A PREROUTING -p tcp
+      --dport {{ lxd_forward_port }}
+      -j DNAT --to-destination {{ lxd_forward_ip }}:22
 
 - name: Modify /etc/hosts
   lineinfile:

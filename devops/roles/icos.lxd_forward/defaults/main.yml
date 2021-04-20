@@ -1,4 +1,1 @@
 lxd_forward_port: "{{ hostvars[lxd_forward_name].ansible_port }}"
-lxd_forward_dport: 22
-lxd_forward_proto: ssh
-lxd_forward_desc: "{{ lxd_forward_proto }} to lxd {{ lxd_forward_name }}"
