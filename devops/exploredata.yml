@@ -18,6 +18,7 @@
       tags:
         - lxd
         - nginx
+        - forward
         - iptables
       lxd_container:
         name: exploredata
@@ -57,15 +58,14 @@
         timeout: 60
       register: _lxd
 
-    - name: SSH forward to exploredata
-      tags: iptables
-      iptables_raw:
-        name: forward_ssh_to_exploredata
-        table: nat
-        rules: >-
-          -A PREROUTING -p tcp
-          --dport {{ hostvars['exploredata'].ansible_port }}
-          -j DNAT --to-destination {{ exploredata_ip }}:22
+
+    - name: Forward ssh port and create /etc/hosts entry
+      tags: forward
+      import_role:
+        name: icos.lxd_forward
+      vars:
+        lxd_forward_name: exploredata
+        lxd_forward_ip: "{{ exploredata_ip }}"
 
     - import_role: name=icos.certbot2
       tags:
