@@ -1,6 +1,6 @@
 - name: Install bash aliases
   lineinfile:
-    path: /root/.bash_profile
+    path: /root/.bash_aliases
     line: "{{ item }}"
     state: present
     create: yes
