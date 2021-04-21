@@ -25,8 +25,9 @@
     - role: icos.cpauth
       tags: cpauth
 
-    - role: icos.bbclient
+    - role: icos.bbclient2
       tags: bbclient
       vars:
+        bbclient_name: cpauth
         bbclient_user: "{{ cpauth_user }}"
         bbclient_coldbackup_enable: no
