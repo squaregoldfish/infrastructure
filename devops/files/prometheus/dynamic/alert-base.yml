@@ -11,6 +11,14 @@ groups:
     annotations:
       summary: "Endpoint {{ $labels.instance }} down!"
 
+  - alert: Borg backup late
+    expr: borg_age_secs > (86400*2)
+    for: 10s
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "Backup of {{ $labels.name }} on {{ $labels.instance }} is late."
+
   - alert: RootdiskFull
     expr: >-
       (node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes < 10
@@ -37,3 +45,12 @@ groups:
       description: >-
         Filesystem is predicted to run out of space within the next 7*24 hours at
         current write rate\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HostHighCpuLoad
+      expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+      for: 0m
+      labels:
+        severity: warning
+      annotations:
+        summary: Host high CPU load (instance {{ $labels.instance }})
+        description: CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}
