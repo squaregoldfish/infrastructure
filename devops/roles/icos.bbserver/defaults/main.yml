@@ -25,3 +25,5 @@ bbserver_has_restrict: True
 # bbserver has support for exporting stats to prometheus via the node_exporter
 # textfiles directory.
 bbserver_textfiles: /opt/node_exporter/textfiles
+
+bbserver_monitor_home: "{{ bbserver_home }}/monitor"

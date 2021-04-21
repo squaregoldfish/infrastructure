@@ -3,6 +3,8 @@
 # directory.
 
 set -Eueo pipefail
+export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
+export PATH=$PATH:/usr/local/bin
 
 textfiles="{{ bbserver_textfiles }}"
 

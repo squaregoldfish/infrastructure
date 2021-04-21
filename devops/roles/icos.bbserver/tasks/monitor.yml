@@ -1,30 +1,23 @@
-- name: Create directories needed for monitoring
+- name: Create monitor directory
   file:
-    path: "{{ item }}"
+    path: "{{ bbserver_monitor_home }}"
     state: directory
-  loop:
-    # bin contains scripts for monitoring etc
-    - "{{ bbserver_home }}/bin"
-    # monitor contains symbolic links to repos we want to monitor
-    - "{{ bbserver_home }}/monitor"
 
-- name: Copy borgmon script
-  copy:
-    src: borgmon.py
-    dest: "{{ bbserver_home }}/bin"
-    mode: +x
-
-- name: Copy borgmon script
-  template:
-    src: borgmon-to-node-exporter.sh
-    dest: "{{ bbserver_home }}/bin"
-    mode: +x
-
-- name: Add borgmon to crontab
+- name: Remove cron job
   cron:
     user: "{{ bbserver_user }}"
-    job: "{{ bbserver_home }}/bin/borgmon-to-node-exporter.sh"
-    hour: "*"
-    minute: "*/5"
-    state: present
+    state: absent
     name: "bbserver_borgmon"
+
+- import_role:
+    name: icos.timer
+  vars:
+    timer_user: bbserver
+    timer_home: "{{ bbserver_monitor_home }}"
+    timer_name: bbserver-borgmon
+    timer_conf: "OnCalendar=*:0/5"
+    timer_envs:
+      - PYTHONUNBUFFERED=1
+      - BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
+      - PATH=/usr/bin:/usr/local/bin
+    timer_content: "{{ lookup('file', 'borgmon.py') }}"

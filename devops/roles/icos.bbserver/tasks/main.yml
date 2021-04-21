@@ -51,10 +51,10 @@
   tags: bbserver_monitor
   stat:
     path: "{{ bbserver_textfiles }}"
-  register: _r
+  register: _textfiles
 
 - import_tasks: monitor.yml
   tags: bbserver_monitor
   # Only enable monitorying via node_exporter if we can find its textfiles
   # directory.
-  when: _r.stat.exists
+  when: _textfiles.stat.exists

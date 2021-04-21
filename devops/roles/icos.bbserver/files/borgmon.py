@@ -11,18 +11,46 @@ import datetime
 import json
 import os
 import subprocess
+import sys
 from concurrent import futures
 
 
-MONITOR = os.path.join(os.environ['HOME'], 'monitor')
+TEXTFILES = os.getenv('TEXTFILES', '/opt/node_exporter/textfiles')
+REPOS = os.getenv('REPOS', os.path.join(os.environ['HOME'], 'repos'))
+
 
 Repo = collections.namedtuple('Repo', ['name', 'path', 'narchives',
                                        'age_secs', 'size_mb'])
 
 
+# UTILS
+def wrap_stdout(func):
+    if sys.stdin.isatty():
+        func()
+    else:
+        out_path = os.path.join(TEXTFILES, 'bbserver.prom')
+        tmp_path = '%s.%d' % (out_path, os.getpid())
+        tmp_file = open(tmp_path, 'w')
+        old_stdout = sys.stdout
+        sys.stdout = tmp_file
+        try:
+            func()
+        except:
+            os.unlink(tmp_path)
+        else:
+            tmp_file.close()
+            os.rename(tmp_path, out_path)
+        finally:
+            sys.stdout = old_stdout
+
+
+# BORG STUFF
+
 def get_repos():
-    for d in os.listdir(MONITOR):
-        yield (d, os.path.realpath(os.path.join(MONITOR, d)))
+    for d in os.listdir(REPOS):
+        if not d.endswith('.repo'):
+            continue
+        yield (d[:-len('.repo')], os.path.realpath(os.path.join(REPOS, d)))
 
 
 def list_archives(repo):
@@ -43,6 +71,9 @@ def stat_repo(name, path):
     age_secs = (datetime.datetime.now() - last_mod).seconds
     return Repo(name, path, len(ars['archives']), age_secs, size_mb)
 
+
+
+# MAIN
 
 def main():
     with futures.ProcessPoolExecutor() as executor:
@@ -67,12 +98,12 @@ def main():
             except Exception as e:
                 print(name, "failed with", e)
             else:
-                print("""borg_age_secs{{name="{name}"}} {age_secs:f}
-                borg_n_archives{{name="{name}"}} {narchives:f}
-                borg_size_mb{{name="{name}"}} {size_mb:f}
-                """.format(name=repo.name, age_secs=repo.age_secs,
+                print(('borg_age_secs{{name="{name}"}} {age_secs:f}\n'
+                       'borg_n_archives{{name="{name}"}} {narchives:f}\n'
+                       'borg_size_mb{{name="{name}"}} {size_mb:f}').format(
+                           name=repo.name, age_secs=repo.age_secs,
                            size_mb=repo.size_mb, narchives=repo.narchives))
 
 
 if __name__ == '__main__':
-    main()
+    wrap_stdout(main)
