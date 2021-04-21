@@ -1,17 +1,21 @@
-- import_role: name=icos.bbclient
+- import_role: name=icos.bbclient2
   vars:
-    bbclient_home: "{{ prometheus_home }}"
+    bbclient_user: root
+    bbclient_home: "{{ prometheus_home }}/bbclient"
     bbclient_name: prometheus
-    bbclient_coldbackup_enable: false
 
-- name: Copy prometheus-backup.py
-  template:
-    src: prometheus-backup.py
-    dest: "{{ prometheus_backup_script }}"
-    mode: +x
-
-- name: Add backup script to crontab
+# FIXME: Remove in 2022. Migration from earlier version
+- name: Remove cron job
   cron:
-    job: "{{ prometheus_backup_script }}"
-    special_time: daily
     name: "prometheus_backup"
+    state: absent
+
+- import_role:
+    name: icos.timer
+  vars:
+    timer_home: "{{ prometheus_home }}/bbclient/backup"
+    timer_name: bbclient-prometheus
+    timer_conf: |
+      OnCalendar=daily
+      RandomizedDelaySec=2h
+    timer_content: "{{ lookup('template', 'prometheus-backup.py') }}"

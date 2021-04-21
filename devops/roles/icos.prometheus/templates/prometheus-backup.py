@@ -12,7 +12,7 @@ from subprocess import PIPE, Popen, STDOUT, run
 
 BASE = Path(os.environ.get("BASE", "{{ prometheus_home }}"))
 GRAFANA_DB = BASE.joinpath("volumes/grafana_data/grafana.db")
-BBCLIENT = BASE.joinpath("bin/bbclient-all")
+BBCLIENT = BASE.joinpath("bbclient/bin/bbclient-all")
 LOGFILE = BASE.joinpath("backup.log")
 
 assert GRAFANA_DB.exists()
