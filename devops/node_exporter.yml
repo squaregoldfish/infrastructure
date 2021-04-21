@@ -29,7 +29,7 @@
     # while at the same time using templates. First do a local template, then
     # synchronize the directory.
     - name: Local template
-      tags: dynamic
+      tags: config
       template:
         src: "{{ item }}"
         dest: files/prometheus/dynamic
@@ -43,7 +43,7 @@
     prometheus_prom_dynamic: files/prometheus/dynamic
   tasks:
     - name: Update prometheus dynamic configuration
-      tags: dynamic
+      tags: config
       import_role:
         name: icos.prometheus
         tasks_from: dynamic

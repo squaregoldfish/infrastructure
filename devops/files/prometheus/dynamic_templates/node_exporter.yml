@@ -11,6 +11,12 @@
     __metrics_path__: /node_exporter/host
     instance: fsicos3
 
+- targets:
+    - cdb.nateko.lu.se
+  labels:
+    __metrics_path__: /node_exporter/host
+    instance: cdb
+
 
 # FSICOS2 VMS
 {% for host in groups['fsicos2_vms'] %}
@@ -21,7 +27,7 @@
     __metrics_path__: /node_exporter/{{ host }}
     instance: {{ host }}
     server: fsicos2
-{% endif %}    
+{% endif %}
 {% endfor %}
 
 
