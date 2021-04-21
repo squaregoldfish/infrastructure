@@ -17,7 +17,7 @@
       # script allow unauthorized HTTPS connections. Use only for testing.
       JWT_REJECT_UNAUTHORIZED=true
 
-# https://helpcenter.onlyoffice.com/server/integration-edition/docker/docker-installation.aspx#Registering
+# https://helpcenter.onlyoffice.com/installation/docs-enterprise-install-docker.aspx#Registering
 - name: Copy license.lic
   copy:
     src: license.lic
