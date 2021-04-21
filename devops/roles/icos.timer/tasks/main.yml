@@ -1,6 +1,11 @@
+- name: Create home directory
+  file:
+    path: "{{ timer_home }}"
+    state: directory
+
 - name: Create timer script
   copy:
-    dest: "{{ timer_home }}/{{ timer_name }}.sh"
+    dest: "{{ timer_home }}/{{ timer_name }}"
     mode: +x
     content: "{{ timer_content }}"
   register: _script
@@ -10,7 +15,7 @@
     dest: "{{ timer_home }}/{{ timer_name }}.timer"
     content: |
       [Unit]
-      Description=Run {{ _script.dest }}
+      Description={{ timer_name }}
 
       [Timer]
       {{ timer_conf }}
@@ -24,9 +29,13 @@
     dest: "{{ timer_home }}/{{ timer_name }}.service"
     content: |
       [Unit]
-      Description=Run {{ _script.dest }}
+      Description={{ timer_name }}
 
       [Service]
+      User={{ timer_user }}
+      {% for env in timer_envs | default([]) -%}
+      Environment={{ env }}
+      {% endfor -%}
       Type=oneshot
       ExecStart={{ _script.dest }}
   register: _service

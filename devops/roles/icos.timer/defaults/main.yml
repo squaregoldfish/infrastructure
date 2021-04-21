@@ -1,0 +1,7 @@
+timer_user: root
+timer_dest: >-
+  {% if timer_src is defined -%}
+  {{ timer_home }}/{{ timer_src | basename }}
+  {% else -%}
+  {{ timer_home }}/{{ timer_name }}.sh"
+  {% endif -%}
