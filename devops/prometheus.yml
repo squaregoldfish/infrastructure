@@ -97,13 +97,17 @@
         tasks_from: setup
 
     - name: Update prometheus static configuration
-      tags: static
+      tags:
+        - static
+        - config
       import_role:
         name: icos.prometheus
         tasks_from: static
 
     - name: Update prometheus dynamic configuration
-      tags: dynamic
+      tags:
+        - dynamic
+        - config
       import_role:
         name: icos.prometheus
         tasks_from: dynamic
