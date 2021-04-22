@@ -1,10 +1,5 @@
 #!/usr/bin/python3
 # Collect statistics for export to prometheus.
-#
-# Each borg repo that is to be monitored is linked to the 'monitor'
-# directory. This script will then - in parallell no less ! - execute several
-# command line utils to extract information about each repo and print them to
-# standard output in a format edible by node_exporters textfile collector.
 
 import collections
 import datetime
