@@ -3,7 +3,3 @@
 
 - import_tasks: config.yml
   tags: postgresql_config
-
-- import_tasks: backup.yml
-  tags: postgresql_backup
-  when: postgresql_backup_script != ""

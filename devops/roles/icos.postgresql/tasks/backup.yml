@@ -1,3 +1,11 @@
+- name: Install bbclient
+  import_role:
+    name: icos.bbclient2
+  vars:
+    bbclient_name: "{{ postgresql_bbclient_name }}"
+    bbclient_user: postgres
+    bbclient_home: "{{ postgresql_home_dir }}/.bbclient"
+
 - name: Copy backup script
   template:
     src: "{{ postgresql_backup_script }}"
@@ -5,13 +13,12 @@
     mode: +x
     owner: postgres
     group: postgres
-  register: _r
 
 - name: Add postgres backup to crontab
   tags: cron
   cron:
     user: postgres
-    job: "{{ _r.dest }}"
+    job: "{{ postgresql_bin_dir }}/{{ postgresql_backup_script }}"
     special_time: daily
     state: present
     name: "postgis_backup"

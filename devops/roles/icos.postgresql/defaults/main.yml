@@ -11,7 +11,7 @@ postgresql_postgis_version: 3
 postgresql_etc_dir: "/etc/postgresql/{{ postgresql_version }}/main"
 postgresql_confd_dir: "{{ postgresql_etc_dir }}/conf.d"
 postgresql_hba_file: "{{ postgresql_etc_dir }}/pg_hba.conf"
-postgresql_home_dir: /var/lib/postgresql/
+postgresql_home_dir: /var/lib/postgresql
 postgresql_bin_dir: "{{ postgresql_home_dir }}/bin"
 
 postgresql_postgis_package: |

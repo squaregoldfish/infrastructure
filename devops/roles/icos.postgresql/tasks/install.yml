@@ -25,7 +25,7 @@
     state: present
     executable: pip3
 
-# We'll keep various script in $HOME/bin
+# We'll keep various scripts in $HOME/bin
 - name: Create {{ postgresql_bin_dir }} directory
   file:
     path: "{{ postgresql_bin_dir }}"
