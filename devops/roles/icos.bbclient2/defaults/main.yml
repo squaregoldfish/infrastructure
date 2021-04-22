@@ -18,6 +18,9 @@ bbclient_repo_url  : "{{ bbclient_remote }}:{{ bbclient_remote_repo }}"
 bbclient_repo_file : "{{ bbclient_home }}/repos"
 bbclient_wrapper   : "{{ bbclient_script_dir }}/borg"
 
+bbclient_one       : "{{ bbclient_script_dir }}/bbclient"
+bbclient_all       : "{{ bbclient_script_dir }}/bbclient-all"
+
 # These are used when delegating to the remote host. There are all
 # based on the bbclient_remote variable which is set to the inventory
 # name of the remote.
