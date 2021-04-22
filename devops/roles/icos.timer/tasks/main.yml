@@ -46,7 +46,7 @@
   failed_when: _r.rc != 0
   changed_when: '"Created" in _r.stdout'
 
-- name: Start backup timer
+- name: Start timer
   systemd:
     name: "{{ timer_name }}.timer"
     enabled: yes
