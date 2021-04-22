@@ -21,7 +21,7 @@
 
 # Migration from bbclient, which downloaded without symlinking.
 - name: Maybe remove non-symlink
-  shell: "[ -h {{ borg_bin }} ] || { echo removing; rm {{ borg_bin }}; }"
+  shell: '[ -h "{{ borg_bin }}" ] || { echo removing; rm -- "{{ borg_bin }}"; }'
   register: _r
   changed_when: "'removing' in _r.stdout"
 
