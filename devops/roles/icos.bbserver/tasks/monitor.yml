@@ -18,6 +18,7 @@
     timer_conf: "OnCalendar=*:0/5"
     timer_envs:
       - PYTHONUNBUFFERED=1
+      - BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
       - BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
       - PATH=/usr/bin:/usr/local/bin
     timer_content: "{{ lookup('file', 'borgmon.py') }}"
