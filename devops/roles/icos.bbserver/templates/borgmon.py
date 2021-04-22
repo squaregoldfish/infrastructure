@@ -15,9 +15,8 @@ import sys
 from concurrent import futures
 
 
-TEXTFILES = os.getenv('TEXTFILES', '/opt/node_exporter/textfiles')
-REPOS = os.getenv('REPOS', os.path.join(os.environ['HOME'], 'repos'))
-
+TEXTFILES = os.getenv('TEXTFILES', '{{ bbserver_textfiles }}')
+REPOS = os.getenv('REPOS', '{{ bbserver_repo_home }}')
 
 Repo = collections.namedtuple('Repo', ['name', 'path', 'narchives',
                                        'age_secs', 'size_mb'])
@@ -72,7 +71,6 @@ def stat_repo(name, path):
     return Repo(name, path, len(ars['archives']), age_secs, size_mb)
 
 
-
 # MAIN
 
 def main():
@@ -98,12 +96,15 @@ def main():
             except Exception as e:
                 print(name, "failed with", e)
             else:
-                print(('borg_age_secs{{name="{name}"}} {age_secs:f}\n'
-                       'borg_n_archives{{name="{name}"}} {narchives:f}\n'
-                       'borg_size_mb{{name="{name}"}} {size_mb:f}').format(
-                           name=repo.name, age_secs=repo.age_secs,
-                           size_mb=repo.size_mb, narchives=repo.narchives))
-
+                # This file is deployed as a ansible template, that means that
+                # too many braces in the below code (i.e by turning it into a
+                # python f-string) will clash with the jinja2 syntax of ansible
+                # templates.
+                ls = ['borg_age_secs{name="%s"} %f' % (name, repo.age_secs),
+                      'borg_n_archives{name="%s"} %f' % (name, repo.narchives),
+                      'borg_size_mb{name="%s"} %f' % (name, repo.size_mb),
+                      ]
+                print('\n'.join(ls))
 
 if __name__ == '__main__':
     wrap_stdout(main)

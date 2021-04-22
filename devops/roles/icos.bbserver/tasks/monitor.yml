@@ -21,4 +21,4 @@
       - BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
       - BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
       - PATH=/usr/bin:/usr/local/bin
-    timer_content: "{{ lookup('file', 'borgmon.py') }}"
+    timer_content: "{{ lookup('template', 'borgmon.py') }}"
