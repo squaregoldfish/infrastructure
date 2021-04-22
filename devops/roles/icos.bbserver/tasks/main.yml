@@ -1,3 +1,8 @@
+- name: Install borg
+  tags: bbserver_borg
+  import_role:
+    name: icos.borg
+
 - name: Create bbserver user
   user:
     name: "{{ bbserver_user }}"
@@ -8,32 +13,6 @@
   file:
     path: "{{ bbserver_home }}"
     mode: 0700
-
-- name: Download borg binary
-  get_url:
-    url: "{{ bbserver_url }}"
-    dest: "{{ bbserver_bin }}_{{ bbserver_ver }}"
-    checksum: "{{ bbserver_checksum | default(omit) }}"
-    mode: +x
-  register: _download
-
-- name: Display checksum of downloaded binary
-  debug:
-    msg: "Binary have checksum sha1:{{ _download.checksum_dest }}"
-  when: not bbserver_checksum
-
-- name: Test downloaded binary
-  command: |
-    {{ _download.dest }} --version
-  register: _r
-  failed_when: not _r.stdout.startswith('borg')
-  changed_when: no
-
-- name: Create {{ bbserver_bin }} symlink
-  file:
-    dest: "{{ bbserver_bin }}"
-    src: "{{ _download.dest }}"
-    state: link
 
 - name: Create repo directory
   file:
@@ -50,6 +29,5 @@
 
 - import_tasks: monitor.yml
   tags: bbserver_monitor
-  # Only enable monitorying via node_exporter if we can find its textfiles
-  # directory.
+  # Only enable monitoring via node_exporter if its textfiles directory exist.
   when: _textfiles.stat.exists

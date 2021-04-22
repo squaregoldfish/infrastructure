@@ -6,9 +6,10 @@
     bbclient_user is undefined or
     bbclient_home is undefined
 
-- name: Install borg on local host
-  import_tasks: install.yml
-  tags: bbclient_install
+- name: Install borg
+  tags: bbclient_borg
+  import_role:
+    name: icos.borg
 
 - name: Setup local ssh directory
   import_tasks: ssh.yml

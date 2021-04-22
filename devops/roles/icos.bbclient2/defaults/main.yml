@@ -2,10 +2,6 @@
 bbclient_coldbackup_enable: False
 
 # DEFAULTS - should not be changed
-bbclient_bin      : "/usr/local/bin/borg"
-bbclient_url      : https://github.com/borgbackup/borg/releases/download/1.1.13/borg-linux64
-bbclient_checksum : "sha1:4121b5340075e731d98780d7dbdc9badc56115e0"
-
 bbclient_ssh_dir    : "{{ bbclient_home }}/ssh"
 bbclient_script_dir : "{{ bbclient_home }}/bin"
 bbclient_borg_dir   : "{{ bbclient_home }}/borg"
