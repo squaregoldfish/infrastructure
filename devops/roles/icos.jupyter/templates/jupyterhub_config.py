@@ -63,6 +63,14 @@ c.DockerSpawner.volumes = {'/project': '/project'}
 c.DockerSpawner.allowed_images = ['notebook']
 
 
+# https://github.com/jupyterhub/dockerspawner/commit/83c4770c17a8fbd1e2f8f42068552937c5ff0eee
+# This commits changes the default behaviour from run-as-root to
+# run-as-user. However, this new behaviour does not set supplementary groups
+# properly (maybe we need some other kind of config for that?), so we revert
+# back to running as root. The notebook will then switch to the correct
+# user/group based on NB_USER and NB_GROUP.
+c.DockerSpawner.run_as_root = True
+
 # The override configuration file doesn't have to exist.
 load_subconfig(os.path.join(os.path.dirname(__file__),
                             'jupyterhub_config_override.py'))
