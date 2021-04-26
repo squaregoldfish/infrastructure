@@ -1,0 +1,12 @@
+- name: Create {{ bbserver_home }}/bin directory
+  file:
+    path: "{{ bbserver_home }}/bin"
+    state: directory
+    owner: "{{ bbserver_user }}"
+    group: "{{ bbserver_user }}"
+
+- name: Copy bbserver.py
+  template:
+    src: bbserver.py
+    mode: +x
+    dest: "{{ bbserver_home }}/bin/bbserver"

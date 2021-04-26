@@ -27,6 +27,9 @@
     path: "{{ bbserver_textfiles }}"
   register: _textfiles
 
+- import_tasks: cli.yml
+  tags: bbserver_cli
+
 - import_tasks: monitor.yml
   tags: bbserver_monitor
   # Only enable monitoring via node_exporter if its textfiles directory exist.
