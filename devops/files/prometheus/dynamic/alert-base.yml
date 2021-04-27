@@ -44,13 +44,22 @@ groups:
       summary: Host disk will fill in one week (instance {{ $labels.instance }})
       description: >-
         Filesystem is predicted to run out of space within the next 7*24 hours at
-        current write rate\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+        current write rate\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}
 
   - alert: HostHighCpuLoad
-      expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
-      for: 0m
-      labels:
-        severity: warning
-      annotations:
-        summary: Host high CPU load (instance {{ $labels.instance }})
-        description: CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host high CPU load (instance {{ $labels.instance }})
+      description: >-
+        CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}
+
+  - alert: S.M.A.R.T device not healthy
+    expr: smartmon_device_smart_healthy == 0
+    for: 10s
+    labels:
+      severity: "critical"
+    annotations:
+      summary: "Device {{ $labels.device }} on {{ $labels.instance }} is not healthy."
