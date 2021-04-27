@@ -25,7 +25,7 @@
     - name: Create the callisto container
       tags:
         - lxd
-        - iptables
+        - forward
       lxd_container:
         name: callisto
         state: started
@@ -77,17 +77,12 @@
         timeout: 60
       register: _lxd
 
-    - name: SSH forward to callisto
-      tags: iptables
-      iptables_raw:
-        name: ssh_forward_to_callisto
-        table: nat
-        rules: >-
-          -A PREROUTING -p tcp
-          --dport {{ hostvars['callisto'].ansible_port }}
-          -j DNAT --to-destination {{ callisto_ip }}:22
-
   roles:
+    - role: icos.lxd_forward
+      tags: forward
+      lxd_forward_name: callisto
+      lxd_forward_ip: "{{ callisto_ip }}"
+
     - role: icos.eurocom
       tags: eurocom
       eurocom_users: "{{ vault_eurocom_users }}"
