@@ -1,0 +1,4 @@
+smartmon_home: /opt/smartmon
+smartmon_scripts: "{{ smartmon_home }}/scripts"
+smartmon_py: "{{ smartmon_scripts }}/smartmon.py"
+smartmon_prom: "{{ node_exporter_textfiles }}/smartmon.prom"

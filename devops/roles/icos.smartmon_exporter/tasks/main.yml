@@ -1,0 +1,37 @@
+- name: Check whether textfiles directory exists
+  stat:
+    path: "{{ node_exporter_textfiles }}"
+  register: _r
+
+- name: Make sure that textfiles directory exists
+  fail:
+    msg: >-
+      Could not find {{ node_exporter_textfiles }},
+      is the node_exporter role installed?
+  when: not _r.stat.exists
+
+- name: Create /opt/smartmon_exporter directory
+  file:
+    path: "{{ smartmon_home }}"
+    state: directory
+
+- name: Clone textfile-collector-scripts
+  git:
+    repo: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts
+    version: master
+    dest: "{{ smartmon_scripts }}"
+
+- name: Install packages
+  apt:
+    name:
+      - moreutils     # sponge(1)
+      - smartmontools # smartctl(1)
+
+- import_role: name=icos.timer
+  vars:
+    timer_home: "{{ smartmon_home }}"
+    timer_name: smartmon
+    timer_conf: OnCalendar=*:0/5
+    timer_content: |
+      #!/bin/bash
+      {{ smartmon_py }} | sponge {{ smartmon_prom }}
