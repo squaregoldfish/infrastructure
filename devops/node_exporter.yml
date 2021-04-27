@@ -18,7 +18,10 @@
         nginxsite_file: files/node-exporter-nginx.conf
 
     - import_role: name=icos.node_exporter
-    
+
+    - import_role: name=icos.smartmon_exporter
+      tags: smartmon
+
 
 - hosts: localhost
   connection: local
@@ -47,4 +50,3 @@
       import_role:
         name: icos.prometheus
         tasks_from: dynamic
-
