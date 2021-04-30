@@ -22,7 +22,7 @@ echo "$HEADER $(date)" >> $LOGFILE
 # root. So we capture all output to a logfile, detect when borg fails, and
 # then manually output the logs for the last run.
 if ! ./bin/bbclient-all create                                 \
-     "::$ARCHIVE" "{{ cpmeta_filestorage_target }}" rdfStorage \
+     "::$ARCHIVE" "{{ cpmeta_filestorage_target }}" rdfStorage submitters.conf \
      >> "$LOGFILE" 2>&1; then
     # output everything after the last header
     sed -ne ":a;\$p;N;/$HEADER/d;ba"  < "$LOGFILE"
