@@ -8,7 +8,7 @@ import json
 import os
 import re
 import subprocess
-from concurrent import futures
+from concurrent.futures import ProcessPoolExecutor
 
 REPOS = os.getenv('REPOS', '{{ bbserver_repo_home }}')
 
@@ -38,18 +38,13 @@ def repo_info(repo):
 
 def for_all(func):
     result = []
-    with futures.ProcessPoolExecutor() as executor:
-        todos = {}
-        for path in find_repos():
-            future = executor.submit(func, path)
-            todos[future] = path
-        for future in futures.as_completed(todos):
-            path = todos[future]
+    with ProcessPoolExecutor() as exe:
+        jobs = [(path, exe.submit(func, path)) for path in find_repos()]
+        for path, job in jobs:
             try:
-                res = future.result()
+                result.append((path, job.result()))
             except Exception as e:
                 print(path, "failed with", e)
-            result.append((path, res))
     return result
 
 
