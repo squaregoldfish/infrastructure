@@ -153,7 +153,7 @@ def add_group(group):
     if exists(r):
         yield "abort %s exists although the group does not" % group
         return
-    yield 'groupadd %s' % group
+    yield 'addgroup %s' % group
     yield 'mkdir -p %s/store' % r
     yield 'chmod 2770 %s' % r
     yield 'chown project:%s %s' % (group, r)
@@ -205,14 +205,14 @@ def sync_new_users(yaml):
         l = u['login']
         if l in e_users:
             continue
-        yield 'useradd --create-home --user-group %s' % l
+        yield 'adduser --disabled-password %s --shell /usr/sbin/nologin --gecos ""' % l
 
 
 def sync_user_groups(yaml):
     for u in yaml['users']:
         l = u['login']
         for g in set(u.get('groups', [])) - set(list_user_groups(l)):
-            yield 'usermod -G %s -a %s' % (g, l)
+            yield 'adduser %s %s' % (l, g)
 
 
 def sync_homedirs(yaml):
