@@ -6,8 +6,9 @@ import random
 import spwd
 import subprocess
 import sys
-
 import click
+
+from concurrent.futures import ProcessPoolExecutor
 from ruamel.yaml import YAML
 
 
@@ -68,10 +69,14 @@ def maybe_restart_hub(force=False):
     if user_database_differs() or force:
         yield "cd /docker/jupyter && docker-compose restart hub"
 
-def maybe_kick_user(user):
-    if diff_user_groups(user):
-        yield ('yesno "%s\'s user credentials have changed, shut down their '
-               ' server? " && docker rm -f jupyter-%s || :' % (user, user))
+def docker_id(user):
+    r = subprocess.run('docker exec jupyter-%s id %s' % (user, user),
+                       shell=True, check=False, capture_output=True, text=1)
+    if r.returncode == 1 and "No such container" in r.stderr:
+        return None
+    if r.returncode == 1:
+        raise Exception(r.stderr)
+    return r.stdout.strip()
 
 
 # USERS
@@ -126,18 +131,6 @@ def list_user_groups(user):
                 and g.gr_name != 'common']
 
 
-def diff_user_groups(user):
-    r = subprocess.run('docker exec jupyter-%s id %s' % (user, user),
-                       shell=True, check=False, capture_output=True, text=1)
-    if r.returncode == 1 and "No such container" in r.stderr:
-        return None
-    if r.returncode == 1:
-        raise Exception(r.stderr)
-    dock = r.stdout.strip()
-    host = subprocess.check_output(['id', user], text=1).strip()
-    return dock != host
-
-
 def reset_passwords(reset):
     ps = []
     for u in reset:
@@ -168,12 +161,34 @@ def add_group(group):
 
 
 def maybe_kick_all_users():
+    # First list all jupyter containers that are user notebook servers and
+    # build a dict that maps username to the output of "id user" on the host.
+    users = {}
     s = subprocess.check_output(['docker', 'ps'], text=1)
     for line in s.splitlines():
         words = line.split()
         if words[-1].startswith('jupyter-'):
             _, user = words[-1].split('-', 1)
-            yield from maybe_kick_user(user)
+            hid = subprocess.check_output(['id', user], text=1).strip()
+            users[user] = hid
+    # Next go through the usernames and spawn a background process that runs
+    # 'docker id jupyter-user id user'. This means that on a busy server we
+    # might start 50-100 'docker exec' processes.
+    # We then compare the output of 'id user' on the host vs in docker.
+    kick = []
+    with ProcessPoolExecutor() as exe:
+        jobs = [(user, exe.submit(docker_id, user)) for user in users]
+        for user, job in jobs:
+            try:
+                dock = job.result()
+                host = users[user]
+                if dock != host :
+                    kick.append(('yesno "%s\'s user credentials have changed, '
+                                 'shut down their server? " && '
+                                 'docker rm -f jupyter-%s || :' % (user, user)))
+            except Exception as e:
+                print(user, "failed with", e)
+    return kick
 
 
 def sync_new_groups(yaml):
