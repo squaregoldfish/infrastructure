@@ -194,3 +194,10 @@
         special_time: hourly
         state: present
         name: "bbclient_backup"
+
+    - name: Change adduser.conf
+      tags: adduser
+      replace:
+        path: /etc/adduser.conf
+        regexp: '^(FIRST_UID|FIRST_GID)=\d+'
+        replace: '\1=2500'
