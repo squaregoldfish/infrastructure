@@ -37,7 +37,8 @@ groups:
         predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 7 * 24 * 3600) < 0
       and ON (instance, device, mountpoint)
         node_filesystem_readonly == 0
-    for: 2m
+    # Long enough so it doesn't trigger on e.g a large rsync transfer.
+    for: 120m
     labels:
       severity: warning
     annotations:
@@ -48,7 +49,8 @@ groups:
 
   - alert: HostHighCpuLoad
     expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
-    for: 0m
+    # Long enough for computations but not cryptocoin miners.
+    for: 60m
     labels:
       severity: warning
     annotations:
