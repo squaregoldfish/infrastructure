@@ -1,8 +1,22 @@
 import logging
 import os
 
-# DEBUGGING
+from dockerspawner import SystemUserSpawner
 
+
+# CUSTOM SPAWNER
+
+class CustomDockerSpawner(SystemUserSpawner):
+    user_volumes = {{ jupyter_user_volumes }}
+
+    def start(self):
+        self.volumes.update(self.user_volumes.get(self.user.name, {}))
+        return super().start()
+
+c.JupyterHub.spawner_class = CustomDockerSpawner
+
+
+# DEBUGGING
 # Makes the hub really spammy.
 # c.JupyterHub.log_level = logging.DEBUG
 # c.DockerSpawner.debug = True
@@ -23,7 +37,7 @@ c.JupyterHub.authenticate_prometheus = False
 
 # CONFIGURATION OF THE PROXY
 # We're not starting the proxy, it's a separate docker-compose service.
-c.ConfigurableHTTPProxy.should_start = False 
+c.ConfigurableHTTPProxy.should_start = False
 c.ConfigurableHTTPProxy.api_url = 'http://proxy:8001'
 
 # The host name that notebooks will use to connect to the hub. In our case,
@@ -31,12 +45,8 @@ c.ConfigurableHTTPProxy.api_url = 'http://proxy:8001'
 c.JupyterHub.hub_connect_ip = 'hub'
 
 # USER MANAGEMENT
-c.JupyterHub.spawner_class = 'dockerspawner.SystemUserSpawner'
 c.JupyterHub.admin_access = True
-c.Authenticator.admin_users = set([{%- for u in jupyter_admins -%}
-                                     '{{- u }}'
-                                     {%- if not loop.last %},
-                                   {%- endif %}{% endfor %}])
+c.Authenticator.admin_users = set({{ jupyter_admins }})
 
 
 # CONFIGURATION OF THE NOTEBOOK CONTAINERS

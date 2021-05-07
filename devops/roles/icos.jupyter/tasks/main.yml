@@ -29,6 +29,7 @@
   template:
     src: jupyterhub_config.py
     dest: "{{ jupyter_home }}/jupyterhub_home/"
+  register: _config
 
 - name: Create the templates directory
   copy:
@@ -42,12 +43,13 @@
       - proxy
     state: present
 
-- name: Restart the hub
+- name: Start the hub
   docker_compose:
     project_src: "{{ jupyter_home }}"
     services:
       - hub
     state: present
+    restarted: "{{ _config.changed }}"
     build: yes
 
 - import_tasks: jusers.yml
