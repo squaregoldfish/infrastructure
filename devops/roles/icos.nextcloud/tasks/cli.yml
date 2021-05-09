@@ -1,7 +1,0 @@
-- name: Add tasks to Makefile
-  blockinfile:
-    marker: "# {mark} ansible / icos.nextcloud"
-    create: yes
-    insertbefore: BOF
-    path: "{{ nextcloud_home }}/Makefile"
-    block: "{{ lookup('template', 'Makefile.nextcloud') }}"

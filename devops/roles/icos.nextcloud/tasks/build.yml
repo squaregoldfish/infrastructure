@@ -1,0 +1,11 @@
+- name: Build nextcloud images using docker-compose
+  shell: |
+    set -o pipefail
+    ( echo -n '=== starting build '; date; docker-compose build --pull) \
+    | tee -a build.log
+  args:
+    chdir: "{{ nextcloud_home }}"
+    executable: /bin/bash
+  register: _output
+  changed_when: '" ---> Running in " in _output.stdout'
+  when: nextcloud_docker_build | default(True)

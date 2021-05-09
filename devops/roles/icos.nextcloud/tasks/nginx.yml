@@ -1,0 +1,24 @@
+- include_role: name=icos.certbot
+  when: nextcloud_certbot_enable | default(True)
+
+- name: Copy nextcloud nginx config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - src: nextcloud.conf
+      dest: /etc/nginx/sites-available/
+
+    - src: nextcloud-nextcloud.inc
+      dest: /etc/nginx/conf.d/
+
+    - src: nextcloud-maintenance.conf
+      dest: /etc/nginx/conf.d/
+  notify: reload nginx config
+
+
+- name: Create /etc/nginx/sites-enabled/nextcloud.conf symlink
+  file:
+    dest: /etc/nginx/sites-enabled/nextcloud.conf
+    src: /etc/nginx/sites-available/nextcloud.conf
+    state: link

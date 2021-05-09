@@ -1,4 +1,1 @@
 FROM nextcloud:{{ nextcloud_nextcloud_version }}-fpm
-
-COPY run_more_php_processes.diff /
-RUN patch -p1 -d / < /run_more_php_processes.diff

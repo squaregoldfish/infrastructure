@@ -1,3 +1,0 @@
-.PHONY: occ
-occ:
-	docker-compose exec -u www-data app bash

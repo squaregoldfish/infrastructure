@@ -1,0 +1,55 @@
+- include_role:
+    name: icos.password_env_file
+  vars:
+      file: "{{ item.file }}"
+      set_fact: "{{ item.set_fact }}"
+      file_var: "{{ item.file_var }}"
+  loop:
+    - file: "{{ nextcloud_home }}/.pg-root-pass"
+      set_fact: nextcloud_db_root_pass
+      file_var: POSTGRES_PASSWORD
+    - file: "{{ nextcloud_home }}/.pg-nextcloud-pass"
+      set_fact: nextcloud_db_pass
+      file_var: NEXTCLOUD_PASSWORD
+
+- name: Copy runtime files
+  template:
+    src: "{{ item.name }}"
+    dest: "{{ nextcloud_home }}/{{ item.name }}"
+    mode: "{{ item.mode | default(omit) }}"
+  loop:
+    - { name: occ, mode: +x }
+    - { name: nextcloud.env, mode: o-r }
+    - { name: postgres.env, mode: o-r }
+    - { name: tweak.conf }
+
+- name: Create nextcloud volumes
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ nextcloud_volume_nextcloud }}"
+    - "{{ nextcloud_volume_postgres }}"
+
+- name: Create build directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: o-r
+  loop:
+    - "{{ nextcloud_build_nextcloud }}"
+    - "{{ nextcloud_build_postgres }}"
+
+- name: Copy files
+  template:
+    dest: "{{ item.dest }}"
+    src: "{{ item.src }}"
+  loop:
+    - src: Dockerfile_nextcloud
+      dest: "{{ nextcloud_build_nextcloud }}/Dockerfile"
+    - src: Dockerfile_postgres
+      dest: "{{ nextcloud_build_postgres }}/Dockerfile"
+    - src: init.sql
+      dest: "{{ nextcloud_build_postgres }}/init.sql"
+    - src: docker-compose.yml
+      dest: "{{ nextcloud_home }}"

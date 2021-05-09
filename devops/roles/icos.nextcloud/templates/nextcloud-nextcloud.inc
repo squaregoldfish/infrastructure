@@ -60,6 +60,14 @@
     #pagespeed off;
 
     location / {
+        {% if nextcloud_maintenance_ips %}
+        location / {
+            if ($nextcloud_maintenance) {
+                return 503;
+            }
+        }
+        {% endif %}
+
         rewrite ^ /index.php;
     }
 
