@@ -4,14 +4,12 @@
 # borgmon script on fsicos2
 #   deploy base bbserver_monitor -lfsicos2*
 
-- hosts: all
+- hosts: physical_servers
   become: true
   roles:
     - role: icos.server
       tags: server
 
-- hosts: fsicos.lunarc.lu.se fsicos2.lunarc.lu.se
-  roles:
     - role: icos.docker
       tags: docker
 
