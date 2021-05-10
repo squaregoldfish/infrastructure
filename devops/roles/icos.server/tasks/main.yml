@@ -9,3 +9,7 @@
 - import_role: name=icos.iptables
 - import_role: name=icos.python3
 - import_role: name=icos.mosh
+
+- import_tasks: fail2ban.yml
+  tags: server_fail2ban
+  
