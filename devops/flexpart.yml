@@ -1,4 +1,10 @@
 - hosts: flexpart_host
+  vars:
+    # These variable are prefixed with 'jupyter_' instead of 'flexpart_' so
+    # that we can reuse files/jupyter.conf without change.
+    jupyter_ip: "{{ _lxd.addresses.eth0 | first }}"
+    jupyter_domains:
+      - flexpart.icos-cp.eu
   vars_files:
     - vault.yml
   pre_tasks:
@@ -21,7 +27,9 @@
         group: "{{ 1001000 }}"
 
     - name: Create the flexpart container
-      tags: lxd
+      tags:
+        - lxd
+        - nginx
       lxd_container:
         name: flexpart
         state: started
@@ -36,8 +44,8 @@
           alias: "20.04"
         config:
           security.nesting: "true"
-          limits.cpu: "20"
-          limits.memory: "250GB"
+          limits.cpu: "50"
+          limits.memory: "350GB"
         devices:
           root:
             path: "/"
@@ -83,6 +91,19 @@
       lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
       lxd_forward_name: flexpart
 
+    - role: icos.certbot2
+      tags: cert
+      certbot_name: flexpart
+      certbot_domains: "{{ jupyter_domains }}"
+
+    - role: icos.nginxsite
+      tags: nginx
+      nginxsite_name: flexpart
+      nginxsite_file: files/jupyter.conf
+      jupyter_domain: "{{ jupyter_domains | first }}"
+      jupyter_cert_name: flexpart
+      jupyter_port: 8000
+
 
 - hosts: flexpart
   vars_files:
@@ -105,3 +126,17 @@
     - role: icos.flexpart
       tags: flexpart
       flexpart_install_run: true
+
+    - role: icos.jupyter
+      tags: jupyter
+      jupyter_admins: "{{ vault_flexpart_admins }}"
+
+  tasks:
+    - name: Login to registry
+      tags: login
+      become: yes
+      become_user: root
+      community.general.docker_login:
+        registry_url: registry.icos-cp.eu
+        username: docker
+        password: "{{ vault_registry_pass }}"
