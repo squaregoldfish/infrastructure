@@ -2,3 +2,4 @@ jupyter_home: /docker/jupyter
 jupyter_admins: []
 jupyter_notebook_image: registry.icos-cp.eu/icosbase
 jupyter_user_volumes: {}
+jupyter_jusers_enable: false

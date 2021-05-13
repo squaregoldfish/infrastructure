@@ -1,0 +1,15 @@
+- name: Start the proxy
+  docker_compose:
+    project_src: "{{ jupyter_home }}"
+    services:
+      - proxy
+    state: present
+
+- name: Start the hub
+  docker_compose:
+    project_src: "{{ jupyter_home }}"
+    services:
+      - hub
+    state: present
+    restarted: "{{ _config.changed }}"
+    build: yes

@@ -143,6 +143,7 @@
       tags: jupyter
       jupyter_admins: "{{ vault_jupyter_admins }}"
       jupyter_user_volumes: "{{ vault_jupyter_user_volumes }}"
+      jupyter_jusers_enable: true
 
     - role: icos.bbclient
       tags: bbclient
