@@ -21,6 +21,8 @@ c.JupyterHub.spawner_class = CustomDockerSpawner
 # c.JupyterHub.log_level = logging.DEBUG
 # c.DockerSpawner.debug = True
 
+# Workaround to allow usernames with '-' in them.
+c.DockerSpawner.escape = 'legacy'
 
 # CONFIGURATION OF THE HUB
 # The ip address for the Hub process to *bind* to.

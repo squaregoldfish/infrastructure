@@ -156,8 +156,10 @@
       tags: project
       user:
         name: project
-        create_home: no
-        home: /data/project
+        create_home: yes
+        # Even though the purpose of the project user is to own the files in
+        # /data/project, we want to store its authorized_keys somewhere else.
+        home: /home/project
         shell: /usr/bin/bash
         password: '*'
 
@@ -173,7 +175,7 @@
       copy:
         dest: /etc/ssh/sshd_config.d/jupyter_allow_users.conf
         content: |
-          AllowUsers {{ vault_jupyter_allow_users | join(" ") }}
+          AllowUsers project {{ vault_jupyter_allow_users | join(" ") }}
       notify: reload sshd
 
     - name: Create backup script
