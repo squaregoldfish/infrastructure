@@ -120,6 +120,7 @@
       superuser_disable_coredump: true
       superuser_list:
         - name: ubuntu
+          password: "{{ vault_flexpart_password }}"
           groups: docker
           key: "{{ vault_flexpart_ssh_keys }}"
 
