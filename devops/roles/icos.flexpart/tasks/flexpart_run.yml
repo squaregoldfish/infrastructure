@@ -62,10 +62,10 @@
 
     - name: Build flexpart image
       docker_image:
-        build_path: "{{ _build.path }}"
-        state: present
+        source: build
         name: "{{ flexpart_image }}"
-        force: "{{ _resources.changed }}"
+        build:
+          path: "{{ _build.path }}"
 
 
 - name: Install the flexpart shell scripts
