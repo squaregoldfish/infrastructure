@@ -1,6 +1,7 @@
 - name: Create user {{ item.name }}
   user:
     name: "{{ item.name }}"
+    password: "{{ item.password | default(omit) }}"
     home: "{{ item.home | default(omit) }}"
     groups: "{{ item.groups | default(omit) }}"
     append: "{{ item.groups | default(false) | bool }}"
