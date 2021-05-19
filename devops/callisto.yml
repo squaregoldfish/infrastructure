@@ -9,7 +9,6 @@
 
 - hosts: callisto_host
   vars:
-    filedrop_domain: filedrop.icos-cp.eu
     callisto_ip: "{{ _lxd.addresses.eth0 | first }}"
   vars_files:
     - vault.yml
@@ -89,17 +88,17 @@
       eurocom_web_root: /pool/ute/eurocom_web_root
       eurocom_data_home: /data/project/eurocom
 
-    - role: icos.certbot2
-      tags:
-        - cert
-        - filedrop
-      certbot_domain: "{{ filedrop_domain }}"
-
-    - role: icos.nginxsite
+  tasks:
+    - name: Proxy filedrop
       tags: filedrop
-      nginxsite_name: filedrop
-      nginxsite_file: roles/icos.filedrop/templates/filedrop.conf
-      filedrop_addr: "http://callisto.lxd:8039"
+      import_role:
+        name: icos.filedrop
+        tasks_from: proxy
+      vars:
+        nginxsite_name: filedrop
+        filedrop_domain: filedrop.icos-cp.eu
+        filedrop_host: callisto.lxd
+
 
 
 - hosts: callisto
