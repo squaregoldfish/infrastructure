@@ -99,6 +99,16 @@
         filedrop_domain: filedrop.icos-cp.eu
         filedrop_host: callisto.lxd
 
+    - name: Proxy jupyter
+      tags: jupyter
+      import_role:
+        name: icos.jupyter
+        tasks_from: proxy
+      vars:
+        nginxsite_name: callisto
+        jupyter_domain: callisto.icos-cp.eu
+        jupyter_ip: callisto.lxd
+
 
 
 - hosts: callisto
@@ -112,6 +122,7 @@
 
     - role: icos.docker
       tags: docker
+      docker_periodic_cleanup: true
 
     - role: icos.superuser
       tags: users
@@ -121,6 +132,10 @@
     - role: icos.filedrop
       tags: filedrop
       filedrop_data_home: /ute/filedrop
+
+    - role: icos.jupyter
+      tags: jupyter
+      jupyter_admins: "{{ vault_callisto_admins }}"
 
   tasks:
     - name: Port forward for filedrop
