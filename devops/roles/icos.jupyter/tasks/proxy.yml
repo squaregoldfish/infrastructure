@@ -1,0 +1,15 @@
+- name: Check that all parameters are defined
+  fail:
+    msg: "{{ item }} needs to be defined"
+  when: vars[item] is undefined
+  loop:
+    - jupyter_domain
+
+- import_role: name=icos.certbot2
+  vars:
+    certbot_domain: "{{ jupyter_domain }}"
+
+- import_role: name=icos.nginxsite
+  vars:
+    nginxsite_file: jupyter-nginx.conf
+    jupyter_cert_name: "{{ certbot_name }}"

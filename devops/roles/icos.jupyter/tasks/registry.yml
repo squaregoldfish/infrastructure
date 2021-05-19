@@ -1,0 +1,13 @@
+- name: Login to registry
+  tags: login
+  become: yes
+  become_user: root
+  community.general.docker_login:
+    registry_url: registry.icos-cp.eu
+    username: docker
+    password: "{{ vault_registry_pass }}"
+
+- name: Pull the notebook image from registry
+  docker_image:
+    name: "{{ jupyter_notebook_image }}"
+    source: pull

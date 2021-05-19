@@ -1,6 +1,9 @@
 - import_tasks: docker.yml
   tags: jupyter_docker
 
+- import_tasks: registry.yml
+  tags: jupyter_registry
+
 - import_tasks: jusers.yml
   tags: jupyter_jusers
   when: jupyter_jusers_enable
