@@ -1,0 +1,7 @@
+- name: Copy {{ item }}
+  template:
+    src: "{{ item }}"
+    dest: "{{ prometheus_home }}/{{ item | splitext | first }}"
+    mode: +x
+  loop:
+    - amtool.py
