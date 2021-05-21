@@ -11,7 +11,7 @@
       #!/bin/bash
       export BORG_RSH="ssh -F {{ bbclient_ssh_config }}"
       export BORG_BASE_DIR="{{ bbclient_borg_dir }}"
-      {{ bbclient_bin }} "$@"
+      {{ borg_bin }} "$@"
 
 - name: Create helper scripts
   template:
