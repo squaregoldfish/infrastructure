@@ -17,7 +17,9 @@ prometheus_users:
 
 prometheus_options: []
 
-prometheus_promtool_ver: 2.25.0
+# https://github.com/prometheus/prometheus/releases/
+prometheus_promtool_ver: 2.27.1
+prometheus_promtool_sha: "sha256:ce637d0167d5e6d2561f3bd37e1c58fe8601e13e4e1ea745653c068f6e1317ae"
 prometheus_host_conf: "{{ prometheus_home }}/volumes/prometheus_conf/prometheus.yml"
 
 prometheus_backup_script: "{{ prometheus_home }}/bin/prometheus-backup.py"

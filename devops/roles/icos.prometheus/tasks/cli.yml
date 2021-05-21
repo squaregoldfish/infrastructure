@@ -1,4 +1,4 @@
-- name: Copy {{ item }}
+- name: Copy script wrappers
   template:
     src: "{{ item }}"
     dest: "{{ prometheus_home }}/{{ item | splitext | first }}"

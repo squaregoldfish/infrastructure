@@ -1,3 +1,9 @@
+# Push new wrapper scripts.
+#   deploy prometheus prometheus_cli
+#
+# Pull new docker versions
+#   deploy prometheus setup build -eprometheus_pull_latest=true
+
 - hosts: prometheus_host
   become: true
   vars_files:
@@ -113,17 +119,13 @@
         tasks_from: dynamic
 
     - name: Build prometheus images
-      tags:
-        - setup
-        - build
+      tags: build
       import_role:
         name: icos.prometheus
         tasks_from: build
 
     - name: Install backup
-      tags:
-        - setup
-        - backup
+      tags: backup
       import_role:
         name: icos.prometheus
         tasks_from: backup

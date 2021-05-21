@@ -108,6 +108,7 @@ services:
     command:
       - '--config.file=/etc/alertmanager/config.yml'
       - '--storage.path=/alertmanager'
+      - "--web.external-url=https://{{ prometheus_alrt_domain }}"
     networks:
       - prometheus
     ports:

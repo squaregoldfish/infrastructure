@@ -6,10 +6,10 @@
     path: "/opt/downloads"
     state: directory
 
-- name: Download prometheus binary
+- name: Download prometheus binaries
   get_url:
     url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_promtool_ver }}/prometheus-{{ prometheus_promtool_ver }}.linux-amd64.tar.gz"
-    checksum: "sha1:b17aade56d79b60d1bd2ce7c6bc4edbd0dbe5758"
+    checksum: "{{ prometheus_promtool_sha }}"
     dest: "/opt/downloads"
     mode: +x
   register: _down
