@@ -8,8 +8,6 @@ cpdata_meta_addr: 127.0.0.1
 cpdata_bind_port: 9011
 cpdata_bind_addr: 127.0.0.1
 
-cpdata_irods_pass:       "{{ vault_cpdata_irods_pass }}"
-cpdata_swestore_pass:    "{{ vault_cpdata_swestore_pass }}"
 cpdata_b2safe_pass:      "{{ vault_cpdata_b2safe_pass }}"
 cpdata_dlreporter_pass:  "{{ vault_cpdata_dlreporter_pass }}"
 cpdata_etcfacade_secret: "{{ vault_cpdata_etcfacade_secret }}"
