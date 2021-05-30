@@ -27,6 +27,7 @@ erddap_host
 [fsicos2_aliases:vars]
 ansible_host=fsicos2.lunarc.lu.se
 ansible_user=root
+ansible_port=60022
 
 [fsicos2_vms]
 quince ansible_port=60522

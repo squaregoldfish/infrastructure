@@ -33,9 +33,7 @@
 - hosts: quince_host
   become: true
   vars:
-    quince_ip: "{{ _lxd.addresses.eth0 | first }}"
-    certbot_name: quince
-    certbot_domains: ["quince.bcdc.no"]
+    quince_host: quince.lxd
   pre_tasks:
     - name: Create the QuinCe container
       tags:
@@ -66,16 +64,41 @@
   roles:
     - role: icos.lxd_forward
       tags: forward
-      lxd_forward_ip: "{{ quince_ip }}"
+      lxd_forward_ip: "{{ _lxd.addresses.eth0 | first }}"
       lxd_forward_name: quince
 
+    # Regular quince.
     - role: icos.certbot2
       tags: cert
+      certbot_name: quince
+      certbot_domains: ["quince.bcdc.no"]
 
     - role: icos.nginxsite
       tags: nginx
       nginxsite_name: quince
       nginxsite_file: files/quince.conf
+      certbot_domains:
+        - quince.bcdc.no
+
+    # Quince Intercomparison.
+    - role: icos.certbot2
+      tags: cert-ic
+      certbot_name: quince-ic
+      certbot_domains:
+        - quince-ic1.bcdc.no
+        - quince-ic2.bcdc.no
+
+    - role: icos.nginxsite
+      tags: nginx-ic
+      nginxsite_name: quince-ic
+      nginxsite_file: files/quince-ic.conf
+      certbot_name: quince-ic
+      quince_port: 8180
+      quince_domains:
+        - name: quince-ic1.bcdc.no
+          location: /ic1
+        - name: quince-ic2.bcdc.no
+          location: /ic2
 
   tasks:
     # The ships sends data to quince using attachments. These are sometimes
