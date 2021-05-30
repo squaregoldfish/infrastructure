@@ -1,0 +1,64 @@
+- targets:
+    # wordpress
+    - www.ingos-infrastructure.eu
+    - www.eric-forum.eu
+    - www.icos-summerschool.eu
+
+    # # fsicos3
+    # - filedrop.icos-cp.eu
+    # - eurocom.icos-cp.eu
+
+    # # fsicos2
+    # - www.actris.se
+    # - apply.fieldsites.se
+    # - cpauth.icos-cp.eu
+    # - auth.fieldsites.se
+    # - data.icos-cp.eu
+    # - data.fieldsites.se
+    # # - demo.icos-cp.eu
+    # - doi.icos-cp.eu
+    # # - eddyetc.icos-cp.eu
+    # - erddap.icos-cp.eu
+    # - bluecloud.icos-cp.eu
+    # - fileshare.icos-cp.eu
+    # # - geoip.icos-cp.eu
+    # - icos-cp.eu
+    # - icos-finland.fi
+    # - icos-netherlands.nl
+
+    # # ri
+    # - icos-ri.eu
+    # - conference.icos-ri.eu
+    # - www.icos-ri.eu
+
+    # # lists
+    # - lists.icos-ri.eu
+    # - lists.eric-forum.eu
+
+    # # meta
+    # - meta.icos-cp.eu/buildInfo
+    # - meta.fieldsites.se/buildInfo
+
+    # - repo.icos-cp.eu
+    # - no.icos-cp.eu
+    # - nordspec.nateko.lu.se
+    # - onlyoffice.icos-cp.eu
+    # - otc-nrt.icos-cp.eu
+    # - otc.icos-cp.eu
+    # - quince.bcdc.no
+    # - quince.icos-cp.eu
+    
+    # # - static.icos-cp.eu
+    # - stilt.icos-cp.eu
+    # - survey.icos-cp.eu
+    # - survey2.icos-cp.eu
+
+    # # sweden
+    # - sweden.icos-cp.eu
+    # - icos-sweden.se
+    # - www.icos-sweden.se
+
+    # # switzerland
+    # - www.icos-switzerland.ch
+    # - switzerland.icos-cp.eu
+    

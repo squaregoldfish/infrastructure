@@ -1,5 +1,8 @@
 - targets:
+    # Misc jupyter instances
     - https://jupyter.icos-cp.eu
     - https://exploredata.icos-cp.eu
     - https://exploretest.icos-cp.eu
     - https://ganymede.icos-cp.eu
+    - https://callisto.icos-cp.eu
+    - https://flexpart.icos-cp.eu
