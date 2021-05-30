@@ -51,7 +51,7 @@
     dest: /usr/local/bin/broot
     mode: +x
 
-- name: Install broot shell function
-  command: /usr/local/bin/broot --install
-  args:
-    creates: /root/.config/broot/launcher/bash/br
+# - name: Install broot shell function
+#   command: /usr/local/bin/broot --install
+#   args:
+#     creates: /root/.config/broot/launcher/bash/br
