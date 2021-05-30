@@ -2,7 +2,7 @@
 [physical_servers]
 cdb.nateko.lu.se ansible_user=root
 fsicos.lunarc.lu.se ansible_user=root
-fsicos2.lunarc.lu.se ansible_user=root
+fsicos2.lunarc.lu.se ansible_user=root ansible_port=60022
 fsicos3.lunarc.lu.se ansible_user=root
 
 
