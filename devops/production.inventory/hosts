@@ -23,6 +23,7 @@ flexextract_host
 postgis_host
 rspamd_host
 erddap_host
+alfresco_host
 
 [fsicos2_aliases:vars]
 ansible_host=fsicos2.lunarc.lu.se
@@ -37,11 +38,11 @@ flexextract ansible_port=60526
 erddap ansible_port=60580
 rspamd ansible_port=60585
 postgis ansible_port=60590
+alfresco ansible_port=60575
 
 [fsicos2_vms:vars]
 ansible_host=fsicos2.lunarc.lu.se
 ansible_user=root
-
 
 
 # FSICOS3

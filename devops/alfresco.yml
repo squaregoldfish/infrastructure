@@ -1,0 +1,73 @@
+- hosts: alfresco_host
+  vars:
+    alfresco_ip: "{{ _lxd.addresses.eth0 | first }}"
+  vars_files:
+    - vault.yml
+  tasks:
+    - name: Create alfresco storage pool
+      tags: pool
+      shell: >-
+        /snap/bin/lxc storage show alfresco > /dev/null 2>&1 ||
+        /snap/bin/lxc storage create alfresco btrfs size=50GB
+      register: _r
+      changed_when:
+        - '"Storage pool alfresco created" in _r.stdout'
+
+    - name: Create the alfresco container
+      lxd_container:
+        name: alfresco
+        state: started
+        profiles:
+          - default
+          - ssh_root
+        source:
+          type: image
+          mode: pull
+          server: https://cloud-images.ubuntu.com/releases
+          protocol: simplestreams
+          alias: "20.04"
+        devices:
+          alfresco:
+            path: /alfresco
+            source: /disk/data/alfresco
+            type: disk
+          root:
+            path: /
+            type: disk
+            pool: alfresco
+            size: "50GB"
+        config:
+          security.nesting: "true"
+        wait_for_ipv4_addresses: true
+        timeout: 600
+      register: _lxd
+
+    - name: SSH forward to alfresco
+      tags: iptables
+      iptables_raw:
+        name: forward_ssh_to_alfresco
+        table: nat
+        rules: >-
+          -A PREROUTING -p tcp
+          --dport {{ hostvars['alfresco'].ansible_port }}
+          -j DNAT --to-destination {{ alfresco_ip }}:22
+
+    - name: Modify /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        regex: '(?:^{{ alfresco_ip | regex_escape}}.*)|(?:.*alfresco\.lxd)$'
+        line: "{{ alfresco_ip }}\talfresco.lxd"
+        state: present
+
+
+- hosts: alfresco
+  become: true
+  vars_files:
+    - vault.yml
+  roles:
+    - role: icos.lxd_guest
+      tags: guest
+
+    - role: icos.docker
+      tags: docker
+      docker_periodic_cleanup: True
