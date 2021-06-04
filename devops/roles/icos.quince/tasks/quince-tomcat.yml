@@ -40,12 +40,6 @@
     src: "{{ quince_tomcat_home }}/bin/catalina.sh"
     state: link
 
-- name: Allowing inbound traffic on the tomcat port
-  ufw:
-    rule: allow
-    port: "{{ quince_tomcat_port }}"
-    comment: tomcat
-
 - name: Copy quince.service
   template:
     src: quince.service
