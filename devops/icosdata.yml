@@ -107,13 +107,14 @@
         create: yes
         path: /etc/exports
         block: |
-          /data/flexextract         fsicos*.lunarc.lu.se(ro)
-          /disk/data/project        fsicos*.lunarc.lu.se(ro)
-          /disk/data/flexpart/meteo fsicos*.lunarc.lu.se(ro)
-          /disk/data/dataAppStorage fsicos*.lunarc.lu.se(ro)
-          /disk/data/stiltweb       fsicos*.lunarc.lu.se(ro)
-          /disk/data/obspack        fsicos*.lunarc.lu.se(ro)
-          /disk/data/stilt          fsicos*.lunarc.lu.se(ro)
+          /data/flexextract                 fsicos*.lunarc.lu.se(ro)
+          /disk/data/project                fsicos*.lunarc.lu.se(ro)
+          /disk/data/flexpart/meteo         fsicos*.lunarc.lu.se(ro)
+          /disk/data/dataAppStorage         fsicos*.lunarc.lu.se(ro)
+          /disk/data/stiltweb               fsicos*.lunarc.lu.se(ro)
+          /disk/data/obspack                fsicos*.lunarc.lu.se(ro)
+          /disk/data/stilt                  fsicos*.lunarc.lu.se(ro)
+          /disk/data/common/netcdf/dataDemo fsicos*.lunarc.lu.se(rw)
       notify: Reload NFS server
 
 
@@ -168,6 +169,10 @@
 
         - path: /data/project/climbeco
           src: fsicos2.lunarc.lu.se:/disk/data/project/climbeco
+
+        - path: /pool/ute/dataDemo
+          src: fsicos2.lunarc.lu.se:/disk/data/common/netcdf/dataDemo
+          opts: rw
 
     - name: Export data via nfs
       tags: export

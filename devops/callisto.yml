@@ -69,6 +69,10 @@
             path: "/ute/filedrop"
             source: "/pool/ute/filedrop"
             type: disk
+          datademo:
+            path: "/ute/dataDemo"
+            source: "/pool/ute/dataDemo"
+            type: disk
         config:
           security.nesting: "true"
         wait_for_ipv4_addresses: true
