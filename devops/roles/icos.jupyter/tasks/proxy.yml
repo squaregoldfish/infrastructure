@@ -12,4 +12,4 @@
 - import_role: name=icos.nginxsite
   vars:
     nginxsite_file: jupyter-nginx.conf
-    jupyter_cert_name: "{{ certbot_name }}"
+    jupyter_cert_name: "{{ jupyter_domain }}"
