@@ -36,6 +36,10 @@
             type: disk
             pool: flexextract
             size: "50GB"
+          ida:
+            path: "/home/ida"
+            source: "/disk/data/ida"
+            type: disk
           flexextract:
             path: /data/flexextract
             source: /disk/data/flexextract
@@ -88,10 +92,7 @@
     - role: icos.superuser
       tags: superuser
       superuser_disable_coredump: true
-      superuser_list:
-        - name: ubuntu
-          groups: docker
-          key: "{{ vault_flexpart_ssh_keys }}"
+      superuser_list: "{{ vault_flexextract_superuser_list }}"
 
   tasks:
     - name: Install additional ssh keys
@@ -99,4 +100,4 @@
       authorized_key:
         user: flexextract
         state: present
-        key: "{{ vault_flexextract_ssh_keys }}"
+        key: "{{ vault_flexextract_extra_keys }}"
