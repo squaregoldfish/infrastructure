@@ -1,4 +1,0 @@
-# We rely on an lxd profile with this name to be present and contain a
-# cloud-init that will give us ssh root access.
-lxd_host_ssh_profile: "ssh_root"
-lxd_host_ubuntu_release: "20.04"
