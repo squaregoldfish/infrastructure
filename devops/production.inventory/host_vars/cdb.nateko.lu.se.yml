@@ -1,0 +1,14 @@
+bbserver_user: bbserver
+bbserver_home: /disk/data/bbserver
+bbserver_bin: /usr/local/bin/borg
+bbserver_repo_home: "{{ bbserver_home }}/repos"
+
+
+pgrep_rdflog_instance:
+  suffix: rdflog
+  peer_host: fsicos2.lunarc.lu.se
+  peer_port: "{{ rdflog_db_port }}"
+  peer_user: "{{ rdflog_rep_user }}"
+  peer_pass: "{{ rdflog_rep_pass }}"
+  peer_cert: roles/icos.rdflog/files/server.crt
+  peer_slot: cdb
