@@ -22,7 +22,7 @@ $settings['trusted_host_patterns'] = array(
 $settings['container_yamls'][] = __DIR__ . '/services.yml';
 $settings['hash_salt'] = '{{ vault_hash_salt }}';
 $settings['install_profile'] = 'standard';
-$config_directories['sync'] = '{{ vault_drupal_sync_directory }}';
+$settings['config_sync_directory'] = '{{ vault_drupal_sync_directory }}';
 
 $settings['update_free_access'] = false;
 $settings['file_private_path'] = '/var/www/private';
