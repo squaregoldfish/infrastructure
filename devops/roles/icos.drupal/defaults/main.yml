@@ -1,2 +1,5 @@
+drupal_version: 9.2
 drupal_websites: ["ac", "ch", "cp", "fi", "nl", "no", "ns", "otc", "se"]
 drupal_home: /disk/data/drupal
+drupal_modules: []
+update_modules: false

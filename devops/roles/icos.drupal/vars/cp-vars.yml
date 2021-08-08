@@ -6,3 +6,19 @@ domain: www.icos-cp.eu
 ssl_domains: [icos-cp.eu,www.icos-cp.eu]
 redirect_to_www: true
 extra_js: cp
+drupal_modules: [
+  editor_advanced_link,
+  field_group,
+  honeypot,
+  html_title,
+  linkit,
+  menu_breadcrumb,
+  metatag,
+  pathauto,
+  readonlymode,
+  redirect,
+  smtp,
+  toc_js,
+  token,
+  webform
+]

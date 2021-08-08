@@ -1,12 +1,14 @@
 version: '2'
 services:
   drupal:
-    image: drupal:8.9
+    image: drupal:{{ drupal_version }}
     links:
       - mariadb
     ports:
       - "127.0.0.1:{{ drupal_docker_port }}:80"
     volumes:
+      - ../composer/composer.json:/opt/drupal/composer.json
+      - vendor:/opt/drupal/vendor
       - ../themes:/var/www/html/themes
       - ../modules:/var/www/html/modules
       - ../libraries:/var/www/html/libraries
@@ -21,7 +23,7 @@ services:
 {% endif %}
     restart: unless-stopped
   mariadb:
-    image: mariadb:10.0.21
+    image: mariadb:10.6
     ports:
       - "127.0.0.1:{{ mysql_docker_port }}:3306"
     environment:
@@ -32,3 +34,5 @@ services:
     volumes:
       - ../db:/var/lib/mysql/:rw
     restart: unless-stopped
+volumes:
+  vendor:

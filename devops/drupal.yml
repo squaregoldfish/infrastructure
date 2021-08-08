@@ -1,6 +1,5 @@
 - import_playbook: setup.yml
 
 - hosts: fsicos2.lunarc.lu.se
-  become: true
   roles:
     - role: icos.drupal

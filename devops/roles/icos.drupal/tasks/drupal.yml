@@ -40,27 +40,57 @@
     src: cp_theme_d8.libraries.yml.j2
     dest: "{{ project_dir }}/themes/cp_theme_d8/cp_theme_d8.libraries.yml"
 
-- name: Ensure {{ project_dir }}/docker/ directory exists
+- name: Create {{ project_dir }}/docker/ directory
   file: path={{ project_dir }}/docker/ state=directory recurse=yes
 
 - name: Copy docker-compose.yml
   template:
     src: docker-compose.yml.j2
     dest: "{{ project_dir }}/docker/docker-compose.yml"
+  register: docker_compose_yml
 
 - name: Copy environment file
   template:
     src: env.j2
     dest: "{{ project_dir }}/docker/.env"
 
-- name: Run docker-compose
+- name: Create {{ project_dir }}/composer/ directory
+  file: path={{ project_dir }}/composer/ state=directory recurse=yes
+
+- name: Copy composer.json
+  template:
+    src: composer.json.j2
+    dest: "{{ project_dir }}/composer/composer.json"
+  register: composer_json
+
+- name: (Re)start docker containers
   docker_compose:
     project_src: "{{ project_dir }}/docker"
     state: present
     pull: yes
+    restarted: yes
+  when: docker_compose_yml.changed or composer_json.changed
+
+- name: Check private directory owner
+  command: docker exec ac_drupal_1 stat -c '%U' /var/www/private/
+  register: private_directory_owner
+  changed_when: false
 
 - name: Change private directory owner
   command: docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/private/
+  when: private_directory_owner.stdout != "www-data"
+
+- name: Check files directory owner
+  command: docker exec ac_drupal_1 stat -c '%U' /var/www/private/
+  register: files_directory_owner
+  changed_when: false
 
 - name: Change files directory owner
   command: docker exec {{website}}_drupal_1 chown -R www-data:www-data /var/www/html/sites/default/files
+  when: files_directory_owner.stdout != "www-data"
+
+- name: Composer update
+  command: docker exec {{website}}_drupal_1 composer update
+  when: update_modules or composer_json.changed
+  register: result
+  changed_when: '"Package operations" in result.stderr'

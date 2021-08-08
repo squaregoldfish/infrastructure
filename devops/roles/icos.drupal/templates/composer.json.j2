@@ -1,0 +1,90 @@
+{
+    "name": "drupal/recommended-project",
+    "description": "Project template for Drupal 9 projects with a relocated document root",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/drupal",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "toc/toc",
+                "version": "v0.3.2",
+                "type": "drupal-library",
+                "dist": {
+                    "url": "https://raw.githubusercontent.com/jgallen23/toc/greenkeeper/update-all/dist/toc.min.js",
+                    "type": "file"
+                }
+            }
+        }
+    ],
+    "require": {
+        "composer/installers": "^1.9",
+        "drupal/core-composer-scaffold": "^{{ drupal_version }}",
+        "drupal/core-recommended": "^{{ drupal_version }}",
+        {{ '"drupal/editor_advanced_link": "^1.8",'     if "editor_advanced_link" in drupal_modules }}
+        {{ '"drupal/editor_file": "^1.5",'              if "editor_file" in drupal_modules }}
+        {{ '"drupal/field_group": "^3.1",'              if "field_group" in drupal_modules }}
+        {{ '"drupal/honeypot": "^2.0",'                 if "honeypot" in drupal_modules }}
+        {{ '"drupal/html_title": "^1.1",'               if "html_title" in drupal_modules }}
+        {{ '"drupal/linkit": "6.0.*@dev",'              if "linkit" in drupal_modules }}
+        {{ '"drupal/menu_breadcrumb": "1.16",'          if "menu_breadcrumb" in drupal_modules }}
+        {{ '"drupal/metatag": "1.16",'                  if "metatag" in drupal_modules }}
+        {{ '"drupal/pathauto": "^1.6",'                 if "pathauto" in drupal_modules }}
+        {{ '"drupal/redirect": "^1.5",'                 if "redirect" in drupal_modules }}
+        {{ '"drupal/restui": "^1.20",'                  if "restui" in drupal_modules }}
+        {{ '"drupal/smtp": "^1.0",'                     if "smtp" in drupal_modules }}
+        {{ '"drupal/toc_js": "^2.0", "toc/toc": "*",'   if "toc_js" in drupal_modules }}
+        {{ '"drupal/token": "^1.7",'                    if "token" in drupal_modules }}
+        {{ '"drupal/webform": "^6.0",'                  if "webform" in drupal_modules }}
+        "drush/drush": "^10.4"
+    },
+    "conflict": {
+        "drupal/drupal": "*"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "drupal-scaffold": {
+            "locations": {
+                "web-root": "web/"
+            }
+        },
+        "installer-paths": {
+            "web/core": [
+                "type:drupal-core"
+            ],
+            "web/libraries/{$name}": [
+                "type:drupal-library"
+            ],
+            "web/modules/contrib/{$name}": [
+                "type:drupal-module"
+            ],
+            "web/profiles/contrib/{$name}": [
+                "type:drupal-profile"
+            ],
+            "web/themes/contrib/{$name}": [
+                "type:drupal-theme"
+            ],
+            "drush/Commands/contrib/{$name}": [
+                "type:drupal-drush"
+            ],
+            "web/modules/custom/{$name}": [
+                "type:drupal-custom-module"
+            ],
+            "web/profiles/custom/{$name}": [
+                "type:drupal-custom-profile"
+            ],
+            "web/themes/custom/{$name}": [
+                "type:drupal-custom-theme"
+            ]
+        }
+    }
+}
