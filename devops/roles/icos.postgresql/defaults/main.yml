@@ -20,3 +20,5 @@ postgresql_postgis_package: |
   {% else -%}
   omit
   {% endif -%}
+
+postgresql_pg_stat_enable: true

@@ -3,3 +3,7 @@
 
 - import_tasks: config.yml
   tags: postgresql_config
+
+- import_tasks: pg_stat.yml
+  tags: postgresql_pg_stat
+  when: postgresql_pg_stat_enable

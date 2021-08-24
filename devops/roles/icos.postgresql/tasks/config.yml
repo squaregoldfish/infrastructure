@@ -17,3 +17,11 @@
   notify: restart postgresql
   when:
     - postgresql_listen_addresses != ""
+
+- name: Install public keys for postgres user
+  tags: keys
+  authorized_key:
+    user: postgres
+    state: present
+    key: "{{ postgresql_ssh_keys }}"
+  when: postgresql_ssh_keys

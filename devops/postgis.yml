@@ -62,9 +62,12 @@
     - import_role: name=icos.postgresql
       tags: postgresql
       vars:
+        # Lock the version in case the role gets upgraded.
+        postgresql_version: 12
         postgresql_postgis_enable: true
         postgresql_postgres_password: "{{ vault_postgis_postgres_password }}"
         postgresql_listen_addresses: "'*'"
+        postgresql_ssh_keys: "{{ vault_postgis_extra_keys }}"
 
     - name: Install backup for postgresql
       tags: backup
@@ -75,13 +78,6 @@
         postgresql_backup_script: backup-dumpall-bbclient
         postgresql_bbclient_name: postgis
 
-    - name: Install public keys for postgres user
-      tags: keys
-      authorized_key:
-        user: postgres
-        state: present
-        key: "{{ vault_postgis_extra_keys }}"
-
     - name: Allow postgres user to connect from same subnet
       tags: hba
       postgresql_pg_hba:
@@ -91,6 +87,7 @@
         method: md5
         contype: hostssl
 
+    # Switch to postgres so we use socket authentication.
     - become: true
       become_user: postgres
       tags: cplog
@@ -111,7 +108,7 @@
             contype: hostssl
           loop: "{{ vault_postgis_cplog_users }}"
 
-        - name: Add the pg_stat_statements to cplog
+        - name: Add the pg_stat_statements extension
           community.postgresql.postgresql_ext:
             name: pg_stat_statements
             db: cplog
