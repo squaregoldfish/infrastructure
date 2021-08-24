@@ -3,6 +3,10 @@
   roles:
     - role: icos.postfix
       tags: postfix
+      postfix_config_list:
+        - param: mynetworks
+          value: "172.16.0.0/12"
+          append: yes
 
     - role: icos.dovecot
       tags: dovecot
