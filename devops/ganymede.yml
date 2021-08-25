@@ -3,7 +3,7 @@
 #   icos ganymede jbuild -ejbuild_force=false
 #
 # Deploy new users, keys, edctl and rsync.
-#   icos ganymede jbuild_users jbuild_rsync
+#   icos ganymede users jbuild_users jbuild_rsync
 
 - hosts: ganymede_host
   vars:
@@ -111,7 +111,7 @@
 
     - role: icos.jupyter
       tags: jupyter
-      jupyter_admins: "{{ vault_ganymede_admins }}"
+      jupyter_admins: "{{ vault_ganymede_jupyter_admins }}"
 
     - role: icos.jbuild
       tags: jbuild
