@@ -52,6 +52,7 @@ flexpart_host
 jupyter_host
 ganymede_host
 registry_host
+amalthea_host
 
 [fsicos3_aliases:vars]
 ansible_host=fsicos3.lunarc.lu.se
@@ -65,6 +66,7 @@ jupyter ansible_port=60535
 ganymede ansible_port=60540
 registry ansible_port=60545
 exploredata ansible_port=60555
+amalthea ansible_port=60560
 
 [fsicos3_vms:vars]
 ansible_host=fsicos3.lunarc.lu.se
