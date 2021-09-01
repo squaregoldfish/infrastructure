@@ -87,6 +87,7 @@
       certbot_domains:
         - quince-ic1.bcdc.no
         - quince-ic2.bcdc.no
+        - icoslabelling.bcdc.no
 
     - role: icos.nginxsite
       tags: nginx-ic
@@ -95,10 +96,9 @@
       certbot_name: quince-ic
       quince_port: 8180
       quince_domains:
-        - name: quince-ic1.bcdc.no
-          location: /ic1
-        - name: quince-ic2.bcdc.no
-          location: /ic2
+        - quince-ic1.bcdc.no
+        - quince-ic2.bcdc.no
+        - icoslabelling.bcdc.no
 
   tasks:
     # The ships sends data to quince using attachments. These are sometimes
