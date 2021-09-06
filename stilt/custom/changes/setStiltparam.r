@@ -32,7 +32,7 @@ evilswipath<-paste("./Input/VPRM/VPRM_input_STILT_EU2_",stilt_year,"/",sep="")  
 #evilswipath="./Input/VPRM/VPRM_input_STILT_EU2_2011/"    # VPRM only -- input path for EVI and LSWI files (can be netcdf)
 #vprmconstantspath="/Net/Groups/BSY/people/cgerbig/RData/CarboEurope/"   # VPRM only -- input path for file with VPRM constants
 vprmconstantspath="./Input/VPRM/VPRMconstants/"   # VPRM only -- input path for file with VPRM constants
-vprmconstantsname="vprmConstants.optEU2007"                                 # VPRM only -- name of file with VPRM constants
+vprmconstantsname="vprmConstants.optEU2007n"                                 # VPRM only -- name of file with VPRM constants
 nldaspath="/project/p1229/Radiation/NLDAS/"                             # VPRM only -- input path for NLDAS temperature and radiation
 
 
