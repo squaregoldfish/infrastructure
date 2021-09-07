@@ -1,6 +1,11 @@
 - hosts: wordpress_host
   vars:
     wordpress_ip: "{{ _lxd.addresses.eth0 | first }}"
+    wordpress_domains:
+      - www.ingos-infrastructure.eu
+      - www.eric-forum.eu
+      - www.icos-summerschool.eu
+      - www.envriplus.eu
   vars_files:
     - vault.yml
   tasks:
@@ -17,7 +22,7 @@
       tags:
         - lxd
         - nginx
-        - hosts
+        - forward
       lxd_container:
         name: wordpress
         state: started
@@ -43,30 +48,21 @@
         timeout: 600
       register: _lxd
 
-    - name: SSH forward to wordpress
-      tags: iptables
-      iptables_raw:
-        name: forward_ssh_to_wordpress
-        table: nat
-        rules: >-
-          -A PREROUTING -p tcp
-          --dport {{ hostvars['wordpress'].ansible_port }}
-          -j DNAT --to-destination {{ wordpress_ip }}:22
-
-    - name: Modify /etc/hosts
-      tags: hosts
-      lineinfile:
-        path: /etc/hosts
-        regex: '(?:^{{ wordpress_ip | regex_escape}}.*)|(?:.*wordpress\.lxd)$'
-        line: "{{ wordpress_ip }}\twordpress.lxd"
-        state: present
+    - name: Forward port
+      tags: forward
+      import_role:
+        name: icos.lxd_forward
+      vars:
+        lxd_forward_name: wordpress
+        lxd_forward_ip: "{{ wordpress_ip }}"
 
     - name: Create certificate
       tags: cert
       import_role:
         name: icos.certbot2
       vars:
-        certbot_domain: www.icos-summerschool.eu
+        certbot_name: wordpress
+        certbot_domains: "{{ wordpress_domains }}"
 
     - name: Install nginx configuration
       tags: nginx
@@ -75,14 +71,8 @@
       vars:
         nginxsite_name: wordpress
         nginxsite_file: files/wordpress.conf
-        wordpress_domains:
-          - www.ingos-infrastructure.eu
-          - www.eric-forum.eu
-          - www.icos-summerschool.eu
-        wordpress_domains_http:
-          - www.envriplus.eu
 
-          
+
 - hosts: wordpress
   vars:
     lxd_guest_root_keys: "{{ vault_wordpress_root_keys }}"
@@ -101,4 +91,3 @@
               $_SERVER['HTTPS']       = 'on';
               $_SERVER['SERVER_PORT'] = 443;
           }
-
