@@ -33,3 +33,9 @@
     src: certbot-retrieve-cert.sh
     dest: /usr/local/sbin/certbot-retrieve-cert
     mode: +x
+
+- name: Create the certbot-find-unused script
+  copy:
+    src: certbot-find-unused.py
+    dest: /usr/local/sbin/certbot-find-unused
+    mode: +x
