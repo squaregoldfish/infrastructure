@@ -1,14 +1,47 @@
-# This task must always be run to ensure that the _stiltcluster variable is present.
 - name: Create stiltcluster user
   user:
     name: "{{ stiltcluster_username }}"
     state: present
     shell: /bin/bash
   register: _stiltcluster
-  tags:
-    - stiltcluster_only
-    - stiltcluster
 
-- import_tasks: stiltcluster.yml
-  tags:
-    - stiltcluster_only
+- name: Run the jarservice role
+  include_role:
+    name: icos.jarservice
+  vars:
+    servicename     : "{{ stiltcluster_servicename }}"
+    username        : "{{ stiltcluster_username }}"
+    extra_groups    : docker
+    jarfile         : "{{ stiltcluster_jar_file }}"
+    # Cannot use variables for paths to roles due to
+    # https://github.com/ansible/ansible/issues/10374
+    configfile      : roles/icos.stiltcluster/templates/local.conf
+    servicetemplate : roles/icos.stiltcluster/templates/stiltcluster.service
+
+- name: Add stiltweb key to authorized_keys
+  authorized_key:
+    user: "{{ stiltcluster_username }}"
+    state: present
+    key: "{{ lookup('file', 'roles/icos.stiltweb/files/stiltweb.pub') }}"
+
+- name: Create bin directory
+  file:
+    path: "{{ stiltcluster_bin_dir }}"
+    state: directory
+
+- name: Install scripts
+  template:
+    src:   "{{ item }}.j2"
+    dest:  "{{ stiltcluster_bin_dir }}/{{ item }}"
+    owner: "{{ stiltcluster_username }}"
+    group: "{{ stiltcluster_username }}"
+    mode:  0755
+  with_items:
+    - remove-old-stiltruns.sh
+
+- name: Add the remove-old-stiltruns cron job
+  cron:
+    name: remove old stiltruns
+    job: "$HOME/bin/remove-old-stiltruns.sh"
+    minute: 22
+    user: "{{ stiltcluster_username }}"
