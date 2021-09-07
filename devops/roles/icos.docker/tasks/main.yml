@@ -51,6 +51,10 @@
     checksum: "sha256:e2949316cdfe360374b76d45ea512f603b42c0db693a70a6a4c11624aa200b8c"
     mode: +x
 
+- name: Install dive
+  apt:
+    deb: https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb
+
 - import_tasks: cleanup.yml
   tags: docker_cleanup
   when: docker_periodic_cleanup
