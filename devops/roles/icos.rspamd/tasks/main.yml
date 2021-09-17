@@ -7,5 +7,8 @@
 - import_tasks: unbound.yml
   tags: rspamd_unbound
 
+- import_tasks: pyzor.yml
+  tags: rspamd_pyzor
+
 - import_tasks: config.yml
   tags: rspamd_config
