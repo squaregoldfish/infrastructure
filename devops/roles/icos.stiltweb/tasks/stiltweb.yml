@@ -35,14 +35,13 @@
   notify:
     - reload systemd config
 
-- block:
-  - import_tasks: stiltweb_build_hosts.yml
+# - block:
+#   - import_tasks: stiltweb_build_hosts.yml
 
-  - import_tasks: stiltweb_ssh_config.yml
-    become: yes
-    become_user: "{{ stiltweb_username }}"
+#   - import_tasks: stiltweb_ssh_config.yml
+#     become: yes
+#     become_user: "{{ stiltweb_username }}"
 
-  - import_tasks: stiltweb_restart_tunnels.yml
-  when:
-    - stiltweb_no_tunnels is not defined
-    - groups.stiltcluster
+#   - import_tasks: stiltweb_restart_tunnels.yml
+#   when:
+#     - stiltweb_no_tunnels is not defined

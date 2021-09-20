@@ -1,10 +1,9 @@
 # $ deploy stilt stiltweb_sync
 
-
-- hosts: stiltcluster
-  name: Connect to cluster hosts to collect ssh keys
-  tasks:
-    - debug: msg="Collecting host key from {{ inventory_hostname }}"
+# - hosts: stiltcluster
+#   name: Connect to cluster hosts to collect ssh keys
+#   tasks:
+#     - debug: msg="Collecting host key from {{ inventory_hostname }}"
 
 - hosts: fsicos2.lunarc.lu.se stiltcluster
   become: true
